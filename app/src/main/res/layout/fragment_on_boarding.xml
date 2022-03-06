@@ -1,20 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.OnBoardingFragment">
+    tools:context=".ui.on_boarding.OnBoardingFragment"
+    android:padding="16dp">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="OnBoarding" />
-
-    <Button
-        android:id="@+id/button"
+    <ImageView
+        android:id="@+id/imageOnBoardingImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button" />
+        android:src="@drawable/illustration1"
+        app:layout_constraintBottom_toTopOf="@+id/headerOnBoardingTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/skipOnBoardingButton"
+        app:layout_constraintVertical_bias="0.56" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/pageNumberOnBoardingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="38dp"
+        android:text="@string/pageNumber"
+        android:textAppearance="@style/page_number"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="1/3" />
+
+    <Button
+        android:id="@+id/skipOnBoardingButton"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="34dp"
+        android:minHeight="40dp"
+        android:text="@string/skip"
+        android:textAppearance="@style/text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Skip" />
+
+    <TextView
+        android:id="@+id/headerOnBoardingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:gravity="center_horizontal|top"
+        android:text="@string/header1"
+        android:textAppearance="@style/header"
+        app:layout_constraintBottom_toTopOf="@+id/descriptionOnBoardingTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Easy to add new transaction" />
+
+    <TextView
+        android:id="@+id/descriptionOnBoardingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:gravity="center_horizontal|top"
+        android:text="@string/description1"
+        android:textAppearance="@style/description"
+        app:layout_constraintBottom_toTopOf="@+id/continueOnBoardingButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="We always try to bring the best experience to users. Your transactions are recorded as quickly as possible. You will not have any difficulties when you first use MoNo." />
+
+    <Button
+        android:id="@+id/continueOnBoardingButton"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="29dp"
+        android:minHeight="48dp"
+        android:text="@string/word_continue"
+        android:textAppearance="@style/text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Continue" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

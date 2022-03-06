@@ -7,11 +7,13 @@
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/drawable/input_page.xml" value="0.1" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/drawable/report_page.xml" value="0.1" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/drawable/settings_page.xml" value="0.1" />
+        <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/font/popins.xml" value="0.31666666666666665" />
+        <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/font/poppins.xml" value="0.31666666666666665" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_calculator.xml" value="0.15628166160081053" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_input.xml" value="0.15628166160081053" />
-        <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_on_boarding.xml" value="0.10740740740740741" />
-        <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_p_i_n_password.xml" value="0.32135416666666666" />
+        <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_on_boarding.xml" value="0.33" />
+        <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_p_i_n_password.xml" value="0.18" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_reminder.xml" value="0.3072916666666667" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_report.xml" value="0.15628166160081053" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_settings.xml" value="0.25" />

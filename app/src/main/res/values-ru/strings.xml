@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mono</string>
+    <string name="input">Ввод</string>
+    <string name="calculator">Калькулятор</string>
+    <string name="report">Отчет</string>
+    <string name="settings">Настройки</string>
+    <string name="skip">Пропускать</string>
+    <string name="header1">Легко добавить новую транзакцию</string>
+    <string name="header2">Отслеживать доходы и расходы</string>
+    <string name="pageNumber">%1$d/%2$d</string>
+    <string name="header3">Всеобъемлющий отчет</string>
+    <string name="description1">Мы всегда стараемся предоставить пользователям наилучший опыт. Ваши транзакции регистрируются как можно быстрее. У вас не возникнет никаких трудностей при первом использовании MoNo.</string>
+    <string name="description2">Подробная информация о визуальном отслеживании транзакций с помощью функций добавления изображений счетов.</string>
+    <string name="description3">Поддерживает просмотр вашего баланса за месяц, доходов и расходов, долгов, кредитов, а также отчетов по категориям.</string>
+    <string name="word_continue">Продолжать</string>
+    <string name="getStarted">Начать</string>
+    <string name="next">Следующий</string>
+    <string name="enter_PIN">Пожалуйста, введите свой PIN-код, чтобы продолжить.</string>
+    <string name="pin_password">PIN-код и пароль</string>
+    <string name="set_pin_password">Установить PIN-код и пароль</string>
+    <string name="confirm_PIN">Пожалуйста, подтвердите свой PIN-код и пароль.</string>
+    <string name="incorrect_PIN">Неверный пароль, пожалуйста, попробуйте еще раз!</string>
+    <string name="remove_PIN">Удалить PIN</string>
+    <string name="delete_PIN">Удалите PIN-код пароля, чтобы отключить эту функцию.</string>
+    <string name="back">Назад</string>
+    <string name="edit">Редактировать</string>
+</resources>

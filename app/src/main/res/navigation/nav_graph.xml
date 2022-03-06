@@ -7,12 +7,13 @@
 
     <fragment
         android:id="@+id/onBoardingFragment"
-        android:name="com.fiz.mono.ui.OnBoardingFragment"
+        android:name="com.fiz.mono.ui.on_boarding.OnBoardingFragment"
         android:label="fragment_on_boarding"
         tools:layout="@layout/fragment_on_boarding" >
         <action
             android:id="@+id/action_onBoardingFragment_to_PINPasswordFragment"
-            app:destination="@id/PINPasswordFragment" />
+            app:destination="@id/PINPasswordFragment"
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment
         android:id="@+id/PINPasswordFragment"
