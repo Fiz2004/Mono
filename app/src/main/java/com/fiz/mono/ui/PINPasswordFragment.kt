@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import com.fiz.mono.R
 
 // TODO: Rename parameter arguments, choose names that match
@@ -36,6 +38,18 @@ class PINPasswordFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_p_i_n_password, container, false)
+
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        view.findViewById<Button>(R.id.button2).setOnClickListener {
+            val action =
+                PINPasswordFragmentDirections
+                    .actionPINPasswordFragmentToInputFragment()
+            view.findNavController().navigate(action)
+        }
     }
 
     companion object {
