@@ -44,7 +44,7 @@ class PINPasswordFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.findViewById<Button>(R.id.button2).setOnClickListener {
+        view.findViewById<Button>(R.id.nextPINPasswordButton).setOnClickListener {
             val action =
                 PINPasswordFragmentDirections
                     .actionPINPasswordFragmentToInputFragment()
