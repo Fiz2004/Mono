@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/onBoardingFragment">
+
+    <fragment
+        android:id="@+id/onBoardingFragment"
+        android:name="com.fiz.mono.ui.OnBoardingFragment"
+        android:label="fragment_on_boarding"
+        tools:layout="@layout/fragment_on_boarding" >
+        <action
+            android:id="@+id/action_onBoardingFragment_to_PINPasswordFragment"
+            app:destination="@id/PINPasswordFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/PINPasswordFragment"
+        android:name="com.fiz.mono.ui.PINPasswordFragment"
+        android:label="fragment_p_i_n_password"
+        tools:layout="@layout/fragment_p_i_n_password" >
+        <action
+            android:id="@+id/action_PINPasswordFragment_to_inputFragment"
+            app:destination="@id/inputFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/inputFragment"
+        android:name="com.fiz.mono.ui.InputFragment"
+        android:label="fragment_input"
+        tools:layout="@layout/fragment_input" />
+    <fragment
+        android:id="@+id/calculatorFragment"
+        android:name="com.fiz.mono.ui.CalculatorFragment"
+        android:label="fragment_calculator"
+        tools:layout="@layout/fragment_calculator" />
+    <fragment
+        android:id="@+id/reminderFragment"
+        android:name="com.fiz.mono.ui.ReminderFragment"
+        android:label="fragment_reminder"
+        tools:layout="@layout/fragment_reminder" />
+    <fragment
+        android:id="@+id/reportFragment"
+        android:name="com.fiz.mono.ui.ReportFragment"
+        android:label="fragment_report"
+        tools:layout="@layout/fragment_report" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.fiz.mono.ui.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+</navigation>

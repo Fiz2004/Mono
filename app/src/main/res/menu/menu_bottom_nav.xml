@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/inputFragment"
+        android:enabled="true"
+        android:icon="@drawable/input_page"
+        android:title="@string/input"/>
+    <item
+        android:id="@+id/calculatorFragment"
+        android:enabled="true"
+        android:icon="@drawable/calculator_page"
+        android:title="@string/calculator"/>
+    <item
+        android:id="@+id/reportFragment"
+        android:enabled="true"
+        android:icon="@drawable/report_page"
+        android:title="@string/report"/>
+    <item
+        android:id="@+id/settingsFragment"
+        android:enabled="true"
+        android:icon="@drawable/settings_page"
+        android:title="@string/settings"/>
+</menu>
