@@ -3,19 +3,19 @@
 
     <style name="description">
         <item name="android:textSize">16sp</item>
-        <item name="android:textColor">#A6A6A6</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
         <item name="android:fontFamily">@font/poppins</item>
     </style>
 
     <style name="title">
         <item name="android:textSize">16sp</item>
-        <item name="android:textColor">#404040</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
         <item name="android:fontFamily">@font/poppins</item>
     </style>
 
     <style name="header">
         <item name="android:textSize">24sp</item>
-        <item name="android:textColor">#404040</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">@font/poppins_bold</item>
 
@@ -28,20 +28,21 @@
 
     <style name="page_number">
         <item name="android:textSize">16sp</item>
-        <item name="android:textColor">#404040</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
         <item name="android:fontFamily">@font/poppins</item>
     </style>
 
     <style name="back" parent="@style/Widget.Material3.Button.TextButton">
         <item name="android:textSize">16sp</item>
-        <item name="android:textColor">#A6A6A6</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="android:textAlignment">textStart</item>
         <item name="android:fontFamily">@font/poppins</item>
         <item name="android:minHeight">40dp</item>
     </style>
 
     <style name="pass">
         <item name="android:textSize">24sp</item>
-        <item name="android:textColor">#404040</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
     </style>
 
     <style name="button" parent="@style/Widget.Material3.Button">
