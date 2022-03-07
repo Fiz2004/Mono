@@ -29,5 +29,9 @@
     <string name="remove_PIN">Remove PIN</string>
     <string name="delete_PIN">Delete PIN password to disable this feature.</string>
 
-    Please confirm your PIN password.
+    <string name="expense">Expense</string>
+    <string name="income">Income</string>
+    <string name="submit">Submit</string>
+    <string name="please_input">Please input</string>
+    <string name="note">Note</string>
 </resources>

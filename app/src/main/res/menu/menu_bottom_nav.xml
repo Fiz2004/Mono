@@ -3,7 +3,7 @@
     <item
         android:id="@+id/inputFragment"
         android:enabled="true"
-        android:icon="@drawable/input_page_unselected"
+        android:icon="@drawable/input_page_selected"
         android:title="@string/input"/>
     <item
         android:id="@+id/calculatorFragment"

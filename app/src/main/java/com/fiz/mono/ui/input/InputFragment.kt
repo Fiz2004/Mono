@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.fiz.mono.R
+import com.fiz.mono.databinding.FragmentInputBinding
+import com.fiz.mono.databinding.FragmentOnBoardingBinding
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,6 +26,9 @@ class InputFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private var _binding: FragmentInputBinding? = null
+    private val binding get() = _binding!!
+
     val viewModel: InputViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,8 +43,14 @@ class InputFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_input, container, false)
+        _binding = FragmentInputBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,6 +68,10 @@ class InputFragment : Fragment() {
                     .actionInputFragmentToPINPasswordFragment()
             view.findNavController().navigate(action)
             return
+        }
+
+        binding.noteInputEditText.setEndIconOnClickListener {
+            // Respond to end icon presses
         }
 
     }

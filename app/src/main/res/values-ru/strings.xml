@@ -5,7 +5,7 @@
     <string name="calculator">Калькулятор</string>
     <string name="report">Отчет</string>
     <string name="settings">Настройки</string>
-    <string name="skip">Пропускать</string>
+    <string name="skip">Пропустить</string>
     <string name="header1">Легко добавить новую транзакцию</string>
     <string name="header2">Отслеживать доходы и расходы</string>
     <string name="pageNumber">%1$d/%2$d</string>
@@ -25,4 +25,10 @@
     <string name="delete_PIN">Удалите PIN-код пароля, чтобы отключить эту функцию.</string>
     <string name="back">Назад</string>
     <string name="edit">Редактировать</string>
+
+    <string name="expense">Расход</string>
+    <string name="income">Доход</string>
+    <string name="submit">Подтвердить</string>
+    <string name="please_input">Пожалуйста, введите</string>
+    <string name="note">Примечание</string>
 </resources>
