@@ -1,10 +1,12 @@
-package com.fiz.mono.ui
+package com.fiz.mono.ui.input
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import com.fiz.mono.R
 
 // TODO: Rename parameter arguments, choose names that match
@@ -22,6 +24,8 @@ class InputFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    val viewModel: InputViewModel by activityViewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -36,6 +40,33 @@ class InputFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_input, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        if (viewModel.firstTime) {
+            val action =
+                InputFragmentDirections
+                    .actionInputFragmentToOnBoardingFragment()
+            view.findNavController().navigate(action)
+            return
+        }
+        if (!viewModel.log) {
+            val action =
+                InputFragmentDirections
+                    .actionInputFragmentToPINPasswordFragment()
+            view.findNavController().navigate(action)
+            return
+        }
+
+    }
+
+    private fun isLogOut(): Boolean {
+        return true
+    }
+
+    private fun isFirstTime(): Boolean {
+        return true
     }
 
     companion object {

@@ -15,7 +15,7 @@ class OnBoardingViewModel : ViewModel() {
     }
 
     fun PIN() {
-        _pages.value = 2
+        _pages.value = 3
     }
 
     fun prevPages() {

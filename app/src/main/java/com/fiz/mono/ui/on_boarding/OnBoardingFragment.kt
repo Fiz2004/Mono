@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentOnBoardingBinding
+import com.fiz.mono.ui.input.InputViewModel
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -27,6 +28,7 @@ class OnBoardingFragment : Fragment() {
     private val binding get() = _binding!!
 
     val viewModel: OnBoardingViewModel by activityViewModels()
+    val inputViewModel: InputViewModel by activityViewModels()
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -70,6 +72,7 @@ class OnBoardingFragment : Fragment() {
 
             if (viewModel.pages.value == 3) {
                 viewModel.PIN()
+                inputViewModel.firstTime=false
                 val action =
                     OnBoardingFragmentDirections
                         .actionOnBoardingFragmentToPINPasswordFragment()
@@ -79,6 +82,7 @@ class OnBoardingFragment : Fragment() {
 
         binding.skipOnBoardingButton.setOnClickListener {
             viewModel.PIN()
+            inputViewModel.firstTime=false
             val action =
                 OnBoardingFragmentDirections
                     .actionOnBoardingFragmentToPINPasswordFragment()
@@ -109,7 +113,7 @@ class OnBoardingFragment : Fragment() {
 
                     binding.continueOnBoardingButton.text = getString(R.string.word_continue)
                 }
-                else -> {
+                2 -> {
                     binding.imageOnBoardingImageView
                         .setImageResource(R.drawable.illustration3)
                     binding.pageNumberOnBoardingTextView.text = getString(R.string.pageNumber,3,3)
