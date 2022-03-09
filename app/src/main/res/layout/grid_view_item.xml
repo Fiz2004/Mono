@@ -2,12 +2,18 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+android:padding="2dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minWidth="92dp"
+        android:minHeight="92dp"
+        app:strokeColor="@color/gray"
+        app:strokeWidth="2dp"
+        style="@style/Widget.Material3.CardView.Outlined"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -16,21 +22,27 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_gravity="center">
 
             <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/iconImageView"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginTop="12dp"
+                app:srcCompat="@drawable/tennis_ball"
+                android:scaleType="centerCrop"
                 android:layout_gravity="center_horizontal"
                 tools:srcCompat="@drawable/tennis_ball" />
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/descriptionTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:layout_marginTop="8dp"
                 android:layout_gravity="bottom|center_horizontal"
                 android:text="Sport" />
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -76,10 +76,10 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/outlinedTextField"
-        app:boxBackgroundColor="@null"
-        app:boxBackgroundMode="outline"
         android:layout_width="match_parent"
         android:layout_height="56dp"
+        app:boxBackgroundColor="@null"
+        app:boxBackgroundMode="outline"
         app:boxCornerRadiusBottomEnd="8dp"
         app:boxCornerRadiusBottomStart="8dp"
         app:boxCornerRadiusTopEnd="8dp"
@@ -90,8 +90,8 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="0dp"
             android:inputType="numberDecimal"
+            android:padding="0dp"
             android:paddingStart="60dp"
             android:text="0.00"
             android:textSize="32sp" />
@@ -101,22 +101,22 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/outlinedTextFieldCur"
-        app:boxBackgroundColor="@null"
-        app:boxBackgroundMode="outline"
         android:layout_width="44dp"
         android:layout_height="56dp"
+        app:boxBackgroundColor="@null"
+        app:boxBackgroundMode="outline"
         app:boxCornerRadiusBottomEnd="0dp"
         app:boxCornerRadiusBottomStart="8dp"
         app:boxCornerRadiusTopEnd="0dp"
         app:boxCornerRadiusTopStart="8dp"
-        android:clipChildren="false"
         app:layout_constraintStart_toStartOf="@+id/outlinedTextField"
         app:layout_constraintTop_toBottomOf="@+id/textExpense">
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="match_parent"
             android:gravity="center"
+            android:padding="0dp"
             android:text="$"
             android:textSize="32sp" />
 
@@ -134,16 +134,16 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/noteInputEditText"
-        app:boxBackgroundColor="@null"
-        app:boxBackgroundMode="outline"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        app:boxBackgroundColor="@null"
+        app:boxBackgroundMode="outline"
         app:boxCornerRadiusBottomEnd="8dp"
         app:boxCornerRadiusBottomStart="8dp"
         app:boxCornerRadiusTopEnd="8dp"
         app:boxCornerRadiusTopStart="8dp"
-        app:endIconDrawable="@drawable/camera"
         app:boxStrokeColor="@color/gray"
+        app:endIconDrawable="@drawable/camera"
         app:endIconMode="custom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -152,25 +152,25 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            />
+            android:padding="0dp" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/categoryInputRecyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="6dp"
-        app:layoutManager=
-            "androidx.recyclerview.widget.GridLayoutManager"
         android:clipToPadding="false"
-        app:spanCount="4"
+        android:padding="6dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toTopOf="@+id/submitInputButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/noteInputEditText"
+        app:spanCount="4"
         tools:itemCount="16"
-        tools:listitem="@layout/grid_view_item"/>
+        tools:listitem="@layout/grid_view_item" />
+
     <Button
         android:id="@+id/submitInputButton"
         style="@style/button"
