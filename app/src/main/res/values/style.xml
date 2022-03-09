@@ -4,13 +4,11 @@
     <style name="description">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">?attr/colorSecondary</item>
-        <item name="android:fontFamily">@font/poppins</item>
     </style>
 
     <style name="title">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">?attr/colorPrimary</item>
-        <item name="android:fontFamily">@font/poppins</item>
     </style>
 
     <style name="header">
@@ -23,20 +21,17 @@
 
     <style name="text">
         <item name="android:textSize">16sp</item>
-        <item name="android:fontFamily">@font/poppins</item>
     </style>
 
     <style name="page_number">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">?attr/colorPrimary</item>
-        <item name="android:fontFamily">@font/poppins</item>
     </style>
 
     <style name="back" parent="@style/Widget.Material3.Button.TextButton">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">?attr/colorSecondary</item>
         <item name="android:textAlignment">textStart</item>
-        <item name="android:fontFamily">@font/poppins</item>
         <item name="android:minHeight">40dp</item>
     </style>
 
@@ -59,7 +54,5 @@
         <item name="strokeColor">?attr/colorPrimary</item>
         <item name="android:textColor">?attr/colorPrimary</item>
     </style>
-
-
 
 </resources>
