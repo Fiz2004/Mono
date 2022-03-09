@@ -81,7 +81,7 @@ class InputFragment : Fragment() {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 if (tab != null) {
                     when (tab.text){
-                        "Expense"->{
+                        getString(R.string.expense)->{
                             val list = listOf(
                                 CategoryItem("Bank", R.drawable.bank),
                                 CategoryItem("Food", R.drawable.food),
@@ -97,7 +97,7 @@ class InputFragment : Fragment() {
                             )
                             adapter.submitList(list)
                         }
-                        "Income"->{
+                        getString(R.string.income)->{
                             val list = listOf(
                                 CategoryItem("Freelance", R.drawable.challenge),
                                 CategoryItem("Salary", R.drawable.money),

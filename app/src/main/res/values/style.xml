@@ -55,4 +55,11 @@
         <item name="android:textColor">?attr/colorPrimary</item>
     </style>
 
+    <style name="buttonCalculator">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:backgroundTint">@color/background</item>
+        <item name="android:layout_margin">2dp</item>
+    </style>
+
 </resources>
