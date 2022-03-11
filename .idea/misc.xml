@@ -3,29 +3,37 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/arrow_right.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/background.xml" value="0.16" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/ball.xml" value="0.123" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/bell_simple_ringing.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/border.xml" value="0.1" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/camera.xml" value="0.123" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/camera1.xml" value="0.123" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/currency_circle.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/dgg.xml" value="0.123" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/edit_image_bg.xml" value="0.5" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/edit_image_bg_background.xml" value="0.18" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/ic_baseline_refresh_24.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/ic_carret_down.xml" value="0.2625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/ic_reset_24.xml" value="0.2625" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/lock_key.xml" value="0.1625" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/mode.xml" value="0.1625" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/squares_four.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/activity_main.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/data_expense_income_item.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/data_range_layout.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_calculator.xml" value="0.22" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_calendar.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_category.xml" value="0.2864471996579735" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_currency.xml" value="0.20521590423257802" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_input.xml" value="0.33" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_on_boarding.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_reminder.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_report.xml" value="0.25" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_settings.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/grid_view_item.xml" value="0.9" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/options_settings_item.xml" value="0.25" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/transaction_item.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/menu/menu_bottom_nav.xml" value="0.2864471996579735" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/drawable/calculator_page.xml" value="0.1" />

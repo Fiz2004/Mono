@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/inputFragment">
+    app:startDestination="@id/settingsFragment">
 
     <fragment
         android:id="@+id/onBoardingFragment"
         android:name="com.fiz.mono.ui.on_boarding.OnBoardingFragment"
         android:label="fragment_on_boarding"
-        tools:layout="@layout/fragment_on_boarding" >
+        tools:layout="@layout/fragment_on_boarding">
         <action
             android:id="@+id/action_onBoardingFragment_to_PINPasswordFragment"
             app:destination="@id/PINPasswordFragment" />
@@ -18,12 +18,15 @@
         android:id="@+id/PINPasswordFragment"
         android:name="com.fiz.mono.ui.PINPasswordFragment"
         android:label="fragment_p_i_n_password"
-        tools:layout="@layout/fragment_p_i_n_password" >
+        tools:layout="@layout/fragment_p_i_n_password">
         <action
             android:id="@+id/action_PINPasswordFragment_to_inputFragment"
             app:destination="@id/inputFragment"
             app:popUpTo="@id/inputFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_PINPasswordFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/inputFragment"
@@ -54,7 +57,30 @@
         tools:layout="@layout/fragment_report" />
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.fiz.mono.ui.SettingsFragment"
+        android:name="com.fiz.mono.ui.settings.SettingsFragment"
         android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings">
+        <action
+            android:id="@+id/action_settingsFragment_to_categoryFragment"
+            app:destination="@id/categoryFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_currencyFragment"
+            app:destination="@id/currencyFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_PINPasswordFragment"
+            app:destination="@id/PINPasswordFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_reminderFragment"
+            app:destination="@id/reminderFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/categoryFragment"
+        android:name="com.fiz.mono.CategoryFragment"
+        android:label="fragment_category"
+        tools:layout="@layout/fragment_category" />
+    <fragment
+        android:id="@+id/currencyFragment"
+        android:name="com.fiz.mono.CurrencyFragment"
+        android:label="fragment_currency"
+        tools:layout="@layout/fragment_currency" />
 </navigation>

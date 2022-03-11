@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:textAllCaps="false"
         android:textSize="16sp"
+        android:backgroundTint="?attr/colorMain"
         app:layout_constraintTop_toTopOf="parent"
         app:tabIndicatorColor="@color/blue"
         app:tabSelectedTextColor="@color/blue"
@@ -32,10 +33,10 @@
 
     <include
         android:id="@+id/dataRangeLayout"
-        layout="@layout/data_range_layout"
-        android:layout_marginTop="12dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        layout="@layout/data_range_layout"
+        android:layout_marginTop="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
@@ -151,7 +152,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:minHeight="48dp"
-
         android:text="@string/submit"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

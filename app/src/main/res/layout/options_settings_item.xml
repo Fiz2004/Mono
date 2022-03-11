@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp">
+
+    <ImageView
+        android:id="@+id/borderItem"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:background="@drawable/edit_image_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/iconCategoryImageView"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:src="@drawable/category"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/category" />
+
+    <TextView
+        android:id="@+id/nameCategoryTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="12dp"
+        android:gravity="center_vertical"
+        android:text="Category"
+        android:textAppearance="@style/size16_color_primary"
+        app:layout_constraintBottom_toBottomOf="@+id/borderItem"
+        app:layout_constraintEnd_toEndOf="@+id/borderItem"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/iconCategoryImageView"
+        app:layout_constraintTop_toTopOf="@+id/borderItem" />
+
+    <ImageView
+        android:id="@+id/carretCircleRightImageView"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="8dp"
+        android:src="@drawable/arrow_right"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/borderItem"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/arrow_right" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/lightDarkModeSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/borderItem"
+        app:layout_constraintTop_toTopOf="parent"
+        app:thumbTint="@color/blue"
+        app:trackTint="@color/gray" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

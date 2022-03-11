@@ -6,17 +6,17 @@
         <item name="android:textColor">?attr/colorSecondary</item>
     </style>
 
-    <style name="title">
+    <style name="size12_color_primary">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">?attr/colorPrimary</item>
     </style>
 
-    <style name="date">
+    <style name="size16_color_secondary">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">?attr/colorSecondary</item>
     </style>
 
-    <style name="some_id">
+    <style name="size16_color_primary">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">?attr/colorPrimary</item>
     </style>
@@ -66,7 +66,7 @@
     </style>
 
     <style name="buttonCalculator" parent="@style/Widget.MaterialComponents.Button">
-        <item name="android:textAppearance">@style/some_id</item>
+        <item name="android:textAppearance">@style/size16_color_primary</item>
         <item name="android:backgroundTint">@color/background</item>
         <item name="android:textColor">?attr/colorPrimary</item>
         <item name="android:layout_margin">2dp</item>

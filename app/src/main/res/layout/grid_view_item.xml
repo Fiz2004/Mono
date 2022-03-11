@@ -13,6 +13,7 @@ android:padding="2dp"
         android:minHeight="92dp"
         app:strokeColor="@color/gray"
         app:strokeWidth="2dp"
+        android:backgroundTint="?attr/colorMain"
         style="@style/Widget.Material3.CardView.Outlined"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,6 +34,7 @@ android:padding="2dp"
                 app:srcCompat="@drawable/tennis_ball"
                 android:scaleType="centerCrop"
                 android:layout_gravity="center_horizontal"
+                app:tint="?attr/colorPrimary"
                 tools:srcCompat="@drawable/tennis_ball" />
 
             <TextView
