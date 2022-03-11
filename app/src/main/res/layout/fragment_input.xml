@@ -30,39 +30,14 @@
             android:text="@string/income" />
     </com.google.android.material.tabs.TabLayout>
 
-    <ImageButton
-        android:id="@+id/leftDateRangeImageButton"
-        android:layout_width="40dp"
-        android:layout_height="0dp"
-        android:background="@drawable/arrow_left"
-        app:layout_constraintBottom_toBottomOf="@+id/editTextDate"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toStartOf="@+id/editTextDate"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
-
-
-    <TextView
-        android:id="@+id/editTextDate"
-        style="@style/title"
-        android:layout_width="0dp"
+    <include
+        android:id="@+id/dataRangeLayout"
+        layout="@layout/data_range_layout"
+        android:layout_marginTop="12dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:minHeight="48dp"
-        android:text="Feb 24, 2022 (Sat)"
-        app:layout_constraintEnd_toStartOf="@+id/rightDateRangeImageButton"
-        app:layout_constraintStart_toEndOf="@+id/leftDateRangeImageButton"
-        app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
-
-    <ImageButton
-        android:id="@+id/rightDateRangeImageButton"
-        android:layout_width="40dp"
-        android:layout_height="0dp"
-        android:background="@drawable/arrow_right"
-        app:layout_constraintBottom_toBottomOf="@+id/editTextDate"
-        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/editTextDate"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
 
     <TextView
@@ -70,17 +45,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/expense"
+        android:layout_marginTop="12dp"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextDate" />
+        app:layout_constraintTop_toBottomOf="@+id/dataRangeLayout" />
 
     <ImageView
         android:id="@+id/imageInputExpenseImageView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@drawable/expense"
+        android:background="@drawable/edit_image_bg"
         android:text="@string/expense"
-        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textExpense" />
+
+    <ImageView
+        android:id="@+id/imageBackgroundInputExpenseImageView"
+        android:layout_width="44dp"
+        android:layout_height="56dp"
+        android:background="@drawable/edit_image_bg_background"
+        android:text="@string/expense"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textExpense" />
 
@@ -100,9 +84,9 @@
         android:id="@+id/outlinedTextField"
         android:layout_width="match_parent"
         android:layout_height="56dp"
+        android:layout_marginStart="60dp"
         android:inputType="numberDecimal"
         android:padding="0dp"
-        android:layout_marginStart="60dp"
         android:text="0.00"
         android:textSize="32sp"
         app:layout_constraintTop_toBottomOf="@+id/textExpense" />
@@ -112,6 +96,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/note"
+        android:layout_marginTop="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -121,12 +106,26 @@
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/noteInputEditText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:background="@drawable/edit_image_bg"
         android:padding="0dp"
-        android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/noteInputTextView" />
+
+    <ImageView
+        android:id="@+id/noteCameraInputEditText"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:strokeColor="?attr/colorSecondaryVariant"
+        android:text="@string/expense"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/noteInputTextView"
+        app:srcCompat="@drawable/camera" />
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -134,6 +133,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="29dp"
         android:padding="6dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toTopOf="@+id/submitInputButton"
@@ -150,6 +151,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:minHeight="48dp"
+
         android:text="@string/submit"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

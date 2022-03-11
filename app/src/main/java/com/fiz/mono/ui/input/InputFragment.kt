@@ -118,7 +118,7 @@ class InputFragment : Fragment() {
             }
         })
 
-        binding.noteInputEditText.setEndIconOnClickListener {
+        binding.noteCameraInputEditText.setOnClickListener {
             // Respond to end icon presses
         }
 

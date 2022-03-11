@@ -4,238 +4,279 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="16dp"
     tools:context=".ui.CalculatorFragment">
 
     <TextView
-        android:id="@+id/operation"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/calculator"
+        android:textAlignment="center"
+        android:textAppearance="@style/title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/result"
+        android:id="@+id/operationCalendarTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="41.82 x 2"
+        android:textColor="?attr/colorSecondary"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.39" />
+
+    <TextView
+        android:id="@+id/resultCalendarTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:text="83.64"
+        android:gravity="end"
+        android:textColor="?attr/colorPrimary"
+        android:textSize="56sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/operation" />
+        app:layout_constraintTop_toBottomOf="@+id/operationCalendarTextView" />
 
     <Button
-        android:id="@+id/calendar7Button"
+        android:id="@+id/sevenCalendarImageButton"
         style="@style/buttonCalculator"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        app:layout_constraintVertical_weight="1"
         android:text="7"
-        app:layout_constraintBottom_toTopOf="@+id/button40"
-        app:layout_constraintEnd_toStartOf="@+id/button46"
+        app:layout_constraintBottom_toTopOf="@+id/fourCalendarImageButton"
+        app:layout_constraintEnd_toStartOf="@+id/eightCalendarImageButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/result" />
+        app:layout_constraintTop_toBottomOf="@+id/resultCalendarTextView" />
 
     <Button
-        android:id="@+id/button44"
+        android:id="@+id/eightCalendarImageButton"
+        style="@style/buttonCalculator"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        style="@style/buttonCalculator"
-        android:text="2"
-        app:layout_constraintBottom_toTopOf="@+id/button42"
-        app:layout_constraintEnd_toStartOf="@+id/button47"
-        app:layout_constraintStart_toEndOf="@+id/button41"
-        app:layout_constraintTop_toBottomOf="@+id/button40" />
-
-    <Button
-        android:id="@+id/button53"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        style="@style/buttonCalculator"
-        android:text="/"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button57"
-        app:layout_constraintStart_toEndOf="@+id/button50"
-        app:layout_constraintTop_toBottomOf="@+id/button41" />
-
-    <Button
-        android:id="@+id/button52"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        style="@style/buttonCalculator"
-        android:text="x"
-        app:layout_constraintBottom_toTopOf="@+id/button42"
-
-        app:layout_constraintEnd_toStartOf="@+id/button57"
-        app:layout_constraintStart_toEndOf="@+id/button47"
-        app:layout_constraintTop_toBottomOf="@+id/button40" />
-
-    <Button
-        android:id="@+id/button46"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        style="@style/buttonCalculator"
+        app:layout_constraintVertical_weight="1"
         android:text="8"
-        app:layout_constraintBottom_toTopOf="@+id/button40"
-        app:layout_constraintEnd_toStartOf="@+id/button48"
-        app:layout_constraintStart_toEndOf="@+id/calendar7Button"
-        app:layout_constraintTop_toBottomOf="@+id/result" />
+        app:layout_constraintBottom_toTopOf="@+id/fourCalendarImageButton"
+        app:layout_constraintEnd_toStartOf="@+id/nineCalendarImageButton"
+        app:layout_constraintStart_toEndOf="@+id/sevenCalendarImageButton"
+        app:layout_constraintTop_toBottomOf="@+id/resultCalendarTextView" />
 
     <Button
-        android:id="@+id/button45"
+        android:id="@+id/nineCalendarImageButton"
+        style="@style/buttonCalculator"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        style="@style/buttonCalculator"
-        android:text="5"
-        app:layout_constraintBottom_toTopOf="@+id/button41"
-        app:layout_constraintEnd_toStartOf="@+id/button49"
-        app:layout_constraintStart_toEndOf="@+id/button40"
-        app:layout_constraintTop_toBottomOf="@+id/calendar7Button" />
-
-    <Button
-        android:id="@+id/button41"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        style="@style/buttonCalculator"
-        android:text="1"
-        app:layout_constraintBottom_toTopOf="@+id/button42"
-        app:layout_constraintEnd_toStartOf="@+id/button44"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button40" />
-
-    <Button
-        android:id="@+id/button49"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        style="@style/buttonCalculator"
-        android:text="6"
-        app:layout_constraintBottom_toTopOf="@+id/button41"
-        app:layout_constraintEnd_toStartOf="@+id/button54"
-        app:layout_constraintStart_toEndOf="@+id/button45"
-        app:layout_constraintTop_toBottomOf="@+id/calendar7Button" />
-
-    <Button
-        android:id="@+id/button48"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        style="@style/buttonCalculator"
+        app:layout_constraintVertical_weight="1"
         android:text="9"
-        app:layout_constraintBottom_toTopOf="@+id/button40"
-        app:layout_constraintEnd_toStartOf="@+id/button51"
-        app:layout_constraintStart_toEndOf="@+id/button46"
-        app:layout_constraintTop_toBottomOf="@+id/result" />
+        app:layout_constraintBottom_toTopOf="@+id/fourCalendarImageButton"
+        app:layout_constraintEnd_toStartOf="@+id/plusCalendarImageButton"
+        app:layout_constraintStart_toEndOf="@+id/eightCalendarImageButton"
+        app:layout_constraintTop_toBottomOf="@+id/resultCalendarTextView" />
 
     <Button
-        android:id="@+id/button47"
+        android:id="@+id/plusCalendarImageButton"
+        style="@style/buttonCalculator"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        style="@style/buttonCalculator"
-        android:text="3"
-        app:layout_constraintBottom_toTopOf="@+id/button42"
-        app:layout_constraintEnd_toStartOf="@+id/button52"
-        app:layout_constraintStart_toEndOf="@+id/button44"
-        app:layout_constraintTop_toBottomOf="@+id/button40" />
-
-    <Button
-        android:id="@+id/button51"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        style="@style/buttonCalculator"
+        app:layout_constraintVertical_weight="1"
         android:text="+"
-        app:layout_constraintBottom_toTopOf="@+id/button40"
-        app:layout_constraintEnd_toStartOf="@+id/button55"
-        app:layout_constraintStart_toEndOf="@+id/button48"
-        app:layout_constraintTop_toBottomOf="@+id/result" />
+        android:textColor="@color/blue"
+        app:layout_constraintBottom_toTopOf="@+id/fourCalendarImageButton"
+        app:layout_constraintEnd_toStartOf="@+id/acCalendarImageButton"
+        app:layout_constraintStart_toEndOf="@+id/nineCalendarImageButton"
+        app:layout_constraintTop_toBottomOf="@+id/resultCalendarTextView" />
 
     <Button
-        android:id="@+id/button57"
+        android:id="@+id/acCalendarImageButton"
+        style="@style/buttonCalculator"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintVertical_weight="1"
+        android:text="AC"
+        android:textColor="@color/red"
+        app:layout_constraintBottom_toTopOf="@+id/deleteCalendarImageButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/plusCalendarImageButton"
+        app:layout_constraintTop_toBottomOf="@+id/resultCalendarTextView" />
+
+    <Button
+        android:id="@+id/fourCalendarImageButton"
         android:layout_width="0dp"
         android:layout_height="0dp"
         style="@style/buttonCalculator"
+        app:layout_constraintVertical_weight="1"
+        android:text="4"
+        app:layout_constraintBottom_toTopOf="@+id/oneCalendarImageButton"
+        app:layout_constraintEnd_toStartOf="@+id/fiveCalendarImageButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sevenCalendarImageButton" />
+
+    <Button
+        android:id="@+id/fiveCalendarImageButton"
+        style="@style/buttonCalculator"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="5"
+        app:layout_constraintBottom_toTopOf="@+id/oneCalendarImageButton"
+        app:layout_constraintEnd_toStartOf="@+id/sixCalendarImageButton"
+        app:layout_constraintStart_toEndOf="@+id/fourCalendarImageButton"
+        app:layout_constraintTop_toBottomOf="@+id/eightCalendarImageButton"
+        app:layout_constraintVertical_weight="1" />
+
+    <Button
+        android:id="@+id/sixCalendarImageButton"
+        style="@style/buttonCalculator"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="6"
+        app:layout_constraintBottom_toTopOf="@+id/oneCalendarImageButton"
+        app:layout_constraintEnd_toStartOf="@+id/minusCalendarImageButton"
+        app:layout_constraintStart_toEndOf="@+id/fiveCalendarImageButton"
+        app:layout_constraintTop_toBottomOf="@+id/nineCalendarImageButton"
+        app:layout_constraintVertical_weight="1" />
+
+    <Button
+        android:id="@+id/minusCalendarImageButton"
+        style="@style/buttonCalculator"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="-"
+        android:textColor="@color/blue"
+        app:layout_constraintBottom_toTopOf="@+id/oneCalendarImageButton"
+        app:layout_constraintEnd_toStartOf="@+id/deleteCalendarImageButton"
+        app:layout_constraintStart_toEndOf="@+id/sixCalendarImageButton"
+        app:layout_constraintTop_toBottomOf="@+id/plusCalendarImageButton"
+        app:layout_constraintVertical_weight="1" />
+
+    <Button
+        android:id="@+id/deleteCalendarImageButton"
+        style="@style/buttonCalculator"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintVertical_weight="1"
+        android:text="Del"
+        android:textColor="@color/red"
+        app:layout_constraintBottom_toTopOf="@+id/oneCalendarImageButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/minusCalendarImageButton"
+        app:layout_constraintTop_toBottomOf="@+id/acCalendarImageButton" />
+
+    <Button
+        android:id="@+id/oneCalendarImageButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        style="@style/buttonCalculator"
+        app:layout_constraintVertical_weight="1"
+        android:text="1"
+        app:layout_constraintBottom_toTopOf="@+id/resetCalendarImageButton"
+        app:layout_constraintEnd_toStartOf="@+id/twoCalendarImageButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fourCalendarImageButton" />
+
+    <Button
+        android:id="@+id/twoCalendarImageButton"
+        style="@style/buttonCalculator"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="2"
+        app:layout_constraintBottom_toTopOf="@+id/zeroCalendarImageButton"
+        app:layout_constraintEnd_toStartOf="@+id/threeCalendarImageButton"
+        app:layout_constraintStart_toEndOf="@+id/oneCalendarImageButton"
+        app:layout_constraintTop_toBottomOf="@+id/fiveCalendarImageButton"
+        app:layout_constraintVertical_weight="1" />
+
+    <Button
+        android:id="@+id/threeCalendarImageButton"
+        style="@style/buttonCalculator"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="3"
+        app:layout_constraintBottom_toTopOf="@+id/pointCalendarImageButton"
+        app:layout_constraintEnd_toStartOf="@+id/timesCalendarImageButton"
+        app:layout_constraintStart_toEndOf="@+id/twoCalendarImageButton"
+        app:layout_constraintTop_toBottomOf="@+id/sixCalendarImageButton"
+        app:layout_constraintVertical_weight="1" />
+
+    <Button
+        android:id="@+id/timesCalendarImageButton"
+        style="@style/buttonCalculator"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="x"
+        android:textColor="@color/blue"
+        app:layout_constraintBottom_toTopOf="@+id/dividedCalendarImageButton"
+        app:layout_constraintEnd_toStartOf="@+id/equalsCalendarImageButton"
+        app:layout_constraintStart_toEndOf="@+id/threeCalendarImageButton"
+        app:layout_constraintTop_toBottomOf="@+id/minusCalendarImageButton"
+        app:layout_constraintVertical_weight="1" />
+
+    <Button
+        android:id="@+id/equalsCalendarImageButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        style="@style/buttonCalculator"
+        app:layout_constraintVertical_weight="2"
         android:text="="
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button53"
-        app:layout_constraintTop_toBottomOf="@+id/button58" />
+        app:layout_constraintStart_toEndOf="@+id/dividedCalendarImageButton"
+        app:layout_constraintTop_toBottomOf="@+id/deleteCalendarImageButton" />
 
     <Button
-        android:id="@+id/button58"
+        android:id="@+id/resetCalendarImageButton"
+        style="@style/buttonCalculator"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        style="@style/buttonCalculator"
-        android:text="Del"
-        app:layout_constraintBottom_toTopOf="@+id/button41"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button54"
-        app:layout_constraintTop_toBottomOf="@+id/calendar7Button" />
-
-    <Button
-        android:id="@+id/button42"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        style="@style/buttonCalculator"
-        android:text="return"
+        app:layout_constraintVertical_weight="1"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button43"
+        app:layout_constraintEnd_toStartOf="@+id/zeroCalendarImageButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button41" />
-
-
-    <Button
-        android:id="@+id/button55"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        style="@style/buttonCalculator"
-        android:text="AC"
-        app:layout_constraintBottom_toTopOf="@+id/button40"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button51"
-        app:layout_constraintTop_toBottomOf="@+id/result" />
+        app:layout_constraintTop_toBottomOf="@+id/oneCalendarImageButton"
+        android:paddingTop="32dp"
+        android:drawableTop="@drawable/ic_reset_24" />
 
     <Button
-        android:id="@+id/button50"
+        android:id="@+id/zeroCalendarImageButton"
+        style="@style/buttonCalculator"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        style="@style/buttonCalculator"
-        android:text="."
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button53"
-        app:layout_constraintStart_toEndOf="@+id/button43"
-        app:layout_constraintTop_toBottomOf="@+id/button41" />
-
-    <Button
-        android:id="@+id/button54"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        style="@style/buttonCalculator"
-        android:text="-"
-        app:layout_constraintBottom_toTopOf="@+id/button41"
-        app:layout_constraintEnd_toStartOf="@+id/button58"
-        app:layout_constraintStart_toEndOf="@+id/button49"
-        app:layout_constraintTop_toBottomOf="@+id/calendar7Button" />
-
-    <Button
-        android:id="@+id/button43"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        style="@style/buttonCalculator"
         android:text="0"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button50"
-        app:layout_constraintStart_toEndOf="@+id/button42"
-        app:layout_constraintTop_toBottomOf="@+id/button41" />
+        app:layout_constraintEnd_toStartOf="@+id/pointCalendarImageButton"
+        app:layout_constraintStart_toEndOf="@+id/resetCalendarImageButton"
+        app:layout_constraintTop_toBottomOf="@+id/twoCalendarImageButton"
+        app:layout_constraintVertical_weight="1" />
 
     <Button
-        android:id="@+id/button40"
+        android:id="@+id/pointCalendarImageButton"
+        style="@style/buttonCalculator"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:text="."
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/dividedCalendarImageButton"
+        app:layout_constraintStart_toEndOf="@+id/zeroCalendarImageButton"
+        app:layout_constraintTop_toBottomOf="@+id/threeCalendarImageButton"
+        app:layout_constraintVertical_weight="1" />
+
+    <Button
+        android:id="@+id/dividedCalendarImageButton"
         style="@style/buttonCalculator"
-        android:text="4"
-        app:layout_constraintBottom_toTopOf="@+id/button41"
-        app:layout_constraintEnd_toStartOf="@+id/button45"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calendar7Button" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="/"
+        android:textColor="@color/blue"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/equalsCalendarImageButton"
+        app:layout_constraintStart_toEndOf="@+id/pointCalendarImageButton"
+        app:layout_constraintTop_toBottomOf="@+id/timesCalendarImageButton"
+        app:layout_constraintVertical_weight="1" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

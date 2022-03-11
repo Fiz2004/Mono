@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <ImageButton
+        android:id="@+id/leftDateRangeImageButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/arrow_left" />
+
+    <TextView
+        android:id="@+id/editTextDate"
+        style="@style/title"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:minHeight="48dp"
+        android:text="Feb 24, 2022 (Sat)" />
+
+    <ImageButton
+        android:id="@+id/rightDateRangeImageButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/arrow_right" />
+</LinearLayout>

@@ -1,14 +1,262 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
+    android:padding="16dp"
     tools:context=".ui.ReportFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:id="@+id/titleTextView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Report" />
+        android:layout_height="wrap_content"
+        android:text="@string/month_report"
+        android:textAlignment="center"
+        android:textAppearance="@style/title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</FrameLayout>
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:background="@drawable/ic_carret_down"
+        app:layout_constraintBottom_toBottomOf="@+id/titleTextView"
+        app:layout_constraintEnd_toEndOf="@+id/titleTextView"
+        app:layout_constraintTop_toTopOf="parent"></ImageButton>
+
+    <include
+        android:id="@+id/dataRangeLayout"
+        layout="@layout/data_range_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
+
+    <ImageView
+        android:id="@+id/currentBalanceBorderReportTextView"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/edit_image_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dataRangeLayout" />
+
+    <TextView
+        android:id="@+id/currentBalanceReportTextView"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:text="Current balance"
+        android:textAppearance="@style/title"
+        android:textColor="?attr/colorSecondary"
+        app:layout_constraintBottom_toBottomOf="@+id/currentBalanceBorderReportTextView"
+        app:layout_constraintEnd_toEndOf="@+id/currentBalanceBorderReportTextView"
+        app:layout_constraintStart_toStartOf="@+id/currentBalanceBorderReportTextView"
+        app:layout_constraintTop_toTopOf="@+id/currentBalanceBorderReportTextView" />
+
+    <TextView
+        android:id="@+id/valueReportTextView"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical|end"
+        android:paddingEnd="16dp"
+        android:text="$40,710.00"
+        android:textAppearance="@style/some_id"
+        android:textColor="@color/blue"
+        app:layout_constraintBottom_toBottomOf="@+id/currentBalanceBorderReportTextView"
+        app:layout_constraintEnd_toEndOf="@+id/currentBalanceBorderReportTextView"
+        app:layout_constraintStart_toStartOf="@+id/currentBalanceBorderReportTextView"
+        app:layout_constraintTop_toTopOf="@+id/currentBalanceBorderReportTextView" />
+
+    <ImageView
+        android:id="@+id/expenseIncomeBorderReportTextView"
+        android:layout_width="match_parent"
+        android:layout_height="84dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/edit_image_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/currentBalanceBorderReportTextView" />
+
+    <TextView
+        android:id="@+id/incomeBalanceReportTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:paddingStart="16dp"
+        android:text="Income"
+        android:textAppearance="@style/title"
+        android:textColor="?attr/colorSecondary"
+        app:layout_constraintBottom_toBottomOf="@+id/expenseBalanceReportTextView"
+        app:layout_constraintEnd_toEndOf="@+id/expenseIncomeBorderReportTextView"
+        app:layout_constraintStart_toStartOf="@+id/expenseIncomeBorderReportTextView"
+        app:layout_constraintTop_toTopOf="@+id/expenseIncomeBorderReportTextView"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/incomeValueReportTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:paddingEnd="16dp"
+        android:layout_marginTop="12dp"
+        android:text="$143,100.00"
+        android:textAppearance="@style/some_id"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@+id/expenseValueReportTextView"
+        app:layout_constraintEnd_toEndOf="@+id/expenseIncomeBorderReportTextView"
+        app:layout_constraintStart_toStartOf="@+id/expenseIncomeBorderReportTextView"
+        app:layout_constraintTop_toTopOf="@+id/expenseIncomeBorderReportTextView"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/expenseBalanceReportTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:layout_marginBottom="12dp"
+        android:text="Expense"
+        android:textAppearance="@style/title"
+        android:textColor="?attr/colorSecondary"
+        app:layout_constraintBottom_toBottomOf="@+id/expenseIncomeBorderReportTextView"
+        app:layout_constraintEnd_toEndOf="@+id/expenseIncomeBorderReportTextView"
+        app:layout_constraintStart_toStartOf="@+id/expenseIncomeBorderReportTextView"
+        app:layout_constraintTop_toBottomOf="@+id/incomeBalanceReportTextView" />
+
+    <TextView
+        android:id="@+id/expenseValueReportTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:gravity="end"
+        android:paddingEnd="16dp"
+        android:text="-$118,150.00"
+        android:textAppearance="@style/some_id"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@+id/expenseBalanceReportTextView"
+        app:layout_constraintEnd_toEndOf="@+id/expenseIncomeBorderReportTextView"
+        app:layout_constraintStart_toStartOf="@+id/expenseIncomeBorderReportTextView"
+        app:layout_constraintTop_toTopOf="@+id/expenseBalanceReportTextView"
+        app:layout_constraintVertical_bias="0.0" />
+
+
+
+
+    <ImageView
+        android:id="@+id/expenseIncomeBalanceBorderReportTextView"
+        android:layout_width="match_parent"
+        android:layout_height="84dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/edit_image_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/expenseIncomeBorderReportTextView" />
+
+    <TextView
+        android:id="@+id/expenseIncomeBalanceReportTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:paddingStart="16dp"
+        android:text="Expense/Income"
+        android:textAppearance="@style/title"
+        android:textColor="?attr/colorSecondary"
+        app:layout_constraintBottom_toBottomOf="@+id/expenseIncomeBalanceBorderReportTextView"
+        app:layout_constraintEnd_toEndOf="@+id/expenseIncomeBalanceBorderReportTextView"
+        app:layout_constraintStart_toStartOf="@+id/expenseIncomeBalanceBorderReportTextView"
+        app:layout_constraintTop_toTopOf="@+id/expenseIncomeBalanceBorderReportTextView"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/expenseIncomeValueReportTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:paddingEnd="16dp"
+        android:layout_marginTop="12dp"
+        android:text="+$24,950.00"
+        android:textAppearance="@style/some_id"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@+id/expenseValueReportTextView"
+        app:layout_constraintEnd_toEndOf="@+id/expenseIncomeBorderReportTextView"
+        app:layout_constraintStart_toStartOf="@+id/expenseIncomeBalanceBorderReportTextView"
+        app:layout_constraintTop_toTopOf="@+id/expenseIncomeBalanceBorderReportTextView"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/previousBalanceReportTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:layout_marginBottom="12dp"
+        android:text="Previous balance"
+        android:textAppearance="@style/title"
+        android:textColor="?attr/colorSecondary"
+        app:layout_constraintBottom_toBottomOf="@+id/expenseIncomeBalanceBorderReportTextView"
+        app:layout_constraintEnd_toEndOf="@+id/expenseIncomeBalanceBorderReportTextView"
+        app:layout_constraintStart_toStartOf="@+id/expenseIncomeBalanceBorderReportTextView"
+        app:layout_constraintTop_toBottomOf="@+id/expenseIncomeBalanceReportTextView" />
+
+    <TextView
+        android:id="@+id/previousBalanceValueReportTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:gravity="end"
+        android:paddingEnd="16dp"
+        android:text="$15,760.00"
+        android:textAppearance="@style/some_id"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@+id/expenseIncomeBalanceBorderReportTextView"
+        app:layout_constraintEnd_toEndOf="@+id/expenseIncomeBorderReportTextView"
+        app:layout_constraintStart_toStartOf="@+id/expenseIncomeBorderReportTextView"
+        app:layout_constraintTop_toTopOf="@+id/previousBalanceReportTextView"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/edit_image_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/expenseIncomeBalanceBorderReportTextView">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="All" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Expense" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Income" />
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tabLayout2">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
