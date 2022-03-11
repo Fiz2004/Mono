@@ -88,7 +88,6 @@ class SettingsAdapter :
             }
 
             binding.lightDarkModeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
-                buttonView.invalidate()
                 if (isChecked) {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 } else {

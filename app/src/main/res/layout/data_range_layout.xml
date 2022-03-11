@@ -3,19 +3,20 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="12dp"
-    android:background="?attr/colorBackground"
+    android:background="@drawable/date_range_bg"
     android:orientation="horizontal">
 
     <ImageButton
         android:id="@+id/leftDateRangeImageButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:layout_gravity="center_vertical"
         android:background="@drawable/arrow_left" />
 
     <TextView
         android:id="@+id/editTextDate"
         style="@style/size12_color_primary"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:gravity="center"
@@ -26,5 +27,6 @@
         android:id="@+id/rightDateRangeImageButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:layout_gravity="center_vertical"
         android:background="@drawable/arrow_right" />
 </LinearLayout>

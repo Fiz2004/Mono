@@ -33,7 +33,6 @@ class SettingsFragment : Fragment() {
         adapter = SettingsAdapter()
         adapter.submitList(SettingsAdapter.createOptions())
         binding.settingsRecyclerView.adapter = adapter
-        binding.settingsRecyclerView.isScrollContainer = false
     }
 
 }

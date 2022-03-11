@@ -72,4 +72,14 @@
         <item name="android:layout_margin">2dp</item>
     </style>
 
+    <style name="switcher.Light" parent="">
+        <item name="colorPrimaryContainer">?attr/colorGray</item>
+        <item name="colorPrimary">?attr/colorMain</item>
+    </style>
+
+    <style name="switcher.Black" parent="">
+        <item name="colorPrimaryContainer">?attr/colorBackground</item>
+        <item name="colorPrimary">@color/blue</item>
+    </style>
+
 </resources>
