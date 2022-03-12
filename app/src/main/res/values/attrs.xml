@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="colorGray" format="color|reference" />
+    <attr name="colorBackground" format="color|reference" />
+    <attr name="colorMain" format="color|reference" />
+    <attr name="switcher" format="reference" />
+</resources>

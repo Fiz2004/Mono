@@ -17,7 +17,6 @@
     <string name="getStarted">Начать</string>
     <string name="next">Следующий</string>
     <string name="enter_PIN">Пожалуйста, введите свой PIN-код, чтобы продолжить.</string>
-    <string name="pin_password">PIN-код и пароль</string>
     <string name="set_pin_password">Установить PIN-код и пароль</string>
     <string name="confirm_PIN">Пожалуйста, подтвердите свой PIN-код и пароль.</string>
     <string name="incorrect_PIN">Неверный пароль, пожалуйста, попробуйте еще раз!</string>
@@ -31,4 +30,12 @@
     <string name="submit">Подтвердить</string>
     <string name="please_input">Пожалуйста, введите</string>
     <string name="note">Примечание</string>
+    <string name="month_report">Отчет за месяц</string>
+    <string name="category">Категория</string>
+    <string name="currency">Валюта</string>
+    <string name="PIN_password">PIN-код и пароль</string>
+    <string name="reminder">Напоминание</string>
+    <string name="dark_mode">Темный режим</string>
+    <string name="delete_all_data">Удалить Все Данные</string>
+    <string name="hello_blank_fragment">Привет пустой фрагмент</string>
 </resources>

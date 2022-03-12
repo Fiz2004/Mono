@@ -21,7 +21,6 @@
     <string name="next">Next</string>
     <string name="back">Back</string>
     <string name="edit">Edit</string>
-    <string name="pin_password">PIN password</string>
     <string name="set_pin_password">Set PIN password</string>
     <string name="enter_PIN">Please enter your PIN password to continue.</string>
     <string name="confirm_PIN">Please confirm your PIN password.</string>
@@ -36,6 +35,15 @@
     <string name="note">Note</string>
 
     <string name="month_report">Month Report</string>
+
+    <!--    Settings-->
+    <string name="category">Category</string>
+    <string name="currency">Currency</string>
+    <string name="PIN_password">PIN password</string>
+    <string name="reminder">Reminder</string>
+    <string name="dark_mode">Dark mode</string>
+    <string name="delete_all_data">Delete All Data</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

@@ -1,11 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <attr name="colorGray" format="color|reference" />
-    <attr name="colorBackground" format="color|reference" />
-    <attr name="colorMain" format="color|reference" />
-    <attr name="switcher" format="reference" />
-
-    <style name="Theme.Mono" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.Mono" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary</item>
@@ -22,8 +16,7 @@
         <item name="colorGray">@color/gray</item>
         <item name="colorBackground">@color/background</item>
         <item name="colorMain">@color/white</item>
-
-    <item name="switcher">@style/switcher.Light</item>
+        <item name="switcher">@style/switcher.Light</item>
     </style>
 
 

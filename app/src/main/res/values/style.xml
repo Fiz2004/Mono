@@ -72,14 +72,15 @@
         <item name="android:layout_margin">2dp</item>
     </style>
 
-    <style name="switcher.Light" parent="">
-        <item name="colorPrimaryContainer">?attr/colorGray</item>
-        <item name="colorPrimary">?attr/colorMain</item>
+    <style name="switcher.Light" parent="Widget.Material3.CompoundButton.Switch">
+        <item name="thumbTint">?attr/colorMain</item>
+        <item name="trackTint">?attr/colorGray</item>
     </style>
 
-    <style name="switcher.Black" parent="">
-        <item name="colorPrimaryContainer">?attr/colorBackground</item>
-        <item name="colorPrimary">@color/blue</item>
+    <style name="switcher.Black" parent="Widget.Material3.CompoundButton.Switch">
+        <item name="thumbTint">@color/blue</item>
+        <item name="trackTint">?attr/colorBackground</item>
     </style>
+
 
 </resources>
