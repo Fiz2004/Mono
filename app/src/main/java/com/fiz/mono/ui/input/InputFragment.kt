@@ -7,12 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentInputBinding
-import com.fiz.mono.databinding.GridViewItemBinding
 import com.google.android.material.tabs.TabLayout
 
 class InputFragment : Fragment() {
@@ -22,6 +18,28 @@ class InputFragment : Fragment() {
     val viewModel: InputViewModel by activityViewModels()
 
     lateinit var adapter: CategoryInputAdapter
+
+    val listExpense = listOf(
+        CategoryItem("Bank", R.drawable.bank),
+        CategoryItem("Food", R.drawable.food),
+        CategoryItem("Medican", R.drawable.medican),
+        CategoryItem("Gym", R.drawable.gym),
+        CategoryItem("Coffee", R.drawable.coffee),
+        CategoryItem("Shopping", R.drawable.market),
+        CategoryItem("Cats", R.drawable.cat),
+        CategoryItem("Party", R.drawable.party),
+        CategoryItem("Gift", R.drawable.gift),
+        CategoryItem("Gas", R.drawable.gas),
+        CategoryItem("Edit", null),
+    )
+
+    val listIncome = listOf(
+        CategoryItem("Freelance", R.drawable.challenge),
+        CategoryItem("Salary", R.drawable.money),
+        CategoryItem("Bonus", R.drawable.coin),
+        CategoryItem("Loan", R.drawable.user),
+        CategoryItem("Edit", null),
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,30 +78,10 @@ class InputFragment : Fragment() {
                 if (tab != null) {
                     when (tab.text){
                         getString(R.string.expense)->{
-                            val list = listOf(
-                                CategoryItem("Bank", R.drawable.bank),
-                                CategoryItem("Food", R.drawable.food),
-                                CategoryItem("Medican", R.drawable.medican),
-                                CategoryItem("Gym", R.drawable.gym),
-                                CategoryItem("Coffee", R.drawable.coffee),
-                                CategoryItem("Shopping", R.drawable.market),
-                                CategoryItem("Cats", R.drawable.cat),
-                                CategoryItem("Party", R.drawable.party),
-                                CategoryItem("Gift", R.drawable.gift),
-                                CategoryItem("Gas", R.drawable.gas),
-                                CategoryItem("Edit", null),
-                            )
-                            adapter.submitList(list)
+                            adapter.submitList(listExpense)
                         }
                         getString(R.string.income)->{
-                            val list = listOf(
-                                CategoryItem("Freelance", R.drawable.challenge),
-                                CategoryItem("Salary", R.drawable.money),
-                                CategoryItem("Bonus", R.drawable.coin),
-                                CategoryItem("Loan", R.drawable.user),
-                                CategoryItem("Edit", null),
-                            )
-                            adapter.submitList(list)
+                            adapter.submitList(listIncome)
                         }
                     }
                 }
@@ -100,21 +98,10 @@ class InputFragment : Fragment() {
             // Respond to end icon presses
         }
 
-        adapter = CategoryInputAdapter()
-        val list = listOf(
-            CategoryItem("Bank", R.drawable.bank),
-            CategoryItem("Food", R.drawable.food),
-            CategoryItem("Medican", R.drawable.medican),
-            CategoryItem("Gym", R.drawable.gym),
-            CategoryItem("Coffee", R.drawable.coffee),
-            CategoryItem("Shopping", R.drawable.market),
-            CategoryItem("Cats", R.drawable.cat),
-            CategoryItem("Party", R.drawable.party),
-            CategoryItem("Gift", R.drawable.gift),
-            CategoryItem("Gas", R.drawable.gas),
-            CategoryItem("Edit", null),
-        )
-        adapter.submitList(list)
+        adapter = CategoryInputAdapter { position ->
+
+        }
+        adapter.submitList(listExpense)
         binding.categoryInputRecyclerView.adapter = adapter
 
     }
@@ -128,53 +115,3 @@ class InputFragment : Fragment() {
     }
 }
 
-class CategoryInputAdapter :
-    ListAdapter<CategoryItem, CategoryInputAdapter.CategoryItemViewHolder>(DiffCallback) {
-
-    class CategoryItemViewHolder(
-        private var binding: GridViewItemBinding
-    ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(categoryItem: CategoryItem) {
-            if (categoryItem.imgSrc!=null) {
-                binding.iconImageView.setImageResource(
-                        categoryItem.imgSrc
-                )
-                binding.descriptionTextView.text = categoryItem.name
-            }else {
-                binding.iconImageView.visibility = View.GONE
-                binding.descriptionTextView.text = categoryItem.name
-                binding.descriptionTextView.setTextColor( binding.root.resources.getColor(R.color.gray))
-            }
-
-            // This is important, because it forces the data binding to execute immediately,
-            // which allows the RecyclerView to make the correct view size measurements
-//            binding.executePendingBindings()
-        }
-    }
-
-    companion object DiffCallback : DiffUtil.ItemCallback<CategoryItem>() {
-        override fun areItemsTheSame(oldItem: CategoryItem, newItem: CategoryItem): Boolean {
-            return oldItem.name == newItem.name
-        }
-
-        override fun areContentsTheSame(oldItem: CategoryItem, newItem: CategoryItem): Boolean {
-            return oldItem == newItem
-        }
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryItemViewHolder {
-        return CategoryItemViewHolder(
-            GridViewItemBinding.inflate(LayoutInflater.from(parent.context))
-        )
-    }
-
-    override fun onBindViewHolder(holder: CategoryItemViewHolder, position: Int) {
-        val categoryItem = getItem(position)
-        holder.bind(categoryItem)
-    }
-}
-
-data class CategoryItem(
-    val name: String,
-    val imgSrc: Int?
-)

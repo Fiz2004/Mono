@@ -1,59 +1,123 @@
 package com.fiz.mono
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.fiz.mono.databinding.FragmentCategoryBinding
+import com.fiz.mono.ui.input.CategoryInputAdapter
+import com.fiz.mono.ui.input.CategoryItem
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [CategoryFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class CategoryFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var _binding: FragmentCategoryBinding? = null
+    private val binding get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    lateinit var expenseAdapter: CategoryInputAdapter
+    lateinit var incomeAdapter: CategoryInputAdapter
+
+    var selectedAdapter: Int? = null
+    var selectedItem: Int? = null
+
+    val listExpense = listOf(
+        CategoryItem("Bank", R.drawable.bank),
+        CategoryItem("Food", R.drawable.food),
+        CategoryItem("Medican", R.drawable.medican),
+        CategoryItem("Gym", R.drawable.gym),
+        CategoryItem("Coffee", R.drawable.coffee),
+        CategoryItem("Shopping", R.drawable.market),
+        CategoryItem("Cats", R.drawable.cat),
+        CategoryItem("Party", R.drawable.party),
+        CategoryItem("Gift", R.drawable.gift),
+        CategoryItem("Gas", R.drawable.gas),
+        CategoryItem("Add more", null),
+    )
+
+    val listIncome = listOf(
+        CategoryItem("Freelance", R.drawable.challenge),
+        CategoryItem("Salary", R.drawable.money),
+        CategoryItem("Bonus", R.drawable.coin),
+        CategoryItem("Loan", R.drawable.user),
+        CategoryItem("Add more", null),
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_category, container, false)
+        _binding = FragmentCategoryBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment CategoryFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            CategoryFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setExpenseAdapter()
+
+        setIncomeAdapter()
+
+        binding.backButton.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
+    }
+
+    private fun setIncomeAdapter() {
+        incomeAdapter = CategoryInputAdapter { position ->
+            if (selectedAdapter != 1) {
+                val old = selectedItem
+                selectedItem = null
+                expenseAdapter.selectedItem = selectedItem
+                old?.let { expenseAdapter.notifyItemChanged(old) }
             }
+            selectedAdapter = 1
+            selectedItem?.let { incomeAdapter.notifyItemChanged(it) }
+            incomeAdapter.notifyItemChanged(position)
+
+            if (selectedItem == position) {
+                selectedItem = null
+                binding.removeButton.visibility = View.GONE
+            } else {
+                selectedItem = position
+                binding.removeButton.visibility = View.VISIBLE
+            }
+
+            incomeAdapter.selectedItem = selectedItem
+        }
+        incomeAdapter.submitList(listIncome)
+        binding.incomeRecyclerView.adapter = incomeAdapter
+    }
+
+    private fun setExpenseAdapter() {
+        expenseAdapter = CategoryInputAdapter { position ->
+            if (selectedAdapter != 0) {
+                val old = selectedItem
+                selectedItem = null
+                incomeAdapter.selectedItem = selectedItem
+                old?.let { incomeAdapter.notifyItemChanged(old) }
+            }
+            selectedAdapter = 0
+
+            selectedItem?.let { expenseAdapter.notifyItemChanged(it) }
+            expenseAdapter.notifyItemChanged(position)
+            if (selectedItem == position) {
+                selectedItem = null
+                binding.removeButton.visibility = View.GONE
+            } else {
+                selectedItem = position
+                binding.removeButton.visibility = View.VISIBLE
+            }
+
+            expenseAdapter.selectedItem = selectedItem
+        }
+        expenseAdapter.submitList(listExpense)
+        binding.expenseRecyclerView.adapter = expenseAdapter
     }
 }

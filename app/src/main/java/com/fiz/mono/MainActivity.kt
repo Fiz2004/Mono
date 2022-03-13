@@ -6,13 +6,11 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
 import com.fiz.mono.databinding.ActivityMainBinding
-import com.fiz.mono.ui.on_boarding.OnBoardingFragment
 import com.fiz.mono.ui.on_boarding.OnBoardingViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -41,7 +39,8 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             if (destination.id == R.id.onBoardingFragment ||
-                destination.id == R.id.PINPasswordFragment
+                destination.id == R.id.PINPasswordFragment ||
+                destination.id == R.id.categoryFragment
             ) {
                 bottomNavigation.visibility = View.GONE
             } else {

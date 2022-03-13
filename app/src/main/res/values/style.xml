@@ -1,55 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="description">
-        <item name="android:textSize">16sp</item>
-        <item name="android:textColor">?attr/colorSecondary</item>
-    </style>
-
-    <style name="size12_color_primary">
-        <item name="android:textSize">12sp</item>
-        <item name="android:textColor">?attr/colorPrimary</item>
-    </style>
-
-    <style name="size16_color_secondary">
-        <item name="android:textSize">16sp</item>
-        <item name="android:textColor">?attr/colorSecondary</item>
-    </style>
-
-    <style name="size16_color_primary">
-        <item name="android:textSize">16sp</item>
-        <item name="android:textColor">?attr/colorPrimary</item>
-    </style>
-
-    <style name="header">
-        <item name="android:textSize">24sp</item>
-        <item name="android:textColor">?attr/colorPrimary</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:fontFamily">@font/poppins_bold</item>
-
-    </style>
-
-    <style name="text">
-        <item name="android:textSize">16sp</item>
-    </style>
-
-    <style name="page_number">
-        <item name="android:textSize">16sp</item>
-        <item name="android:textColor">?attr/colorPrimary</item>
-    </style>
-
-    <style name="back" parent="@style/Widget.Material3.Button.TextButton">
-        <item name="android:textSize">16sp</item>
-        <item name="android:textColor">?attr/colorSecondary</item>
-        <item name="android:textAlignment">textStart</item>
-        <item name="android:minHeight">40dp</item>
-    </style>
-
-    <style name="pass">
-        <item name="android:textSize">24sp</item>
-        <item name="android:textColor">?attr/colorPrimary</item>
-    </style>
-
     <style name="button" parent="@style/Widget.Material3.Button">
         <item name="android:minHeight">48dp</item>
         <item name="android:elevation">4dp</item>
