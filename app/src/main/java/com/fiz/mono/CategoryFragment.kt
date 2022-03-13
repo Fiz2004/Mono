@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.fiz.mono.databinding.FragmentCategoryBinding
 import com.fiz.mono.ui.input.CategoryInputAdapter
 import com.fiz.mono.ui.input.CategoryItem
@@ -20,7 +22,7 @@ class CategoryFragment : Fragment() {
     var selectedAdapter: Int? = null
     var selectedItem: Int? = null
 
-    val listExpense = listOf(
+    val listExpense = mutableListOf(
         CategoryItem("Bank", R.drawable.bank),
         CategoryItem("Food", R.drawable.food),
         CategoryItem("Medican", R.drawable.medican),
@@ -34,13 +36,18 @@ class CategoryFragment : Fragment() {
         CategoryItem("Add more", null),
     )
 
-    val listIncome = listOf(
+    val listIncome = mutableListOf(
         CategoryItem("Freelance", R.drawable.challenge),
         CategoryItem("Salary", R.drawable.money),
         CategoryItem("Bonus", R.drawable.coin),
         CategoryItem("Loan", R.drawable.user),
         CategoryItem("Add more", null),
     )
+
+    val args: CategoryFragmentArgs by navArgs()
+    var name: String = ""
+    var icon: Int = 0
+    var type: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,6 +66,17 @@ class CategoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        type = args.type
+        name = args.name.toString()
+        icon = args.icon
+        if (type != "") {
+            if (type == "expense") {
+                listExpense.add(listExpense.size - 1, CategoryItem(name, icon))
+            } else {
+                listIncome.add(listIncome.size - 1, CategoryItem(name, icon))
+            }
+        }
+
         setExpenseAdapter()
 
         setIncomeAdapter()
@@ -67,10 +85,37 @@ class CategoryFragment : Fragment() {
             findNavController().popBackStack()
         }
 
+        binding.removeButton.setOnClickListener {
+            if (selectedAdapter == 0) {
+                if (selectedItem != null) {
+                    listExpense.removeAt(selectedItem!!)
+                    expenseAdapter.submitList(listExpense)
+                    expenseAdapter.notifyItemRemoved(selectedItem!!)
+                }
+            } else {
+                if (selectedItem != null) {
+                    listIncome.removeAt(selectedItem!!)
+                    incomeAdapter.submitList(listIncome)
+                    incomeAdapter.notifyItemRemoved(selectedItem!!)
+                }
+            }
+        }
+
     }
 
     private fun setIncomeAdapter() {
         incomeAdapter = CategoryInputAdapter { position ->
+
+            if (position == listIncome.size - 1) {
+                val action =
+                    CategoryFragmentDirections
+                        .actionCategoryFragmentToCategoryAddFragment("income")
+                view?.findNavController()?.navigate(action)
+                return@CategoryInputAdapter
+            }
+
+
+
             if (selectedAdapter != 1) {
                 val old = selectedItem
                 selectedItem = null
@@ -97,6 +142,17 @@ class CategoryFragment : Fragment() {
 
     private fun setExpenseAdapter() {
         expenseAdapter = CategoryInputAdapter { position ->
+
+            if (position == listExpense.size - 1) {
+                val action =
+                    CategoryFragmentDirections
+                        .actionCategoryFragmentToCategoryAddFragment("expense")
+                view?.findNavController()?.navigate(action)
+                return@CategoryInputAdapter
+            }
+
+
+
             if (selectedAdapter != 0) {
                 val old = selectedItem
                 selectedItem = null

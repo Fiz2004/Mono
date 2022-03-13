@@ -44,7 +44,7 @@ class SettingsFragment : Fragment() {
         binding.categoryCircleRightImageView.setOnClickListener {
             val action =
                 SettingsFragmentDirections
-                    .actionSettingsFragmentToCategoryFragment()
+                    .actionSettingsFragmentToCategoryFragment("", 0, "")
             view.findNavController().navigate(action)
         }
 

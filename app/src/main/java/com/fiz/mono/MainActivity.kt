@@ -38,13 +38,14 @@ class MainActivity : AppCompatActivity() {
         val settingsMenuItem: MenuItem = bottomNavigation.menu.findItem(R.id.settingsFragment)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id == R.id.onBoardingFragment ||
-                destination.id == R.id.PINPasswordFragment ||
-                destination.id == R.id.categoryFragment
+            if (destination.id == R.id.inputFragment ||
+                destination.id == R.id.calculatorFragment ||
+                destination.id == R.id.reportFragment ||
+                destination.id == R.id.settingsFragment
             ) {
-                bottomNavigation.visibility = View.GONE
-            } else {
                 bottomNavigation.visibility = View.VISIBLE
+            } else {
+                bottomNavigation.visibility = View.GONE
             }
         }
 

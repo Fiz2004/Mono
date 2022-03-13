@@ -39,4 +39,8 @@
     <string name="delete_all_data">Удалить Все Данные</string>
     <string name="hello_blank_fragment">Привет пустой фрагмент</string>
     <string name="remove">Удалить</string>
+    <string name="add_category">Добавить категорию</string>
+    <string name="add">Добавить</string>
+    <string name="category_name">Название категории</string>
+    <string name="icon">Иконка</string>
 </resources>

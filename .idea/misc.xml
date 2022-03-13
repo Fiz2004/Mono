@@ -24,6 +24,7 @@
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_calculator.xml" value="0.33" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_calendar.xml" value="0.35597826086956524" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_category.xml" value="0.35597826086956524" />
+        <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_category_add.xml" value="0.4569746376811594" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_input.xml" value="0.5" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_on_boarding.xml" value="0.22" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_p_i_n_password.xml" value="0.33" />
@@ -31,6 +32,7 @@
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_report.xml" value="0.5" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_settings.xml" value="0.5" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/grid_view_item.xml" value="0.38385416666666666" />
+        <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/item_icon_category.xml" value="0.4569746376811594" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/options_settings_item.xml" value="0.67" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/menu/menu_bottom_nav.xml" value="0.2037037037037037" />
       </map>

@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fiz.mono.R
-import com.fiz.mono.databinding.GridViewItemBinding
+import com.fiz.mono.databinding.ItemCategoryBinding
 
 class CategoryInputAdapter(private val callback: (Int) -> Unit) :
     ListAdapter<CategoryItem, CategoryInputAdapter.CategoryItemViewHolder>(DiffCallback) {
@@ -18,7 +18,7 @@ class CategoryInputAdapter(private val callback: (Int) -> Unit) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryItemViewHolder {
         return CategoryItemViewHolder(
-            GridViewItemBinding.inflate(LayoutInflater.from(parent.context))
+            ItemCategoryBinding.inflate(LayoutInflater.from(parent.context))
         )
     }
 
@@ -28,7 +28,7 @@ class CategoryInputAdapter(private val callback: (Int) -> Unit) :
     }
 
     inner class CategoryItemViewHolder(
-        private var binding: GridViewItemBinding
+        private var binding: ItemCategoryBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(categoryItem: CategoryItem, callback: (Int) -> Unit) {
             if (categoryItem.imgSrc != null) {
@@ -68,7 +68,7 @@ class CategoryInputAdapter(private val callback: (Int) -> Unit) :
 
     companion object DiffCallback : DiffUtil.ItemCallback<CategoryItem>() {
         override fun areItemsTheSame(oldItem: CategoryItem, newItem: CategoryItem): Boolean {
-            return oldItem.name == newItem.name
+            return oldItem == newItem
         }
 
         override fun areContentsTheSame(oldItem: CategoryItem, newItem: CategoryItem): Boolean {

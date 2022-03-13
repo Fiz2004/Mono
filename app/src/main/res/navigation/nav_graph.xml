@@ -77,10 +77,38 @@
         android:id="@+id/categoryFragment"
         android:name="com.fiz.mono.CategoryFragment"
         android:label="fragment_category"
-        tools:layout="@layout/fragment_category" />
+        tools:layout="@layout/fragment_category">
+        <action
+            android:id="@+id/action_categoryFragment_to_categoryAddFragment"
+            app:destination="@id/categoryAddFragment" />
+        <argument
+            android:name="name"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="icon"
+            app:argType="integer" />
+        <argument
+            android:name="type"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/currencyFragment"
         android:name="com.fiz.mono.CurrencyFragment"
         android:label="fragment_currency"
         tools:layout="@layout/fragment_currency" />
+    <fragment
+        android:id="@+id/categoryAddFragment"
+        android:name="com.fiz.mono.CategoryAddFragment"
+        android:label="fragment_category_add"
+        tools:layout="@layout/fragment_category_add">
+        <argument
+            android:name="type"
+            android:defaultValue="expense"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_categoryAddFragment_to_categoryFragment"
+            app:destination="@id/categoryFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>
