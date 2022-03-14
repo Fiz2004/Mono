@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.fiz.mono.R
+import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.databinding.FragmentInputBinding
 import com.google.android.material.tabs.TabLayout
 

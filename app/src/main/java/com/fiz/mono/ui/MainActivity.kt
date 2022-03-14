@@ -1,4 +1,4 @@
-package com.fiz.mono
+package com.fiz.mono.ui
 
 import android.os.Bundle
 import android.view.MenuItem
@@ -10,6 +10,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
+import com.fiz.mono.R
 import com.fiz.mono.databinding.ActivityMainBinding
 import com.fiz.mono.ui.on_boarding.OnBoardingViewModel
 
@@ -53,34 +54,73 @@ class MainActivity : AppCompatActivity() {
         bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.inputFragment -> {
-                    inputMenuItem.icon = AppCompatResources.getDrawable(this, R.drawable.input_page_selected)
+                    inputMenuItem.icon = AppCompatResources.getDrawable(
+                        this,
+                        R.drawable.input_page_selected
+                    )
                     calculatorMenuItem.icon =
                         AppCompatResources.getDrawable(this, R.drawable.calculator_page_unselected)
-                    reportMenuItem.icon = AppCompatResources.getDrawable(this, R.drawable.report_page_unselected)
-                    settingsMenuItem.icon = AppCompatResources.getDrawable(this, R.drawable.settings_page_unselected)
+                    reportMenuItem.icon = AppCompatResources.getDrawable(
+                        this,
+                        R.drawable.report_page_unselected
+                    )
+                    settingsMenuItem.icon = AppCompatResources.getDrawable(
+                        this,
+                        R.drawable.settings_page_unselected
+                    )
 
                 }
                 R.id.calculatorFragment -> {
-                    inputMenuItem.icon = AppCompatResources.getDrawable(this, R.drawable.input_page_unselected)
-                    calculatorMenuItem.icon = AppCompatResources.getDrawable(this, R.drawable.calculator_page_selected)
-                    reportMenuItem.icon = AppCompatResources.getDrawable(this, R.drawable.report_page_unselected)
-                    settingsMenuItem.icon = AppCompatResources.getDrawable(this, R.drawable.settings_page_unselected)
+                    inputMenuItem.icon = AppCompatResources.getDrawable(
+                        this,
+                        R.drawable.input_page_unselected
+                    )
+                    calculatorMenuItem.icon = AppCompatResources.getDrawable(
+                        this,
+                        R.drawable.calculator_page_selected
+                    )
+                    reportMenuItem.icon = AppCompatResources.getDrawable(
+                        this,
+                        R.drawable.report_page_unselected
+                    )
+                    settingsMenuItem.icon = AppCompatResources.getDrawable(
+                        this,
+                        R.drawable.settings_page_unselected
+                    )
 
                 }
                 R.id.reportFragment -> {
-                    inputMenuItem.icon = AppCompatResources.getDrawable(this, R.drawable.input_page_unselected)
+                    inputMenuItem.icon = AppCompatResources.getDrawable(
+                        this,
+                        R.drawable.input_page_unselected
+                    )
                     calculatorMenuItem.icon =
                         AppCompatResources.getDrawable(this, R.drawable.calculator_page_unselected)
-                    reportMenuItem.icon = AppCompatResources.getDrawable(this, R.drawable.report_page_selected)
-                    settingsMenuItem.icon = AppCompatResources.getDrawable(this, R.drawable.settings_page_unselected)
+                    reportMenuItem.icon = AppCompatResources.getDrawable(
+                        this,
+                        R.drawable.report_page_selected
+                    )
+                    settingsMenuItem.icon = AppCompatResources.getDrawable(
+                        this,
+                        R.drawable.settings_page_unselected
+                    )
 
                 }
                 R.id.settingsFragment -> {
-                    inputMenuItem.icon = AppCompatResources.getDrawable(this, R.drawable.input_page_unselected)
+                    inputMenuItem.icon = AppCompatResources.getDrawable(
+                        this,
+                        R.drawable.input_page_unselected
+                    )
                     calculatorMenuItem.icon =
                         AppCompatResources.getDrawable(this, R.drawable.calculator_page_unselected)
-                    reportMenuItem.icon = AppCompatResources.getDrawable(this, R.drawable.report_page_unselected)
-                    settingsMenuItem.icon = AppCompatResources.getDrawable(this, R.drawable.settings_page_selected)
+                    reportMenuItem.icon = AppCompatResources.getDrawable(
+                        this,
+                        R.drawable.report_page_unselected
+                    )
+                    settingsMenuItem.icon = AppCompatResources.getDrawable(
+                        this,
+                        R.drawable.settings_page_selected
+                    )
 
                 }
                 else -> {

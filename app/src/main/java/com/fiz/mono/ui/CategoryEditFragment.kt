@@ -1,4 +1,4 @@
-package com.fiz.mono
+package com.fiz.mono.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,52 +8,30 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.fiz.mono.databinding.FragmentCategoryBinding
+import com.fiz.mono.data.CategoryItem
+import com.fiz.mono.data.CategoryStore
+import com.fiz.mono.databinding.FragmentCategoryEditBinding
 import com.fiz.mono.ui.input.CategoryInputAdapter
-import com.fiz.mono.ui.input.CategoryItem
 
-class CategoryFragment : Fragment() {
-    private var _binding: FragmentCategoryBinding? = null
+
+class CategoryEditFragment : Fragment() {
+
+    private val args: CategoryEditFragmentArgs by navArgs()
+
+    private var _binding: FragmentCategoryEditBinding? = null
     private val binding get() = _binding!!
 
-    lateinit var expenseAdapter: CategoryInputAdapter
-    lateinit var incomeAdapter: CategoryInputAdapter
+    private lateinit var expenseAdapter: CategoryInputAdapter
+    private lateinit var incomeAdapter: CategoryInputAdapter
 
     var selectedAdapter: Int? = null
     var selectedItem: Int? = null
-
-    val listExpense = mutableListOf(
-        CategoryItem("Bank", R.drawable.bank),
-        CategoryItem("Food", R.drawable.food),
-        CategoryItem("Medican", R.drawable.medican),
-        CategoryItem("Gym", R.drawable.gym),
-        CategoryItem("Coffee", R.drawable.coffee),
-        CategoryItem("Shopping", R.drawable.market),
-        CategoryItem("Cats", R.drawable.cat),
-        CategoryItem("Party", R.drawable.party),
-        CategoryItem("Gift", R.drawable.gift),
-        CategoryItem("Gas", R.drawable.gas),
-        CategoryItem("Add more", null),
-    )
-
-    val listIncome = mutableListOf(
-        CategoryItem("Freelance", R.drawable.challenge),
-        CategoryItem("Salary", R.drawable.money),
-        CategoryItem("Bonus", R.drawable.coin),
-        CategoryItem("Loan", R.drawable.user),
-        CategoryItem("Add more", null),
-    )
-
-    val args: CategoryFragmentArgs by navArgs()
-    var name: String = ""
-    var icon: Int = 0
-    var type: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentCategoryBinding.inflate(inflater, container, false)
+        _binding = FragmentCategoryEditBinding.inflate(inflater, container, false)
         val view = binding.root
         return view
     }
@@ -66,14 +44,14 @@ class CategoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        type = args.type
-        name = args.name.toString()
-        icon = args.icon
+        val type = args.type
+        val name = args.name.toString()
+        val icon = args.icon
         if (type != "") {
             if (type == "expense") {
-                listExpense.add(listExpense.size - 1, CategoryItem(name, icon))
+                CategoryStore.insertNewCategoryExpense(CategoryItem(name, icon))
             } else {
-                listIncome.add(listIncome.size - 1, CategoryItem(name, icon))
+                CategoryStore.insertNewCategoryIncome(CategoryItem(name, icon))
             }
         }
 
@@ -88,14 +66,14 @@ class CategoryFragment : Fragment() {
         binding.removeButton.setOnClickListener {
             if (selectedAdapter == 0) {
                 if (selectedItem != null) {
-                    listExpense.removeAt(selectedItem!!)
-                    expenseAdapter.submitList(listExpense)
+                    CategoryStore.removeCategoryExpense(selectedItem!!)
+                    expenseAdapter.submitList(CategoryStore.getAllCategoryExpense())
                     expenseAdapter.notifyItemRemoved(selectedItem!!)
                 }
             } else {
                 if (selectedItem != null) {
-                    listIncome.removeAt(selectedItem!!)
-                    incomeAdapter.submitList(listIncome)
+                    CategoryStore.removeCategoryIncome(selectedItem!!)
+                    incomeAdapter.submitList(CategoryStore.getAllCategoryIncome())
                     incomeAdapter.notifyItemRemoved(selectedItem!!)
                 }
             }
@@ -106,9 +84,9 @@ class CategoryFragment : Fragment() {
     private fun setIncomeAdapter() {
         incomeAdapter = CategoryInputAdapter { position ->
 
-            if (position == listIncome.size - 1) {
+            if (position == CategoryStore.getAllCategoryIncome().size - 1) {
                 val action =
-                    CategoryFragmentDirections
+                    CategoryEditFragmentDirections
                         .actionCategoryFragmentToCategoryAddFragment("income")
                 view?.findNavController()?.navigate(action)
                 return@CategoryInputAdapter
@@ -136,16 +114,16 @@ class CategoryFragment : Fragment() {
 
             incomeAdapter.selectedItem = selectedItem
         }
-        incomeAdapter.submitList(listIncome)
+        incomeAdapter.submitList(CategoryStore.getAllCategoryIncome())
         binding.incomeRecyclerView.adapter = incomeAdapter
     }
 
     private fun setExpenseAdapter() {
         expenseAdapter = CategoryInputAdapter { position ->
 
-            if (position == listExpense.size - 1) {
+            if (position == CategoryStore.getAllCategoryExpense().size - 1) {
                 val action =
-                    CategoryFragmentDirections
+                    CategoryEditFragmentDirections
                         .actionCategoryFragmentToCategoryAddFragment("expense")
                 view?.findNavController()?.navigate(action)
                 return@CategoryInputAdapter
@@ -173,7 +151,7 @@ class CategoryFragment : Fragment() {
 
             expenseAdapter.selectedItem = selectedItem
         }
-        expenseAdapter.submitList(listExpense)
+        expenseAdapter.submitList(CategoryStore.getAllCategoryExpense())
         binding.expenseRecyclerView.adapter = expenseAdapter
     }
 }

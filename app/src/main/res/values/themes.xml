@@ -3,13 +3,15 @@
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnPrimary">@color/blue</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/secondary</item>
         <item name="colorSecondaryVariant">@color/gray</item>
-        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorOnSecondary">@color/blue</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorMain</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+
         <!-- Customize your theme here. -->
         <item name="android:fontFamily">@font/poppins</item>
         <item name="android:colorBackground">@color/white</item>

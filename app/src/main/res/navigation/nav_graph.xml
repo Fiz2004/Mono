@@ -75,9 +75,9 @@
     </fragment>
     <fragment
         android:id="@+id/categoryFragment"
-        android:name="com.fiz.mono.CategoryFragment"
+        android:name="com.fiz.mono.ui.CategoryEditFragment"
         android:label="fragment_category"
-        tools:layout="@layout/fragment_category">
+        tools:layout="@layout/fragment_category_edit">
         <action
             android:id="@+id/action_categoryFragment_to_categoryAddFragment"
             app:destination="@id/categoryAddFragment" />
@@ -94,12 +94,12 @@
     </fragment>
     <fragment
         android:id="@+id/currencyFragment"
-        android:name="com.fiz.mono.CurrencyFragment"
+        android:name="com.fiz.mono.ui.CurrencyFragment"
         android:label="fragment_currency"
         tools:layout="@layout/fragment_currency" />
     <fragment
         android:id="@+id/categoryAddFragment"
-        android:name="com.fiz.mono.CategoryAddFragment"
+        android:name="com.fiz.mono.ui.CategoryAddFragment"
         android:label="fragment_category_add"
         tools:layout="@layout/fragment_category_add">
         <argument
@@ -109,6 +109,7 @@
         <action
             android:id="@+id/action_categoryAddFragment_to_categoryFragment"
             app:destination="@id/categoryFragment"
+            app:popUpTo="@id/categoryFragment"
             app:popUpToInclusive="true" />
     </fragment>
 </navigation>

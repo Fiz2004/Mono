@@ -4,14 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context=".CategoryAddFragment">
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    tools:context=".ui.CategoryAddFragment">
 
     <TextView
         android:id="@+id/titleTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:text="@string/add_category"
         android:textAlignment="center"
         android:textAppearance="@style/size16_color_primary"
@@ -19,7 +20,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/backButton"
         style="@style/Widget.Material3.Button.TextButton"
         android:layout_width="wrap_content"
@@ -35,7 +36,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/addButton"
         style="@style/Widget.Material3.Button.TextButton"
         android:layout_width="wrap_content"
