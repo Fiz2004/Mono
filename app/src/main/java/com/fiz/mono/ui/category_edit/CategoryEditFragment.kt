@@ -1,4 +1,4 @@
-package com.fiz.mono.ui
+package com.fiz.mono.ui.category_edit
 
 import android.os.Bundle
 import android.view.LayoutInflater

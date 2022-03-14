@@ -4,7 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
+    android:paddingStart="16dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="24dp"
     tools:context=".ui.CalculatorFragment">
 
     <TextView
@@ -12,7 +15,7 @@
         android:layout_height="wrap_content"
         android:text="@string/calculator"
         android:textAlignment="center"
-        android:textAppearance="@style/size12_color_primary"
+        android:textAppearance="@style/size16_color_primary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -228,7 +231,7 @@
         app:layout_constraintStart_toEndOf="@+id/dividedCalendarImageButton"
         app:layout_constraintTop_toBottomOf="@+id/deleteCalendarImageButton" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/resetCalendarImageButton"
         style="@style/buttonCalculator"
         android:layout_width="0dp"
@@ -238,8 +241,8 @@
         app:layout_constraintEnd_toStartOf="@+id/zeroCalendarImageButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/oneCalendarImageButton"
-        android:paddingTop="32dp"
-        android:drawableTop="@drawable/ic_reset_24" />
+        app:icon="@drawable/ic_reset_24"
+        app:iconGravity="textStart" />
 
     <Button
         android:id="@+id/zeroCalendarImageButton"

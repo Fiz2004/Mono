@@ -75,7 +75,7 @@
     </fragment>
     <fragment
         android:id="@+id/categoryFragment"
-        android:name="com.fiz.mono.ui.CategoryEditFragment"
+        android:name="com.fiz.mono.ui.category_edit.CategoryEditFragment"
         android:label="fragment_category"
         tools:layout="@layout/fragment_category_edit">
         <action
@@ -94,12 +94,12 @@
     </fragment>
     <fragment
         android:id="@+id/currencyFragment"
-        android:name="com.fiz.mono.ui.CurrencyFragment"
+        android:name="com.fiz.mono.ui.currency.CurrencyFragment"
         android:label="fragment_currency"
         tools:layout="@layout/fragment_currency" />
     <fragment
         android:id="@+id/categoryAddFragment"
-        android:name="com.fiz.mono.ui.CategoryAddFragment"
+        android:name="com.fiz.mono.ui.category_add.CategoryAddFragment"
         android:label="fragment_category_add"
         tools:layout="@layout/fragment_category_add">
         <argument

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="fragmentPaddingStart">16dp</dimen>
+    <dimen name="fragmentPaddingEnd">16dp</dimen>
+    <dimen name="titleMarginTop">6dp</dimen>
+</resources>

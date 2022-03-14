@@ -19,15 +19,16 @@
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/ic_reset_24.xml" value="0.2625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/lock_key.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/mode.xml" value="0.1625" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/radiobutton_currency.xml" value="0.2155" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/squares_four.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/activity_main.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/data_expense_income_item.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/data_range_layout.xml" value="0.2864471996579735" />
-        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_calculator.xml" value="0.22" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_calculator.xml" value="0.25" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_calendar.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_category.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_category_add.xml" value="0.22" />
-        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_currency.xml" value="0.20521590423257802" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_currency.xml" value="0.25" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_input.xml" value="0.33" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_on_boarding.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_reminder.xml" value="0.2864471996579735" />

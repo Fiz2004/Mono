@@ -26,6 +26,11 @@
         <item name="android:textColor">?attr/colorPrimary</item>
     </style>
 
+    <style name="size24_color_primary">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
     <style name="header">
         <item name="android:textSize">24sp</item>
         <item name="android:textColor">?attr/colorPrimary</item>

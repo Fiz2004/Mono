@@ -16,11 +16,13 @@
         <item name="android:textColor">?attr/colorPrimary</item>
     </style>
 
-    <style name="buttonCalculator" parent="@style/Widget.MaterialComponents.Button">
-        <item name="android:textAppearance">@style/size16_color_primary</item>
-        <item name="android:backgroundTint">@color/background</item>
+    <style name="buttonCalculator" parent="@style/Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textAppearance">@style/size24_color_primary</item>
+        <item name="android:backgroundTint">?attr/colorBackground</item>
         <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:layout_margin">2dp</item>
+        <item name="cornerRadius">4dp</item>
     </style>
 
     <style name="switcher.Light" parent="Widget.Material3.CompoundButton.Switch">
@@ -31,6 +33,11 @@
     <style name="switcher.Black" parent="Widget.Material3.CompoundButton.Switch">
         <item name="thumbTint">@color/blue</item>
         <item name="trackTint">?attr/colorBackground</item>
+    </style>
+
+
+    <style name="Widget.Material3.CompoundButton.RadioButton.Mono" parent="@style/Widget.Material3.CompoundButton.RadioButton">
+        <item name="buttonTint">@drawable/radiobutton_currency</item>
     </style>
 
 

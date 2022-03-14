@@ -50,6 +50,81 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        when (bottomNavigation.selectedItemId) {
+            R.id.inputFragment -> {
+                inputMenuItem.icon = AppCompatResources.getDrawable(
+                    this,
+                    R.drawable.input_page_selected
+                )
+                calculatorMenuItem.icon =
+                    AppCompatResources.getDrawable(this, R.drawable.calculator_page_unselected)
+                reportMenuItem.icon = AppCompatResources.getDrawable(
+                    this,
+                    R.drawable.report_page_unselected
+                )
+                settingsMenuItem.icon = AppCompatResources.getDrawable(
+                    this,
+                    R.drawable.settings_page_unselected
+                )
+
+            }
+            R.id.calculatorFragment -> {
+                inputMenuItem.icon = AppCompatResources.getDrawable(
+                    this,
+                    R.drawable.input_page_unselected
+                )
+                calculatorMenuItem.icon = AppCompatResources.getDrawable(
+                    this,
+                    R.drawable.calculator_page_selected
+                )
+                reportMenuItem.icon = AppCompatResources.getDrawable(
+                    this,
+                    R.drawable.report_page_unselected
+                )
+                settingsMenuItem.icon = AppCompatResources.getDrawable(
+                    this,
+                    R.drawable.settings_page_unselected
+                )
+
+            }
+            R.id.reportFragment -> {
+                inputMenuItem.icon = AppCompatResources.getDrawable(
+                    this,
+                    R.drawable.input_page_unselected
+                )
+                calculatorMenuItem.icon =
+                    AppCompatResources.getDrawable(this, R.drawable.calculator_page_unselected)
+                reportMenuItem.icon = AppCompatResources.getDrawable(
+                    this,
+                    R.drawable.report_page_selected
+                )
+                settingsMenuItem.icon = AppCompatResources.getDrawable(
+                    this,
+                    R.drawable.settings_page_unselected
+                )
+
+            }
+            R.id.settingsFragment -> {
+                inputMenuItem.icon = AppCompatResources.getDrawable(
+                    this,
+                    R.drawable.input_page_unselected
+                )
+                calculatorMenuItem.icon =
+                    AppCompatResources.getDrawable(this, R.drawable.calculator_page_unselected)
+                reportMenuItem.icon = AppCompatResources.getDrawable(
+                    this,
+                    R.drawable.report_page_unselected
+                )
+                settingsMenuItem.icon = AppCompatResources.getDrawable(
+                    this,
+                    R.drawable.settings_page_selected
+                )
+
+            }
+            else -> {
+            }
+        }
+
 
         bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {

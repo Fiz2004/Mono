@@ -1,4 +1,4 @@
-package com.fiz.mono.ui
+package com.fiz.mono.ui.category_add
 
 import android.content.res.ColorStateList
 import android.view.LayoutInflater

@@ -73,15 +73,17 @@ class InputFragment : Fragment() {
             return
         }
 
+        binding.textInputExpenseTextView.text = viewModel.currency
+
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
 
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 if (tab != null) {
-                    when (tab.text){
-                        getString(R.string.expense)->{
+                    when (tab.text) {
+                        getString(R.string.expense) -> {
                             adapter.submitList(listExpense)
                         }
-                        getString(R.string.income)->{
+                        getString(R.string.income) -> {
                             adapter.submitList(listIncome)
                         }
                     }
