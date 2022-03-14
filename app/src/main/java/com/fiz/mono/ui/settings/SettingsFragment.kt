@@ -58,7 +58,7 @@ class SettingsFragment : Fragment() {
         binding.pinPasswordCircleRightImageView.setOnClickListener {
             val action =
                 SettingsFragmentDirections
-                    .actionSettingsFragmentToPINPasswordFragment()
+                    .actionSettingsFragmentToPINPasswordFragment("settings")
             view.findNavController().navigate(action)
         }
 

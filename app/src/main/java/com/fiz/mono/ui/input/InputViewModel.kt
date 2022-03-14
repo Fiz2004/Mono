@@ -7,4 +7,6 @@ class InputViewModel:ViewModel() {
     var log: Boolean = false
 
     var currency: String = "$"
+
+    var PIN: String = ""
 }

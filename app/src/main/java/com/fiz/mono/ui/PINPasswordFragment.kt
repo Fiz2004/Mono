@@ -1,79 +1,201 @@
 package com.fiz.mono.ui
 
+import android.content.res.ColorStateList
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
 import com.fiz.mono.R
+import com.fiz.mono.databinding.FragmentPINPasswordBinding
 import com.fiz.mono.ui.input.InputViewModel
+import com.fiz.mono.util.getColorCompat
+import com.fiz.mono.util.themeColor
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [PINPasswordFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class PINPasswordFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    val args: PINPasswordFragmentArgs by navArgs()
+
+    private var _binding: FragmentPINPasswordBinding? = null
+    private val binding get() = _binding!!
 
     val inputViewModel: InputViewModel by activityViewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    var focus: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_p_i_n_password, container, false)
+        _binding = FragmentPINPasswordBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
 
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.findViewById<Button>(R.id.nextPINPasswordButton).setOnClickListener {
-            inputViewModel.log=true
+
+        binding.editTextNumber1.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
+                if (cs.isNotEmpty() && focus == null) {
+                    binding.editTextNumber2.requestFocus()
+                }
+                if (cs.length > 1) {
+                    binding.editTextNumber1.setText(cs[1].toString())
+                }
+                checkPIN()
+            }
+
+            override fun beforeTextChanged(s: CharSequence, arg1: Int, arg2: Int, arg3: Int) {}
+            override fun afterTextChanged(arg0: Editable) {}
+        })
+
+        binding.editTextNumber1.setOnClickListener {
+            focus = 1
+            binding.editTextNumber1.transformationMethod =
+                HideReturnsTransformationMethod.getInstance()
+            binding.editTextNumber2.transformationMethod =
+                PasswordTransformationMethod.getInstance()
+            binding.editTextNumber3.transformationMethod =
+                PasswordTransformationMethod.getInstance()
+            binding.editTextNumber4.transformationMethod =
+                PasswordTransformationMethod.getInstance()
+        }
+
+        binding.editTextNumber2.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
+                if (cs.isNotEmpty() && focus == null) {
+                    binding.editTextNumber3.requestFocus()
+                }
+                if (cs.length > 1) {
+                    binding.editTextNumber2.setText(cs[1].toString())
+                }
+                checkPIN()
+            }
+
+            override fun beforeTextChanged(s: CharSequence, arg1: Int, arg2: Int, arg3: Int) {}
+            override fun afterTextChanged(arg0: Editable) {}
+        })
+
+        binding.editTextNumber2.setOnClickListener {
+            focus = 2
+            binding.editTextNumber1.transformationMethod =
+                PasswordTransformationMethod.getInstance()
+            binding.editTextNumber2.transformationMethod =
+                HideReturnsTransformationMethod.getInstance()
+            binding.editTextNumber3.transformationMethod =
+                PasswordTransformationMethod.getInstance()
+            binding.editTextNumber4.transformationMethod =
+                PasswordTransformationMethod.getInstance()
+        }
+
+        binding.editTextNumber3.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
+                if (cs.isNotEmpty() && focus == null) {
+                    binding.editTextNumber4.requestFocus()
+                }
+                if (cs.length > 1) {
+                    binding.editTextNumber3.setText(cs[1].toString())
+                }
+                checkPIN()
+            }
+
+            override fun beforeTextChanged(s: CharSequence, arg1: Int, arg2: Int, arg3: Int) {}
+            override fun afterTextChanged(arg0: Editable) {}
+        })
+
+        binding.editTextNumber3.setOnClickListener {
+            focus = 2
+            binding.editTextNumber1.transformationMethod =
+                PasswordTransformationMethod.getInstance()
+            binding.editTextNumber2.transformationMethod =
+                PasswordTransformationMethod.getInstance()
+            binding.editTextNumber3.transformationMethod =
+                HideReturnsTransformationMethod.getInstance()
+            binding.editTextNumber4.transformationMethod =
+                PasswordTransformationMethod.getInstance()
+        }
+
+        binding.editTextNumber4.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
+                if (cs.isNotEmpty() && focus == null) {
+                    binding.nextPINPasswordButton.requestFocus()
+                }
+                if (cs.length > 1) {
+                    binding.editTextNumber4.setText(cs[1].toString())
+                }
+                checkPIN()
+            }
+
+            override fun beforeTextChanged(s: CharSequence, arg1: Int, arg2: Int, arg3: Int) {}
+            override fun afterTextChanged(arg0: Editable) {}
+        })
+
+        binding.editTextNumber4.setOnClickListener {
+            focus = 4
+            binding.editTextNumber1.transformationMethod =
+                PasswordTransformationMethod.getInstance()
+            binding.editTextNumber2.transformationMethod =
+                PasswordTransformationMethod.getInstance()
+            binding.editTextNumber3.transformationMethod =
+                PasswordTransformationMethod.getInstance()
+            binding.editTextNumber4.transformationMethod =
+                HideReturnsTransformationMethod.getInstance()
+        }
+
+
+        binding.nextPINPasswordButton.setOnClickListener {
+            inputViewModel.log = true
             val action =
                 PINPasswordFragmentDirections
                     .actionPINPasswordFragmentToInputFragment()
             view.findNavController().navigate(action)
         }
+
+        checkPIN()
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment PINPasswordFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            PINPasswordFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    private fun checkPIN() {
+        binding.nextPINPasswordButton.isEnabled =
+            binding.editTextNumber1.text?.isNotEmpty() == true &&
+                    binding.editTextNumber2.text?.isNotEmpty() == true &&
+                    binding.editTextNumber3.text?.isNotEmpty() == true &&
+                    binding.editTextNumber4.text?.isNotEmpty() == true
+
+        if (!binding.nextPINPasswordButton.isEnabled) {
+            binding.nextPINPasswordButton.backgroundTintList =
+                context?.themeColor(R.attr.colorGray)?.let {
+                    ColorStateList.valueOf(
+                        it
+                    )
                 }
-            }
+            context?.themeColor(com.google.android.material.R.attr.colorSecondary)
+                ?.let { binding.nextPINPasswordButton.setTextColor(it) }
+        } else {
+            binding.nextPINPasswordButton.backgroundTintList =
+                context?.getColorCompat(R.color.blue)?.let {
+                    ColorStateList.valueOf(
+                        it
+                    )
+                }
+            context?.themeColor(R.attr.colorMain)
+                ?.let {
+                    binding.nextPINPasswordButton.setTextColor(it)
+                }
+        }
     }
+
 }

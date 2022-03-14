@@ -68,7 +68,7 @@ class InputFragment : Fragment() {
         if (!viewModel.log) {
             val action =
                 InputFragmentDirections
-                    .actionInputFragmentToPINPasswordFragment()
+                    .actionInputFragmentToPINPasswordFragment("start")
             view.findNavController().navigate(action)
             return
         }

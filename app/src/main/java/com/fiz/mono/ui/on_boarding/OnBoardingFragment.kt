@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentOnBoardingBinding
@@ -75,7 +74,7 @@ class OnBoardingFragment : Fragment() {
                 inputViewModel.firstTime=false
                 val action =
                     OnBoardingFragmentDirections
-                        .actionOnBoardingFragmentToPINPasswordFragment()
+                        .actionOnBoardingFragmentToPINPasswordFragment("onBoard")
                 view.findNavController().navigate(action)
             }
         }
@@ -85,7 +84,7 @@ class OnBoardingFragment : Fragment() {
             inputViewModel.firstTime=false
             val action =
                 OnBoardingFragmentDirections
-                    .actionOnBoardingFragmentToPINPasswordFragment()
+                    .actionOnBoardingFragmentToPINPasswordFragment("onBoard")
             view.findNavController().navigate(action)
         }
 
