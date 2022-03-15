@@ -5,12 +5,15 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
@@ -31,15 +34,12 @@ class PINPasswordFragment : Fragment() {
 
     private val viewModel: InputViewModel by activityViewModels()
 
-    private var type = "string"
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentPINPasswordBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
+        return binding.root
     }
 
     override fun onDestroyView() {
@@ -50,34 +50,21 @@ class PINPasswordFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if ((args.type == "onBoard" || args.type == "start") && viewModel.PIN == "") {
+        if (args.fromCome == START && viewModel.PIN.isBlank()) {
             viewModel.log = true
             val action =
                 PINPasswordFragmentDirections
                     .actionPINPasswordFragmentToInputFragment()
             view.findNavController().navigate(action)
             return
-        } else {
-            type = "login"
         }
-
-
-        if (args.type == "settings" && viewModel.PIN == "") {
-            type = "create"
-        }
-
-        if (args.type == "settings" && viewModel.PIN != "") {
-            type = "remove"
-        }
-
-        updateUI()
 
         binding.backButton.setOnClickListener {
             findNavController().popBackStack()
         }
 
         binding.editButton.setOnClickListener {
-            type = "edit"
+            viewModel.statePIN = STATE_EDIT
             updateUI()
         }
 
@@ -118,33 +105,38 @@ class PINPasswordFragment : Fragment() {
             )
         )
 
+        binding.editTextNumber1.onFocusChangeListener = onFocusChangeEditText()
+        binding.editTextNumber2.onFocusChangeListener = onFocusChangeEditText()
+        binding.editTextNumber3.onFocusChangeListener = onFocusChangeEditText()
+        binding.editTextNumber4.onFocusChangeListener = onFocusChangeEditText()
+
         binding.nextPINPasswordButton.setOnClickListener {
 
-            if (type == "remove") {
-                type = "confirmRemove"
+            if (viewModel.statePIN == STATE_REMOVE) {
+                viewModel.statePIN = STATE_CONFIRM_REMOVE
                 updateUI()
                 return@setOnClickListener
             }
 
-            if (type == "confirmRemove") {
+            if (viewModel.statePIN == STATE_CONFIRM_REMOVE) {
                 if (viewModel.PIN == getPIN()) {
                     viewModel.log = true
                     viewModel.PIN = ""
                     Toast.makeText(requireContext(), "PIN deleted", Toast.LENGTH_SHORT).show()
                     findNavController().popBackStack()
                 } else {
-                    type = "ErrorConfirmRemove"
+                    viewModel.statePIN = STATE_CONFIRM_REMOVE_ERROR
                     updateUI()
                 }
                 return@setOnClickListener
             }
 
-            if (type == "edit") {
+            if (viewModel.statePIN == STATE_EDIT) {
                 if (viewModel.PIN == getPIN()) {
-                    type = "create"
+                    viewModel.statePIN = STATE_CREATE
                     updateUI()
                 } else {
-                    type = "ErrorEdit"
+                    viewModel.statePIN = STATE_EDIT_ERROR
                     updateUI()
                 }
                 return@setOnClickListener
@@ -153,7 +145,7 @@ class PINPasswordFragment : Fragment() {
             viewModel.log = true
             viewModel.PIN = getPIN()
 
-            if (args.type == "settings") {
+            if (args.fromCome == SETTINGS) {
                 findNavController().popBackStack()
                 return@setOnClickListener
             }
@@ -164,24 +156,62 @@ class PINPasswordFragment : Fragment() {
             view.findNavController().navigate(action)
         }
 
+
+        viewModel.statePIN = getState()
+
+        updateUI()
         checkPIN()
+    }
+
+    private fun onFocusChangeEditText() = { view: View, b: Boolean ->
+        if (view !is EditText) throw error("Error")
+        if (b) {
+            view.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            view.background = AppCompatResources.getDrawable(
+                requireContext(),
+                R.drawable.background_pin_focused_edittext
+            )
+        } else {
+            view.transformationMethod = PasswordTransformationMethod.getInstance()
+            view.background =
+                AppCompatResources.getDrawable(requireContext(), R.drawable.background_pin_edittext)
+        }
+    }
+
+    private fun getState(): String {
+        if (args.fromCome == START && viewModel.PIN.isNotBlank()) {
+            return STATE_LOGIN
+        }
+
+        if (args.fromCome == SETTINGS && viewModel.PIN.isBlank()) {
+            return STATE_CREATE
+        }
+
+        if (args.fromCome == SETTINGS && viewModel.PIN.isNotBlank()) {
+            return STATE_REMOVE
+        }
+
+        return STATE_ERROR
     }
 
     private fun textWatcher(editText: EditText, next: View) = object : TextWatcher {
         override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
             if (cs.isNotEmpty()) {
-                if (type == "ErrorConfirmRemove") {
-                    type = "confirmRemove"
+                if (viewModel.statePIN == STATE_CONFIRM_REMOVE_ERROR) {
+                    viewModel.statePIN = STATE_CONFIRM_REMOVE
                     updateUI()
                 }
-                if (type == "ErrorEdit") {
-                    type = "edit"
+                if (viewModel.statePIN == STATE_EDIT_ERROR) {
+                    viewModel.statePIN = STATE_EDIT
                     updateUI()
                 }
-                next.requestFocus()
+                if (next is EditText)
+                    if (next.text.isBlank())
+                        next.requestFocus()
             }
             if (cs.length > 1) {
                 editText.setText(cs[1].toString())
+                editText.setSelection(1)
             }
             checkPIN()
         }
@@ -194,8 +224,8 @@ class PINPasswordFragment : Fragment() {
         binding.editTextNumber1.text.toString() + binding.editTextNumber2.text + binding.editTextNumber3.text + binding.editTextNumber4.text
 
     private fun updateUI() {
-        when (type) {
-            "login", "create" -> {
+        when (viewModel.statePIN) {
+            STATE_LOGIN, STATE_CREATE -> {
                 binding.decsriptionTextView.text = getString(R.string.enter_PIN)
                 binding.nextPINPasswordButton.text = getString(R.string.next)
                 binding.editButton.visibility = View.GONE
@@ -208,15 +238,27 @@ class PINPasswordFragment : Fragment() {
                 binding.editTextNumber1.requestFocus()
                 showKeyboard()
             }
-            "edit", "confirmRemove" -> {
+            STATE_EDIT, STATE_CONFIRM_REMOVE -> {
                 binding.decsriptionTextView.text = getString(R.string.confirm_PIN)
                 binding.nextPINPasswordButton.text = getString(R.string.set_pin_password)
                 binding.editButton.visibility = View.GONE
                 binding.warningTextView.visibility = View.GONE
-                binding.editTextNumber1.setBackgroundColor(requireContext().themeColor(R.attr.colorBackground))
-                binding.editTextNumber2.setBackgroundColor(requireContext().themeColor(R.attr.colorBackground))
-                binding.editTextNumber3.setBackgroundColor(requireContext().themeColor(R.attr.colorBackground))
-                binding.editTextNumber4.setBackgroundColor(requireContext().themeColor(R.attr.colorBackground))
+                binding.editTextNumber1.background = AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.background_pin_edittext
+                )
+                binding.editTextNumber2.background = AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.background_pin_edittext
+                )
+                binding.editTextNumber3.background = AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.background_pin_edittext
+                )
+                binding.editTextNumber4.background = AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.background_pin_edittext
+                )
                 binding.nextPINPasswordButton.isEnabled = false
                 nextPINPasswordButtonSetDisabled()
                 binding.editTextNumber1.isEnabled = true
@@ -230,7 +272,7 @@ class PINPasswordFragment : Fragment() {
                 binding.editTextNumber1.requestFocus()
                 showKeyboard()
             }
-            "remove" -> {
+            STATE_REMOVE -> {
                 binding.decsriptionTextView.text = getString(R.string.delete_PIN)
                 binding.nextPINPasswordButton.text = getString(R.string.remove_PIN)
                 binding.editButton.visibility = View.VISIBLE
@@ -245,13 +287,24 @@ class PINPasswordFragment : Fragment() {
                 binding.editTextNumber3.isEnabled = false
                 binding.editTextNumber4.isEnabled = false
             }
-            "ErrorConfirmRemove", "ErrorEdit" -> {
+            STATE_CONFIRM_REMOVE_ERROR, STATE_EDIT_ERROR -> {
                 binding.warningTextView.visibility = View.VISIBLE
-                binding.editTextNumber1.setBackgroundColor(requireContext().getColorCompat(R.color.red))
-                binding.editTextNumber2.setBackgroundColor(requireContext().getColorCompat(R.color.red))
-                binding.editTextNumber3.setBackgroundColor(requireContext().getColorCompat(R.color.red))
-                binding.editTextNumber4.setBackgroundColor(requireContext().getColorCompat(R.color.red))
-
+                binding.editTextNumber1.background = AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.background_pin_error_edittext
+                )
+                binding.editTextNumber2.background = AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.background_pin_error_edittext
+                )
+                binding.editTextNumber3.background = AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.background_pin_error_edittext
+                )
+                binding.editTextNumber4.background = AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.background_pin_error_edittext
+                )
             }
         }
     }
@@ -264,7 +317,7 @@ class PINPasswordFragment : Fragment() {
     }
 
     private fun checkPIN() {
-        if (type == "remove") return
+        if (viewModel.statePIN == STATE_REMOVE) return
         binding.nextPINPasswordButton.isEnabled =
             binding.editTextNumber1.text?.isNotEmpty() == true &&
                     binding.editTextNumber2.text?.isNotEmpty() == true &&
@@ -312,6 +365,21 @@ class PINPasswordFragment : Fragment() {
             ?.let {
                 binding.nextPINPasswordButton.setTextColor(it)
             }
+    }
+
+    companion object {
+        const val START = "start"
+        const val SETTINGS = "settings"
+
+        const val STATE_LOGIN = "login"
+        const val STATE_CREATE = "create"
+        const val STATE_REMOVE = "remove"
+        const val STATE_ERROR = "ERROR"
+        const val STATE_CONFIRM_REMOVE_ERROR = "errorConfirmRemove"
+        const val STATE_CONFIRM_REMOVE = "confirmRemove"
+        const val STATE_EDIT_ERROR = "errorEdit"
+        const val STATE_EDIT = "edit"
+
     }
 
 }

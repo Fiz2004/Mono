@@ -5,6 +5,9 @@
       <map>
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/arrow_right.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/background.xml" value="0.16" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/background_pin_edittext.xml" value="0.1395" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/background_pin_error_edittext.xml" value="0.1395" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/background_pin_focused_edittext.xml" value="0.1395" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/ball.xml" value="0.123" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/bell_simple_ringing.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/border.xml" value="0.1" />
@@ -14,7 +17,7 @@
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/currency_circle.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/dgg.xml" value="0.123" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/edit_image_bg.xml" value="0.5" />
-        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/edit_image_bg_background.xml" value="0.18" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/edit_image_bg_background.xml" value="0.14" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/ic_baseline_refresh_24.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/ic_carret_down.xml" value="0.2625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/ic_reset_24.xml" value="0.2625" />
@@ -30,9 +33,9 @@
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_category.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_category_add.xml" value="0.22" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_currency.xml" value="0.25" />
-        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_input.xml" value="0.33" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_input.xml" value="0.25" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_on_boarding.xml" value="0.2864471996579735" />
-        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_p_i_n_password.xml" value="0.33" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_p_i_n_password.xml" value="1.2393617021276595" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_reminder.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_report.xml" value="0.25" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_settings.xml" value="0.2864471996579735" />

@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import com.fiz.mono.databinding.FragmentSettingsBinding
+import com.fiz.mono.ui.pin_password.PINPasswordFragment
 
 class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
@@ -58,7 +59,7 @@ class SettingsFragment : Fragment() {
         binding.pinPasswordCircleRightImageView.setOnClickListener {
             val action =
                 SettingsFragmentDirections
-                    .actionSettingsFragmentToPINPasswordFragment("settings")
+                    .actionSettingsFragmentToPINPasswordFragment(PINPasswordFragment.SETTINGS)
             view.findNavController().navigate(action)
         }
 

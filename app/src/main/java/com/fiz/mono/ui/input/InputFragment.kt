@@ -10,6 +10,7 @@ import androidx.navigation.findNavController
 import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.databinding.FragmentInputBinding
+import com.fiz.mono.ui.pin_password.PINPasswordFragment
 import com.google.android.material.tabs.TabLayout
 
 class InputFragment : Fragment() {
@@ -68,12 +69,12 @@ class InputFragment : Fragment() {
         if (!viewModel.log) {
             val action =
                 InputFragmentDirections
-                    .actionInputFragmentToPINPasswordFragment("start")
+                    .actionInputFragmentToPINPasswordFragment(PINPasswordFragment.START)
             view.findNavController().navigate(action)
             return
         }
 
-        binding.textInputExpenseTextView.text = viewModel.currency
+        binding.currencyTextView.text = viewModel.currency
 
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
 

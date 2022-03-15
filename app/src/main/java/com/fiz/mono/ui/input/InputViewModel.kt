@@ -10,4 +10,6 @@ class InputViewModel:ViewModel() {
     var currency: String = "$"
 
     var PIN: String = ""
+
+    var statePIN = ""
 }

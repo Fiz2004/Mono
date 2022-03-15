@@ -28,7 +28,7 @@
             android:id="@+id/action_PINPasswordFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
         <argument
-            android:name="type"
+            android:name="fromCome"
             app:argType="string" />
     </fragment>
     <fragment
