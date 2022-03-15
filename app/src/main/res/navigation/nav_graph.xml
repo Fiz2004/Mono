@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/settingsFragment">
+    app:startDestination="@id/inputFragment">
 
     <fragment
         android:id="@+id/onBoardingFragment"
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/PINPasswordFragment"
-        android:name="com.fiz.mono.ui.PINPasswordFragment"
+        android:name="com.fiz.mono.ui.pin_password.PINPasswordFragment"
         android:label="fragment_p_i_n_password"
         tools:layout="@layout/fragment_p_i_n_password">
         <action
