@@ -13,7 +13,7 @@ import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setTextAppearanceCompat
 import com.fiz.mono.util.themeColor
 
-class CategoryInputAdapter(private val callback: (Int) -> Unit) :
+class CategoryInputAdapter(private val colorSelected: Int, private val callback: (Int) -> Unit) :
     ListAdapter<CategoryItem, CategoryInputAdapter.CategoryItemViewHolder>(DiffCallback) {
 
     var selectedItem: Int? = null
@@ -34,6 +34,7 @@ class CategoryInputAdapter(private val callback: (Int) -> Unit) :
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(categoryItem: CategoryItem, callback: (Int) -> Unit) {
             if (categoryItem.imgSrc != null) {
+                binding.iconImageView.visibility = View.VISIBLE
                 binding.iconImageView.setImageResource(
                     categoryItem.imgSrc
                 )
@@ -55,7 +56,7 @@ class CategoryInputAdapter(private val callback: (Int) -> Unit) :
 
             if (selectedItem == adapterPosition) {
                 binding.cardMaterialCard.strokeColor =
-                    binding.root.context.getColorCompat(R.color.red)
+                    binding.root.context.getColorCompat(colorSelected)
             } else {
                 binding.cardMaterialCard.strokeColor =
                     binding.root.context.themeColor(R.attr.colorGray)

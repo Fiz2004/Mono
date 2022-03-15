@@ -8,48 +8,33 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.fiz.mono.R
-import com.fiz.mono.data.CategoryItem
+import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.databinding.FragmentInputBinding
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
+import com.fiz.mono.util.setDisabled
+import com.fiz.mono.util.setEnabled
 import com.google.android.material.tabs.TabLayout
 
 class InputFragment : Fragment() {
     private var _binding: FragmentInputBinding? = null
     private val binding get() = _binding!!
 
-    val viewModel: InputViewModel by activityViewModels()
+    private val viewModel: InputViewModel by activityViewModels()
 
-    lateinit var adapter: CategoryInputAdapter
+    private lateinit var adapter: CategoryInputAdapter
 
-    val listExpense = listOf(
-        CategoryItem("Bank", R.drawable.bank),
-        CategoryItem("Food", R.drawable.food),
-        CategoryItem("Medican", R.drawable.medican),
-        CategoryItem("Gym", R.drawable.gym),
-        CategoryItem("Coffee", R.drawable.coffee),
-        CategoryItem("Shopping", R.drawable.market),
-        CategoryItem("Cats", R.drawable.cat),
-        CategoryItem("Party", R.drawable.party),
-        CategoryItem("Gift", R.drawable.gift),
-        CategoryItem("Gas", R.drawable.gas),
-        CategoryItem("Edit", null),
-    )
+    private val listExpense = CategoryStore.getAllCategoryExpenseForInput()
+    private val listIncome = CategoryStore.getAllCategoryIncomeForInput()
 
-    val listIncome = listOf(
-        CategoryItem("Freelance", R.drawable.challenge),
-        CategoryItem("Salary", R.drawable.money),
-        CategoryItem("Bonus", R.drawable.coin),
-        CategoryItem("Loan", R.drawable.user),
-        CategoryItem("Edit", null),
-    )
+    var selectedAdapter: Int? = 0
+    var selectedItem: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentInputBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
+        return binding.root
     }
 
     override fun onDestroyView() {
@@ -76,38 +61,77 @@ class InputFragment : Fragment() {
 
         binding.currencyTextView.text = viewModel.currency
 
-        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                if (tab != null) {
-                    when (tab.text) {
-                        getString(R.string.expense) -> {
-                            adapter.submitList(listExpense)
-                        }
-                        getString(R.string.income) -> {
-                            adapter.submitList(listIncome)
-                        }
-                    }
-                }
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-            }
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-            }
-        })
+        binding.tabLayout.addOnTabSelectedListener(onTabSelectedListener())
 
         binding.noteCameraInputEditText.setOnClickListener {
-            // Respond to end icon presses
+            binding.foto1.visibility = View.VISIBLE
+            binding.foto2.visibility = View.VISIBLE
+            binding.foto3.visibility = View.VISIBLE
+
+            binding.delFoto1.visibility = View.VISIBLE
+            binding.delFoto2.visibility = View.VISIBLE
+            binding.delFoto3.visibility = View.VISIBLE
         }
 
-        adapter = CategoryInputAdapter { position ->
+        binding.delFoto1.setOnClickListener {
+            binding.foto1.visibility = View.GONE
+            binding.foto2.visibility = View.GONE
+            binding.foto3.visibility = View.GONE
 
+            binding.delFoto1.visibility = View.GONE
+            binding.delFoto2.visibility = View.GONE
+            binding.delFoto3.visibility = View.GONE
         }
+
+        adapter = CategoryInputAdapter(R.color.blue) { position ->
+
+            if (position == CategoryStore.getAllCategoryExpenseForEdit().size - 1) {
+                val action =
+                    InputFragmentDirections
+                        .actionInputFragmentToCategoryFragment("", 0, "")
+                view.findNavController().navigate(action)
+                return@CategoryInputAdapter
+            }
+
+            if (selectedItem == position) {
+                selectedItem = null
+                binding.submitInputButton.setDisabled()
+            } else {
+                selectedItem = position
+                binding.submitInputButton.setEnabled()
+            }
+            adapter.selectedItem = selectedItem
+            adapter.notifyDataSetChanged()
+        }
+
+        binding.submitInputButton.setDisabled()
         adapter.submitList(listExpense)
         binding.categoryInputRecyclerView.adapter = adapter
 
+    }
+
+    private fun onTabSelectedListener() = object : TabLayout.OnTabSelectedListener {
+
+        override fun onTabSelected(tab: TabLayout.Tab?) {
+            if (tab != null) {
+                when (tab.text) {
+                    getString(R.string.expense) -> {
+                        selectedAdapter = 0
+                        adapter.submitList(listExpense)
+                    }
+                    getString(R.string.income) -> {
+                        selectedAdapter = 1
+                        adapter.submitList(listIncome)
+                    }
+                }
+            }
+        }
+
+        override fun onTabUnselected(tab: TabLayout.Tab?) {
+        }
+
+        override fun onTabReselected(tab: TabLayout.Tab?) {
+        }
     }
 
     private fun isLogOut(): Boolean {

@@ -15,7 +15,6 @@ object CategoryStore {
         CategoryItem("Party", R.drawable.party),
         CategoryItem("Gift", R.drawable.gift),
         CategoryItem("Gas", R.drawable.gas),
-        CategoryItem("Add more", null),
     )
 
     private val allCategoryIncome = mutableListOf(
@@ -23,18 +22,45 @@ object CategoryStore {
         CategoryItem("Salary", R.drawable.money),
         CategoryItem("Bonus", R.drawable.coin),
         CategoryItem("Loan", R.drawable.user),
-        CategoryItem("Add more", null),
     )
 
     fun getAllCategoryExpense() = allCategoryExpense
     fun getAllCategoryIncome() = allCategoryIncome
 
+    fun getAllCategoryExpenseForEdit(): MutableList<CategoryItem> {
+        val result = emptyList<CategoryItem>().toMutableList()
+        result.addAll(allCategoryExpense)
+        result.add(CategoryItem("Add more", null))
+        return result
+    }
+
+    fun getAllCategoryIncomeForEdit(): MutableList<CategoryItem> {
+        val result = emptyList<CategoryItem>().toMutableList()
+        result.addAll(allCategoryIncome)
+        result.add(CategoryItem("Add more", null))
+        return result
+    }
+
+    fun getAllCategoryExpenseForInput(): MutableList<CategoryItem> {
+        val result = emptyList<CategoryItem>().toMutableList()
+        result.addAll(allCategoryExpense)
+        result.add(CategoryItem("Edit", null))
+        return result
+    }
+
+    fun getAllCategoryIncomeForInput(): MutableList<CategoryItem> {
+        val result = emptyList<CategoryItem>().toMutableList()
+        result.addAll(allCategoryIncome)
+        result.add(CategoryItem("Edit", null))
+        return result
+    }
+
     fun insertNewCategoryExpense(newCategoryItem: CategoryItem) {
-        allCategoryExpense.add(allCategoryExpense.size - 1, newCategoryItem)
+        allCategoryExpense.add(allCategoryExpense.size, newCategoryItem)
     }
 
     fun insertNewCategoryIncome(newCategoryItem: CategoryItem) {
-        allCategoryIncome.add(allCategoryIncome.size - 1, newCategoryItem)
+        allCategoryIncome.add(allCategoryIncome.size, newCategoryItem)
     }
 
     fun removeCategoryExpense(position: Int) {

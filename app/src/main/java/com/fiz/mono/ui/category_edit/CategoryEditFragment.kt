@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.databinding.FragmentCategoryEditBinding
@@ -67,32 +68,34 @@ class CategoryEditFragment : Fragment() {
             if (selectedAdapter == 0) {
                 if (selectedItem != null) {
                     CategoryStore.removeCategoryExpense(selectedItem!!)
-                    expenseAdapter.submitList(CategoryStore.getAllCategoryExpense())
-                    expenseAdapter.notifyItemRemoved(selectedItem!!)
+                    expenseAdapter.submitList(CategoryStore.getAllCategoryExpenseForEdit())
+                    expenseAdapter.notifyDataSetChanged()
                 }
+                selectedItem = null
+                expenseAdapter.selectedItem = null
             } else {
                 if (selectedItem != null) {
                     CategoryStore.removeCategoryIncome(selectedItem!!)
-                    incomeAdapter.submitList(CategoryStore.getAllCategoryIncome())
-                    incomeAdapter.notifyItemRemoved(selectedItem!!)
+                    incomeAdapter.submitList(CategoryStore.getAllCategoryIncomeForEdit())
+                    incomeAdapter.notifyDataSetChanged()
                 }
+                selectedItem = null
+                incomeAdapter.selectedItem = null
             }
         }
 
     }
 
     private fun setIncomeAdapter() {
-        incomeAdapter = CategoryInputAdapter { position ->
+        incomeAdapter = CategoryInputAdapter(R.color.red) { position ->
 
-            if (position == CategoryStore.getAllCategoryIncome().size - 1) {
+            if (position == CategoryStore.getAllCategoryIncomeForEdit().size - 1) {
                 val action =
                     CategoryEditFragmentDirections
                         .actionCategoryFragmentToCategoryAddFragment("income")
                 view?.findNavController()?.navigate(action)
                 return@CategoryInputAdapter
             }
-
-
 
             if (selectedAdapter != 1) {
                 val old = selectedItem
@@ -114,14 +117,14 @@ class CategoryEditFragment : Fragment() {
 
             incomeAdapter.selectedItem = selectedItem
         }
-        incomeAdapter.submitList(CategoryStore.getAllCategoryIncome())
+        incomeAdapter.submitList(CategoryStore.getAllCategoryIncomeForEdit())
         binding.incomeRecyclerView.adapter = incomeAdapter
     }
 
     private fun setExpenseAdapter() {
-        expenseAdapter = CategoryInputAdapter { position ->
+        expenseAdapter = CategoryInputAdapter(R.color.red) { position ->
 
-            if (position == CategoryStore.getAllCategoryExpense().size - 1) {
+            if (position == CategoryStore.getAllCategoryExpenseForEdit().size - 1) {
                 val action =
                     CategoryEditFragmentDirections
                         .actionCategoryFragmentToCategoryAddFragment("expense")
@@ -151,7 +154,7 @@ class CategoryEditFragment : Fragment() {
 
             expenseAdapter.selectedItem = selectedItem
         }
-        expenseAdapter.submitList(CategoryStore.getAllCategoryExpense())
+        expenseAdapter.submitList(CategoryStore.getAllCategoryExpenseForEdit())
         binding.expenseRecyclerView.adapter = expenseAdapter
     }
 }

@@ -35,13 +35,16 @@
         android:id="@+id/inputFragment"
         android:name="com.fiz.mono.ui.input.InputFragment"
         android:label="fragment_input"
-        tools:layout="@layout/fragment_input" >
+        tools:layout="@layout/fragment_input">
         <action
             android:id="@+id/action_inputFragment_to_onBoardingFragment"
             app:destination="@id/onBoardingFragment" />
         <action
             android:id="@+id/action_inputFragment_to_PINPasswordFragment"
             app:destination="@id/PINPasswordFragment" />
+        <action
+            android:id="@+id/action_inputFragment_to_categoryFragment"
+            app:destination="@id/categoryFragment" />
     </fragment>
     <fragment
         android:id="@+id/calculatorFragment"

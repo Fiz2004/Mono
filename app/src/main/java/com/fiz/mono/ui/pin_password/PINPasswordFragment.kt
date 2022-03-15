@@ -1,7 +1,6 @@
 package com.fiz.mono.ui.pin_password
 
 import android.content.Context
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -22,8 +21,9 @@ import androidx.navigation.fragment.navArgs
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentPINPasswordBinding
 import com.fiz.mono.ui.input.InputViewModel
-import com.fiz.mono.util.getColorCompat
-import com.fiz.mono.util.themeColor
+import com.fiz.mono.util.setDisabled
+import com.fiz.mono.util.setEnabled
+import com.fiz.mono.util.setRemove
 
 
 class PINPasswordFragment : Fragment() {
@@ -234,7 +234,7 @@ class PINPasswordFragment : Fragment() {
                 binding.editTextNumber2.setText("")
                 binding.editTextNumber3.setText("")
                 binding.editTextNumber4.setText("")
-                nextPINPasswordButtonSetDisabled()
+                binding.nextPINPasswordButton.setDisabled()
                 binding.editTextNumber1.requestFocus()
                 showKeyboard()
             }
@@ -259,8 +259,7 @@ class PINPasswordFragment : Fragment() {
                     requireContext(),
                     R.drawable.background_pin_edittext
                 )
-                binding.nextPINPasswordButton.isEnabled = false
-                nextPINPasswordButtonSetDisabled()
+                binding.nextPINPasswordButton.setDisabled()
                 binding.editTextNumber1.isEnabled = true
                 binding.editTextNumber2.isEnabled = true
                 binding.editTextNumber3.isEnabled = true
@@ -276,8 +275,7 @@ class PINPasswordFragment : Fragment() {
                 binding.decsriptionTextView.text = getString(R.string.delete_PIN)
                 binding.nextPINPasswordButton.text = getString(R.string.remove_PIN)
                 binding.editButton.visibility = View.VISIBLE
-                binding.nextPINPasswordButton.isEnabled = true
-                nextPINPasswordButtonSetRemove()
+                binding.nextPINPasswordButton.setRemove()
                 binding.editTextNumber1.setText(viewModel.PIN[0].toString())
                 binding.editTextNumber2.setText(viewModel.PIN[1].toString())
                 binding.editTextNumber3.setText(viewModel.PIN[2].toString())
@@ -325,46 +323,9 @@ class PINPasswordFragment : Fragment() {
                     binding.editTextNumber4.text?.isNotEmpty() == true
 
         if (binding.nextPINPasswordButton.isEnabled)
-            nextPINPasswordButtonSetEnabled()
+            binding.nextPINPasswordButton.setEnabled()
         else
-            nextPINPasswordButtonSetDisabled()
-    }
-
-    private fun nextPINPasswordButtonSetDisabled() {
-        binding.nextPINPasswordButton.backgroundTintList =
-            context?.themeColor(R.attr.colorGray)?.let {
-                ColorStateList.valueOf(
-                    it
-                )
-            }
-        context?.themeColor(com.google.android.material.R.attr.colorSecondary)
-            ?.let { binding.nextPINPasswordButton.setTextColor(it) }
-    }
-
-    private fun nextPINPasswordButtonSetEnabled() {
-        binding.nextPINPasswordButton.backgroundTintList =
-            context?.getColorCompat(R.color.blue)?.let {
-                ColorStateList.valueOf(
-                    it
-                )
-            }
-        context?.themeColor(R.attr.colorMain)
-            ?.let {
-                binding.nextPINPasswordButton.setTextColor(it)
-            }
-    }
-
-    private fun nextPINPasswordButtonSetRemove() {
-        binding.nextPINPasswordButton.backgroundTintList =
-            context?.getColorCompat(R.color.red)?.let {
-                ColorStateList.valueOf(
-                    it
-                )
-            }
-        context?.themeColor(R.attr.colorMain)
-            ?.let {
-                binding.nextPINPasswordButton.setTextColor(it)
-            }
+            binding.nextPINPasswordButton.setDisabled()
     }
 
     companion object {

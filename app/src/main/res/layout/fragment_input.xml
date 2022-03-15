@@ -4,16 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
+    android:paddingStart="@dimen/fragmentPaddingStart"
+    android:paddingEnd="@dimen/fragmentPaddingEnd"
     tools:context=".ui.input.InputFragment">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="?attr/colorMain"
         android:textAllCaps="false"
         android:textSize="16sp"
-        android:backgroundTint="?attr/colorMain"
         app:layout_constraintTop_toTopOf="parent"
         app:tabIndicatorColor="@color/blue"
         app:tabSelectedTextColor="@color/blue"
@@ -31,120 +32,242 @@
             android:text="@string/income" />
     </com.google.android.material.tabs.TabLayout>
 
-    <include
-        android:id="@+id/dataRangeLayout"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        layout="@layout/data_range_layout"
-        android:layout_marginTop="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
-
-    <TextView
-        android:id="@+id/textExpense"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/expense"
-        android:layout_marginTop="12dp"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dataRangeLayout" />
-
-    <ImageView
-        android:id="@+id/imageInputExpenseImageView"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="@drawable/edit_image_bg"
-        android:text="@string/expense"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textExpense" />
-
-    <ImageView
-        android:id="@+id/imageBackgroundInputExpenseImageView"
-        android:layout_width="44dp"
-        android:layout_height="56dp"
-        android:background="@drawable/edit_image_bg_background"
-        android:text="@string/expense"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textExpense" />
-
-    <TextView
-        android:id="@+id/textInputExpenseTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="56dp"
-        android:layout_marginStart="12dp"
-        android:gravity="center"
-        android:text="$"
-        android:textSize="32sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textExpense" />
-
-
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/outlinedTextField"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginStart="60dp"
-        android:inputType="numberDecimal"
-        android:padding="0dp"
-        android:text="0.00"
-        android:textSize="32sp"
-        app:layout_constraintTop_toBottomOf="@+id/textExpense" />
-
-    <TextView
-        android:id="@+id/noteInputTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/note"
-        android:layout_marginTop="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageInputExpenseImageView" />
-
-
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/noteInputEditText"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="@drawable/edit_image_bg"
-        android:padding="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/noteInputTextView" />
-
-    <ImageView
-        android:id="@+id/noteCameraInputEditText"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:strokeColor="?attr/colorSecondaryVariant"
-        android:text="@string/expense"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/noteInputTextView"
-        app:srcCompat="@drawable/camera" />
-
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/categoryInputRecyclerView"
-        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="29dp"
-        android:padding="6dp"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        android:layout_marginBottom="18dp"
         app:layout_constraintBottom_toTopOf="@+id/submitInputButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/noteInputEditText"
-        app:spanCount="4"
-        tools:itemCount="16"
-        tools:listitem="@layout/item_category" />
+        app:layout_constraintTop_toBottomOf="@+id/tabLayout"
+        tools:layout_editor_absoluteX="16dp">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+
+            <include
+                android:id="@+id/dataRangeLayout"
+                layout="@layout/data_range_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/ExpenseTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/expense"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/dataRangeLayout" />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/outlinedTextField"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@drawable/edit_image_bg"
+                android:hint="0.00"
+                android:inputType="numberDecimal"
+                android:padding="0dp"
+                android:paddingStart="60dp"
+                android:textColor="?attr/colorPrimary"
+                android:textColorHint="?attr/colorGray"
+                android:textSize="32sp"
+                app:layout_constraintTop_toBottomOf="@+id/ExpenseTextView"
+                tools:layout_editor_absoluteX="16dp" />
+
+            <TextView
+                android:id="@+id/currencyTextView"
+                android:layout_width="44dp"
+                android:layout_height="56dp"
+                android:background="@drawable/edit_image_bg_background"
+                android:gravity="center"
+                android:text="$"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="32sp"
+                app:layout_constraintBottom_toBottomOf="@+id/outlinedTextField"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ExpenseTextView" />
+
+            <TextView
+                android:id="@+id/noteInputTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/note"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/outlinedTextField" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/noteLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_image_bg"
+                android:minHeight="48dp"
+                android:paddingStart="16dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/noteInputTextView">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/noteInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/colorMain"
+                    android:hint="@string/please_input"
+                    android:paddingStart="16dp"
+                    android:textColor="?attr/colorPrimary"
+                    android:textColorHint="?attr/colorGray"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/noteCameraInputEditText"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/noteInputEditText"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/noteInputEditText"
+                    app:srcCompat="@drawable/camera" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/foto1"
+                    style="@style/Widget.Material3.CardView.Elevated"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="?attr/colorMain"
+                    android:visibility="gone"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintHorizontal_weight="1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/noteInputEditText">
+
+                    <ImageView
+                        android:id="@+id/foto1ImageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone"
+                        tools:src="@tools:sample/avatars" />
+
+                    <ImageView
+                        android:id="@+id/delFoto1"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="end|top"
+                        android:src="@drawable/delete"
+                        android:visibility="gone"
+                        tools:src="@drawable/delete" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/foto2"
+                    style="@style/Widget.Material3.CardView.Elevated"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="?attr/colorMain"
+                    android:visibility="gone"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintHorizontal_weight="1"
+                    app:layout_constraintStart_toEndOf="@+id/foto1"
+                    app:layout_constraintTop_toBottomOf="@+id/noteInputEditText">
+
+
+                    <ImageView
+                        android:id="@+id/foto2ImageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone"
+                        tools:src="@tools:sample/avatars" />
+
+                    <ImageView
+                        android:id="@+id/delFoto2"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="end|top"
+                        android:src="@drawable/delete"
+                        android:visibility="gone"
+                        tools:src="@drawable/delete" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/foto3"
+                    style="@style/Widget.Material3.CardView.Elevated"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="12dp"
+                    android:background="?attr/colorMain"
+                    android:visibility="gone"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_weight="1"
+                    app:layout_constraintStart_toEndOf="@+id/foto2"
+                    app:layout_constraintTop_toBottomOf="@+id/noteInputEditText">
+
+
+                    <ImageView
+                        android:id="@+id/foto3ImageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone"
+                        tools:src="@tools:sample/avatars" />
+
+                    <ImageView
+                        android:id="@+id/delFoto3"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="end|top"
+                        android:src="@drawable/delete"
+                        android:visibility="gone"
+                        tools:src="@drawable/delete" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/categoryInputRecyclerView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:clipToPadding="false"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/noteLayout"
+                app:spanCount="4"
+                tools:itemCount="16"
+                tools:listitem="@layout/item_category" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.core.widget.NestedScrollView>
 
     <Button
         android:id="@+id/submitInputButton"
