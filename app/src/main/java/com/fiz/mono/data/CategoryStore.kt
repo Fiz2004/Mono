@@ -56,11 +56,11 @@ object CategoryStore {
     }
 
     fun insertNewCategoryExpense(newCategoryItem: CategoryItem) {
-        allCategoryExpense.add(allCategoryExpense.size, newCategoryItem)
+        allCategoryExpense.add(newCategoryItem)
     }
 
     fun insertNewCategoryIncome(newCategoryItem: CategoryItem) {
-        allCategoryIncome.add(allCategoryIncome.size, newCategoryItem)
+        allCategoryIncome.add(newCategoryItem)
     }
 
     fun removeCategoryExpense(position: Int) {
