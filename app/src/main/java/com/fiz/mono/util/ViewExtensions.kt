@@ -43,6 +43,7 @@ fun Button.setEnabled() {
 }
 
 fun Button.setRemove() {
+    this.isEnabled = true
     this.backgroundTintList =
         context?.getColorCompat(R.color.red)?.let {
             ColorStateList.valueOf(

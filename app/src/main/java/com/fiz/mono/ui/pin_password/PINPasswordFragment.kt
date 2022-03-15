@@ -68,18 +68,6 @@ class PINPasswordFragment : Fragment() {
             updateUI()
         }
 
-//        binding.editTextNumber1.setOnClickListener {
-//            focus = 1
-//            binding.editTextNumber1.transformationMethod =
-//                HideReturnsTransformationMethod.getInstance()
-//            binding.editTextNumber2.transformationMethod =
-//                PasswordTransformationMethod.getInstance()
-//            binding.editTextNumber3.transformationMethod =
-//                PasswordTransformationMethod.getInstance()
-//            binding.editTextNumber4.transformationMethod =
-//                PasswordTransformationMethod.getInstance()
-//        }
-
         binding.editTextNumber1.addTextChangedListener(
             textWatcher(
                 binding.editTextNumber1,
@@ -233,7 +221,7 @@ class PINPasswordFragment : Fragment() {
             STATE_LOGIN, STATE_CREATE -> {
                 binding.decsriptionTextView.text = getString(R.string.enter_PIN)
                 binding.nextPINPasswordButton.text = getString(R.string.next)
-                binding.editButton.visibility = View.GONE
+                binding.editButton.visibility = View.INVISIBLE
                 binding.nextPINPasswordButton.isEnabled = false
                 binding.editTextNumber1.setText("")
                 binding.editTextNumber2.setText("")
@@ -246,7 +234,7 @@ class PINPasswordFragment : Fragment() {
             STATE_EDIT, STATE_CONFIRM_REMOVE -> {
                 binding.decsriptionTextView.text = getString(R.string.confirm_PIN)
                 binding.nextPINPasswordButton.text = getString(R.string.set_pin_password)
-                binding.editButton.visibility = View.GONE
+                binding.editButton.visibility = View.INVISIBLE
                 binding.warningTextView.visibility = View.GONE
                 binding.editTextNumber1.background = AppCompatResources.getDrawable(
                     requireContext(),
