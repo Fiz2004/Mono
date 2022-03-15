@@ -48,7 +48,7 @@
 
             <include
                 android:id="@+id/dataRangeLayout"
-                layout="@layout/data_range_layout"
+                layout="@layout/layout_data_range"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
@@ -67,7 +67,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/dataRangeLayout" />
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/outlinedTextField"
+                android:id="@+id/valueEditText"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:background="@drawable/edit_image_bg"
@@ -90,7 +90,7 @@
                 android:text="$"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="32sp"
-                app:layout_constraintBottom_toBottomOf="@+id/outlinedTextField"
+                app:layout_constraintBottom_toBottomOf="@+id/valueEditText"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ExpenseTextView" />
 
@@ -103,7 +103,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/outlinedTextField" />
+                app:layout_constraintTop_toBottomOf="@+id/valueEditText" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/noteLayout"
@@ -120,7 +120,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/noteInputTextView">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/noteInputEditText"
+                    android:id="@+id/noteEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="?attr/colorMain"
@@ -139,11 +139,11 @@
                     android:layout_height="32dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/noteInputEditText"
+                    app:layout_constraintBottom_toBottomOf="@+id/noteEditText"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/noteInputEditText"
+                    app:layout_constraintTop_toTopOf="@+id/noteEditText"
                     app:srcCompat="@drawable/camera" />
 
                 <com.google.android.material.card.MaterialCardView
@@ -158,7 +158,7 @@
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintHorizontal_weight="1"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/noteInputEditText">
+                    app:layout_constraintTop_toBottomOf="@+id/noteEditText">
 
                     <ImageView
                         android:id="@+id/foto1ImageView"
@@ -191,7 +191,7 @@
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintHorizontal_weight="1"
                     app:layout_constraintStart_toEndOf="@+id/foto1"
-                    app:layout_constraintTop_toBottomOf="@+id/noteInputEditText">
+                    app:layout_constraintTop_toBottomOf="@+id/noteEditText">
 
 
                     <ImageView
@@ -225,7 +225,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_weight="1"
                     app:layout_constraintStart_toEndOf="@+id/foto2"
-                    app:layout_constraintTop_toBottomOf="@+id/noteInputEditText">
+                    app:layout_constraintTop_toBottomOf="@+id/noteEditText">
 
 
                     <ImageView

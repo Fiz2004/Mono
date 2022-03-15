@@ -9,11 +9,15 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.fiz.mono.R
 import com.fiz.mono.data.CategoryStore
+import com.fiz.mono.data.TransactionItem
+import com.fiz.mono.data.TransactionStore
 import com.fiz.mono.databinding.FragmentInputBinding
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
 import com.fiz.mono.util.setDisabled
 import com.fiz.mono.util.setEnabled
 import com.google.android.material.tabs.TabLayout
+import java.text.SimpleDateFormat
+import java.util.*
 
 class InputFragment : Fragment() {
     private var _binding: FragmentInputBinding? = null
@@ -32,7 +36,7 @@ class InputFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentInputBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -102,6 +106,49 @@ class InputFragment : Fragment() {
             }
             adapter.selectedItem = selectedItem
             adapter.notifyDataSetChanged()
+        }
+
+        binding.submitInputButton.setOnClickListener {
+            if (binding.valueEditText.text?.isBlank() == true) return@setOnClickListener
+            TransactionStore.insertNewTransaction(
+                TransactionItem(
+                    Calendar.getInstance().time,
+                    binding.valueEditText.text.toString().toDouble(),
+                    TransactionStore.getAllTransactions()[adapter.selectedItem!!].nameCategory,
+                    binding.noteEditText.text.toString(),
+                    TransactionStore.getAllTransactions()[adapter.selectedItem!!].imgSrc
+                )
+            )
+            binding.valueEditText.setText("")
+            binding.noteEditText.setText("")
+            selectedItem = null
+            adapter.selectedItem = null
+            adapter.notifyDataSetChanged()
+            binding.submitInputButton.setDisabled()
+
+            binding.foto1.visibility = View.GONE
+            binding.foto2.visibility = View.GONE
+            binding.foto3.visibility = View.GONE
+
+            binding.delFoto1.visibility = View.GONE
+            binding.delFoto2.visibility = View.GONE
+            binding.delFoto3.visibility = View.GONE
+
+        }
+
+        binding.dataRangeLayout.editTextDate.text =
+            SimpleDateFormat("MMM dd, yyyy (EEE)").format(viewModel.date.time)
+
+        binding.dataRangeLayout.leftDateRangeImageButton.setOnClickListener {
+            viewModel.date.add(Calendar.DAY_OF_YEAR, -1)
+            binding.dataRangeLayout.editTextDate.text =
+                SimpleDateFormat("MMM dd, yyyy (EEE)").format(viewModel.date.time)
+        }
+
+        binding.dataRangeLayout.rightDateRangeImageButton.setOnClickListener {
+            viewModel.date.add(Calendar.DAY_OF_YEAR, 1)
+            binding.dataRangeLayout.editTextDate.text =
+                SimpleDateFormat("MMM dd, yyyy (EEE)").format(viewModel.date.time)
         }
 
         binding.submitInputButton.setDisabled()

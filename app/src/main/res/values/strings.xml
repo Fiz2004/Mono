@@ -53,5 +53,6 @@
     <string name="category_name">Category name</string>
     <string name="icon">Icon</string>
     <string name="category_edit">Edit Category</string>
+    <string name="current_balance">Current balance</string>
 
 </resources>

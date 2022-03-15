@@ -163,18 +163,23 @@ class PINPasswordFragment : Fragment() {
         checkPIN()
     }
 
-    private fun onFocusChangeEditText() = { view: View, b: Boolean ->
-        if (view !is EditText) throw error("Error")
-        if (b) {
-            view.transformationMethod = HideReturnsTransformationMethod.getInstance()
-            view.background = AppCompatResources.getDrawable(
-                requireContext(),
-                R.drawable.background_pin_focused_edittext
-            )
-        } else {
-            view.transformationMethod = PasswordTransformationMethod.getInstance()
-            view.background =
-                AppCompatResources.getDrawable(requireContext(), R.drawable.background_pin_edittext)
+    private fun onFocusChangeEditText() = object : View.OnFocusChangeListener {
+        override fun onFocusChange(view: View, b: Boolean) {
+            if (view !is EditText) return
+            if (b) {
+                view.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                view.background = AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.background_pin_focused_edittext
+                )
+            } else {
+                view.transformationMethod = PasswordTransformationMethod.getInstance()
+                view.background =
+                    AppCompatResources.getDrawable(
+                        requireContext(),
+                        R.drawable.background_pin_edittext
+                    )
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package com.fiz.mono.ui.input
 
 import androidx.lifecycle.ViewModel
+import java.util.*
 
 class InputViewModel:ViewModel() {
     // TODO поставить true перед выпуском, сейчас false для отладки
@@ -12,4 +13,6 @@ class InputViewModel:ViewModel() {
     var PIN: String = ""
 
     var statePIN = ""
+
+    var date = Calendar.getInstance()
 }

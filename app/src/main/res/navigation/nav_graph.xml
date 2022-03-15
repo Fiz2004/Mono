@@ -58,7 +58,7 @@
         tools:layout="@layout/fragment_reminder" />
     <fragment
         android:id="@+id/reportFragment"
-        android:name="com.fiz.mono.ui.ReportFragment"
+        android:name="com.fiz.mono.ui.report.ReportFragment"
         android:label="fragment_report"
         tools:layout="@layout/fragment_report" />
     <fragment

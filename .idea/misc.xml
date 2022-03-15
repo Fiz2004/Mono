@@ -41,8 +41,10 @@
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_settings.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/grid_view_item.xml" value="0.9" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/item_category.xml" value="0.1627379873073436" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/item_transaction.xml" value="0.25" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/layout_data_range.xml" value="0.242520398912058" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/options_settings_item.xml" value="0.25" />
-        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/transaction_item.xml" value="0.2864471996579735" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/transaction_item.xml" value="0.25" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/menu/menu_bottom_nav.xml" value="0.2864471996579735" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/drawable/calculator_page.xml" value="0.1" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/drawable/input_page.xml" value="0.1" />
