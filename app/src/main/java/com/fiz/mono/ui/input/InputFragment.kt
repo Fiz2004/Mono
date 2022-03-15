@@ -27,9 +27,6 @@ class InputFragment : Fragment() {
 
     private lateinit var adapter: CategoryInputAdapter
 
-    private val listExpense = CategoryStore.getAllCategoryExpenseForInput()
-    private val listIncome = CategoryStore.getAllCategoryIncomeForInput()
-
     var selectedAdapter: Int? = 0
     var selectedItem: Int? = null
 
@@ -110,13 +107,18 @@ class InputFragment : Fragment() {
 
         binding.submitInputButton.setOnClickListener {
             if (binding.valueEditText.text?.isBlank() == true) return@setOnClickListener
+            val selectedCategoryItem = if (selectedAdapter == 0)
+                CategoryStore.getAllCategoryExpense()[adapter.selectedItem!!]
+            else
+                CategoryStore.getAllCategoryIncome()[adapter.selectedItem!!]
+
             TransactionStore.insertNewTransaction(
                 TransactionItem(
                     Calendar.getInstance().time,
                     binding.valueEditText.text.toString().toDouble(),
-                    TransactionStore.getAllTransactions()[adapter.selectedItem!!].nameCategory,
+                    selectedCategoryItem.name,
                     binding.noteEditText.text.toString(),
-                    TransactionStore.getAllTransactions()[adapter.selectedItem!!].imgSrc
+                    selectedCategoryItem.imgSrc
                 )
             )
             binding.valueEditText.setText("")
@@ -152,7 +154,7 @@ class InputFragment : Fragment() {
         }
 
         binding.submitInputButton.setDisabled()
-        adapter.submitList(listExpense)
+        adapter.submitList(CategoryStore.getAllCategoryExpenseForInput())
         binding.categoryInputRecyclerView.adapter = adapter
 
     }
@@ -164,11 +166,11 @@ class InputFragment : Fragment() {
                 when (tab.text) {
                     getString(R.string.expense) -> {
                         selectedAdapter = 0
-                        adapter.submitList(listExpense)
+                        adapter.submitList(CategoryStore.getAllCategoryExpenseForInput())
                     }
                     getString(R.string.income) -> {
                         selectedAdapter = 1
-                        adapter.submitList(listIncome)
+                        adapter.submitList(CategoryStore.getAllCategoryIncomeForInput())
                     }
                 }
             }
