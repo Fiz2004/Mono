@@ -122,7 +122,7 @@ class ReportFragment : Fragment() {
             getCurrencyFormat(viewModel.currency, currentExpense, false)
 
         binding.expenseIncomeValueReportTextView.text =
-            getCurrencyFormat(viewModel.currency, currentIncome - currentExpense, true)
+            getCurrencyFormat(viewModel.currency, currentIncome + currentExpense, true)
 
         val copyDate = viewModel.date
         copyDate.add(Calendar.MONTH, -1)
@@ -141,7 +141,7 @@ class ReportFragment : Fragment() {
             .fold(0.0) { acc, d -> acc + d }
 
         binding.previousBalanceValueReportTextView.text =
-            getCurrencyFormat(viewModel.currency, prevIncome - prevExpense, false)
+            getCurrencyFormat(viewModel.currency, prevIncome + prevExpense, false)
     }
 
     private fun updateAdapter() {
