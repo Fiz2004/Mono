@@ -18,6 +18,8 @@ class InputViewModel : ViewModel() {
     var date = Calendar.getInstance()
 
     var tabSelectedReport: Int = 0
+
+    var categorySelectedReport = 0
 }
 
 fun getCurrencyFormat(currency: String, value: Double, isPrefixPlus: Boolean): String {

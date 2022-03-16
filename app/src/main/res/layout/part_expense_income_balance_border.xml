@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/expenseIncomeBalanceBorder"
+    android:layout_width="match_parent"
+    android:layout_height="84dp"
+    android:layout_marginStart="@dimen/fragmentPaddingStart"
+    android:layout_marginTop="16dp"
+    android:layout_marginEnd="@dimen/fragmentPaddingEnd"
+    android:background="@drawable/edit_image_bg"
+    app:layout_constraintTop_toBottomOf="@+id/balanceBorder"
+    tools:showIn="@layout/fragment_report">
+
+    <TextView
+        android:id="@+id/expenseIncomeBalanceReportTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:paddingStart="16dp"
+        android:text="Expense/Income"
+        android:textAppearance="@style/size16_color_secondary"
+        android:textColor="?attr/colorSecondary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/expenseIncomeValueReportTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="end"
+        android:paddingEnd="16dp"
+        android:text="+$24,950.00"
+        android:textAppearance="@style/size16_color_primary"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/previousBalanceReportTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:paddingStart="16dp"
+        android:text="Previous balance"
+        android:textAppearance="@style/size16_color_secondary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/previousBalanceValueReportTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:paddingEnd="16dp"
+        android:text="$15,760.00"
+        android:textAppearance="@style/size16_color_primary"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

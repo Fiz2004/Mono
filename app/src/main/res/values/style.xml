@@ -3,10 +3,10 @@
 
     <style name="button" parent="@style/Widget.Material3.Button">
         <item name="android:minHeight">48dp</item>
-        <item name="android:elevation">4dp</item>
+        <item name="elevation">4dp</item>
         <item name="android:textColor">?attr/colorMain</item>
         <item name="android:textAppearance">@style/text</item>
-        <item name="android:backgroundTint">@color/blue</item>
+        <item name="backgroundTint">@color/blue</item>
     </style>
 
     <style name="skipButton" parent="@style/Widget.Material3.Button.OutlinedButton">
@@ -37,11 +37,13 @@
 
     <style name="buttonCalculator" parent="@style/Widget.MaterialComponents.Button.TextButton">
         <item name="android:textAppearance">@style/size24_color_primary</item>
-        <item name="android:backgroundTint">?attr/colorBackground</item>
+        <item name="backgroundTint">?attr/colorBackground</item>
         <item name="android:textColor">?attr/colorPrimary</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_margin">2dp</item>
         <item name="cornerRadius">4dp</item>
+        <item name="layout_constraintVertical_weight">1</item>
+        <item name="layout_constraintHorizontal_weight">1</item>
     </style>
 
     <style name="switcher.Light" parent="Widget.Material3.CompoundButton.Switch">

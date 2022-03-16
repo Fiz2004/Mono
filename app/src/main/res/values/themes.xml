@@ -13,7 +13,7 @@
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
 
         <!-- Customize your theme here. -->
-        <item name="android:fontFamily">@font/poppins</item>
+        <item name="fontFamily">@font/poppins</item>
         <item name="android:colorBackground">@color/white</item>
         <item name="colorGray">@color/gray</item>
         <item name="colorBackground">@color/background</item>

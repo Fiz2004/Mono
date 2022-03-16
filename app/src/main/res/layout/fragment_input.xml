@@ -172,7 +172,7 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_gravity="end|top"
-                        android:src="@drawable/delete"
+                        app:srcCompat="@drawable/delete"
                         android:visibility="gone"
                         tools:src="@drawable/delete" />
 
@@ -206,7 +206,7 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_gravity="end|top"
-                        android:src="@drawable/delete"
+                        app:srcCompat="@drawable/delete"
                         android:visibility="gone"
                         tools:src="@drawable/delete" />
 
@@ -240,7 +240,7 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_gravity="end|top"
-                        android:src="@drawable/delete"
+                        app:srcCompat="@drawable/delete"
                         android:visibility="gone"
                         tools:src="@drawable/delete" />
 

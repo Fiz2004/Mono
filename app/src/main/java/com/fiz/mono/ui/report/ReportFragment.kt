@@ -12,6 +12,8 @@ import com.fiz.mono.data.TransactionStore
 import com.fiz.mono.databinding.FragmentReportBinding
 import com.fiz.mono.ui.input.InputViewModel
 import com.fiz.mono.ui.input.getCurrencyFormat
+import com.fiz.mono.util.getColorCompat
+import com.fiz.mono.util.themeColor
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -78,6 +80,18 @@ class ReportFragment : Fragment() {
                 updateUI()
                 updateAdapter()
             }
+        }
+
+        binding.choiceReportImageButton.setOnClickListener {
+            binding.choiceReportConstraintLayout.visibility = View.VISIBLE
+            if (viewModel.categorySelectedReport == 0) {
+                binding.monthlyTextView.setTextColor(requireContext().getColorCompat(R.color.blue))
+                binding.monthlyTextView.setTextColor(requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary))
+            } else {
+                binding.monthlyTextView.setTextColor(requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary))
+                binding.monthlyTextView.setTextColor(requireContext().getColorCompat(R.color.blue))
+            }
+
         }
 
         updateUI()

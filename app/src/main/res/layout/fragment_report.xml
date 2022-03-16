@@ -21,6 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
+        android:id="@+id/choiceReportImageButton"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:background="@drawable/ic_carret_down"
@@ -70,7 +71,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/currentBalanceReportTextView" />
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/balanceBorder"
         android:layout_width="match_parent"
@@ -79,7 +79,8 @@
         android:layout_marginStart="@dimen/fragmentPaddingStart"
         android:layout_marginEnd="@dimen/fragmentPaddingEnd"
         android:background="@drawable/edit_image_bg"
-        app:layout_constraintTop_toBottomOf="@+id/currentBalanceReportTextView">
+        app:layout_constraintTop_toBottomOf="@+id/currentBalanceReportTextView"
+        tools:showIn="@layout/fragment_report">
 
         <TextView
             android:id="@+id/incomeBalanceReportTextView"
@@ -131,7 +132,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/expenseIncomeBalanceBorder"
         android:layout_width="match_parent"
@@ -140,7 +140,8 @@
         android:layout_marginStart="@dimen/fragmentPaddingStart"
         android:layout_marginEnd="@dimen/fragmentPaddingEnd"
         android:background="@drawable/edit_image_bg"
-        app:layout_constraintTop_toBottomOf="@+id/balanceBorder">
+        app:layout_constraintTop_toBottomOf="@+id/balanceBorder"
+        tools:showIn="@layout/fragment_report">
 
         <TextView
             android:id="@+id/expenseIncomeBalanceReportTextView"
@@ -206,10 +207,11 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/toggle1"
-            style="@style/ToggleButton"
             android:layout_height="wrap_content"
             android:layout_width="67dp"
+            style="@style/ToggleButton"
             android:gravity="start"
+            android:layout_marginTop="-1dp"
             android:text="All" />
 
         <com.google.android.material.button.MaterialButton
@@ -250,6 +252,40 @@
         app:layout_constraintTop_toBottomOf="@+id/allExpenseIncomeToggleButton"
         tools:itemCount="16"
         tools:listitem="@layout/item_transaction" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/choiceReportConstraintLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/edit_image_bg"
+        android:padding="24dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleTextView">
+
+        <TextView
+            android:id="@+id/monthlyTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="Monthly"
+            android:textAppearance="@style/size16_color_primary"
+            android:textColor="?attr/colorSecondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/categoryTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Category"
+            android:textAppearance="@style/size16_color_primary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/monthlyTextView" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

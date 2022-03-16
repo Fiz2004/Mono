@@ -11,7 +11,7 @@
         android:id="@+id/imageOnBoardingImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/illustration1"
+        app:srcCompat="@drawable/illustration1"
         app:layout_constraintBottom_toTopOf="@+id/headerOnBoardingTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

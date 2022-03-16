@@ -16,7 +16,7 @@
         <item name="android:textColorPrimary">?attr/colorPrimary</item>
 
         <!-- Customize your theme here. -->
-        <item name="android:fontFamily">@font/poppins</item>
+        <item name="fontFamily">@font/poppins</item>
         <item name="android:colorBackground">@color/black_dark</item>
         <item name="colorGray">@color/gray_dark</item>
         <item name="colorBackground">@color/background_dark</item>
