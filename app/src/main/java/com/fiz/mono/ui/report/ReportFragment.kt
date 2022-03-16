@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.fiz.mono.R
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
 import com.fiz.mono.databinding.FragmentReportBinding
 import com.fiz.mono.ui.input.InputViewModel
 import com.fiz.mono.ui.input.getCurrencyFormat
-import com.google.android.material.tabs.TabLayout
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -59,19 +59,26 @@ class ReportFragment : Fragment() {
             updateAdapter()
         }
 
-        binding.allExpenseIncomeTabLayout.addOnTabSelectedListener(object :
-            TabLayout.OnTabSelectedListener {
-
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                tab?.let {
-                    viewModel.tabSelectedReport = tab.position
-                    updateAdapter()
+        binding.allExpenseIncomeToggleButton.addOnButtonCheckedListener { toggleButton, checkedId, isChecked ->
+            when (checkedId) {
+                R.id.toggle1 -> {
+                    if (isChecked)
+                        viewModel.tabSelectedReport = 0
+                }
+                R.id.toggle2 -> {
+                    if (isChecked)
+                        viewModel.tabSelectedReport = 1
+                }
+                R.id.toggle3 -> {
+                    if (isChecked)
+                        viewModel.tabSelectedReport = 2
                 }
             }
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-        })
+            if (isChecked) {
+                updateUI()
+                updateAdapter()
+            }
+        }
 
         updateUI()
         updateAdapter()

@@ -25,6 +25,8 @@
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/lock_key.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/mode.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/radiobutton_currency.xml" value="0.2155" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/selector_toggle_button.xml" value="0.1395" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/selector_toggle_button_text.xml" value="0.1395" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/squares_four.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/activity_main.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/data_expense_income_item.xml" value="0.2864471996579735" />
@@ -38,7 +40,7 @@
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_on_boarding.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_p_i_n_password.xml" value="0.1" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_reminder.xml" value="0.2864471996579735" />
-        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_report.xml" value="0.33" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_report.xml" value="0.29878048780487804" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_settings.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/grid_view_item.xml" value="0.9" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/item_category.xml" value="0.1627379873073436" />

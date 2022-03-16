@@ -62,7 +62,10 @@ class TransactionsAdapter(private val currency: String) :
             }
 
             binding.categoryTransactionTextView.text = transactionItem.nameCategory
-            binding.noteTransactionTextView.text = "(${transactionItem.note})"
+            if (transactionItem.note.isNotBlank())
+                binding.noteTransactionTextView.text = "(${transactionItem.note})"
+            else
+                binding.noteTransactionTextView.text = ""
             if (transactionItem.value > 0) {
                 binding.valueTextView.setTextColor(binding.root.context.getColorCompat(R.color.blue))
                 binding.valueTextView.text =
