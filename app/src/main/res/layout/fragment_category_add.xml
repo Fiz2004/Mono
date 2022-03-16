@@ -68,13 +68,9 @@
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/categoryNameEditText"
+        style="@style/EditText"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@drawable/edit_image_bg"
-        android:hint="@string/please_input"
-        android:paddingStart="16dp"
-        android:textAppearance="@style/size16_color_primary"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/categoryNameTextView" />
 

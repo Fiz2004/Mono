@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class OnBoardingViewModel : ViewModel() {
-    val _pages = MutableLiveData<Int>(0)
+    private val _pages = MutableLiveData(0)
     val pages: LiveData<Int>
         get() = _pages
 

@@ -37,11 +37,14 @@
     <string name="reminder">Напоминание</string>
     <string name="dark_mode">Темный режим</string>
     <string name="delete_all_data">Удалить Все Данные</string>
-    <string name="hello_blank_fragment">Привет пустой фрагмент</string>
     <string name="remove">Удалить</string>
     <string name="add_category">Добавить Категорию</string>
     <string name="add">Добавить</string>
     <string name="category_name">Название категории</string>
     <string name="icon">Иконка</string>
     <string name="category_edit">Редактировать Категорию</string>
+    <string name="current_balance">Текущий баланс</string>
+    <string name="expense_income">Расход/Доход</string>
+    <string name="previous_balance">Предыдущий баланс</string>
+    <string name="all">Все</string>
 </resources>

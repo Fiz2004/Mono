@@ -27,8 +27,8 @@ class InputFragment : Fragment() {
 
     private lateinit var adapter: CategoryInputAdapter
 
-    var selectedAdapter: Int? = 0
-    var selectedItem: Int? = null
+    private var selectedAdapter: Int? = 0
+    private var selectedItem: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -188,14 +188,6 @@ class InputFragment : Fragment() {
 
         override fun onTabReselected(tab: TabLayout.Tab?) {
         }
-    }
-
-    private fun isLogOut(): Boolean {
-        return true
-    }
-
-    private fun isFirstTime(): Boolean {
-        return true
     }
 }
 

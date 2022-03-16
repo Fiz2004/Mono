@@ -15,7 +15,7 @@ class InputViewModel : ViewModel() {
 
     var statePIN = ""
 
-    var date = Calendar.getInstance()
+    var date: Calendar = Calendar.getInstance()
 
     var tabSelectedReport: Int = 0
 

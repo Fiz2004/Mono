@@ -63,7 +63,8 @@ class TransactionsAdapter(private val currency: String) :
 
             binding.categoryTransactionTextView.text = transactionItem.nameCategory
             if (transactionItem.note.isNotBlank())
-                binding.noteTransactionTextView.text = "(${transactionItem.note})"
+                binding.noteTransactionTextView.text =
+                    binding.root.context.getString(R.string.transaction_note, transactionItem.note)
             else
                 binding.noteTransactionTextView.text = ""
             if (transactionItem.value > 0) {

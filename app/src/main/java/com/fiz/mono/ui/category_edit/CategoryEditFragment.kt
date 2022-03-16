@@ -25,16 +25,15 @@ class CategoryEditFragment : Fragment() {
     private lateinit var expenseAdapter: CategoryInputAdapter
     private lateinit var incomeAdapter: CategoryInputAdapter
 
-    var selectedAdapter: Int? = null
+    private var selectedAdapter: Int? = null
     var selectedItem: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentCategoryEditBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
+        return binding.root
     }
 
     override fun onDestroyView() {

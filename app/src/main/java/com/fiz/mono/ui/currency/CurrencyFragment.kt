@@ -16,15 +16,14 @@ class CurrencyFragment : Fragment() {
     private var _binding: FragmentCurrencyBinding? = null
     private val binding get() = _binding!!
 
-    val viewModel: InputViewModel by activityViewModels()
+    private val viewModel: InputViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentCurrencyBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
+        return binding.root
     }
 
     override fun onDestroyView() {

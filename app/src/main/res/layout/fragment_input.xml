@@ -87,7 +87,7 @@
                 android:layout_height="56dp"
                 android:background="@drawable/edit_image_bg_background"
                 android:gravity="center"
-                android:text="$"
+                tools:text="$"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="32sp"
                 app:layout_constraintBottom_toBottomOf="@+id/valueEditText"
@@ -121,14 +121,10 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/noteEditText"
+                    style="@style/EditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="?attr/colorMain"
-                    android:hint="@string/please_input"
-                    android:paddingStart="16dp"
-                    android:textColor="?attr/colorPrimary"
-                    android:textColorHint="?attr/colorGray"
-                    android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -172,8 +168,8 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_gravity="end|top"
-                        app:srcCompat="@drawable/delete"
                         android:visibility="gone"
+                        app:srcCompat="@drawable/delete"
                         tools:src="@drawable/delete" />
 
                 </com.google.android.material.card.MaterialCardView>
@@ -206,8 +202,8 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_gravity="end|top"
-                        app:srcCompat="@drawable/delete"
                         android:visibility="gone"
+                        app:srcCompat="@drawable/delete"
                         tools:src="@drawable/delete" />
 
                 </com.google.android.material.card.MaterialCardView>
@@ -240,8 +236,8 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_gravity="end|top"
-                        app:srcCompat="@drawable/delete"
                         android:visibility="gone"
+                        app:srcCompat="@drawable/delete"
                         tools:src="@drawable/delete" />
 
                 </com.google.android.material.card.MaterialCardView>

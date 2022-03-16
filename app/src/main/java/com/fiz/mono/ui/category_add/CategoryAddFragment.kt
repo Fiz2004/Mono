@@ -15,11 +15,11 @@ class CategoryAddFragment : Fragment() {
     private var _binding: FragmentCategoryAddBinding? = null
     private val binding get() = _binding!!
 
-    lateinit var adapter: IconCategoryAdapter
+    private lateinit var adapter: IconCategoryAdapter
 
     var selectedItem: Int? = null
 
-    val list = mutableListOf(
+    private val list = mutableListOf(
         R.drawable.user, R.drawable.plane, R.drawable.chair, R.drawable.baby,
         R.drawable.bank, R.drawable.gym, R.drawable.cycles, R.drawable.bird,
         R.drawable.boat, R.drawable.books, R.drawable.brain, R.drawable.building,
@@ -37,16 +37,15 @@ class CategoryAddFragment : Fragment() {
         R.drawable.fix
     )
 
-    val args: CategoryAddFragmentArgs by navArgs()
-    var type: String = ""
+    private val args: CategoryAddFragmentArgs by navArgs()
+    private var type: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentCategoryAddBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
+        return binding.root
     }
 
     override fun onDestroyView() {

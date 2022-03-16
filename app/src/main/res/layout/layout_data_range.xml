@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginTop="12dp"
     android:background="@drawable/date_range_bg"
     android:orientation="horizontal">
@@ -21,7 +22,7 @@
         android:layout_weight="1"
         android:gravity="center"
         android:minHeight="48dp"
-        android:text="Feb 24, 2022 (Sat)" />
+        tools:text="Feb 24, 2022 (Sat)" />
 
     <ImageButton
         android:id="@+id/rightDateRangeImageButton"

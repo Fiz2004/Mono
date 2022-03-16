@@ -3,7 +3,6 @@ package com.fiz.mono.ui
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.navigation.NavController
@@ -12,11 +11,9 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
 import com.fiz.mono.R
 import com.fiz.mono.databinding.ActivityMainBinding
-import com.fiz.mono.ui.on_boarding.OnBoardingViewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    val viewModel: OnBoardingViewModel by viewModels()
 
     private lateinit var navController: NavController
 

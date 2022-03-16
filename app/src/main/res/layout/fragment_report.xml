@@ -45,12 +45,13 @@
         android:id="@+id/currentBalanceReportTextView"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:layout_marginStart="@dimen/fragmentPaddingStart"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="@dimen/fragmentPaddingEnd"
         android:background="@drawable/edit_image_bg"
         android:gravity="center_vertical"
-        android:layout_marginStart="@dimen/fragmentPaddingStart"
-        android:layout_marginEnd="@dimen/fragmentPaddingEnd"
         android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:text="@string/current_balance"
         android:textAppearance="@style/size16_color_secondary"
         app:layout_constraintEnd_toEndOf="parent"
@@ -63,7 +64,7 @@
         android:layout_height="48dp"
         android:gravity="center_vertical|end"
         android:paddingEnd="32dp"
-        android:text="$40,710.00"
+        tools:text="$40,710.00"
         android:textAppearance="@style/size16_color_primary"
         android:textColor="@color/blue"
         app:layout_constraintBottom_toBottomOf="@+id/currentBalanceReportTextView"
@@ -88,7 +89,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:paddingStart="16dp"
-            android:text="Income"
+            android:text="@string/income"
             android:textAppearance="@style/size16_color_secondary"
             android:textColor="?attr/colorSecondary"
             app:layout_constraintStart_toStartOf="parent"
@@ -101,7 +102,7 @@
             android:layout_marginTop="12dp"
             android:gravity="end"
             android:paddingEnd="16dp"
-            android:text="$143,100.00"
+            tools:text="$143,100.00"
             android:textAppearance="@style/size16_color_primary"
             android:textColor="?attr/colorPrimary"
             app:layout_constraintEnd_toEndOf="parent"
@@ -113,7 +114,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             android:paddingStart="16dp"
-            android:text="Expense"
+            android:text="@string/expense"
             android:textAppearance="@style/size16_color_secondary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -124,7 +125,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             android:paddingEnd="16dp"
-            android:text="-$118,150.00"
+            tools:text="-$118,150.00"
             android:textAppearance="@style/size16_color_primary"
             android:textColor="?attr/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -149,7 +150,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:paddingStart="16dp"
-            android:text="Expense/Income"
+            android:text="@string/expense_income"
             android:textAppearance="@style/size16_color_secondary"
             android:textColor="?attr/colorSecondary"
             app:layout_constraintStart_toStartOf="parent"
@@ -162,7 +163,7 @@
             android:layout_marginTop="12dp"
             android:gravity="end"
             android:paddingEnd="16dp"
-            android:text="+$24,950.00"
+            tools:text="+$24,950.00"
             android:textAppearance="@style/size16_color_primary"
             android:textColor="?attr/colorPrimary"
             app:layout_constraintEnd_toEndOf="parent"
@@ -174,7 +175,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             android:paddingStart="16dp"
-            android:text="Previous balance"
+            android:text="@string/previous_balance"
             android:textAppearance="@style/size16_color_secondary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -185,7 +186,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             android:paddingEnd="16dp"
-            android:text="$15,760.00"
+            tools:text="$15,760.00"
             android:textAppearance="@style/size16_color_primary"
             android:textColor="?attr/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -212,21 +213,21 @@
             style="@style/ToggleButton"
             android:gravity="start"
             android:layout_marginTop="-1dp"
-            android:text="All" />
+            android:text="@string/all" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/toggle2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/ToggleButton"
-            android:text="Expense" />
+            android:text="@string/expense" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/toggle3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/ToggleButton"
-            android:text="Income" />
+            android:text="@string/income" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <LinearLayout

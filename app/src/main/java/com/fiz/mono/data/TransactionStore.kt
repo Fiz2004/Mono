@@ -4,7 +4,7 @@ import com.fiz.mono.R
 import java.util.*
 
 object TransactionStore {
-    private val allTransactions = mutableListOf<TransactionItem>(
+    private val allTransactions = mutableListOf(
         TransactionItem(
             getDate(2022, 1, 24),
             -5.49,
