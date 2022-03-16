@@ -10,8 +10,8 @@ import com.fiz.mono.R
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.databinding.ItemTransactionBinding
 import com.fiz.mono.databinding.ItemTransactionDateExpenseIncomeBinding
+import com.fiz.mono.ui.input.getCurrencyFormat
 import com.fiz.mono.util.getColorCompat
-import kotlin.math.abs
 
 class TransactionsAdapter(private val currency: String) :
     ListAdapter<DataItem, RecyclerView.ViewHolder>(DiffCallback) {
@@ -65,11 +65,12 @@ class TransactionsAdapter(private val currency: String) :
             binding.noteTransactionTextView.text = "(${transactionItem.note})"
             if (transactionItem.value > 0) {
                 binding.valueTextView.setTextColor(binding.root.context.getColorCompat(R.color.blue))
-                binding.valueTextView.text = "+" + currency + "%.2f".format(transactionItem.value)
+                binding.valueTextView.text =
+                    getCurrencyFormat(currency, transactionItem.value, true)
             } else {
                 binding.valueTextView.setTextColor(binding.root.context.getColorCompat(R.color.red))
                 binding.valueTextView.text =
-                    "-" + currency + "%.2f".format(abs(transactionItem.value))
+                    getCurrencyFormat(currency, transactionItem.value, true)
             }
 
         }
@@ -92,13 +93,13 @@ class TransactionsAdapter(private val currency: String) :
                 binding.expense.visibility = View.GONE
             } else {
                 binding.expense.visibility = View.VISIBLE
-                binding.expense.text = "-" + currency + "%.2f".format(abs(infoDay.expense))
+                binding.expense.text = getCurrencyFormat(currency, infoDay.expense, true)
             }
             if (infoDay.income == 0.0) {
                 binding.income.visibility = View.GONE
             } else {
                 binding.income.visibility = View.VISIBLE
-                binding.income.text = "+" + currency + "%.2f".format(infoDay.income)
+                binding.income.text = getCurrencyFormat(currency, infoDay.income, true)
             }
         }
 

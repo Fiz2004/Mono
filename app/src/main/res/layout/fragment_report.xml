@@ -187,8 +187,11 @@
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/allExpenseIncomeTabLayout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginTop="20dp"
+        app:tabIndicatorColor="?attr/colorBackground"
+        app:tabIndicatorFullWidth="true"
+        app:tabIndicatorHeight="46dp"
         android:background="@drawable/background_tab_layout_report"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -204,6 +207,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Expense" />
+
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
