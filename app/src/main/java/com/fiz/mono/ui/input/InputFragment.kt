@@ -112,10 +112,17 @@ class InputFragment : Fragment() {
             else
                 CategoryStore.getAllCategoryIncome()[adapter.selectedItem!!]
 
+            val valueEditText = binding.valueEditText.text.toString().toDouble()
+
+            val value = if (selectedAdapter == 0)
+                -valueEditText
+            else
+                valueEditText
+
             TransactionStore.insertNewTransaction(
                 TransactionItem(
                     Calendar.getInstance().time,
-                    binding.valueEditText.text.toString().toDouble(),
+                    value,
                     selectedCategoryItem.name,
                     binding.noteEditText.text.toString(),
                     selectedCategoryItem.imgSrc
