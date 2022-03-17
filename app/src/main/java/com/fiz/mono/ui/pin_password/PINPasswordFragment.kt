@@ -160,6 +160,9 @@ class PINPasswordFragment : Fragment() {
                     requireContext(),
                     R.drawable.background_pin_focused_edittext
                 )
+                if (view.text.length == 1) {
+                    view.setSelection(1)
+                }
             } else {
                 view.transformationMethod = PasswordTransformationMethod.getInstance()
                 view.background =
@@ -188,7 +191,8 @@ class PINPasswordFragment : Fragment() {
     }
 
     private fun textWatcher(editText: EditText, next: View) = object : TextWatcher {
-        override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
+        override fun onTextChanged(cs: CharSequence, start: Int, before: Int, count: Int) {
+            if (before == count) return
             if (cs.isNotEmpty()) {
                 if (viewModel.statePIN == STATE_CONFIRM_REMOVE_ERROR) {
                     viewModel.statePIN = STATE_CONFIRM_REMOVE
@@ -209,8 +213,8 @@ class PINPasswordFragment : Fragment() {
             checkPIN()
         }
 
-        override fun beforeTextChanged(s: CharSequence, arg1: Int, arg2: Int, arg3: Int) {}
-        override fun afterTextChanged(arg0: Editable) {}
+        override fun beforeTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+        override fun afterTextChanged(s: Editable) {}
     }
 
     private fun getPIN() =

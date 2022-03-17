@@ -29,6 +29,7 @@
             app:destination="@id/settingsFragment" />
         <argument
             android:name="fromCome"
+            android:defaultValue="settings"
             app:argType="string" />
     </fragment>
     <fragment
