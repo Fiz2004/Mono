@@ -5,28 +5,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.fiz.mono.R
-import com.fiz.mono.data.CategoryItem
-import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.databinding.FragmentCategoryEditBinding
-import com.fiz.mono.ui.input.CategoryInputAdapter
+import com.fiz.mono.util.CategoryInputAdapter
 
 
 class CategoryEditFragment : Fragment() {
-
-    private val args: CategoryEditFragmentArgs by navArgs()
-
     private var _binding: FragmentCategoryEditBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: CategoryEditViewModel by viewModels()
 
     private lateinit var expenseAdapter: CategoryInputAdapter
     private lateinit var incomeAdapter: CategoryInputAdapter
 
-    private var selectedAdapter: Int? = null
-    var selectedItem: Int? = null
+    private val args: CategoryEditFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,116 +41,65 @@ class CategoryEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val type = args.type
-        val name = args.name.toString()
-        val icon = args.icon
-        if (type != "") {
-            if (type == "expense") {
-                CategoryStore.insertNewCategoryExpense(CategoryItem(name, icon))
-            } else {
-                CategoryStore.insertNewCategoryIncome(CategoryItem(name, icon))
-            }
+        if (args.type != "") {
+            viewModel.insertNewCategory(args.type, args.name.toString(), args.icon)
         }
+        binding.backButton.setOnClickListener(::backButtonOnClickListener)
+        binding.removeButton.setOnClickListener(::removeButtonOnClickListener)
 
-        setExpenseAdapter()
+        expenseAdapter = CategoryInputAdapter(R.color.red, ::adapterExpenseOnClickListener)
+        expenseAdapter.submitList(viewModel.getAllCategoryItemExpense())
+        binding.expenseRecyclerView.adapter = expenseAdapter
 
-        setIncomeAdapter()
-
-        binding.backButton.setOnClickListener {
-            findNavController().popBackStack()
-        }
-
-        binding.removeButton.setOnClickListener {
-            if (selectedAdapter == 0) {
-                if (selectedItem != null) {
-                    CategoryStore.removeCategoryExpense(selectedItem!!)
-                    expenseAdapter.submitList(CategoryStore.getAllCategoryExpenseForEdit())
-                    expenseAdapter.notifyDataSetChanged()
-                }
-                selectedItem = null
-                expenseAdapter.selectedItem = null
-            } else {
-                if (selectedItem != null) {
-                    CategoryStore.removeCategoryIncome(selectedItem!!)
-                    incomeAdapter.submitList(CategoryStore.getAllCategoryIncomeForEdit())
-                    incomeAdapter.notifyDataSetChanged()
-                }
-                selectedItem = null
-                incomeAdapter.selectedItem = null
-            }
-        }
-
-    }
-
-    private fun setIncomeAdapter() {
-        incomeAdapter = CategoryInputAdapter(R.color.red) { position ->
-
-            if (position == CategoryStore.getAllCategoryIncomeForEdit().size - 1) {
-                val action =
-                    CategoryEditFragmentDirections
-                        .actionCategoryFragmentToCategoryAddFragment("income")
-                view?.findNavController()?.navigate(action)
-                return@CategoryInputAdapter
-            }
-
-            if (selectedAdapter != 1) {
-                val old = selectedItem
-                selectedItem = null
-                expenseAdapter.selectedItem = selectedItem
-                old?.let { expenseAdapter.notifyItemChanged(old) }
-            }
-            selectedAdapter = 1
-            selectedItem?.let { incomeAdapter.notifyItemChanged(it) }
-            incomeAdapter.notifyItemChanged(position)
-
-            if (selectedItem == position) {
-                selectedItem = null
-                binding.removeButton.visibility = View.GONE
-            } else {
-                selectedItem = position
-                binding.removeButton.visibility = View.VISIBLE
-            }
-
-            incomeAdapter.selectedItem = selectedItem
-        }
-        incomeAdapter.submitList(CategoryStore.getAllCategoryIncomeForEdit())
+        incomeAdapter = CategoryInputAdapter(R.color.red, ::adapterIncomeOnClickListener)
+        incomeAdapter.submitList(viewModel.getAllCategoryItemIncome())
         binding.incomeRecyclerView.adapter = incomeAdapter
     }
 
-    private fun setExpenseAdapter() {
-        expenseAdapter = CategoryInputAdapter(R.color.red) { position ->
+    private fun backButtonOnClickListener(v: View): Unit {
+        findNavController().popBackStack()
+    }
 
-            if (position == CategoryStore.getAllCategoryExpenseForEdit().size - 1) {
-                val action =
-                    CategoryEditFragmentDirections
-                        .actionCategoryFragmentToCategoryAddFragment("expense")
-                view?.findNavController()?.navigate(action)
-                return@CategoryInputAdapter
-            }
+    private fun removeButtonOnClickListener(v: View): Unit {
+        viewModel.removeSelectItem()
+        binding.removeButton.visibility = viewModel.getVisibilityRemoveButton()
+        updateAdapters()
+    }
 
+    private fun adapterExpenseOnClickListener(position: Int) {
+        viewModel.addSelectItemExpense(position)
+        binding.removeButton.visibility = viewModel.getVisibilityRemoveButton()
+        updateAdapters()
 
-
-            if (selectedAdapter != 0) {
-                val old = selectedItem
-                selectedItem = null
-                incomeAdapter.selectedItem = selectedItem
-                old?.let { incomeAdapter.notifyItemChanged(old) }
-            }
-            selectedAdapter = 0
-
-            selectedItem?.let { expenseAdapter.notifyItemChanged(it) }
-            expenseAdapter.notifyItemChanged(position)
-            if (selectedItem == position) {
-                selectedItem = null
-                binding.removeButton.visibility = View.GONE
-            } else {
-                selectedItem = position
-                binding.removeButton.visibility = View.VISIBLE
-            }
-
-            expenseAdapter.selectedItem = selectedItem
+        if (viewModel.isClickAddPositionExpense(position)) {
+            val action =
+                CategoryEditFragmentDirections
+                    .actionCategoryFragmentToCategoryAddFragment(TYPE_EXPENSE)
+            view?.findNavController()?.navigate(action)
         }
-        expenseAdapter.submitList(CategoryStore.getAllCategoryExpenseForEdit())
-        binding.expenseRecyclerView.adapter = expenseAdapter
+
+    }
+
+    private fun adapterIncomeOnClickListener(position: Int) {
+        viewModel.addSelectItemIncome(position)
+        binding.removeButton.visibility = viewModel.getVisibilityRemoveButton()
+        updateAdapters()
+
+        if (viewModel.isClickAddPositionIncome(position)) {
+            val action =
+                CategoryEditFragmentDirections
+                    .actionCategoryFragmentToCategoryAddFragment(TYPE_INCOME)
+            view?.findNavController()?.navigate(action)
+        }
+    }
+
+    private fun updateAdapters() {
+        incomeAdapter.submitList(viewModel.getAllCategoryItemIncome())
+        expenseAdapter.submitList(viewModel.getAllCategoryItemExpense())
+    }
+
+    companion object {
+        const val TYPE_EXPENSE = "expense"
+        const val TYPE_INCOME = "income"
     }
 }

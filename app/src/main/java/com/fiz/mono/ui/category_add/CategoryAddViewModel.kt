@@ -8,27 +8,27 @@ import com.fiz.mono.data.CategoryStore
 class CategoryAddViewModel : ViewModel() {
     private var selectedItem: Int? = null
 
-    private val list = CategoryStore.getAllCategoryIcon()
+    private val allCategoryIcon = CategoryStore.getAllCategoryIcon()
 
     fun addSelectItem(position: Int) {
         if (selectedItem == position) {
             selectedItem = null
-            list[position].selected = false
+            allCategoryIcon[position].selected = false
         } else {
             selectedItem?.let {
-                list[it].selected = false
+                allCategoryIcon[it].selected = false
             }
             selectedItem = position
-            list[position].selected = true
+            allCategoryIcon[position].selected = true
         }
     }
 
-    fun getList(): List<CategoryIconItem> {
-        return list.map { it.copy() }
+    fun getAllCategoryIcon(): List<CategoryIconItem> {
+        return allCategoryIcon.map { it.copy() }
     }
 
     fun getSelectedIcon(): Int {
-        return list[selectedItem!!].imgSrc
+        return allCategoryIcon[selectedItem!!].imgSrc
     }
 
     fun getVisibilityAddButton(): Int {

@@ -18,6 +18,7 @@ class CategoryAddFragment : Fragment() {
     private val viewModel: CategoryAddViewModel by viewModels()
 
     private lateinit var adapter: IconCategoryAdapter
+
     private val args: CategoryAddFragmentArgs by navArgs()
 
     override fun onCreateView(
@@ -41,9 +42,8 @@ class CategoryAddFragment : Fragment() {
         binding.addButton.setOnClickListener(::addButtonOnClickListener)
 
         adapter = IconCategoryAdapter(::adapterOnClickListener)
-        adapter.submitList(viewModel.getList())
+        adapter.submitList(viewModel.getAllCategoryIcon())
         binding.expenseRecyclerView.adapter = adapter
-
     }
 
     private fun backButtonOnClickListener(v: View): Unit {
@@ -68,7 +68,7 @@ class CategoryAddFragment : Fragment() {
     private fun adapterOnClickListener(position: Int) {
         viewModel.addSelectItem(position)
         binding.addButton.visibility = viewModel.getVisibilityAddButton()
-        adapter.submitList(viewModel.getList())
+        adapter.submitList(viewModel.getAllCategoryIcon())
     }
 
 }

@@ -13,6 +13,7 @@ import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
 import com.fiz.mono.databinding.FragmentInputBinding
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
+import com.fiz.mono.util.CategoryInputAdapter
 import com.fiz.mono.util.setDisabled
 import com.fiz.mono.util.setEnabled
 import com.google.android.material.tabs.TabLayout
@@ -96,21 +97,25 @@ class InputFragment : Fragment() {
 
             if (selectedItem == position) {
                 selectedItem = null
+                CategoryStore.getAllCategoryExpenseForInput()[position].selected = false
                 binding.submitInputButton.setDisabled()
             } else {
+                selectedItem?.let {
+                    CategoryStore.getAllCategoryExpenseForInput()[selectedItem!!].selected = false
+                }
+                CategoryStore.getAllCategoryExpenseForInput()[position].selected = true
                 selectedItem = position
                 binding.submitInputButton.setEnabled()
             }
-            adapter.selectedItem = selectedItem
-            adapter.notifyDataSetChanged()
+            adapter.submitList(CategoryStore.getAllCategoryExpenseForInput().map { it.copy() })
         }
 
         binding.submitInputButton.setOnClickListener {
             if (binding.valueEditText.text?.isBlank() == true) return@setOnClickListener
             val selectedCategoryItem = if (selectedAdapter == 0)
-                CategoryStore.getAllCategoryExpense()[adapter.selectedItem!!]
+                CategoryStore.getAllCategoryExpense()[selectedItem!!]
             else
-                CategoryStore.getAllCategoryIncome()[adapter.selectedItem!!]
+                CategoryStore.getAllCategoryIncome()[selectedItem!!]
 
             val valueEditText = binding.valueEditText.text.toString().toDouble()
 
@@ -131,8 +136,7 @@ class InputFragment : Fragment() {
             binding.valueEditText.setText("")
             binding.noteEditText.setText("")
             selectedItem = null
-            adapter.selectedItem = null
-            adapter.notifyDataSetChanged()
+            CategoryStore.getAllCategoryExpenseForInput()[selectedItem!!].selected = false
             binding.submitInputButton.setDisabled()
 
             binding.foto1.visibility = View.GONE
@@ -161,7 +165,7 @@ class InputFragment : Fragment() {
         }
 
         binding.submitInputButton.setDisabled()
-        adapter.submitList(CategoryStore.getAllCategoryExpenseForInput())
+        adapter.submitList(CategoryStore.getAllCategoryExpenseForInput().map { it.copy() })
         binding.categoryInputRecyclerView.adapter = adapter
 
         updateUI()

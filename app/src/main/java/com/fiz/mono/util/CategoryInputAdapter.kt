@@ -1,23 +1,16 @@
-package com.fiz.mono.ui.input
+package com.fiz.mono.util
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.databinding.ItemCategoryBinding
-import com.fiz.mono.util.getColorCompat
-import com.fiz.mono.util.setTextAppearanceCompat
-import com.fiz.mono.util.themeColor
 
 class CategoryInputAdapter(private val colorSelected: Int, private val callback: (Int) -> Unit) :
-    ListAdapter<CategoryItem, CategoryInputAdapter.CategoryItemViewHolder>(DiffCallback) {
-
-    var selectedItem: Int? = null
-
+    ListAdapter<CategoryItem, CategoryInputAdapter.CategoryItemViewHolder>(CategoryItem.DiffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryItemViewHolder {
         return CategoryItemViewHolder(
             ItemCategoryBinding.inflate(LayoutInflater.from(parent.context))
@@ -54,7 +47,7 @@ class CategoryInputAdapter(private val colorSelected: Int, private val callback:
                 )
             }
 
-            if (selectedItem == adapterPosition) {
+            if (categoryItem.selected) {
                 binding.cardMaterialCard.strokeColor =
                     binding.root.context.getColorCompat(colorSelected)
             } else {
@@ -66,16 +59,6 @@ class CategoryInputAdapter(private val colorSelected: Int, private val callback:
                 callback(adapterPosition)
             }
 
-        }
-    }
-
-    companion object DiffCallback : DiffUtil.ItemCallback<CategoryItem>() {
-        override fun areItemsTheSame(oldItem: CategoryItem, newItem: CategoryItem): Boolean {
-            return oldItem == newItem
-        }
-
-        override fun areContentsTheSame(oldItem: CategoryItem, newItem: CategoryItem): Boolean {
-            return oldItem == newItem
         }
     }
 }
