@@ -8,7 +8,7 @@
     android:paddingTop="8dp"
     android:paddingEnd="16dp"
     android:paddingBottom="24dp"
-    tools:context=".ui.CalculatorFragment">
+    tools:context=".ui.calculator.CalculatorFragment">
 
     <TextView
         android:layout_width="match_parent"
@@ -24,7 +24,6 @@
         android:id="@+id/operationCalendarTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="41.82 x 2"
         android:textColor="?attr/colorSecondary"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -32,19 +31,20 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.39" />
+        app:layout_constraintVertical_bias="0.39"
+        tools:text="41.82 x 2" />
 
     <TextView
         android:id="@+id/resultCalendarTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="83.64"
         android:gravity="end"
         android:textColor="?attr/colorPrimary"
         android:textSize="56sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/operationCalendarTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/operationCalendarTextView"
+        tools:text="83.64" />
 
     <Button
         android:id="@+id/sevenCalendarImageButton"
@@ -105,9 +105,9 @@
 
     <Button
         android:id="@+id/fourCalendarImageButton"
+        style="@style/buttonCalculator"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        style="@style/buttonCalculator"
         android:text="4"
         app:layout_constraintBottom_toTopOf="@+id/oneCalendarImageButton"
         app:layout_constraintEnd_toStartOf="@+id/fiveCalendarImageButton"
@@ -162,9 +162,9 @@
 
     <Button
         android:id="@+id/oneCalendarImageButton"
+        style="@style/buttonCalculator"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        style="@style/buttonCalculator"
         android:text="1"
         app:layout_constraintBottom_toTopOf="@+id/resetCalendarImageButton"
         app:layout_constraintEnd_toStartOf="@+id/twoCalendarImageButton"
@@ -207,27 +207,27 @@
 
     <Button
         android:id="@+id/equalsCalendarImageButton"
+        style="@style/buttonCalculator"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        style="@style/buttonCalculator"
-        app:layout_constraintVertical_weight="2"
         android:text="="
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/dividedCalendarImageButton"
-        app:layout_constraintTop_toBottomOf="@+id/deleteCalendarImageButton" />
+        app:layout_constraintTop_toBottomOf="@+id/deleteCalendarImageButton"
+        app:layout_constraintVertical_weight="2" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/resetCalendarImageButton"
         style="@style/buttonCalculator"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        app:icon="@drawable/ic_reset_24"
+        app:iconGravity="textStart"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/zeroCalendarImageButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/oneCalendarImageButton"
-        app:icon="@drawable/ic_reset_24"
-        app:iconGravity="textStart" />
+        app:layout_constraintTop_toBottomOf="@+id/oneCalendarImageButton" />
 
     <Button
         android:id="@+id/zeroCalendarImageButton"

@@ -49,7 +49,7 @@
     </fragment>
     <fragment
         android:id="@+id/calculatorFragment"
-        android:name="com.fiz.mono.ui.CalculatorFragment"
+        android:name="com.fiz.mono.ui.calculator.CalculatorFragment"
         android:label="fragment_calculator"
         tools:layout="@layout/fragment_calculator" />
     <fragment
