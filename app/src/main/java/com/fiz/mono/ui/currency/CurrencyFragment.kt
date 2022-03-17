@@ -10,13 +10,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentCurrencyBinding
-import com.fiz.mono.ui.input.InputViewModel
+import com.fiz.mono.ui.MainViewModel
 
 class CurrencyFragment : Fragment() {
     private var _binding: FragmentCurrencyBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: InputViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,6 +45,17 @@ class CurrencyFragment : Fragment() {
 
         binding.backButton.setOnClickListener {
             findNavController().popBackStack()
+        }
+
+        when (viewModel.currency) {
+            "$" -> binding.USDRadioButton.isChecked = true
+            "¥" -> binding.JPYRadioButton.isChecked = true
+            "₡" -> binding.CRCRadioButton.isChecked = true
+            "£" -> binding.GBPRadioButton.isChecked = true
+            "₼" -> binding.AZNRadioButton.isChecked = true
+            "€" -> binding.ALLRadioButton.isChecked = true
+            "лв" -> binding.BGNRadioButton.isChecked = true
+            "đ" -> binding.VNDRadioButton.isChecked = true
         }
     }
 

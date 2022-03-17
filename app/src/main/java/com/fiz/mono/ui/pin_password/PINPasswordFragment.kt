@@ -20,7 +20,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentPINPasswordBinding
-import com.fiz.mono.ui.input.InputViewModel
+import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.util.setDisabled
 import com.fiz.mono.util.setEnabled
 import com.fiz.mono.util.setRemove
@@ -32,7 +32,7 @@ class PINPasswordFragment : Fragment() {
     private var _binding: FragmentPINPasswordBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: InputViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

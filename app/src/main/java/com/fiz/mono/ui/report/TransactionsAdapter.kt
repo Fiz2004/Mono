@@ -10,7 +10,7 @@ import com.fiz.mono.R
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.databinding.ItemTransactionBinding
 import com.fiz.mono.databinding.ItemTransactionDateExpenseIncomeBinding
-import com.fiz.mono.ui.input.getCurrencyFormat
+import com.fiz.mono.ui.getCurrencyFormat
 import com.fiz.mono.util.getColorCompat
 
 class TransactionsAdapter(private val currency: String) :

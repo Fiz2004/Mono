@@ -10,7 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentOnBoardingBinding
-import com.fiz.mono.ui.input.InputViewModel
+import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
 
 class OnBoardingFragment : Fragment() {
@@ -18,7 +18,7 @@ class OnBoardingFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: OnBoardingViewModel by activityViewModels()
-    private val inputViewModel: InputViewModel by activityViewModels()
+    private val inputViewModel: MainViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +52,7 @@ class OnBoardingFragment : Fragment() {
 
             if (viewModel.pages.value == 3) {
                 viewModel.PIN()
-                inputViewModel.firstTime=false
+                inputViewModel.firstTime = false
                 val action =
                     OnBoardingFragmentDirections
                         .actionOnBoardingFragmentToPINPasswordFragment(PINPasswordFragment.START)
@@ -62,7 +62,7 @@ class OnBoardingFragment : Fragment() {
 
         binding.skipOnBoardingButton.setOnClickListener {
             viewModel.PIN()
-            inputViewModel.firstTime=false
+            inputViewModel.firstTime = false
             val action =
                 OnBoardingFragmentDirections
                     .actionOnBoardingFragmentToPINPasswordFragment(PINPasswordFragment.START)
@@ -74,8 +74,8 @@ class OnBoardingFragment : Fragment() {
                 0 -> {
                     binding.imageOnBoardingImageView
                         .setImageResource(R.drawable.illustration1)
-                    binding.pageNumberOnBoardingTextView.text = getString(R.string.pageNumber,1,3)
-                    binding.skipOnBoardingButton.visibility=View.VISIBLE
+                    binding.pageNumberOnBoardingTextView.text = getString(R.string.pageNumber, 1, 3)
+                    binding.skipOnBoardingButton.visibility = View.VISIBLE
 
                     binding.headerOnBoardingTextView.text = getString(R.string.header1)
                     binding.descriptionOnBoardingTextView.text = getString(R.string.description1)
@@ -85,8 +85,8 @@ class OnBoardingFragment : Fragment() {
                 1 -> {
                     binding.imageOnBoardingImageView
                         .setImageResource(R.drawable.illustration2)
-                    binding.pageNumberOnBoardingTextView.text = getString(R.string.pageNumber,2,3)
-                    binding.skipOnBoardingButton.visibility=View.VISIBLE
+                    binding.pageNumberOnBoardingTextView.text = getString(R.string.pageNumber, 2, 3)
+                    binding.skipOnBoardingButton.visibility = View.VISIBLE
 
                     binding.headerOnBoardingTextView.text = getString(R.string.header2)
                     binding.descriptionOnBoardingTextView.text = getString(R.string.description2)
@@ -96,8 +96,8 @@ class OnBoardingFragment : Fragment() {
                 2 -> {
                     binding.imageOnBoardingImageView
                         .setImageResource(R.drawable.illustration3)
-                    binding.pageNumberOnBoardingTextView.text = getString(R.string.pageNumber,3,3)
-                    binding.skipOnBoardingButton.visibility=View.GONE
+                    binding.pageNumberOnBoardingTextView.text = getString(R.string.pageNumber, 3, 3)
+                    binding.skipOnBoardingButton.visibility = View.GONE
 
                     binding.headerOnBoardingTextView.text = getString(R.string.header3)
                     binding.descriptionOnBoardingTextView.text = getString(R.string.description3)

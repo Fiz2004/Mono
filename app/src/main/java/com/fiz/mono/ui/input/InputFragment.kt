@@ -12,6 +12,7 @@ import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
 import com.fiz.mono.databinding.FragmentInputBinding
+import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
 import com.fiz.mono.util.CategoryInputAdapter
 import com.fiz.mono.util.setDisabled
@@ -24,7 +25,7 @@ class InputFragment : Fragment() {
     private var _binding: FragmentInputBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: InputViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels()
 
     private lateinit var adapter: CategoryInputAdapter
 

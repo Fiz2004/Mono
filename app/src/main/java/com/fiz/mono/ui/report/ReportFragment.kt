@@ -10,8 +10,8 @@ import com.fiz.mono.R
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
 import com.fiz.mono.databinding.FragmentReportBinding
-import com.fiz.mono.ui.input.InputViewModel
-import com.fiz.mono.ui.input.getCurrencyFormat
+import com.fiz.mono.ui.MainViewModel
+import com.fiz.mono.ui.getCurrencyFormat
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.themeColor
 import java.text.SimpleDateFormat
@@ -22,7 +22,7 @@ class ReportFragment : Fragment() {
     private var _binding: FragmentReportBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: InputViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels()
 
     private lateinit var adapter: TransactionsAdapter
 

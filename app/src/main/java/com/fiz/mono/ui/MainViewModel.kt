@@ -1,10 +1,10 @@
-package com.fiz.mono.ui.input
+package com.fiz.mono.ui
 
 import androidx.lifecycle.ViewModel
 import java.util.*
 import kotlin.math.abs
 
-class InputViewModel : ViewModel() {
+class MainViewModel : ViewModel() {
     // TODO поставить true перед выпуском, сейчас false для отладки
     var firstTime: Boolean = false
     var log: Boolean = false
