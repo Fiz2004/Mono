@@ -1,5 +1,6 @@
 package com.fiz.mono.ui.input
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,12 +13,19 @@ import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
 import com.fiz.mono.databinding.FragmentInputBinding
+import com.fiz.mono.ui.MainActivity
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
 import com.fiz.mono.util.CategoryInputAdapter
 import com.fiz.mono.util.setDisabled
 import com.fiz.mono.util.setEnabled
 import com.google.android.material.tabs.TabLayout
+import io.ak1.pix.helpers.PixEventCallback
+import io.ak1.pix.helpers.addPixToActivity
+import io.ak1.pix.models.Flash
+import io.ak1.pix.models.Mode
+import io.ak1.pix.models.Options
+import io.ak1.pix.models.Ratio
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -31,6 +39,9 @@ class InputFragment : Fragment() {
 
     private var selectedAdapter: Int? = 0
     private var selectedItem: Int? = null
+
+    var load = false
+    lateinit var loadData: List<Uri>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,6 +78,32 @@ class InputFragment : Fragment() {
         binding.tabLayout.addOnTabSelectedListener(onTabSelectedListener())
 
         binding.noteCameraInputEditText.setOnClickListener {
+
+            val options = Options().apply {
+                ratio = Ratio.RATIO_AUTO                                    //Image/video capture ratio
+                count =
+                    3                                                   //Number of images to restrict selection count
+                spanCount = 4                                               //Number for columns in grid
+                path = "Pix/Camera"                                         //Custom Path For media Storage
+                isFrontFacing = true                                       //Front Facing camera on start
+                mode =
+                    Mode.Picture                                             //Option to select only pictures or videos or both
+                flash = Flash.Auto                                          //Option to select flash type
+            }
+
+            (requireActivity() as MainActivity).addPixToActivity(R.id.foto1, options) {
+                when (it.status) {
+                    PixEventCallback.Status.SUCCESS -> {
+                        load = true
+                        loadData = it.data
+
+                    }//use results as it.data
+                    PixEventCallback.Status.BACK_PRESSED -> {
+
+                    } // back pressed called
+                }
+            }
+
             binding.foto1.visibility = View.VISIBLE
             binding.foto2.visibility = View.VISIBLE
             binding.foto3.visibility = View.VISIBLE
@@ -85,6 +122,12 @@ class InputFragment : Fragment() {
             binding.delFoto2.visibility = View.GONE
             binding.delFoto3.visibility = View.GONE
         }
+
+        binding.delFoto2.setOnClickListener {
+            updateImage()
+        }
+
+
 
         adapter = CategoryInputAdapter(R.color.blue) { position ->
 
@@ -136,8 +179,8 @@ class InputFragment : Fragment() {
             )
             binding.valueEditText.setText("")
             binding.noteEditText.setText("")
-            selectedItem = null
             CategoryStore.getAllCategoryExpenseForInput()[selectedItem!!].selected = false
+            selectedItem = null
             binding.submitInputButton.setDisabled()
 
             binding.foto1.visibility = View.GONE
@@ -170,6 +213,11 @@ class InputFragment : Fragment() {
         binding.categoryInputRecyclerView.adapter = adapter
 
         updateUI()
+    }
+
+    private fun updateImage() {
+        for (d in loadData)
+            binding.foto1ImageView.setImageURI(d)
     }
 
     private fun updateUI() {

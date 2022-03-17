@@ -6,7 +6,7 @@ import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.CategoryStore
 
 private const val ADAPTER_EXPENSE = 0
-private const val ADAPTER_INCOME = 0
+private const val ADAPTER_INCOME = 1
 
 class CategoryEditViewModel : ViewModel() {
     private var selectedAdapter: Int? = null
