@@ -83,19 +83,37 @@ class ReportFragment : Fragment() {
         }
 
         binding.choiceReportImageButton.setOnClickListener {
-            binding.choiceReportConstraintLayout.visibility = View.VISIBLE
-            if (viewModel.categorySelectedReport == 0) {
-                binding.monthlyTextView.setTextColor(requireContext().getColorCompat(R.color.blue))
-                binding.monthlyTextView.setTextColor(requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary))
+            if (binding.choiceReportConstraintLayout.visibility == View.GONE) {
+                binding.choiceReportConstraintLayout.visibility = View.VISIBLE
+                updateMenu()
             } else {
-                binding.monthlyTextView.setTextColor(requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary))
-                binding.monthlyTextView.setTextColor(requireContext().getColorCompat(R.color.blue))
+                binding.choiceReportConstraintLayout.visibility = View.GONE
             }
 
         }
 
+        binding.monthlyTextView.setOnClickListener {
+            viewModel.categorySelectedReport = 0
+            binding.choiceReportConstraintLayout.visibility = View.GONE
+        }
+
+        binding.categoryTextView.setOnClickListener {
+            viewModel.categorySelectedReport = 1
+            binding.choiceReportConstraintLayout.visibility = View.GONE
+        }
+
         updateUI()
         updateAdapter()
+    }
+
+    private fun updateMenu() {
+        if (viewModel.categorySelectedReport == 0) {
+            binding.monthlyTextView.setTextColor(requireContext().getColorCompat(R.color.blue))
+            binding.categoryTextView.setTextColor(requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary))
+        } else {
+            binding.monthlyTextView.setTextColor(requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary))
+            binding.categoryTextView.setTextColor(requireContext().getColorCompat(R.color.blue))
+        }
     }
 
     private fun updateUI() {
@@ -174,5 +192,4 @@ class ReportFragment : Fragment() {
         adapter.submitList(items)
         binding.transactionsRecyclerView.adapter = adapter
     }
-
 }
