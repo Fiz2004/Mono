@@ -37,8 +37,7 @@
         android:layout_height="0dp"
         android:layout_marginBottom="18dp"
         app:layout_constraintBottom_toTopOf="@+id/submitInputButton"
-        app:layout_constraintTop_toBottomOf="@+id/tabLayout"
-        tools:layout_editor_absoluteX="16dp">
+        app:layout_constraintTop_toBottomOf="@+id/tabLayout">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -57,11 +56,11 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/ExpenseTextView"
+                android:id="@+id/ExpenseIncomeTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="@string/expense"
+                tools:text="@string/expense"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/dataRangeLayout" />
@@ -78,7 +77,7 @@
                 android:textColor="?attr/colorPrimary"
                 android:textColorHint="?attr/colorGray"
                 android:textSize="32sp"
-                app:layout_constraintTop_toBottomOf="@+id/ExpenseTextView"
+                app:layout_constraintTop_toBottomOf="@+id/ExpenseIncomeTextView"
                 tools:layout_editor_absoluteX="16dp" />
 
             <TextView
@@ -92,7 +91,7 @@
                 android:textSize="32sp"
                 app:layout_constraintBottom_toBottomOf="@+id/valueEditText"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ExpenseTextView" />
+                app:layout_constraintTop_toBottomOf="@+id/ExpenseIncomeTextView" />
 
             <TextView
                 android:id="@+id/noteInputTextView"

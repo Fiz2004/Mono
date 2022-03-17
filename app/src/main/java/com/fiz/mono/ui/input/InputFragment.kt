@@ -164,6 +164,14 @@ class InputFragment : Fragment() {
         adapter.submitList(CategoryStore.getAllCategoryExpenseForInput())
         binding.categoryInputRecyclerView.adapter = adapter
 
+        updateUI()
+    }
+
+    private fun updateUI() {
+        when (selectedAdapter) {
+            0 -> binding.ExpenseIncomeTextView.text = getString(R.string.expense)
+            1 -> binding.ExpenseIncomeTextView.text = getString(R.string.income)
+        }
     }
 
     private fun onTabSelectedListener() = object : TabLayout.OnTabSelectedListener {
@@ -180,6 +188,7 @@ class InputFragment : Fragment() {
                         adapter.submitList(CategoryStore.getAllCategoryIncomeForInput())
                     }
                 }
+                updateUI()
             }
         }
 
