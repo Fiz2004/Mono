@@ -11,7 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentCategoryEditBinding
-import com.fiz.mono.util.CategoryInputAdapter
+import com.fiz.mono.util.CategoriesAdapter
 
 
 class CategoryEditFragment : Fragment() {
@@ -20,8 +20,8 @@ class CategoryEditFragment : Fragment() {
 
     private val viewModel: CategoryEditViewModel by viewModels()
 
-    private lateinit var expenseAdapter: CategoryInputAdapter
-    private lateinit var incomeAdapter: CategoryInputAdapter
+    private lateinit var expenseAdapter: CategoriesAdapter
+    private lateinit var incomeAdapter: CategoriesAdapter
 
     private val args: CategoryEditFragmentArgs by navArgs()
 
@@ -47,11 +47,11 @@ class CategoryEditFragment : Fragment() {
         binding.backButton.setOnClickListener(::backButtonOnClickListener)
         binding.removeButton.setOnClickListener(::removeButtonOnClickListener)
 
-        expenseAdapter = CategoryInputAdapter(R.color.red, ::adapterExpenseOnClickListener)
+        expenseAdapter = CategoriesAdapter(R.color.red, ::adapterExpenseOnClickListener)
         expenseAdapter.submitList(viewModel.getAllCategoryItemExpense())
         binding.expenseRecyclerView.adapter = expenseAdapter
 
-        incomeAdapter = CategoryInputAdapter(R.color.red, ::adapterIncomeOnClickListener)
+        incomeAdapter = CategoriesAdapter(R.color.red, ::adapterIncomeOnClickListener)
         incomeAdapter.submitList(viewModel.getAllCategoryItemIncome())
         binding.incomeRecyclerView.adapter = incomeAdapter
     }

@@ -10,11 +10,11 @@ class CategoryAddViewModel : ViewModel() {
 
     fun addSelectItem(position: Int) {
         if (!allCategoryIcon[position].selected) {
-            val prevItems = allCategoryIcon.firstOrNull { it.selected }
-            prevItems?.let {
+            allCategoryIcon.find { it.selected }?.let {
                 it.selected = false
             }
         }
+
         allCategoryIcon[position].selected = !allCategoryIcon[position].selected
     }
 

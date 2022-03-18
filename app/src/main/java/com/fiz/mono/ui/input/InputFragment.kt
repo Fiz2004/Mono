@@ -16,7 +16,7 @@ import com.fiz.mono.databinding.FragmentInputBinding
 import com.fiz.mono.ui.MainActivity
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
-import com.fiz.mono.util.CategoryInputAdapter
+import com.fiz.mono.util.CategoriesAdapter
 import com.fiz.mono.util.setDisabled
 import com.fiz.mono.util.setEnabled
 import com.google.android.material.tabs.TabLayout
@@ -35,7 +35,7 @@ class InputFragment : Fragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
 
-    private lateinit var adapter: CategoryInputAdapter
+    private lateinit var adapter: CategoriesAdapter
 
     private var selectedAdapter: Int? = 0
     private var selectedItem: Int? = null
@@ -129,7 +129,7 @@ class InputFragment : Fragment() {
 
 
 
-        adapter = CategoryInputAdapter(R.color.blue) { position ->
+        adapter = CategoriesAdapter(R.color.blue) { position ->
             if (selectedAdapter == 0) {
 
                 if (position == CategoryStore.getAllCategoryExpenseForEdit().size - 1) {
@@ -139,7 +139,7 @@ class InputFragment : Fragment() {
                         InputFragmentDirections
                             .actionInputFragmentToCategoryFragment("", 0, "")
                     view.findNavController().navigate(action)
-                    return@CategoryInputAdapter
+                    return@CategoriesAdapter
                 }
 
                 if (selectedItem == position) {
@@ -165,7 +165,7 @@ class InputFragment : Fragment() {
                         InputFragmentDirections
                             .actionInputFragmentToCategoryFragment("", 0, "")
                     view.findNavController().navigate(action)
-                    return@CategoryInputAdapter
+                    return@CategoriesAdapter
                 }
 
                 if (selectedItem == position) {
