@@ -36,7 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="18dp"
-        app:layout_constraintBottom_toTopOf="@+id/submitInputButton"
+        app:layout_constraintBottom_toTopOf="@+id/submitButton"
         app:layout_constraintTop_toBottomOf="@+id/tabLayout">
 
 
@@ -94,7 +94,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/ExpenseIncomeTextView" />
 
             <TextView
-                android:id="@+id/noteInputTextView"
+                android:id="@+id/noteTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
@@ -116,7 +116,7 @@
                 android:paddingBottom="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/noteInputTextView">
+                app:layout_constraintTop_toBottomOf="@+id/noteTextView">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/noteEditText"
@@ -129,7 +129,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
-                    android:id="@+id/noteCameraInputEditText"
+                    android:id="@+id/noteCameraEditText"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_marginTop="8dp"
@@ -142,7 +142,7 @@
                     app:srcCompat="@drawable/camera" />
 
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/foto1"
+                    android:id="@+id/photo1Card"
                     style="@style/Widget.Material3.CardView.Elevated"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
@@ -156,14 +156,14 @@
                     app:layout_constraintTop_toBottomOf="@+id/noteEditText">
 
                     <ImageView
-                        android:id="@+id/foto1ImageView"
+                        android:id="@+id/photo1ImageView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:visibility="gone"
                         tools:src="@tools:sample/avatars" />
 
                     <ImageView
-                        android:id="@+id/delFoto1"
+                        android:id="@+id/deletePhoto1ImageView"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_gravity="end|top"
@@ -174,7 +174,7 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/foto2"
+                    android:id="@+id/photo2Card"
                     style="@style/Widget.Material3.CardView.Elevated"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
@@ -185,19 +185,19 @@
                     android:visibility="gone"
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintHorizontal_weight="1"
-                    app:layout_constraintStart_toEndOf="@+id/foto1"
+                    app:layout_constraintStart_toEndOf="@+id/photo1Card"
                     app:layout_constraintTop_toBottomOf="@+id/noteEditText">
 
 
                     <ImageView
-                        android:id="@+id/foto2ImageView"
+                        android:id="@+id/photo2ImageView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:visibility="gone"
                         tools:src="@tools:sample/avatars" />
 
                     <ImageView
-                        android:id="@+id/delFoto2"
+                        android:id="@+id/deletePhoto2ImageView"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_gravity="end|top"
@@ -208,7 +208,7 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/foto3"
+                    android:id="@+id/photo3Card"
                     style="@style/Widget.Material3.CardView.Elevated"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
@@ -219,19 +219,19 @@
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_weight="1"
-                    app:layout_constraintStart_toEndOf="@+id/foto2"
+                    app:layout_constraintStart_toEndOf="@+id/photo2Card"
                     app:layout_constraintTop_toBottomOf="@+id/noteEditText">
 
 
                     <ImageView
-                        android:id="@+id/foto3ImageView"
+                        android:id="@+id/photo3ImageView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:visibility="gone"
                         tools:src="@tools:sample/avatars" />
 
                     <ImageView
-                        android:id="@+id/delFoto3"
+                        android:id="@+id/deletePhoto3ImageView"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_gravity="end|top"
@@ -244,7 +244,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/categoryInputRecyclerView"
+                android:id="@+id/categoryRecyclerView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
@@ -265,7 +265,7 @@
     </androidx.core.widget.NestedScrollView>
 
     <Button
-        android:id="@+id/submitInputButton"
+        android:id="@+id/submitButton"
         style="@style/button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

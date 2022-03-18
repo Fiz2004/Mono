@@ -49,6 +49,7 @@ dependencies {
 
     // PixImagePicker
     implementation 'io.ak1.pix:piximagepicker:1.6.3'
+    implementation 'androidx.databinding:databinding-runtime:7.1.2'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

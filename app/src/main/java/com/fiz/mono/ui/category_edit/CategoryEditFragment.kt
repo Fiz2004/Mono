@@ -41,9 +41,8 @@ class CategoryEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (args.type != "") {
-            viewModel.insertNewCategory(args.type, args.name.toString(), args.icon)
-        }
+        viewModel.insertNewCategory(args.type, args.name.toString(), args.icon)
+
         binding.backButton.setOnClickListener(::backButtonOnClickListener)
         binding.removeButton.setOnClickListener(::removeButtonOnClickListener)
 
@@ -67,32 +66,33 @@ class CategoryEditFragment : Fragment() {
     }
 
     private fun adapterExpenseOnClickListener(position: Int) {
-        viewModel.addSelectItemExpense(position)
-        binding.removeButton.visibility = viewModel.getVisibilityRemoveButton()
-        updateAdapters()
-
         if (viewModel.isClickAddPositionExpense(position)) {
             viewModel.cleanSelected()
             val action =
                 CategoryEditFragmentDirections
                     .actionCategoryFragmentToCategoryAddFragment(TYPE_EXPENSE)
             view?.findNavController()?.navigate(action)
+            return
         }
 
+        viewModel.addSelectItemExpense(position)
+        binding.removeButton.visibility = viewModel.getVisibilityRemoveButton()
+        updateAdapters()
     }
 
     private fun adapterIncomeOnClickListener(position: Int) {
-        viewModel.addSelectItemIncome(position)
-        binding.removeButton.visibility = viewModel.getVisibilityRemoveButton()
-        updateAdapters()
-
         if (viewModel.isClickAddPositionIncome(position)) {
             viewModel.cleanSelected()
             val action =
                 CategoryEditFragmentDirections
                     .actionCategoryFragmentToCategoryAddFragment(TYPE_INCOME)
             view?.findNavController()?.navigate(action)
+            return
         }
+
+        viewModel.addSelectItemIncome(position)
+        binding.removeButton.visibility = viewModel.getVisibilityRemoveButton()
+        updateAdapters()
     }
 
     private fun updateAdapters() {

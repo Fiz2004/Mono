@@ -74,6 +74,7 @@ class CategoryEditViewModel : ViewModel() {
     }
 
     fun insertNewCategory(type: String, name: String, icon: Int) {
+        if (type == "") return
         if (type == CategoryEditFragment.TYPE_EXPENSE) {
             CategoryStore.insertNewCategoryExpense(CategoryItem(name, icon))
         } else {
@@ -84,11 +85,11 @@ class CategoryEditViewModel : ViewModel() {
     }
 
     fun isClickAddPositionExpense(position: Int): Boolean {
-        return position == getAllCategoryItemExpense().size - 1
+        return position == allCategoryExpense.size - 1
     }
 
     fun isClickAddPositionIncome(position: Int): Boolean {
-        return position == getAllCategoryItemIncome().size - 1
+        return position == allCategoryIncome.size - 1
     }
 
     fun cleanSelected() {
