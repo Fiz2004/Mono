@@ -5,15 +5,13 @@ import androidx.lifecycle.ViewModel
 import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.CategoryStore
 
-private const val ADAPTER_EXPENSE = 0
-private const val ADAPTER_INCOME = 1
-
 class CategoryEditViewModel : ViewModel() {
-    private var selectedAdapter: Int? = null
-    private var selectedItem: Int? = null
-
     private var allCategoryExpense = CategoryStore.getAllCategoryExpenseForEdit()
     private var allCategoryIncome = CategoryStore.getAllCategoryIncomeForEdit()
+
+    init {
+        cleanSelected()
+    }
 
     fun getAllCategoryItemExpense(): List<CategoryItem> {
         return allCategoryExpense.map { it.copy() }
@@ -24,25 +22,16 @@ class CategoryEditViewModel : ViewModel() {
     }
 
     fun addSelectItemExpense(position: Int) {
-        if (selectedAdapter != ADAPTER_EXPENSE) {
-            selectedItem?.let {
-                allCategoryIncome[it].selected = false
-            }
-            selectedItem = null
+        allCategoryIncome.find { it.selected }?.let {
+            it.selected = false
         }
 
-        selectedAdapter = ADAPTER_EXPENSE
-
-        if (selectedItem == position) {
-            selectedItem = null
-            allCategoryExpense[position].selected = false
-        } else {
-            selectedItem?.let {
-                allCategoryExpense[it].selected = false
+        if (!allCategoryExpense[position].selected) {
+            allCategoryExpense.find { it.selected }?.let {
+                it.selected = false
             }
-            selectedItem = position
-            allCategoryExpense[position].selected = true
         }
+        allCategoryExpense[position].selected = !allCategoryExpense[position].selected
     }
 
     fun getVisibilityRemoveButton(): Int {
@@ -53,51 +42,35 @@ class CategoryEditViewModel : ViewModel() {
     }
 
     private fun isSelected(): Boolean {
-        return selectedItem != null
+        return allCategoryExpense.any { it.selected } || allCategoryIncome.any { it.selected }
     }
 
     fun addSelectItemIncome(position: Int) {
-        if (selectedAdapter != ADAPTER_INCOME) {
-            selectedItem?.let {
-                allCategoryExpense[it].selected = false
-            }
-            selectedItem = null
+        allCategoryExpense.find { it.selected }?.let {
+            it.selected = false
         }
-        selectedAdapter = ADAPTER_INCOME
 
-        if (selectedItem == position) {
-            selectedItem = null
-            allCategoryIncome[position].selected = false
-        } else {
-            selectedItem?.let {
-                allCategoryIncome[it].selected = false
+        if (!allCategoryIncome[position].selected) {
+            allCategoryIncome.find { it.selected }?.let {
+                it.selected = false
             }
-            selectedItem = position
-            allCategoryIncome[position].selected = true
         }
+        allCategoryIncome[position].selected = !allCategoryIncome[position].selected
     }
 
     fun removeSelectItem() {
-        if (isSelectExpense()) {
-            if (selectedItem != null) {
-                CategoryStore.removeCategoryExpense(selectedItem!!)
-            }
-            CategoryStore.getAllCategoryExpenseForEdit()[selectedItem!!].selected = false
-            selectedItem = null
-
-        } else {
-            if (selectedItem != null) {
-                CategoryStore.removeCategoryIncome(selectedItem!!)
-            }
-            CategoryStore.getAllCategoryIncomeForEdit()[selectedItem!!].selected = false
-            selectedItem = null
+        allCategoryExpense.indexOfFirst { it.selected }.let {
+            if (it == -1) return@let
+            CategoryStore.removeCategoryExpense(it)
         }
+
+        allCategoryIncome.indexOfFirst { it.selected }.let {
+            if (it == -1) return@let
+            CategoryStore.removeCategoryIncome(it)
+        }
+
         allCategoryExpense = CategoryStore.getAllCategoryExpenseForEdit()
         allCategoryIncome = CategoryStore.getAllCategoryIncomeForEdit()
-    }
-
-    private fun isSelectExpense(): Boolean {
-        return selectedAdapter == ADAPTER_EXPENSE
     }
 
     fun insertNewCategory(type: String, name: String, icon: Int) {
@@ -121,8 +94,6 @@ class CategoryEditViewModel : ViewModel() {
     fun cleanSelected() {
         allCategoryExpense.forEach { it.selected = false }
         allCategoryIncome.forEach { it.selected = false }
-        selectedAdapter = null
-        selectedItem = null
     }
 
 

@@ -266,10 +266,12 @@ class InputFragment : Fragment() {
                 when (tab.text) {
                     getString(R.string.expense) -> {
                         selectedAdapter = 0
+                        selectedItem = null
                         adapter.submitList(CategoryStore.getAllCategoryExpenseForInput())
                     }
                     getString(R.string.income) -> {
                         selectedAdapter = 1
+                        selectedItem = null
                         adapter.submitList(CategoryStore.getAllCategoryIncomeForInput())
                     }
                 }

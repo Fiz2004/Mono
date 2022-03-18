@@ -26,6 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
+        android:layout_marginStart="-14dp"
         android:text="@string/back"
         android:textAlignment="textStart"
         android:textAppearance="@style/size16_color_secondary"

@@ -8,6 +8,10 @@ import com.fiz.mono.data.categoryIcons
 class CategoryAddViewModel : ViewModel() {
     private val allCategoryIcon = categoryIcons
 
+    init {
+        allCategoryIcon.forEach { it.selected = false }
+    }
+
     fun addSelectItem(position: Int) {
         if (!allCategoryIcon[position].selected) {
             allCategoryIcon.find { it.selected }?.let {

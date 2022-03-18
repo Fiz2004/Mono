@@ -33,13 +33,21 @@ class CategoriesViewHolder(
             categoryItem.imgSrc?.let { iconImageView.setImageResource(it) }
             descriptionTextView.text = categoryItem.name
             descriptionTextView.setTextAppearanceCompat(
-                binding.root.context,
+                root.context,
                 R.style.size12_color_primary
             )
+            descriptionTextView.setTextColor(getColorText(categoryItem.imgSrc))
             cardMaterialCard.strokeColor = getStrokeColor(categoryItem.selected, colorSelected)
 
             root.setOnClickListener { callback(adapterPosition) }
         }
+    }
+
+    private fun getColorText(imgSrc: Int?): Int {
+        return if (imgSrc != null)
+            binding.root.context.themeColor(com.google.android.material.R.attr.colorPrimary)
+        else
+            binding.root.context.themeColor(com.google.android.material.R.attr.colorSecondary)
     }
 
     private fun getStrokeColor(selected: Boolean, colorSelected: Int): Int {
