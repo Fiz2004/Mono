@@ -17,7 +17,7 @@ class CategoryAddFragment : Fragment() {
 
     private val viewModel: CategoryAddViewModel by viewModels()
 
-    private lateinit var adapter: IconCategoryAdapter
+    private lateinit var adapter: CategoryIconsAdapter
 
     private val args: CategoryAddFragmentArgs by navArgs()
 
@@ -41,7 +41,7 @@ class CategoryAddFragment : Fragment() {
 
         binding.addButton.setOnClickListener(::addButtonOnClickListener)
 
-        adapter = IconCategoryAdapter(::adapterOnClickListener)
+        adapter = CategoryIconsAdapter(::adapterOnClickListener)
         adapter.submitList(viewModel.getAllCategoryIcon())
         binding.expenseRecyclerView.adapter = adapter
     }

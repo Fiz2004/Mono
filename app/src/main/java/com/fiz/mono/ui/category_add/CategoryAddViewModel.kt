@@ -2,33 +2,28 @@ package com.fiz.mono.ui.category_add
 
 import android.view.View
 import androidx.lifecycle.ViewModel
-import com.fiz.mono.data.CategoryIconItem
-import com.fiz.mono.data.CategoryStore
+import com.fiz.mono.data.CategoryIcon
+import com.fiz.mono.data.categoryIcons
 
 class CategoryAddViewModel : ViewModel() {
-    private var selectedItem: Int? = null
-
-    private val allCategoryIcon = CategoryStore.getAllCategoryIcon()
+    private val allCategoryIcon = categoryIcons
 
     fun addSelectItem(position: Int) {
-        if (selectedItem == position) {
-            selectedItem = null
-            allCategoryIcon[position].selected = false
-        } else {
-            selectedItem?.let {
-                allCategoryIcon[it].selected = false
+        if (!allCategoryIcon[position].selected) {
+            val prevItems = allCategoryIcon.firstOrNull { it.selected }
+            prevItems?.let {
+                it.selected = false
             }
-            selectedItem = position
-            allCategoryIcon[position].selected = true
         }
+        allCategoryIcon[position].selected = !allCategoryIcon[position].selected
     }
 
-    fun getAllCategoryIcon(): List<CategoryIconItem> {
+    fun getAllCategoryIcon(): List<CategoryIcon> {
         return allCategoryIcon.map { it.copy() }
     }
 
     fun getSelectedIcon(): Int {
-        return allCategoryIcon[selectedItem!!].imgSrc
+        return allCategoryIcon.first { it.selected }.imgSrc
     }
 
     fun getVisibilityAddButton(): Int {
@@ -39,6 +34,6 @@ class CategoryAddViewModel : ViewModel() {
     }
 
     fun isSelected(): Boolean {
-        return selectedItem != null
+        return allCategoryIcon.any { it.selected }
     }
 }
