@@ -130,28 +130,60 @@ class InputFragment : Fragment() {
 
 
         adapter = CategoryInputAdapter(R.color.blue) { position ->
+            if (selectedAdapter == 0) {
 
-            if (position == CategoryStore.getAllCategoryExpenseForEdit().size - 1) {
-                val action =
-                    InputFragmentDirections
-                        .actionInputFragmentToCategoryFragment("", 0, "")
-                view.findNavController().navigate(action)
-                return@CategoryInputAdapter
-            }
-
-            if (selectedItem == position) {
-                selectedItem = null
-                CategoryStore.getAllCategoryExpenseForInput()[position].selected = false
-                binding.submitInputButton.setDisabled()
-            } else {
-                selectedItem?.let {
-                    CategoryStore.getAllCategoryExpenseForInput()[selectedItem!!].selected = false
+                if (position == CategoryStore.getAllCategoryExpenseForEdit().size - 1) {
+                    selectedItem = null
+                    CategoryStore.getAllCategoryExpenseForEdit().forEach { it.selected = false }
+                    val action =
+                        InputFragmentDirections
+                            .actionInputFragmentToCategoryFragment("", 0, "")
+                    view.findNavController().navigate(action)
+                    return@CategoryInputAdapter
                 }
-                CategoryStore.getAllCategoryExpenseForInput()[position].selected = true
-                selectedItem = position
-                binding.submitInputButton.setEnabled()
+
+                if (selectedItem == position) {
+                    selectedItem = null
+                    CategoryStore.getAllCategoryExpenseForInput()[position].selected = false
+                    binding.submitInputButton.setDisabled()
+                } else {
+                    selectedItem?.let {
+                        CategoryStore.getAllCategoryExpenseForInput()[selectedItem!!].selected =
+                            false
+                    }
+                    CategoryStore.getAllCategoryExpenseForInput()[position].selected = true
+                    selectedItem = position
+                    binding.submitInputButton.setEnabled()
+                }
+                adapter.submitList(CategoryStore.getAllCategoryExpenseForInput().map { it.copy() })
+            } else {
+
+                if (position == CategoryStore.getAllCategoryIncomeForEdit().size - 1) {
+                    selectedItem = null
+                    CategoryStore.getAllCategoryIncomeForEdit().forEach { it.selected = false }
+                    val action =
+                        InputFragmentDirections
+                            .actionInputFragmentToCategoryFragment("", 0, "")
+                    view.findNavController().navigate(action)
+                    return@CategoryInputAdapter
+                }
+
+                if (selectedItem == position) {
+                    selectedItem = null
+                    CategoryStore.getAllCategoryIncomeForInput()[position].selected = false
+                    binding.submitInputButton.setDisabled()
+                } else {
+                    selectedItem?.let {
+                        CategoryStore.getAllCategoryIncomeForInput()[selectedItem!!].selected =
+                            false
+                    }
+                    CategoryStore.getAllCategoryIncomeForInput()[position].selected = true
+                    selectedItem = position
+                    binding.submitInputButton.setEnabled()
+                }
+                adapter.submitList(CategoryStore.getAllCategoryIncomeForInput().map { it.copy() })
             }
-            adapter.submitList(CategoryStore.getAllCategoryExpenseForInput().map { it.copy() })
+
         }
 
         binding.submitInputButton.setOnClickListener {

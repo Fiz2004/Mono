@@ -72,6 +72,7 @@ class CategoryEditFragment : Fragment() {
         updateAdapters()
 
         if (viewModel.isClickAddPositionExpense(position)) {
+            viewModel.cleanSelected()
             val action =
                 CategoryEditFragmentDirections
                     .actionCategoryFragmentToCategoryAddFragment(TYPE_EXPENSE)
@@ -86,6 +87,7 @@ class CategoryEditFragment : Fragment() {
         updateAdapters()
 
         if (viewModel.isClickAddPositionIncome(position)) {
+            viewModel.cleanSelected()
             val action =
                 CategoryEditFragmentDirections
                     .actionCategoryFragmentToCategoryAddFragment(TYPE_INCOME)

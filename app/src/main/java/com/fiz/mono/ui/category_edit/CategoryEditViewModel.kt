@@ -52,7 +52,7 @@ class CategoryEditViewModel : ViewModel() {
             View.GONE
     }
 
-    fun isSelected(): Boolean {
+    private fun isSelected(): Boolean {
         return selectedItem != null
     }
 
@@ -96,7 +96,7 @@ class CategoryEditViewModel : ViewModel() {
         allCategoryIncome = CategoryStore.getAllCategoryIncomeForEdit()
     }
 
-    fun isSelectExpense(): Boolean {
+    private fun isSelectExpense(): Boolean {
         return selectedAdapter == ADAPTER_EXPENSE
     }
 
@@ -116,6 +116,13 @@ class CategoryEditViewModel : ViewModel() {
 
     fun isClickAddPositionIncome(position: Int): Boolean {
         return position == getAllCategoryItemIncome().size - 1
+    }
+
+    fun cleanSelected() {
+        allCategoryExpense.forEach { it.selected = false }
+        allCategoryIncome.forEach { it.selected = false }
+        selectedAdapter = null
+        selectedItem = null
     }
 
 
