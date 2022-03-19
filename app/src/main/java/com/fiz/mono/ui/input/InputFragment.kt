@@ -1,27 +1,33 @@
 package com.fiz.mono.ui.input
 
+import android.app.Activity.RESULT_OK
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentInputBinding
-import com.fiz.mono.ui.MainActivity
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
 import com.fiz.mono.util.CategoriesAdapter
 import com.fiz.mono.util.setDisabled
 import com.google.android.material.tabs.TabLayout
-import io.ak1.pix.helpers.PixEventCallback
-import io.ak1.pix.helpers.addPixToActivity
-import io.ak1.pix.models.Flash
-import io.ak1.pix.models.Mode
-import io.ak1.pix.models.Options
-import io.ak1.pix.models.Ratio
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 class InputFragment : Fragment() {
     private var _binding: FragmentInputBinding? = null
@@ -32,6 +38,7 @@ class InputFragment : Fragment() {
 
     private lateinit var adapter: CategoriesAdapter
 
+    lateinit var currentPhotoPath: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -81,7 +88,91 @@ class InputFragment : Fragment() {
         val allCategory = viewModel.getAllCategoryFromSelected()
         adapter.submitList(allCategory)
 
+        val pm = requireActivity().packageManager
+        if (!pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY))
+            binding.noteCameraEditText.isEnabled = false
+
         updateUI()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == 102 && resultCode == RESULT_OK) {
+            val intentData = data?.extras?.get("data")
+            intentData?.let {
+                val imageBitmap = intentData as Bitmap
+
+                binding.photo1ImageView.setImageBitmap(imageBitmap)
+            }
+            setPic()
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
+    }
+
+    private fun dispatchTakePictureIntent() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            // Ensure that there's a camera activity to handle the intent
+            takePictureIntent.resolveActivity(requireContext().packageManager)?.also {
+                // Create the File where the photo should go
+                val photoFile: File? = try {
+                    createImageFile()
+                } catch (ex: IOException) {
+                    // Error occurred while creating the File
+                    null
+                }
+                // Continue only if the File was successfully created
+                photoFile?.also {
+                    val photoURI: Uri = FileProvider.getUriForFile(
+                        requireContext(),
+                        "com.fiz.mono.fileprovider",
+                        it
+                    )
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(takePictureIntent, 102)
+                }
+            }
+        }
+    }
+
+    private fun setPic() {
+        // Get the dimensions of the View
+        val targetW: Int = binding.photo1ImageView.width
+        val targetH: Int = binding.photo1ImageView.height
+
+        val bmOptions = BitmapFactory.Options().apply {
+            // Get the dimensions of the bitmap
+            inJustDecodeBounds = true
+
+        }
+        BitmapFactory.decodeFile(currentPhotoPath, bmOptions)
+
+        val photoW: Int = bmOptions.outWidth
+        val photoH: Int = bmOptions.outHeight
+
+        // Determine how much to scale down the image
+        val scaleFactor: Int = Math.max(1, Math.min(photoW / targetW, photoH / targetH))
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false
+        bmOptions.inSampleSize = scaleFactor
+        bmOptions.inPurgeable = true
+
+        BitmapFactory.decodeFile(currentPhotoPath, bmOptions)?.also { bitmap ->
+            binding.photo1ImageView.setImageBitmap(bitmap)
+        }
     }
 
     private fun rightDateRangeOnClickListener(view: View) {
@@ -89,12 +180,10 @@ class InputFragment : Fragment() {
         updateUI()
     }
 
-
     private fun leftDateRangeOnClickListener(view: View) {
         mainViewModel.dateMinusOne()
         updateUI()
     }
-
 
     private fun submitButtonOnClickListener(view: View) {
         if (binding.valueEditText.text?.isBlank() == true) return
@@ -105,17 +194,18 @@ class InputFragment : Fragment() {
             value,
             note
         )
+        adapter.submitList(viewModel.getAllCategoryFromSelected())
         updateUI()
     }
 
     private fun adapterOnClickListener(position: Int) {
-        checkClickEditPosition(position)
+        if (checkClickEditPosition(position)) return
         viewModel.addSelectItem(position)
-        adapter.submitList(viewModel.getListForSubmitAdapter())
+        adapter.submitList(viewModel.getAllCategoryFromSelected())
         updateUI()
     }
 
-    private fun checkClickEditPosition(position: Int) {
+    private fun checkClickEditPosition(position: Int): Boolean {
         if (viewModel.getSelectedAdapter() == EXPENSE) {
             if (viewModel.isClickEditPositionExpense(position)) {
                 viewModel.cleanSelected()
@@ -123,7 +213,7 @@ class InputFragment : Fragment() {
                     InputFragmentDirections
                         .actionInputFragmentToCategoryFragment("", 0, "")
                 view?.findNavController()?.navigate(action)
-                return
+                return true
             }
         } else {
             if (viewModel.isClickEditPositionIncome(position)) {
@@ -132,9 +222,10 @@ class InputFragment : Fragment() {
                     InputFragmentDirections
                         .actionInputFragmentToCategoryFragment("", 0, "")
                 view?.findNavController()?.navigate(action)
-                return
+                return true
             }
         }
+        return false
     }
 
     private fun deletePhotoOnClickListener(number: Int) {
@@ -149,45 +240,27 @@ class InputFragment : Fragment() {
                 binding.deletePhoto3ImageView.visibility = View.GONE
             }
 
-            else -> updateImage()
+            else -> {}
         }
     }
 
     private fun noteCameraOnClickListener(view: View) {
-        val options = Options().apply {
-            ratio = Ratio.RATIO_AUTO                                    //Image/video capture ratio
-            count =
-                3                                                   //Number of images to restrict selection count
-            spanCount = 4                                               //Number for columns in grid
-            path =
-                "Pix/Camera"                                         //Custom Path For media Storage
-            isFrontFacing =
-                true                                       //Front Facing camera on start
-            mode =
-                Mode.Picture                                             //Option to select only pictures or videos or both
-            flash =
-                Flash.Auto                                          //Option to select flash type
-        }
+        binding.photo1Card.visibility = View.VISIBLE
+        binding.photo2Card.visibility = View.VISIBLE
+        binding.photo3Card.visibility = View.VISIBLE
 
-        (requireActivity() as MainActivity).addPixToActivity(R.id.photo1Card, options) {
-            when (it.status) {
-                PixEventCallback.Status.SUCCESS -> {
-                    viewModel.setData(it.data)
+        binding.photo1ImageView.visibility = View.VISIBLE
+        binding.photo2ImageView.visibility = View.VISIBLE
+        binding.photo3ImageView.visibility = View.VISIBLE
 
-                }//use results as it.data
-                PixEventCallback.Status.BACK_PRESSED -> {
+        binding.deletePhoto1ImageView.visibility = View.VISIBLE
+        binding.deletePhoto2ImageView.visibility = View.VISIBLE
+        binding.deletePhoto3ImageView.visibility = View.VISIBLE
 
-                } // back pressed called
-            }
-        }
+        dispatchTakePictureIntent()
 
         viewModel.state = "load"
         updateUI()
-    }
-
-    private fun updateImage() {
-        for (d in viewModel.loadData)
-            binding.photo1ImageView.setImageURI(d)
     }
 
     private fun updateUI() {
@@ -209,6 +282,7 @@ class InputFragment : Fragment() {
             binding.deletePhoto1ImageView.visibility = View.GONE
             binding.deletePhoto2ImageView.visibility = View.GONE
             binding.deletePhoto3ImageView.visibility = View.GONE
+            viewModel.state = ""
         }
 
         if (viewModel.state == "load") {
@@ -219,8 +293,8 @@ class InputFragment : Fragment() {
             binding.deletePhoto1ImageView.visibility = View.VISIBLE
             binding.deletePhoto2ImageView.visibility = View.VISIBLE
             binding.deletePhoto3ImageView.visibility = View.VISIBLE
+            viewModel.state = ""
         }
-
 
     }
 

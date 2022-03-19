@@ -29,14 +29,6 @@ class CategoryInputViewModel : ViewModel() {
         loadData = results
     }
 
-    fun getAllCategoryItemExpense(): List<CategoryItem> {
-        return allCategoryExpense.map { it.copy() }
-    }
-
-    fun getAllCategoryItemIncome(): List<CategoryItem> {
-        return allCategoryIncome.map { it.copy() }
-    }
-
     fun setSelectedAdapter(adapter: Int) {
         selectedAdapter = adapter
         if (adapter == InputFragment.EXPENSE)
@@ -78,17 +70,6 @@ class CategoryInputViewModel : ViewModel() {
             allCategoryIncome).first { it.selected }.selected = false
 
         state = "Только что отправили"
-    }
-
-    fun getAllCategoryFromSelected(): List<CategoryItem> {
-        return (if (selectedAdapter == InputFragment.EXPENSE)
-            allCategoryExpense
-        else
-            allCategoryIncome)
-    }
-
-    fun getSelectedAdapter(): Int {
-        return selectedAdapter
     }
 
     fun isClickEditPositionExpense(position: Int): Boolean {
@@ -139,12 +120,23 @@ class CategoryInputViewModel : ViewModel() {
         allCategoryIncome[position].selected = !allCategoryIncome[position].selected
     }
 
-    fun getListForSubmitAdapter(): List<CategoryItem> {
+    fun getAllCategoryFromSelected(): List<CategoryItem> {
         return if (getSelectedAdapter() == InputFragment.EXPENSE)
             getAllCategoryItemExpense()
         else
             getAllCategoryItemIncome()
+    }
 
+    fun getSelectedAdapter(): Int {
+        return selectedAdapter
+    }
+
+    fun getAllCategoryItemExpense(): List<CategoryItem> {
+        return allCategoryExpense.map { it.copy() }
+    }
+
+    fun getAllCategoryItemIncome(): List<CategoryItem> {
+        return allCategoryIncome.map { it.copy() }
     }
 
 }

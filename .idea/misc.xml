@@ -36,7 +36,7 @@
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_category.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_category_add.xml" value="0.22" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_category_edit.xml" value="0.25" />
-        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_currency.xml" value="0.1" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_currency.xml" value="0.25" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_input.xml" value="0.1" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_on_boarding.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_p_i_n_password.xml" value="0.1" />
@@ -45,7 +45,6 @@
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_settings.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/grid_view_item.xml" value="0.9" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/item_category.xml" value="0.1627379873073436" />
-        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/item_icon_category.xml" value="0.14667781027998328" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/item_transaction.xml" value="0.25" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/item_transaction_date_expense_income.xml" value="0.25" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/layout_data_range.xml" value="0.242520398912058" />
@@ -70,6 +69,7 @@
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_report.xml" value="0.15628166160081053" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_settings.xml" value="0.25" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/menu/menu_bottom_nav.xml" value="0.2037037037037037" />
+        <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/xml/file_paths.xml" value="2.842857142857143" />
       </map>
     </option>
   </component>
