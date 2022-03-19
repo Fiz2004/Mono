@@ -1,17 +1,16 @@
 package com.fiz.mono.ui.input
 
-import android.app.Activity.RESULT_OK
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -21,13 +20,12 @@ import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentInputBinding
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
+import com.fiz.mono.util.ActivityContract
 import com.fiz.mono.util.CategoriesAdapter
 import com.fiz.mono.util.setDisabled
 import com.google.android.material.tabs.TabLayout
 import java.io.File
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
 
 class InputFragment : Fragment() {
     private var _binding: FragmentInputBinding? = null
@@ -38,7 +36,32 @@ class InputFragment : Fragment() {
 
     private lateinit var adapter: CategoriesAdapter
 
-    lateinit var currentPhotoPath: String
+    private var cashCheckCameraHardware: Boolean? = null
+
+    private val cameraActivityLauncher = registerForActivityResult(ActivityContract()) { result ->
+        result?.extras?.get("data")?.let {
+            val intentData = result.extras?.get("data")
+            intentData?.let {
+                val imageBitmap = intentData as Bitmap
+                binding.photo1ImageView.setImageBitmap(imageBitmap)
+            }
+        }
+        if (binding.photo1ImageView.drawable == null)
+            viewModel.setPic(binding.photo1ImageView.width, binding.photo1ImageView.height).also {
+                binding.photo1ImageView.setImageBitmap(it)
+                return@registerForActivityResult
+            }
+        if (binding.photo2ImageView.drawable == null)
+            viewModel.setPic(binding.photo2ImageView.width, binding.photo2ImageView.height).also {
+                binding.photo2ImageView.setImageBitmap(it)
+                return@registerForActivityResult
+            }
+        if (binding.photo3ImageView.drawable == null)
+            viewModel.setPic(binding.photo3ImageView.width, binding.photo3ImageView.height).also {
+                binding.photo3ImageView.setImageBitmap(it)
+                return@registerForActivityResult
+            }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -88,91 +111,13 @@ class InputFragment : Fragment() {
         val allCategory = viewModel.getAllCategoryFromSelected()
         adapter.submitList(allCategory)
 
-        val pm = requireActivity().packageManager
-        if (!pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY))
-            binding.noteCameraEditText.isEnabled = false
-
         updateUI()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == 102 && resultCode == RESULT_OK) {
-            val intentData = data?.extras?.get("data")
-            intentData?.let {
-                val imageBitmap = intentData as Bitmap
-
-                binding.photo1ImageView.setImageBitmap(imageBitmap)
-            }
-            setPic()
-        }
-    }
-
-    @Throws(IOException::class)
-    private fun createImageFile(): File {
-        // Create an image file name
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val storageDir: File = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
-        return File.createTempFile(
-            "JPEG_${timeStamp}_", /* prefix */
-            ".jpg", /* suffix */
-            storageDir /* directory */
-        ).apply {
-            // Save a file: path for use with ACTION_VIEW intents
-            currentPhotoPath = absolutePath
-        }
-    }
-
-    private fun dispatchTakePictureIntent() {
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            // Ensure that there's a camera activity to handle the intent
-            takePictureIntent.resolveActivity(requireContext().packageManager)?.also {
-                // Create the File where the photo should go
-                val photoFile: File? = try {
-                    createImageFile()
-                } catch (ex: IOException) {
-                    // Error occurred while creating the File
-                    null
-                }
-                // Continue only if the File was successfully created
-                photoFile?.also {
-                    val photoURI: Uri = FileProvider.getUriForFile(
-                        requireContext(),
-                        "com.fiz.mono.fileprovider",
-                        it
-                    )
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    startActivityForResult(takePictureIntent, 102)
-                }
-            }
-        }
-    }
-
-    private fun setPic() {
-        // Get the dimensions of the View
-        val targetW: Int = binding.photo1ImageView.width
-        val targetH: Int = binding.photo1ImageView.height
-
-        val bmOptions = BitmapFactory.Options().apply {
-            // Get the dimensions of the bitmap
-            inJustDecodeBounds = true
-
-        }
-        BitmapFactory.decodeFile(currentPhotoPath, bmOptions)
-
-        val photoW: Int = bmOptions.outWidth
-        val photoH: Int = bmOptions.outHeight
-
-        // Determine how much to scale down the image
-        val scaleFactor: Int = Math.max(1, Math.min(photoW / targetW, photoH / targetH))
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false
-        bmOptions.inSampleSize = scaleFactor
-        bmOptions.inPurgeable = true
-
-        BitmapFactory.decodeFile(currentPhotoPath, bmOptions)?.also { bitmap ->
-            binding.photo1ImageView.setImageBitmap(bitmap)
-        }
+    private fun checkCameraHardware(context: Context): Boolean {
+        if (cashCheckCameraHardware == null)
+            cashCheckCameraHardware = context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
+        return cashCheckCameraHardware ?: false
     }
 
     private fun rightDateRangeOnClickListener(view: View) {
@@ -259,8 +204,30 @@ class InputFragment : Fragment() {
 
         dispatchTakePictureIntent()
 
-        viewModel.state = "load"
         updateUI()
+    }
+
+    private fun dispatchTakePictureIntent() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            takePictureIntent.resolveActivity(requireContext().packageManager)?.also {
+                val photoFile: File? = try {
+                    viewModel.createImageFile(requireContext())
+                } catch (ex: IOException) {
+                    Toast.makeText(requireContext(), "I can't create a file", Toast.LENGTH_LONG).show()
+                    null
+                }
+
+                photoFile?.also {
+                    val photoURI: Uri = FileProvider.getUriForFile(
+                        requireContext(),
+                        "com.fiz.mono.fileprovider",
+                        it
+                    )
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    cameraActivityLauncher.launch(takePictureIntent)
+                }
+            }
+        }
     }
 
     private fun updateUI() {
@@ -269,6 +236,8 @@ class InputFragment : Fragment() {
         binding.ExpenseIncomeTextView.text = viewModel.getTypeFromSelectedAdapter(requireContext())
 
         viewModel.setStateSubmitInputButton(binding.submitButton)
+
+        binding.noteCameraEditText.isEnabled = checkCameraHardware(requireActivity())
 
         if (viewModel.state == "Только что отправили") {
             binding.valueEditText.setText("")
@@ -284,18 +253,6 @@ class InputFragment : Fragment() {
             binding.deletePhoto3ImageView.visibility = View.GONE
             viewModel.state = ""
         }
-
-        if (viewModel.state == "load") {
-            binding.photo1Card.visibility = View.VISIBLE
-            binding.photo2Card.visibility = View.VISIBLE
-            binding.photo3Card.visibility = View.VISIBLE
-
-            binding.deletePhoto1ImageView.visibility = View.VISIBLE
-            binding.deletePhoto2ImageView.visibility = View.VISIBLE
-            binding.deletePhoto3ImageView.visibility = View.VISIBLE
-            viewModel.state = ""
-        }
-
     }
 
     private fun onTabSelectedListener() = object : TabLayout.OnTabSelectedListener {

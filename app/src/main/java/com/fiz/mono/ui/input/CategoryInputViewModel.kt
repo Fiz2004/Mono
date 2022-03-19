@@ -1,7 +1,10 @@
 package com.fiz.mono.ui.input
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Environment
 import android.widget.Button
 import androidx.lifecycle.ViewModel
 import com.fiz.mono.R
@@ -11,7 +14,12 @@ import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
 import com.fiz.mono.util.setDisabled
 import com.fiz.mono.util.setEnabled
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.max
+import kotlin.math.min
 
 class CategoryInputViewModel : ViewModel() {
     private var allCategoryExpense = CategoryStore.getAllCategoryExpenseForInput()
@@ -23,6 +31,8 @@ class CategoryInputViewModel : ViewModel() {
     lateinit var loadData: List<Uri>
 
     var state = ""
+
+    lateinit var currentPhotoPath: String
 
     fun setData(results: List<Uri>) {
         load = true
@@ -137,6 +147,39 @@ class CategoryInputViewModel : ViewModel() {
 
     fun getAllCategoryItemIncome(): List<CategoryItem> {
         return allCategoryIncome.map { it.copy() }
+    }
+
+    @Throws(IOException::class)
+    fun createImageFile(context: Context): File {
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
+        return File.createTempFile(
+            "JPEG_${timeStamp}_",
+            ".jpg",
+            storageDir
+        ).apply {
+            currentPhotoPath = absolutePath
+        }
+    }
+
+    fun setPic(targetW: Int, targetH: Int): Bitmap? {
+        val bmOptions = BitmapFactory.Options().apply {
+            inJustDecodeBounds = true
+        }
+        BitmapFactory.decodeFile(currentPhotoPath, bmOptions)
+
+        val photoW: Int = bmOptions.outWidth
+        val photoH: Int = bmOptions.outHeight
+
+        val scaleFactor: Int = max(1, min(photoW / targetW, photoH / targetH))
+
+        bmOptions.inJustDecodeBounds = false
+        bmOptions.inSampleSize = scaleFactor
+
+        BitmapFactory.decodeFile(currentPhotoPath, bmOptions)?.also { bitmap ->
+            return bitmap
+        }
+        return null
     }
 
 }
