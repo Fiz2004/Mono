@@ -2,8 +2,12 @@ package com.fiz.mono.data
 
 import androidx.annotation.DrawableRes
 import androidx.recyclerview.widget.DiffUtil
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
+@Entity
 data class CategoryItem(
+    @PrimaryKey
     val name: String,
     @DrawableRes val imgSrc: Int?,
     var selected: Boolean = false

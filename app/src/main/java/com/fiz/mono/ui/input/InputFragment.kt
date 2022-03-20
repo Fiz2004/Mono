@@ -77,6 +77,11 @@ class InputFragment : Fragment() {
             return
         }
 
+        if (viewModel.edit) {
+            viewModel.initLoad()
+            viewModel.edit = false
+        }
+
         binding.noteCameraEditText.setOnClickListener(::noteCameraOnClickListener)
         binding.deletePhoto1ImageView.setOnClickListener { deletePhotoOnClickListener(1) }
         binding.deletePhoto2ImageView.setOnClickListener { deletePhotoOnClickListener(2) }
@@ -142,6 +147,7 @@ class InputFragment : Fragment() {
         if (viewModel.getSelectedAdapter() == EXPENSE) {
             if (viewModel.isClickEditPositionExpense(position)) {
                 viewModel.cleanSelected()
+                viewModel.edit = true
                 val action =
                     InputFragmentDirections
                         .actionInputFragmentToCategoryFragment("", 0, "")
@@ -151,6 +157,7 @@ class InputFragment : Fragment() {
         } else {
             if (viewModel.isClickEditPositionIncome(position)) {
                 viewModel.cleanSelected()
+                viewModel.edit = true
                 val action =
                     InputFragmentDirections
                         .actionInputFragmentToCategoryFragment("", 0, "")

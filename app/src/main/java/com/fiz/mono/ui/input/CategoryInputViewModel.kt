@@ -23,6 +23,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class CategoryInputViewModel : ViewModel() {
+    var edit: Boolean = false
     var note: String = ""
     var value: Double = 0.0
     private var allCategoryExpense = CategoryStore.getAllCategoryExpenseForInput()
@@ -207,6 +208,11 @@ class CategoryInputViewModel : ViewModel() {
             return bitmap
         }
         return null
+    }
+
+    fun initLoad() {
+        allCategoryExpense = CategoryStore.getAllCategoryExpenseForInput()
+        allCategoryIncome = CategoryStore.getAllCategoryIncomeForInput()
     }
 
 }
