@@ -18,7 +18,7 @@ class OnBoardingFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: OnBoardingViewModel by activityViewModels()
-    private val inputViewModel: MainViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,67 +46,72 @@ class OnBoardingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.continueOnBoardingButton.setOnClickListener(::continueOnClickListener)
+        binding.skipOnBoardingButton.setOnClickListener(::skipOnClickListener)
 
-        binding.continueOnBoardingButton.setOnClickListener {
-            viewModel.nextPages()
-
-            if (viewModel.pages.value == 3) {
-                viewModel.PIN()
-                inputViewModel.firstTime = false
-                val action =
-                    OnBoardingFragmentDirections
-                        .actionOnBoardingFragmentToPINPasswordFragment(PINPasswordFragment.START)
-                view.findNavController().navigate(action)
-            }
+        viewModel.pages.observe(viewLifecycleOwner) {
+            updateUI()
         }
 
-        binding.skipOnBoardingButton.setOnClickListener {
+    }
+
+    private fun updateUI() {
+        when (viewModel.pages.value) {
+            0 -> {
+                binding.imageOnBoardingImageView
+                    .setImageResource(R.drawable.illustration1)
+                binding.pageNumberOnBoardingTextView.text = getString(R.string.pageNumber, 1, 3)
+                binding.skipOnBoardingButton.visibility = View.VISIBLE
+
+                binding.headerOnBoardingTextView.text = getString(R.string.header1)
+                binding.descriptionOnBoardingTextView.text = getString(R.string.description1)
+
+                binding.continueOnBoardingButton.text = getString(R.string.word_continue)
+            }
+            1 -> {
+                binding.imageOnBoardingImageView
+                    .setImageResource(R.drawable.illustration2)
+                binding.pageNumberOnBoardingTextView.text = getString(R.string.pageNumber, 2, 3)
+                binding.skipOnBoardingButton.visibility = View.VISIBLE
+
+                binding.headerOnBoardingTextView.text = getString(R.string.header2)
+                binding.descriptionOnBoardingTextView.text = getString(R.string.description2)
+
+                binding.continueOnBoardingButton.text = getString(R.string.word_continue)
+            }
+            2 -> {
+                binding.imageOnBoardingImageView
+                    .setImageResource(R.drawable.illustration3)
+                binding.pageNumberOnBoardingTextView.text = getString(R.string.pageNumber, 3, 3)
+                binding.skipOnBoardingButton.visibility = View.GONE
+
+                binding.headerOnBoardingTextView.text = getString(R.string.header3)
+                binding.descriptionOnBoardingTextView.text = getString(R.string.description3)
+
+                binding.continueOnBoardingButton.text = getString(R.string.getStarted)
+            }
+        }
+    }
+
+    private fun skipOnClickListener(view: View) {
+        viewModel.PIN()
+        mainViewModel.firstTime = false
+        val action =
+            OnBoardingFragmentDirections
+                .actionOnBoardingFragmentToPINPasswordFragment(PINPasswordFragment.START)
+        view.findNavController().navigate(action)
+    }
+
+    private fun continueOnClickListener(view: View) {
+        viewModel.nextPages()
+
+        if (viewModel.pages.value == 3) {
             viewModel.PIN()
-            inputViewModel.firstTime = false
+            mainViewModel.firstTime = false
             val action =
                 OnBoardingFragmentDirections
                     .actionOnBoardingFragmentToPINPasswordFragment(PINPasswordFragment.START)
             view.findNavController().navigate(action)
         }
-
-        viewModel.pages.observe(viewLifecycleOwner) {
-            when (it) {
-                0 -> {
-                    binding.imageOnBoardingImageView
-                        .setImageResource(R.drawable.illustration1)
-                    binding.pageNumberOnBoardingTextView.text = getString(R.string.pageNumber, 1, 3)
-                    binding.skipOnBoardingButton.visibility = View.VISIBLE
-
-                    binding.headerOnBoardingTextView.text = getString(R.string.header1)
-                    binding.descriptionOnBoardingTextView.text = getString(R.string.description1)
-
-                    binding.continueOnBoardingButton.text = getString(R.string.word_continue)
-                }
-                1 -> {
-                    binding.imageOnBoardingImageView
-                        .setImageResource(R.drawable.illustration2)
-                    binding.pageNumberOnBoardingTextView.text = getString(R.string.pageNumber, 2, 3)
-                    binding.skipOnBoardingButton.visibility = View.VISIBLE
-
-                    binding.headerOnBoardingTextView.text = getString(R.string.header2)
-                    binding.descriptionOnBoardingTextView.text = getString(R.string.description2)
-
-                    binding.continueOnBoardingButton.text = getString(R.string.word_continue)
-                }
-                2 -> {
-                    binding.imageOnBoardingImageView
-                        .setImageResource(R.drawable.illustration3)
-                    binding.pageNumberOnBoardingTextView.text = getString(R.string.pageNumber, 3, 3)
-                    binding.skipOnBoardingButton.visibility = View.GONE
-
-                    binding.headerOnBoardingTextView.text = getString(R.string.header3)
-                    binding.descriptionOnBoardingTextView.text = getString(R.string.description3)
-
-                    binding.continueOnBoardingButton.text = getString(R.string.getStarted)
-                }
-            }
-        }
-
-
     }
 }

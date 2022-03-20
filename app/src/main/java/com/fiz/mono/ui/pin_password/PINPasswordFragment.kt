@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -25,14 +26,14 @@ import com.fiz.mono.util.setDisabled
 import com.fiz.mono.util.setEnabled
 import com.fiz.mono.util.setRemove
 
-
 class PINPasswordFragment : Fragment() {
     private val args: PINPasswordFragmentArgs by navArgs()
 
     private var _binding: FragmentPINPasswordBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: MainViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
+    private val viewModel: PINPasswordViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,8 +51,8 @@ class PINPasswordFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (args.fromCome == START && viewModel.PIN.isBlank()) {
-            viewModel.log = true
+        if (args.fromCome == START && mainViewModel.PIN.isBlank()) {
+            mainViewModel.log = true
             val action =
                 PINPasswordFragmentDirections
                     .actionPINPasswordFragmentToInputFragment()
@@ -59,14 +60,8 @@ class PINPasswordFragment : Fragment() {
             return
         }
 
-        binding.backButton.setOnClickListener {
-            findNavController().popBackStack()
-        }
-
-        binding.editButton.setOnClickListener {
-            viewModel.statePIN = STATE_EDIT
-            updateUI()
-        }
+        binding.backButton.setOnClickListener(::backOnClickListener)
+        binding.editButton.setOnClickListener(::editOnClickListener)
 
         binding.editTextNumber1.addTextChangedListener(
             textWatcher(
@@ -92,63 +87,70 @@ class PINPasswordFragment : Fragment() {
                 binding.nextPINPasswordButton
             )
         )
-
         binding.editTextNumber1.onFocusChangeListener = onFocusChangeEditText()
         binding.editTextNumber2.onFocusChangeListener = onFocusChangeEditText()
         binding.editTextNumber3.onFocusChangeListener = onFocusChangeEditText()
         binding.editTextNumber4.onFocusChangeListener = onFocusChangeEditText()
+        binding.nextPINPasswordButton.setOnClickListener(::nextPINOnClickListener)
 
-        binding.nextPINPasswordButton.setOnClickListener {
-
-            if (viewModel.statePIN == STATE_REMOVE) {
-                viewModel.statePIN = STATE_CONFIRM_REMOVE
-                updateUI()
-                return@setOnClickListener
-            }
-
-            if (viewModel.statePIN == STATE_CONFIRM_REMOVE) {
-                if (viewModel.PIN == getPIN()) {
-                    viewModel.log = true
-                    viewModel.PIN = ""
-                    Toast.makeText(requireContext(), "PIN deleted", Toast.LENGTH_SHORT).show()
-                    findNavController().popBackStack()
-                } else {
-                    viewModel.statePIN = STATE_CONFIRM_REMOVE_ERROR
-                    updateUI()
-                }
-                return@setOnClickListener
-            }
-
-            if (viewModel.statePIN == STATE_EDIT) {
-                if (viewModel.PIN == getPIN()) {
-                    viewModel.statePIN = STATE_CREATE
-                    updateUI()
-                } else {
-                    viewModel.statePIN = STATE_EDIT_ERROR
-                    updateUI()
-                }
-                return@setOnClickListener
-            }
-
-            viewModel.log = true
-            viewModel.PIN = getPIN()
-
-            if (args.fromCome == SETTINGS) {
-                findNavController().popBackStack()
-                return@setOnClickListener
-            }
-
-            val action =
-                PINPasswordFragmentDirections
-                    .actionPINPasswordFragmentToInputFragment()
-            view.findNavController().navigate(action)
-        }
-
-
-        viewModel.statePIN = getState()
+        mainViewModel.statePIN = getState()
 
         updateUI()
         checkPIN()
+    }
+
+    private fun nextPINOnClickListener(view: View) {
+        if (mainViewModel.statePIN == STATE_REMOVE) {
+            mainViewModel.statePIN = STATE_CONFIRM_REMOVE
+            updateUI()
+            return
+        }
+
+        if (mainViewModel.statePIN == STATE_CONFIRM_REMOVE) {
+            if (mainViewModel.PIN == getPIN()) {
+                mainViewModel.log = true
+                mainViewModel.PIN = ""
+                Toast.makeText(requireContext(), "PIN deleted", Toast.LENGTH_SHORT).show()
+                findNavController().popBackStack()
+            } else {
+                mainViewModel.statePIN = STATE_CONFIRM_REMOVE_ERROR
+                updateUI()
+            }
+            return
+        }
+
+        if (mainViewModel.statePIN == STATE_EDIT) {
+            if (mainViewModel.PIN == getPIN()) {
+                mainViewModel.statePIN = STATE_CREATE
+                updateUI()
+            } else {
+                mainViewModel.statePIN = STATE_EDIT_ERROR
+                updateUI()
+            }
+            return
+        }
+
+        mainViewModel.log = true
+        mainViewModel.PIN = getPIN()
+
+        if (args.fromCome == SETTINGS) {
+            findNavController().popBackStack()
+            return
+        }
+
+        val action =
+            PINPasswordFragmentDirections
+                .actionPINPasswordFragmentToInputFragment()
+        view.findNavController().navigate(action)
+    }
+
+    private fun editOnClickListener(view: View) {
+        mainViewModel.statePIN = STATE_EDIT
+        updateUI()
+    }
+
+    private fun backOnClickListener(view: View) {
+        findNavController().popBackStack()
     }
 
     private fun onFocusChangeEditText() = object : View.OnFocusChangeListener {
@@ -175,15 +177,15 @@ class PINPasswordFragment : Fragment() {
     }
 
     private fun getState(): String {
-        if (args.fromCome == START && viewModel.PIN.isNotBlank()) {
+        if (args.fromCome == START && mainViewModel.PIN.isNotBlank()) {
             return STATE_LOGIN
         }
 
-        if (args.fromCome == SETTINGS && viewModel.PIN.isBlank()) {
+        if (args.fromCome == SETTINGS && mainViewModel.PIN.isBlank()) {
             return STATE_CREATE
         }
 
-        if (args.fromCome == SETTINGS && viewModel.PIN.isNotBlank()) {
+        if (args.fromCome == SETTINGS && mainViewModel.PIN.isNotBlank()) {
             return STATE_REMOVE
         }
 
@@ -194,12 +196,12 @@ class PINPasswordFragment : Fragment() {
         override fun onTextChanged(cs: CharSequence, start: Int, before: Int, count: Int) {
             if (before == count) return
             if (cs.isNotEmpty()) {
-                if (viewModel.statePIN == STATE_CONFIRM_REMOVE_ERROR) {
-                    viewModel.statePIN = STATE_CONFIRM_REMOVE
+                if (mainViewModel.statePIN == STATE_CONFIRM_REMOVE_ERROR) {
+                    mainViewModel.statePIN = STATE_CONFIRM_REMOVE
                     updateUI()
                 }
-                if (viewModel.statePIN == STATE_EDIT_ERROR) {
-                    viewModel.statePIN = STATE_EDIT
+                if (mainViewModel.statePIN == STATE_EDIT_ERROR) {
+                    mainViewModel.statePIN = STATE_EDIT
                     updateUI()
                 }
                 if (next is EditText)
@@ -221,7 +223,7 @@ class PINPasswordFragment : Fragment() {
         binding.editTextNumber1.text.toString() + binding.editTextNumber2.text + binding.editTextNumber3.text + binding.editTextNumber4.text
 
     private fun updateUI() {
-        when (viewModel.statePIN) {
+        when (mainViewModel.statePIN) {
             STATE_LOGIN, STATE_CREATE -> {
                 binding.decsriptionTextView.text = getString(R.string.enter_PIN)
                 binding.nextPINPasswordButton.text = getString(R.string.next)
@@ -273,10 +275,10 @@ class PINPasswordFragment : Fragment() {
                 binding.nextPINPasswordButton.text = getString(R.string.remove_PIN)
                 binding.editButton.visibility = View.VISIBLE
                 binding.nextPINPasswordButton.setRemove()
-                binding.editTextNumber1.setText(viewModel.PIN[0].toString())
-                binding.editTextNumber2.setText(viewModel.PIN[1].toString())
-                binding.editTextNumber3.setText(viewModel.PIN[2].toString())
-                binding.editTextNumber4.setText(viewModel.PIN[3].toString())
+                binding.editTextNumber1.setText(mainViewModel.PIN[0].toString())
+                binding.editTextNumber2.setText(mainViewModel.PIN[1].toString())
+                binding.editTextNumber3.setText(mainViewModel.PIN[2].toString())
+                binding.editTextNumber4.setText(mainViewModel.PIN[3].toString())
                 binding.editTextNumber1.isEnabled = false
                 binding.editTextNumber2.isEnabled = false
                 binding.editTextNumber3.isEnabled = false
@@ -312,7 +314,7 @@ class PINPasswordFragment : Fragment() {
     }
 
     private fun checkPIN() {
-        if (viewModel.statePIN == STATE_REMOVE) return
+        if (mainViewModel.statePIN == STATE_REMOVE) return
         binding.nextPINPasswordButton.isEnabled =
             binding.editTextNumber1.text?.isNotEmpty() == true &&
                     binding.editTextNumber2.text?.isNotEmpty() == true &&

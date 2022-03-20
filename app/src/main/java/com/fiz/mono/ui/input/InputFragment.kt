@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -17,6 +18,7 @@ import com.fiz.mono.ui.pin_password.PINPasswordFragment
 import com.fiz.mono.util.ActivityContract
 import com.fiz.mono.util.CategoriesAdapter
 import com.fiz.mono.util.setDisabled
+import com.fiz.mono.util.setEnabled
 import com.google.android.material.tabs.TabLayout
 
 class InputFragment : Fragment() {
@@ -82,6 +84,8 @@ class InputFragment : Fragment() {
         binding.submitButton.setOnClickListener(::submitButtonOnClickListener)
         binding.dataRangeLayout.leftDateRangeImageButton.setOnClickListener(::leftDateRangeOnClickListener)
         binding.dataRangeLayout.rightDateRangeImageButton.setOnClickListener(::rightDateRangeOnClickListener)
+        binding.valueEditText.doOnTextChanged(::valueEditTextOnTextChanged)
+        binding.noteEditText.doOnTextChanged(::noteEditTextOnTextChanged)
 
         adapter = CategoriesAdapter(R.color.blue, ::adapterOnClickListener)
         binding.tabLayout.addOnTabSelectedListener(onTabSelectedListener())
@@ -93,6 +97,16 @@ class InputFragment : Fragment() {
         adapter.submitList(allCategory)
 
         updateUI()
+    }
+
+    private fun valueEditTextOnTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
+        viewModel.setValue(text)
+        if (binding.valueEditText.text != text)
+            updateUI()
+    }
+
+    private fun noteEditTextOnTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
+        viewModel.note = text.toString()
     }
 
     private fun checkCameraHardware(context: Context): Boolean {
@@ -112,14 +126,7 @@ class InputFragment : Fragment() {
     }
 
     private fun submitButtonOnClickListener(view: View) {
-        if (binding.valueEditText.text?.isBlank() == true) return
-
-        val value = binding.valueEditText.text.toString().toDouble()
-        val note = binding.noteEditText.text.toString()
-        viewModel.clickSubmit(
-            value,
-            note
-        )
+        viewModel.clickSubmit()
         adapter.submitList(viewModel.getAllCategoryFromSelected())
         updateUI()
     }
@@ -171,8 +178,6 @@ class InputFragment : Fragment() {
         binding.currencyTextView.text = mainViewModel.currency
         binding.dataRangeLayout.editTextDate.text = mainViewModel.getFormatDate()
         binding.ExpenseIncomeTextView.text = viewModel.getTypeFromSelectedAdapter(requireContext())
-
-        viewModel.setStateSubmitInputButton(binding.submitButton)
 
         binding.noteCameraEditText.isEnabled = checkCameraHardware(requireActivity())
         if (viewModel.photo.size == 3)
@@ -226,12 +231,17 @@ class InputFragment : Fragment() {
             }
         }
 
-        if (viewModel.state == "Только что отправили") {
-            binding.valueEditText.setText("")
-            binding.noteEditText.setText("")
+        if (viewModel.isSelected() && viewModel.value != 0.0)
+            binding.submitButton.setEnabled()
+        else
             binding.submitButton.setDisabled()
-            viewModel.state = ""
-        }
+
+        if (viewModel.value == 0.0)
+            binding.valueEditText.setText("")
+        else
+            binding.valueEditText.setText(viewModel.value.toString())
+
+        binding.noteEditText.setText(viewModel.note.toString())
 
         viewModel.photo.getOrNull(0)?.let {
             binding.photo1ImageView.setImageBitmap(it)

@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
-import android.widget.Button
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
@@ -16,8 +15,6 @@ import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
-import com.fiz.mono.util.setDisabled
-import com.fiz.mono.util.setEnabled
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -26,14 +23,14 @@ import kotlin.math.max
 import kotlin.math.min
 
 class CategoryInputViewModel : ViewModel() {
+    var note: String = ""
+    var value: Double = 0.0
     private var allCategoryExpense = CategoryStore.getAllCategoryExpenseForInput()
     private var allCategoryIncome = CategoryStore.getAllCategoryIncomeForInput()
 
     private var selectedAdapter: Int = InputFragment.EXPENSE
 
-    var state = ""
-
-    lateinit var currentPhotoPath: String
+    private lateinit var currentPhotoPath: String
 
     val photo: MutableList<Bitmap?> = mutableListOf()
 
@@ -55,30 +52,40 @@ class CategoryInputViewModel : ViewModel() {
         }
     }
 
-    fun clickSubmit(absValue: Double, note: String) {
+    fun setValue(text: CharSequence?) {
+        val value1 = text.toString()
+        if (value1.isNotBlank())
+            value = value1.toDouble()
+        else
+            value = 0.0
+    }
+
+    fun clickSubmit() {
         val selectedCategoryItem = getAllCategoryFromSelected().first { it.selected }
 
-        val value = if (selectedAdapter == InputFragment.EXPENSE)
-            -absValue
+        val value1 = if (selectedAdapter == InputFragment.EXPENSE)
+            -value
         else
-            absValue
+            value
 
         TransactionStore.insertNewTransaction(
             TransactionItem(
                 Calendar.getInstance().time,
-                value,
+                value1,
                 selectedCategoryItem.name,
                 note,
                 selectedCategoryItem.imgSrc,
                 photo
             )
         )
+
+        value = 0.0
+        note = ""
+
         (if (selectedAdapter == InputFragment.EXPENSE)
             allCategoryExpense
         else
             allCategoryIncome).first { it.selected }.selected = false
-
-        state = "Только что отправили"
     }
 
     fun isClickEditPositionExpense(position: Int): Boolean {
@@ -92,13 +99,6 @@ class CategoryInputViewModel : ViewModel() {
     fun cleanSelected() {
         allCategoryExpense.forEach { it.selected = false }
         allCategoryIncome.forEach { it.selected = false }
-    }
-
-    fun setStateSubmitInputButton(submitButton: Button) {
-        if (getAllCategoryFromSelected().firstOrNull { it.selected } == null)
-            submitButton.setDisabled()
-        else
-            submitButton.setEnabled()
     }
 
     fun addSelectItem(position: Int) {
@@ -138,6 +138,10 @@ class CategoryInputViewModel : ViewModel() {
 
     fun getSelectedAdapter(): Int {
         return selectedAdapter
+    }
+
+    fun isSelected(): Boolean {
+        return getAllCategoryFromSelected().firstOrNull { it.selected } != null
     }
 
     fun getAllCategoryItemExpense(): List<CategoryItem> {
