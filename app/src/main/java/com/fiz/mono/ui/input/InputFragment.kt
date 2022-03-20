@@ -1,17 +1,11 @@
 package com.fiz.mono.ui.input
 
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -24,8 +18,6 @@ import com.fiz.mono.util.ActivityContract
 import com.fiz.mono.util.CategoriesAdapter
 import com.fiz.mono.util.setDisabled
 import com.google.android.material.tabs.TabLayout
-import java.io.File
-import java.io.IOException
 
 class InputFragment : Fragment() {
     private var _binding: FragmentInputBinding? = null
@@ -39,28 +31,17 @@ class InputFragment : Fragment() {
     private var cashCheckCameraHardware: Boolean? = null
 
     private val cameraActivityLauncher = registerForActivityResult(ActivityContract()) { result ->
-        result?.extras?.get("data")?.let {
-            val intentData = result.extras?.get("data")
-            intentData?.let {
-                val imageBitmap = intentData as Bitmap
-                binding.photo1ImageView.setImageBitmap(imageBitmap)
-            }
+//        result?.extras?.get("data")?.let {
+//            val intentData = result.extras?.get("data")
+//            intentData?.let {
+//                val imageBitmap = intentData as Bitmap
+//                binding.photo1ImageView.setImageBitmap(imageBitmap)
+//            }
+//        }
+        viewModel.setPic(300, 300).also {
+            viewModel.photo.add(it)
         }
-        if (binding.photo1ImageView.drawable == null)
-            viewModel.setPic(binding.photo1ImageView.width, binding.photo1ImageView.height).also {
-                binding.photo1ImageView.setImageBitmap(it)
-                return@registerForActivityResult
-            }
-        if (binding.photo2ImageView.drawable == null)
-            viewModel.setPic(binding.photo2ImageView.width, binding.photo2ImageView.height).also {
-                binding.photo2ImageView.setImageBitmap(it)
-                return@registerForActivityResult
-            }
-        if (binding.photo3ImageView.drawable == null)
-            viewModel.setPic(binding.photo3ImageView.width, binding.photo3ImageView.height).also {
-                binding.photo3ImageView.setImageBitmap(it)
-                return@registerForActivityResult
-            }
+        updateUI()
     }
 
     override fun onCreateView(
@@ -174,60 +155,16 @@ class InputFragment : Fragment() {
     }
 
     private fun deletePhotoOnClickListener(number: Int) {
-        when (number) {
-            1 -> {
-                binding.photo1Card.visibility = View.GONE
-                binding.photo2Card.visibility = View.GONE
-                binding.photo3Card.visibility = View.GONE
-
-                binding.deletePhoto1ImageView.visibility = View.GONE
-                binding.deletePhoto2ImageView.visibility = View.GONE
-                binding.deletePhoto3ImageView.visibility = View.GONE
-            }
-
-            else -> {}
-        }
-    }
-
-    private fun noteCameraOnClickListener(view: View) {
-        binding.photo1Card.visibility = View.VISIBLE
-        binding.photo2Card.visibility = View.VISIBLE
-        binding.photo3Card.visibility = View.VISIBLE
-
-        binding.photo1ImageView.visibility = View.VISIBLE
-        binding.photo2ImageView.visibility = View.VISIBLE
-        binding.photo3ImageView.visibility = View.VISIBLE
-
-        binding.deletePhoto1ImageView.visibility = View.VISIBLE
-        binding.deletePhoto2ImageView.visibility = View.VISIBLE
-        binding.deletePhoto3ImageView.visibility = View.VISIBLE
-
-        dispatchTakePictureIntent()
-
+        viewModel.photo.removeAt(number - 1)
         updateUI()
     }
 
-    private fun dispatchTakePictureIntent() {
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            takePictureIntent.resolveActivity(requireContext().packageManager)?.also {
-                val photoFile: File? = try {
-                    viewModel.createImageFile(requireContext())
-                } catch (ex: IOException) {
-                    Toast.makeText(requireContext(), "I can't create a file", Toast.LENGTH_LONG).show()
-                    null
-                }
-
-                photoFile?.also {
-                    val photoURI: Uri = FileProvider.getUriForFile(
-                        requireContext(),
-                        "com.fiz.mono.fileprovider",
-                        it
-                    )
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    cameraActivityLauncher.launch(takePictureIntent)
-                }
-            }
+    private fun noteCameraOnClickListener(view: View) {
+        viewModel.dispatchTakePictureIntent(requireContext())?.let {
+            cameraActivityLauncher.launch(it)
         }
+
+        updateUI()
     }
 
     private fun updateUI() {
@@ -238,21 +175,73 @@ class InputFragment : Fragment() {
         viewModel.setStateSubmitInputButton(binding.submitButton)
 
         binding.noteCameraEditText.isEnabled = checkCameraHardware(requireActivity())
+        if (viewModel.photo.size == 3)
+            binding.noteCameraEditText.isEnabled = false
+
+        if (viewModel.photo.size == 0) {
+            binding.photo1Card.visibility = View.GONE
+            binding.photo2Card.visibility = View.GONE
+            binding.photo3Card.visibility = View.GONE
+
+            binding.photo1ImageView.visibility = View.GONE
+            binding.photo2ImageView.visibility = View.GONE
+            binding.photo3ImageView.visibility = View.GONE
+
+            binding.deletePhoto1ImageView.visibility = View.GONE
+            binding.deletePhoto2ImageView.visibility = View.GONE
+            binding.deletePhoto3ImageView.visibility = View.GONE
+        } else {
+            binding.photo1Card.visibility = View.VISIBLE
+            binding.photo2Card.visibility = View.VISIBLE
+            binding.photo3Card.visibility = View.VISIBLE
+            when (viewModel.photo.size) {
+                1 -> {
+                    binding.photo1ImageView.visibility = View.VISIBLE
+                    binding.photo2ImageView.visibility = View.GONE
+                    binding.photo3ImageView.visibility = View.GONE
+
+                    binding.deletePhoto1ImageView.visibility = View.VISIBLE
+                    binding.deletePhoto2ImageView.visibility = View.GONE
+                    binding.deletePhoto3ImageView.visibility = View.GONE
+                }
+                2 -> {
+                    binding.photo1ImageView.visibility = View.VISIBLE
+                    binding.photo2ImageView.visibility = View.VISIBLE
+                    binding.photo3ImageView.visibility = View.GONE
+
+                    binding.deletePhoto1ImageView.visibility = View.VISIBLE
+                    binding.deletePhoto2ImageView.visibility = View.VISIBLE
+                    binding.deletePhoto3ImageView.visibility = View.GONE
+
+                }
+                3 -> {
+                    binding.photo1ImageView.visibility = View.VISIBLE
+                    binding.photo2ImageView.visibility = View.VISIBLE
+                    binding.photo3ImageView.visibility = View.VISIBLE
+
+                    binding.deletePhoto1ImageView.visibility = View.VISIBLE
+                    binding.deletePhoto2ImageView.visibility = View.VISIBLE
+                    binding.deletePhoto3ImageView.visibility = View.VISIBLE
+                }
+            }
+        }
 
         if (viewModel.state == "Только что отправили") {
             binding.valueEditText.setText("")
             binding.noteEditText.setText("")
             binding.submitButton.setDisabled()
-
-            binding.photo1Card.visibility = View.GONE
-            binding.photo2Card.visibility = View.GONE
-            binding.photo3Card.visibility = View.GONE
-
-            binding.deletePhoto1ImageView.visibility = View.GONE
-            binding.deletePhoto2ImageView.visibility = View.GONE
-            binding.deletePhoto3ImageView.visibility = View.GONE
             viewModel.state = ""
         }
+
+        viewModel.photo.getOrNull(0)?.let {
+            binding.photo1ImageView.setImageBitmap(it)
+        } ?: binding.photo1ImageView.setImageBitmap(null)
+        viewModel.photo.getOrNull(1)?.let {
+            binding.photo2ImageView.setImageBitmap(it)
+        } ?: binding.photo2ImageView.setImageBitmap(null)
+        viewModel.photo.getOrNull(2)?.let {
+            binding.photo3ImageView.setImageBitmap(it)
+        } ?: binding.photo3ImageView.setImageBitmap(null)
     }
 
     private fun onTabSelectedListener() = object : TabLayout.OnTabSelectedListener {

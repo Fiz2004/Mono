@@ -1,11 +1,15 @@
 package com.fiz.mono.ui.input
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
+import android.provider.MediaStore
 import android.widget.Button
+import android.widget.Toast
+import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
@@ -27,17 +31,11 @@ class CategoryInputViewModel : ViewModel() {
 
     private var selectedAdapter: Int = InputFragment.EXPENSE
 
-    private var load = false
-    lateinit var loadData: List<Uri>
-
     var state = ""
 
     lateinit var currentPhotoPath: String
 
-    fun setData(results: List<Uri>) {
-        load = true
-        loadData = results
-    }
+    val photo: MutableList<Bitmap?> = mutableListOf()
 
     fun setSelectedAdapter(adapter: Int) {
         selectedAdapter = adapter
@@ -71,7 +69,8 @@ class CategoryInputViewModel : ViewModel() {
                 value,
                 selectedCategoryItem.name,
                 note,
-                selectedCategoryItem.imgSrc
+                selectedCategoryItem.imgSrc,
+                photo
             )
         )
         (if (selectedAdapter == InputFragment.EXPENSE)
@@ -147,6 +146,30 @@ class CategoryInputViewModel : ViewModel() {
 
     fun getAllCategoryItemIncome(): List<CategoryItem> {
         return allCategoryIncome.map { it.copy() }
+    }
+
+    fun dispatchTakePictureIntent(context: Context): Intent? {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            takePictureIntent.resolveActivity(context.packageManager)?.also {
+                val photoFile: File? = try {
+                    createImageFile(context)
+                } catch (ex: IOException) {
+                    Toast.makeText(context, "I can't create a file", Toast.LENGTH_LONG).show()
+                    null
+                }
+
+                photoFile?.also {
+                    val photoURI: Uri = FileProvider.getUriForFile(
+                        context,
+                        "com.fiz.mono.fileprovider",
+                        it
+                    )
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    return takePictureIntent
+                }
+            }
+        }
+        return null
     }
 
     @Throws(IOException::class)

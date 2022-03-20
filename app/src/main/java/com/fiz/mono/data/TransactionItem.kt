@@ -11,5 +11,5 @@ data class TransactionItem(
     val note: String,
     @DrawableRes
     val imgSrc: Int?,
-    val photo: List<Bitmap>? = null
+    val photo: List<Bitmap?> = mutableListOf()
 )
