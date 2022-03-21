@@ -3,7 +3,6 @@ package com.fiz.mono.ui.report
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fiz.mono.R
@@ -14,7 +13,7 @@ import com.fiz.mono.ui.getCurrencyFormat
 import com.fiz.mono.util.getColorCompat
 
 class TransactionsAdapter(private val currency: String) :
-    ListAdapter<DataItem, RecyclerView.ViewHolder>(DiffCallback) {
+    ListAdapter<DataItem, RecyclerView.ViewHolder>(DataItemDiff) {
 
     private val ITEM_VIEW_TYPE_HEADER = 0
     private val ITEM_VIEW_TYPE_ITEM = 1
@@ -116,27 +115,5 @@ class TransactionsAdapter(private val currency: String) :
             }
         }
     }
-
-    companion object DiffCallback : DiffUtil.ItemCallback<DataItem>() {
-        override fun areItemsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
-            return oldItem == newItem
-        }
-
-        override fun areContentsTheSame(
-            oldItem: DataItem,
-            newItem: DataItem
-        ): Boolean {
-            return oldItem == newItem
-        }
-    }
 }
 
-data class InfoDay(
-    val date: String,
-    val expense: Double, val income: Double
-)
-
-sealed class DataItem {
-    data class InfoTransactionItem(val transactionItem: TransactionItem) : DataItem()
-    data class InfoDayHeaderItem(val infoDay: InfoDay) : DataItem()
-}

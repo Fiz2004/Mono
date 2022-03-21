@@ -14,6 +14,9 @@ import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.getCurrencyFormat
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.themeColor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -102,8 +105,12 @@ class ReportFragment : Fragment() {
             binding.choiceReportConstraintLayout.visibility = View.GONE
         }
 
-        updateUI()
-        updateAdapter()
+        CoroutineScope(Dispatchers.IO).launch {
+            TransactionStore.init {
+                updateUI()
+                updateAdapter()
+            }
+        }
     }
 
     private fun updateMenu() {

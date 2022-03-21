@@ -2,7 +2,7 @@ package com.fiz.mono.data
 
 import com.fiz.mono.R
 import com.fiz.mono.data.database.CategoryItemDAO
-import com.fiz.mono.data.database.CategoryItemDatabase
+import com.fiz.mono.data.database.ItemDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.concurrent.Executors
@@ -12,7 +12,7 @@ object CategoryStore {
     private lateinit var allCategoryIncome: MutableList<CategoryItem>
 
     private val categoryItemDao: CategoryItemDAO? =
-        CategoryItemDatabase.getDatabase()?.expenseCategoryItemDao()
+        ItemDatabase.getDatabase()?.categoryItemDao()
 
     suspend fun init(callback: () -> Unit) {
         var loadItemDao: List<CategoryItem>? = null
@@ -38,9 +38,8 @@ object CategoryStore {
                     }
                 }
             } else {
-                val loadItem = loadItemDao
                 allCategoryExpense =
-                    loadItem.filter { it.id[0] == 'e' } as MutableList<CategoryItem>
+                    loadItemDao.filter { it.id[0] == 'e' } as MutableList<CategoryItem>
             }
 
             if (loadItemDao?.size == 0 || loadItemDao == null) {
@@ -56,8 +55,8 @@ object CategoryStore {
                     }
                 }
             } else {
-                val loadItem = loadItemDao
-                allCategoryIncome = loadItem.filter { it.id[0] == 'i' } as MutableList<CategoryItem>
+                allCategoryIncome =
+                    loadItemDao.filter { it.id[0] == 'i' } as MutableList<CategoryItem>
             }
             callback()
 

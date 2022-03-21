@@ -9,9 +9,8 @@ interface CategoryItemDAO {
     suspend fun getAll(): List<CategoryItem>?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(categoryItem: CategoryItem?)
+    fun insert(categoryItem: CategoryItem)
 
     @Delete
     fun delete(categoryItem: CategoryItem?)
-
 }

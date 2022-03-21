@@ -18,6 +18,8 @@ import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
@@ -49,9 +51,9 @@ class CategoryInputViewModel : ViewModel() {
 
     private var selectedAdapter: Int = InputFragment.EXPENSE
 
-    private lateinit var currentPhotoPath: String
+    lateinit var currentPhotoPath: String
 
-    val photo: MutableList<Bitmap?> = mutableListOf()
+    val photoPath: MutableList<String?> = mutableListOf()
 
     fun setSelectedAdapter(adapter: Int) {
         selectedAdapter = adapter
@@ -87,19 +89,31 @@ class CategoryInputViewModel : ViewModel() {
         else
             value
 
-        TransactionStore.insertNewTransaction(
-            TransactionItem(
-                Calendar.getInstance().time,
-                value1,
-                selectedCategoryItem.name,
-                note,
-                selectedCategoryItem.imgSrc,
-                photo
-            )
-        )
 
-        value = 0.0
-        note = ""
+        CoroutineScope(Dispatchers.IO).launch {
+            TransactionStore.init {
+
+                val lastItem = TransactionStore.getAllTransactions().lastOrNull()
+                val id = lastItem?.id
+                val newId = id?.let { it + 1 } ?: 0
+
+                TransactionStore.insertNewTransaction(
+                    TransactionItem(
+                        newId,
+                        Calendar.getInstance().time,
+                        value1,
+                        selectedCategoryItem.name,
+                        note,
+                        selectedCategoryItem.imgSrc,
+                        photoPath
+                    )
+                )
+
+                value = 0.0
+                note = ""
+
+            }
+        }
 
         (if (selectedAdapter == InputFragment.EXPENSE)
             allCategoryExpense
@@ -210,11 +224,11 @@ class CategoryInputViewModel : ViewModel() {
         }
     }
 
-    fun setPic(targetW: Int, targetH: Int): Bitmap? {
+    fun setPic(targetW: Int, targetH: Int, path: String): Bitmap? {
         val bmOptions = BitmapFactory.Options().apply {
             inJustDecodeBounds = true
         }
-        BitmapFactory.decodeFile(currentPhotoPath, bmOptions)
+        BitmapFactory.decodeFile(path, bmOptions)
 
         val photoW: Int = bmOptions.outWidth
         val photoH: Int = bmOptions.outHeight
@@ -224,7 +238,7 @@ class CategoryInputViewModel : ViewModel() {
         bmOptions.inJustDecodeBounds = false
         bmOptions.inSampleSize = scaleFactor
 
-        BitmapFactory.decodeFile(currentPhotoPath, bmOptions)?.also { bitmap ->
+        BitmapFactory.decodeFile(path, bmOptions)?.also { bitmap ->
             return bitmap
         }
         return null

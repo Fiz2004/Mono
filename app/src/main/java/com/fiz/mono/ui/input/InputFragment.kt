@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -16,6 +17,8 @@ import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
 import com.fiz.mono.util.ActivityContract
 import com.fiz.mono.util.CategoriesAdapter
+import com.fiz.mono.util.setDisabled
+import com.fiz.mono.util.setEnabled
 import com.google.android.material.tabs.TabLayout
 
 class InputFragment : Fragment() {
@@ -37,9 +40,7 @@ class InputFragment : Fragment() {
 //                binding.photo1ImageView.setImageBitmap(imageBitmap)
 //            }
 //        }
-        viewModel.setPic(300, 300).also {
-            viewModel.photo.add(it)
-        }
+        viewModel.photoPath.add(viewModel.currentPhotoPath)
         updateUI()
     }
 
@@ -110,19 +111,30 @@ class InputFragment : Fragment() {
         updateUI()
     }
 
-    private fun valueEditTextOnTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
+    private fun valueEditTextOnTextChanged(
+        text: CharSequence?,
+        start: Int,
+        before: Int,
+        count: Int
+    ) {
         viewModel.setValue(text)
         if (binding.valueEditText.text != text)
             updateUI()
     }
 
-    private fun noteEditTextOnTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
+    private fun noteEditTextOnTextChanged(
+        text: CharSequence?,
+        start: Int,
+        before: Int,
+        count: Int
+    ) {
         viewModel.note = text.toString()
     }
 
     private fun checkCameraHardware(context: Context): Boolean {
         if (cashCheckCameraHardware == null)
-            cashCheckCameraHardware = context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
+            cashCheckCameraHardware =
+                context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
         return cashCheckCameraHardware ?: false
     }
 
@@ -175,7 +187,7 @@ class InputFragment : Fragment() {
     }
 
     private fun deletePhotoOnClickListener(number: Int) {
-        viewModel.photo.removeAt(number - 1)
+        viewModel.photoPath.removeAt(number - 1)
         updateUI()
     }
 
@@ -193,10 +205,10 @@ class InputFragment : Fragment() {
         binding.ExpenseIncomeTextView.text = viewModel.getTypeFromSelectedAdapter(requireContext())
 
         binding.noteCameraEditText.isEnabled = checkCameraHardware(requireActivity())
-        if (viewModel.photo.size == 3)
+        if (viewModel.photoPath.size == 3)
             binding.noteCameraEditText.isEnabled = false
 
-        if (viewModel.photo.size == 0) {
+        if (viewModel.photoPath.size == 0) {
             binding.photo1Card.visibility = View.GONE
             binding.photo2Card.visibility = View.GONE
             binding.photo3Card.visibility = View.GONE
@@ -212,7 +224,7 @@ class InputFragment : Fragment() {
             binding.photo1Card.visibility = View.VISIBLE
             binding.photo2Card.visibility = View.VISIBLE
             binding.photo3Card.visibility = View.VISIBLE
-            when (viewModel.photo.size) {
+            when (viewModel.photoPath.size) {
                 1 -> {
                     binding.photo1ImageView.visibility = View.VISIBLE
                     binding.photo2ImageView.visibility = View.GONE
@@ -256,14 +268,20 @@ class InputFragment : Fragment() {
 
         binding.noteEditText.setText(viewModel.note.toString())
 
-        viewModel.photo.getOrNull(0)?.let {
-            binding.photo1ImageView.setImageBitmap(it)
+        viewModel.photoPath.getOrNull(0)?.let {
+            viewModel.setPic(300, 300, it).also {
+                binding.photo1ImageView.setImageBitmap(it)
+            }
         } ?: binding.photo1ImageView.setImageBitmap(null)
-        viewModel.photo.getOrNull(1)?.let {
-            binding.photo2ImageView.setImageBitmap(it)
+        viewModel.photoPath.getOrNull(1)?.let {
+            viewModel.setPic(300, 300, it).also {
+                binding.photo1ImageView.setImageBitmap(it)
+            }
         } ?: binding.photo2ImageView.setImageBitmap(null)
-        viewModel.photo.getOrNull(2)?.let {
-            binding.photo3ImageView.setImageBitmap(it)
+        viewModel.photoPath.getOrNull(2)?.let {
+            viewModel.setPic(300, 300, it).also {
+                binding.photo1ImageView.setImageBitmap(it)
+            }
         } ?: binding.photo3ImageView.setImageBitmap(null)
     }
 

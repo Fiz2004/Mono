@@ -1,11 +1,11 @@
 package com.fiz.mono
 
 import android.app.Application
-import com.fiz.mono.data.database.CategoryItemDatabase
+import com.fiz.mono.data.database.ItemDatabase
 
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
-        CategoryItemDatabase.getInstance(applicationContext)
+        ItemDatabase.getInstance(applicationContext)
     }
 }
