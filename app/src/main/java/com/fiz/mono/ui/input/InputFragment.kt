@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -17,8 +16,6 @@ import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
 import com.fiz.mono.util.ActivityContract
 import com.fiz.mono.util.CategoriesAdapter
-import com.fiz.mono.util.setDisabled
-import com.fiz.mono.util.setEnabled
 import com.google.android.material.tabs.TabLayout
 
 class InputFragment : Fragment() {
@@ -100,6 +97,15 @@ class InputFragment : Fragment() {
 
         val allCategory = viewModel.getAllCategoryFromSelected()
         adapter.submitList(allCategory)
+
+        viewModel.allCategoryExpense.observe(viewLifecycleOwner) {
+            val allCategory = viewModel.getAllCategoryFromSelected()
+            adapter.submitList(allCategory)
+        }
+        viewModel.allCategoryIncome.observe(viewLifecycleOwner) {
+            val allCategory = viewModel.getAllCategoryFromSelected()
+            adapter.submitList(allCategory)
+        }
 
         updateUI()
     }

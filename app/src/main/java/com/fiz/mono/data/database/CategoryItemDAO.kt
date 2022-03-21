@@ -4,22 +4,9 @@ import androidx.room.*
 import com.fiz.mono.data.CategoryItem
 
 @Dao
-interface ExpenseCategoryItemDAO {
+interface CategoryItemDAO {
     @Query("SELECT * FROM CategoryItem")
-    fun getAll(): List<CategoryItem>?
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(categoryItem: CategoryItem?)
-
-    @Delete
-    fun delete(categoryItem: CategoryItem?)
-
-}
-
-@Dao
-interface IncomeCategoryItemDAO {
-    @Query("SELECT * FROM CategoryItem")
-    fun getAll(): List<CategoryItem>?
+    suspend fun getAll(): List<CategoryItem>?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(categoryItem: CategoryItem?)

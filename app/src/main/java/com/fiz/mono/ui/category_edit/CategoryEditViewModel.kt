@@ -76,9 +76,9 @@ class CategoryEditViewModel : ViewModel() {
     fun insertNewCategory(type: String, name: String, icon: Int) {
         if (type == "") return
         if (type == CategoryEditFragment.TYPE_EXPENSE) {
-            CategoryStore.insertNewCategoryExpense(CategoryItem(name, icon))
+            CategoryStore.insertNewCategoryExpense(name, icon)
         } else {
-            CategoryStore.insertNewCategoryIncome(CategoryItem(name, icon))
+            CategoryStore.insertNewCategoryIncome(name, icon)
         }
         allCategoryExpense = CategoryStore.getAllCategoryExpenseForEdit()
         allCategoryIncome = CategoryStore.getAllCategoryIncomeForEdit()

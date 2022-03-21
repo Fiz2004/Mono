@@ -8,8 +8,7 @@ import com.fiz.mono.data.CategoryItem
 
 @Database(entities = [CategoryItem::class], version = 1)
 abstract class CategoryItemDatabase : RoomDatabase() {
-    abstract fun expenseCategoryItemDao(): ExpenseCategoryItemDAO?
-    abstract fun incomeCategoryItemDao(): IncomeCategoryItemDAO?
+    abstract fun expenseCategoryItemDao(): CategoryItemDAO?
 
     companion object {
 

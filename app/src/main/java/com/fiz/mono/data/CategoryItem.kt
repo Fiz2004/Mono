@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 @Entity
 data class CategoryItem(
     @PrimaryKey
+    val id: String,
     val name: String,
     @DrawableRes val imgSrc: Int?,
     var selected: Boolean = false

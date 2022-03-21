@@ -9,12 +9,16 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -26,8 +30,22 @@ class CategoryInputViewModel : ViewModel() {
     var edit: Boolean = false
     var note: String = ""
     var value: Double = 0.0
-    private var allCategoryExpense = CategoryStore.getAllCategoryExpenseForInput()
-    private var allCategoryIncome = CategoryStore.getAllCategoryIncomeForInput()
+    private var _allCategoryExpense: MutableLiveData<MutableList<CategoryItem>> =
+        MutableLiveData(mutableListOf())
+    var allCategoryExpense: LiveData<MutableList<CategoryItem>> = _allCategoryExpense
+
+    private var _allCategoryIncome: MutableLiveData<MutableList<CategoryItem>> =
+        MutableLiveData(mutableListOf())
+    var allCategoryIncome: LiveData<MutableList<CategoryItem>> = _allCategoryIncome
+
+    init {
+        viewModelScope.launch {
+            CategoryStore.init {
+                _allCategoryExpense.value = CategoryStore.getAllCategoryExpenseForInput()
+                _allCategoryIncome.value = CategoryStore.getAllCategoryIncomeForInput()
+            }
+        }
+    }
 
     private var selectedAdapter: Int = InputFragment.EXPENSE
 
@@ -38,9 +56,9 @@ class CategoryInputViewModel : ViewModel() {
     fun setSelectedAdapter(adapter: Int) {
         selectedAdapter = adapter
         if (adapter == InputFragment.EXPENSE)
-            allCategoryIncome.forEach { it.selected = false }
+            allCategoryIncome.value?.forEach { it.selected = false }
         else
-            allCategoryExpense.forEach { it.selected = false }
+            allCategoryExpense.value?.forEach { it.selected = false }
     }
 
     fun getTypeFromSelectedAdapter(context: Context): String {
@@ -55,10 +73,10 @@ class CategoryInputViewModel : ViewModel() {
 
     fun setValue(text: CharSequence?) {
         val value1 = text.toString()
-        if (value1.isNotBlank())
-            value = value1.toDouble()
+        value = if (value1.isNotBlank())
+            value1.toDouble()
         else
-            value = 0.0
+            0.0
     }
 
     fun clickSubmit() {
@@ -86,20 +104,20 @@ class CategoryInputViewModel : ViewModel() {
         (if (selectedAdapter == InputFragment.EXPENSE)
             allCategoryExpense
         else
-            allCategoryIncome).first { it.selected }.selected = false
+            allCategoryIncome).value?.first { it.selected }?.selected = false
     }
 
     fun isClickEditPositionExpense(position: Int): Boolean {
-        return position == allCategoryExpense.size - 1
+        return position == allCategoryExpense.value?.size?.minus(1) ?: throw Error("No allCategoryExpense")
     }
 
     fun isClickEditPositionIncome(position: Int): Boolean {
-        return position == allCategoryIncome.size - 1
+        return position == allCategoryIncome.value?.size?.minus(1) ?: throw Error("No allCategoryIncome")
     }
 
     fun cleanSelected() {
-        allCategoryExpense.forEach { it.selected = false }
-        allCategoryIncome.forEach { it.selected = false }
+        allCategoryExpense.value?.forEach { it.selected = false }
+        allCategoryIncome.value?.forEach { it.selected = false }
     }
 
     fun addSelectItem(position: Int) {
@@ -111,23 +129,25 @@ class CategoryInputViewModel : ViewModel() {
 
 
     private fun addSelectItemExpense(position: Int) {
-        if (!allCategoryExpense[position].selected) {
-            allCategoryExpense.find { it.selected }?.let {
+        if (!allCategoryExpense.value?.get(position)?.selected!!) {
+            allCategoryExpense.value?.find { it.selected }?.let {
                 it.selected = false
             }
         }
 
-        allCategoryExpense[position].selected = !allCategoryExpense[position].selected
+        allCategoryExpense.value?.get(position)!!.selected =
+            !allCategoryExpense.value?.get(position)!!.selected
     }
 
     private fun addSelectItemIncome(position: Int) {
-        if (!allCategoryIncome[position].selected) {
-            allCategoryIncome.find { it.selected }?.let {
+        if (!allCategoryIncome.value?.get(position)?.selected!!) {
+            allCategoryIncome.value?.find { it.selected }?.let {
                 it.selected = false
             }
         }
 
-        allCategoryIncome[position].selected = !allCategoryIncome[position].selected
+        allCategoryIncome.value?.get(position)?.selected =
+            !allCategoryIncome.value?.get(position)?.selected!!
     }
 
     fun getAllCategoryFromSelected(): List<CategoryItem> {
@@ -146,11 +166,11 @@ class CategoryInputViewModel : ViewModel() {
     }
 
     fun getAllCategoryItemExpense(): List<CategoryItem> {
-        return allCategoryExpense.map { it.copy() }
+        return allCategoryExpense.value?.map { it.copy() } ?: mutableListOf()
     }
 
     fun getAllCategoryItemIncome(): List<CategoryItem> {
-        return allCategoryIncome.map { it.copy() }
+        return allCategoryIncome.value?.map { it.copy() } ?: mutableListOf()
     }
 
     fun dispatchTakePictureIntent(context: Context): Intent? {
@@ -211,8 +231,7 @@ class CategoryInputViewModel : ViewModel() {
     }
 
     fun initLoad() {
-        allCategoryExpense = CategoryStore.getAllCategoryExpenseForInput()
-        allCategoryIncome = CategoryStore.getAllCategoryIncomeForInput()
+        _allCategoryExpense.value = CategoryStore.getAllCategoryExpenseForInput()
+        _allCategoryIncome.value = CategoryStore.getAllCategoryIncomeForInput()
     }
-
 }
