@@ -122,13 +122,13 @@ class InputFragment : Fragment() {
             } ?: binding.photo3ImageView.setImageBitmap(null)
         }
         viewModel.note.observe(viewLifecycleOwner) {
-            binding.noteEditText.setText(it.toString())
+//            binding.noteEditText.setText(it.toString())
         }
         viewModel.value.observe(viewLifecycleOwner) {
-            if (it == 0.0)
-                binding.valueEditText.setText("")
-            else
-                binding.valueEditText.setText(it.toString())
+//            if (it == 0.0)
+//                binding.valueEditText.setText("")
+//            else
+//                binding.valueEditText.setText(it.toString())
         }
 
         updateUI()
@@ -141,7 +141,6 @@ class InputFragment : Fragment() {
         count: Int
     ) {
         viewModel.setValue(text)
-        if (binding.valueEditText.text != text)
             updateUI()
     }
 
