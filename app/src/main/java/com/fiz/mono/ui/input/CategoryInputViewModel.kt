@@ -30,15 +30,14 @@ import kotlin.math.min
 
 class CategoryInputViewModel : ViewModel() {
     var edit: Boolean = false
-    var note: String = ""
-    var value: Double = 0.0
-    private var _allCategoryExpense: MutableLiveData<MutableList<CategoryItem>> =
-        MutableLiveData(mutableListOf())
-    var allCategoryExpense: LiveData<MutableList<CategoryItem>> = _allCategoryExpense
+    private var _allCategoryExpense: MutableLiveData<MutableList<CategoryItem>> = MutableLiveData(mutableListOf())
+    val allCategoryExpense: LiveData<MutableList<CategoryItem>>
+        get() = _allCategoryExpense
 
     private var _allCategoryIncome: MutableLiveData<MutableList<CategoryItem>> =
         MutableLiveData(mutableListOf())
-    var allCategoryIncome: LiveData<MutableList<CategoryItem>> = _allCategoryIncome
+    val allCategoryIncome: LiveData<MutableList<CategoryItem>>
+        get() = _allCategoryIncome
 
     init {
         viewModelScope.launch {
@@ -53,7 +52,17 @@ class CategoryInputViewModel : ViewModel() {
 
     lateinit var currentPhotoPath: String
 
-    val photoPath: MutableList<String?> = mutableListOf()
+    private val _note: MutableLiveData<String> = MutableLiveData("")
+    val note: LiveData<String>
+        get() = _note
+
+    private val _value: MutableLiveData<Double> = MutableLiveData(0.0)
+    val value: LiveData<Double>
+        get() = _value
+
+    private val _photoPath: MutableLiveData<MutableList<String?>> = MutableLiveData(mutableListOf())
+    val photoPath: LiveData<MutableList<String?>>
+        get() = _photoPath
 
     fun setSelectedAdapter(adapter: Int) {
         selectedAdapter = adapter
@@ -75,7 +84,7 @@ class CategoryInputViewModel : ViewModel() {
 
     fun setValue(text: CharSequence?) {
         val value1 = text.toString()
-        value = if (value1.isNotBlank())
+        _value.value = if (value1.isNotBlank())
             value1.toDouble()
         else
             0.0
@@ -85,9 +94,9 @@ class CategoryInputViewModel : ViewModel() {
         val selectedCategoryItem = getAllCategoryFromSelected().first { it.selected }
 
         val value1 = if (selectedAdapter == InputFragment.EXPENSE)
-            -value
+            -value.value!!
         else
-            value
+            value.value
 
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -97,21 +106,22 @@ class CategoryInputViewModel : ViewModel() {
                 val id = lastItem?.id
                 val newId = id?.let { it + 1 } ?: 0
 
+                val photoPathList: List<String?> = photoPath.value?.toList() ?: listOf("")
+
                 TransactionStore.insertNewTransaction(
                     TransactionItem(
                         newId,
                         Calendar.getInstance().time,
-                        value1,
+                        value1 ?: 0.0,
                         selectedCategoryItem.name,
-                        note,
+                        note.value ?: "",
                         selectedCategoryItem.imgSrc,
-                        photoPath
+                        photoPathList
                     )
                 )
 
-                value = 0.0
-                note = ""
-
+                _value.value = 0.0
+                _note.value = ""
             }
         }
 
@@ -140,7 +150,6 @@ class CategoryInputViewModel : ViewModel() {
         else
             addSelectItemIncome(position)
     }
-
 
     private fun addSelectItemExpense(position: Int) {
         if (!allCategoryExpense.value?.get(position)?.selected!!) {
@@ -247,5 +256,18 @@ class CategoryInputViewModel : ViewModel() {
     fun initLoad() {
         _allCategoryExpense.value = CategoryStore.getAllCategoryExpenseForInput()
         _allCategoryIncome.value = CategoryStore.getAllCategoryIncomeForInput()
+    }
+
+    fun addPhotoPath() {
+        photoPath.value?.add(currentPhotoPath)
+        _photoPath.value = photoPath.value
+    }
+
+    fun removePhotoPath(number: Int) {
+        photoPath.value?.removeAt(number - 1)
+    }
+
+    fun setNote(text: String) {
+        _note.value = text
     }
 }

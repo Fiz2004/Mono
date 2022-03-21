@@ -36,14 +36,7 @@ class InputFragment : Fragment() {
     private var cashCheckCameraHardware: Boolean? = null
 
     private val cameraActivityLauncher = registerForActivityResult(ActivityContract()) { result ->
-//        result?.extras?.get("data")?.let {
-//            val intentData = result.extras?.get("data")
-//            intentData?.let {
-//                val imageBitmap = intentData as Bitmap
-//                binding.photo1ImageView.setImageBitmap(imageBitmap)
-//            }
-//        }
-        viewModel.photoPath.add(viewModel.currentPhotoPath)
+        viewModel.addPhotoPath()
         updateUI()
     }
 
@@ -111,6 +104,32 @@ class InputFragment : Fragment() {
             val allCategory = viewModel.getAllCategoryFromSelected()
             adapter.submitList(allCategory)
         }
+        viewModel.photoPath.observe(viewLifecycleOwner) {
+            it.getOrNull(0)?.let {
+                viewModel.setPic(300, 300, it).also {
+                    binding.photo1ImageView.setImageBitmap(it)
+                }
+            } ?: binding.photo1ImageView.setImageBitmap(null)
+            it.getOrNull(1)?.let {
+                viewModel.setPic(300, 300, it).also {
+                    binding.photo2ImageView.setImageBitmap(it)
+                }
+            } ?: binding.photo2ImageView.setImageBitmap(null)
+            it.getOrNull(2)?.let {
+                viewModel.setPic(300, 300, it).also {
+                    binding.photo3ImageView.setImageBitmap(it)
+                }
+            } ?: binding.photo3ImageView.setImageBitmap(null)
+        }
+        viewModel.note.observe(viewLifecycleOwner) {
+            binding.noteEditText.setText(it.toString())
+        }
+        viewModel.value.observe(viewLifecycleOwner) {
+            if (it == 0.0)
+                binding.valueEditText.setText("")
+            else
+                binding.valueEditText.setText(it.toString())
+        }
 
         updateUI()
     }
@@ -132,7 +151,7 @@ class InputFragment : Fragment() {
         before: Int,
         count: Int
     ) {
-        viewModel.note = text.toString()
+        viewModel.setNote(text.toString())
     }
 
     private fun checkCameraHardware(context: Context): Boolean {
@@ -191,7 +210,7 @@ class InputFragment : Fragment() {
     }
 
     private fun deletePhotoOnClickListener(number: Int) {
-        viewModel.photoPath.removeAt(number - 1)
+        viewModel.removePhotoPath(number)
         updateUI()
     }
 
@@ -209,10 +228,10 @@ class InputFragment : Fragment() {
         binding.ExpenseIncomeTextView.text = viewModel.getTypeFromSelectedAdapter(requireContext())
 
         binding.noteCameraEditText.isEnabled = checkCameraHardware(requireActivity())
-        if (viewModel.photoPath.size == 3)
+        if (viewModel.photoPath.value?.size == 3)
             binding.noteCameraEditText.isEnabled = false
 
-        if (viewModel.photoPath.size == 0) {
+        if (viewModel.photoPath.value?.size == 0) {
             binding.photo1Card.visibility = View.GONE
             binding.photo2Card.visibility = View.GONE
             binding.photo3Card.visibility = View.GONE
@@ -228,7 +247,7 @@ class InputFragment : Fragment() {
             binding.photo1Card.visibility = View.VISIBLE
             binding.photo2Card.visibility = View.VISIBLE
             binding.photo3Card.visibility = View.VISIBLE
-            when (viewModel.photoPath.size) {
+            when (viewModel.photoPath.value?.size) {
                 1 -> {
                     binding.photo1ImageView.visibility = View.VISIBLE
                     binding.photo2ImageView.visibility = View.GONE
@@ -260,33 +279,10 @@ class InputFragment : Fragment() {
             }
         }
 
-        if (viewModel.isSelected() && viewModel.value != 0.0)
+        if (viewModel.isSelected() && viewModel.value.value != 0.0)
             binding.submitButton.setEnabled()
         else
             binding.submitButton.setDisabled()
-
-        if (viewModel.value == 0.0)
-            binding.valueEditText.setText("")
-        else
-            binding.valueEditText.setText(viewModel.value.toString())
-
-        binding.noteEditText.setText(viewModel.note.toString())
-
-        viewModel.photoPath.getOrNull(0)?.let {
-            viewModel.setPic(300, 300, it).also {
-                binding.photo1ImageView.setImageBitmap(it)
-            }
-        } ?: binding.photo1ImageView.setImageBitmap(null)
-        viewModel.photoPath.getOrNull(1)?.let {
-            viewModel.setPic(300, 300, it).also {
-                binding.photo1ImageView.setImageBitmap(it)
-            }
-        } ?: binding.photo2ImageView.setImageBitmap(null)
-        viewModel.photoPath.getOrNull(2)?.let {
-            viewModel.setPic(300, 300, it).also {
-                binding.photo1ImageView.setImageBitmap(it)
-            }
-        } ?: binding.photo3ImageView.setImageBitmap(null)
     }
 
     private fun onTabSelectedListener() = object : TabLayout.OnTabSelectedListener {
