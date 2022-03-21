@@ -4,4 +4,7 @@
     <dimen name="fragmentPaddingEnd">16dp</dimen>
     <dimen name="titleMarginTop">6dp</dimen>
     <dimen name="paddingEditText">16dp</dimen>
+
+    <dimen name="marginStartBackButton">-14dp</dimen>
+    <dimen name="marginTopBackButton">4dp</dimen>
 </resources>

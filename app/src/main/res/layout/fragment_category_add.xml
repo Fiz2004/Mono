@@ -22,15 +22,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/backButton"
-        style="@style/Widget.Material3.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginStart="-14dp"
-        android:text="@string/back"
-        android:textAlignment="textStart"
-        android:textAppearance="@style/size16_color_secondary"
-        android:textColor="?attr/colorSecondary"
+        style="@style/BackButton"
         app:layout_constraintBottom_toBottomOf="@+id/titleTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
