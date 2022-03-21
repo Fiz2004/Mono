@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Mono</string>
+    <string name="preferences" translatable="false">com.fiz.mono.ui</string>
+
     <string name="input">Input</string>
     <string name="calculator">Calculator</string>
     <string name="report">Report</string>

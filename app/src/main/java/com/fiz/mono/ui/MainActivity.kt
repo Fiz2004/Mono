@@ -3,6 +3,7 @@ package com.fiz.mono.ui
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.navigation.NavController
@@ -17,11 +18,15 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
 
+    private val mainViewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        loadPreferences()
 
         val navHostFragment: NavHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -202,5 +207,13 @@ class MainActivity : AppCompatActivity() {
             item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
             true
         }
+    }
+
+    private fun loadPreferences() {
+        val sharedPreferences = getSharedPreferences(getString(R.string.preferences), MODE_PRIVATE)
+        mainViewModel.firstTime = sharedPreferences.getBoolean("firstTime", true)
+        mainViewModel.currency = sharedPreferences.getString("currency", "$") ?: "$"
+        mainViewModel.PIN = sharedPreferences.getString("PIN", "") ?: ""
+
     }
 }

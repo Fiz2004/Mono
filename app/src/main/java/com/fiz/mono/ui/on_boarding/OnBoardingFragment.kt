@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
@@ -96,6 +97,12 @@ class OnBoardingFragment : Fragment() {
     private fun skipOnClickListener(view: View) {
         viewModel.PIN()
         mainViewModel.firstTime = false
+        val sharedPreferences = requireActivity().getSharedPreferences(
+            getString(R.string.preferences),
+            AppCompatActivity.MODE_PRIVATE
+        ).edit()
+        sharedPreferences.putBoolean("firstTime", mainViewModel.firstTime)
+        sharedPreferences.apply()
         val action =
             OnBoardingFragmentDirections
                 .actionOnBoardingFragmentToPINPasswordFragment(PINPasswordFragment.START)
@@ -108,6 +115,12 @@ class OnBoardingFragment : Fragment() {
         if (viewModel.pages.value == 3) {
             viewModel.PIN()
             mainViewModel.firstTime = false
+            val sharedPreferences = requireActivity().getSharedPreferences(
+                getString(R.string.preferences),
+                AppCompatActivity.MODE_PRIVATE
+            ).edit()
+            sharedPreferences.putBoolean("firstTime", mainViewModel.firstTime)
+            sharedPreferences.apply()
             val action =
                 OnBoardingFragmentDirections
                     .actionOnBoardingFragmentToPINPasswordFragment(PINPasswordFragment.START)

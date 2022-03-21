@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentInputBinding
 import com.fiz.mono.ui.MainViewModel
@@ -22,6 +23,8 @@ import com.fiz.mono.util.setEnabled
 import com.google.android.material.tabs.TabLayout
 
 class InputFragment : Fragment() {
+    private val args: InputFragmentArgs by navArgs()
+
     private var _binding: FragmentInputBinding? = null
     private val binding get() = _binding!!
 
@@ -67,7 +70,8 @@ class InputFragment : Fragment() {
             view.findNavController().navigate(action)
             return
         }
-        if (!mainViewModel.log) {
+
+        if (!args.log && mainViewModel.PIN.isNotBlank()) {
             val action =
                 InputFragmentDirections
                     .actionInputFragmentToPINPasswordFragment(PINPasswordFragment.START)

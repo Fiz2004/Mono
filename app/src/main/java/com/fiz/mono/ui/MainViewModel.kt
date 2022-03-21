@@ -6,9 +6,7 @@ import java.util.*
 import kotlin.math.abs
 
 class MainViewModel : ViewModel() {
-    // TODO поставить true перед выпуском, сейчас false для отладки
     var firstTime: Boolean = false
-    var log: Boolean = false
 
     var currency: String = "$"
 

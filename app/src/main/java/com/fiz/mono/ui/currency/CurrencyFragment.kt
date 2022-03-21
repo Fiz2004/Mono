@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -114,6 +115,12 @@ class CurrencyFragment : Fragment() {
                         viewModel.currency = binding.iconVNDRadioButton.text.toString()
                     }
             }
+            val sharedPreferences = requireActivity().getSharedPreferences(
+                getString(R.string.preferences),
+                AppCompatActivity.MODE_PRIVATE
+            ).edit()
+            sharedPreferences.putString("currency", viewModel.currency)
+            sharedPreferences.apply()
         }
     }
 }

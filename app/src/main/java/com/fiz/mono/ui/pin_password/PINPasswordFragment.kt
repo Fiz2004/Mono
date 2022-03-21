@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -52,10 +53,9 @@ class PINPasswordFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         if (args.fromCome == START && mainViewModel.PIN.isBlank()) {
-            mainViewModel.log = true
             val action =
                 PINPasswordFragmentDirections
-                    .actionPINPasswordFragmentToInputFragment()
+                    .actionPINPasswordFragmentToInputFragment(true)
             view.findNavController().navigate(action)
             return
         }
@@ -108,8 +108,13 @@ class PINPasswordFragment : Fragment() {
 
         if (mainViewModel.statePIN == STATE_CONFIRM_REMOVE) {
             if (mainViewModel.PIN == getPIN()) {
-                mainViewModel.log = true
+                val sharedPreferences = requireActivity().getSharedPreferences(
+                    getString(R.string.preferences),
+                    AppCompatActivity.MODE_PRIVATE
+                ).edit()
                 mainViewModel.PIN = ""
+                sharedPreferences.putString("PIN", mainViewModel.PIN)
+                sharedPreferences.apply()
                 Toast.makeText(requireContext(), "PIN deleted", Toast.LENGTH_SHORT).show()
                 findNavController().popBackStack()
             } else {
@@ -130,8 +135,13 @@ class PINPasswordFragment : Fragment() {
             return
         }
 
-        mainViewModel.log = true
+        val sharedPreferences = requireActivity().getSharedPreferences(
+            getString(R.string.preferences),
+            AppCompatActivity.MODE_PRIVATE
+        ).edit()
         mainViewModel.PIN = getPIN()
+        sharedPreferences.putString("PIN", mainViewModel.PIN)
+        sharedPreferences.apply()
 
         if (args.fromCome == SETTINGS) {
             findNavController().popBackStack()
@@ -140,7 +150,7 @@ class PINPasswordFragment : Fragment() {
 
         val action =
             PINPasswordFragmentDirections
-                .actionPINPasswordFragmentToInputFragment()
+                .actionPINPasswordFragmentToInputFragment(true)
         view.findNavController().navigate(action)
     }
 

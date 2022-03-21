@@ -46,6 +46,10 @@
         <action
             android:id="@+id/action_inputFragment_to_categoryFragment"
             app:destination="@id/categoryFragment" />
+        <argument
+            android:name="log"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/calculatorFragment"
