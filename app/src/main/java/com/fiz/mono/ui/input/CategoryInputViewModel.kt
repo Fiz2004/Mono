@@ -9,17 +9,13 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.core.content.FileProvider
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.fiz.mono.data.database.ItemDatabase
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
@@ -29,7 +25,6 @@ import kotlin.math.max
 import kotlin.math.min
 
 class CategoryInputViewModel(private val categoryStore: CategoryStore) : ViewModel() {
-    var edit: Boolean = false
     var allCategoryExpense = categoryStore.getAllCategoryExpenseForInput()
     var allCategoryIncome = categoryStore.getAllCategoryIncomeForInput()
 
@@ -45,9 +40,10 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore) : ViewMod
     val value: LiveData<String>
         get() = _value
 
-    private val _photoPath: MutableLiveData<MutableList<String?>> = MutableLiveData(mutableListOf())
-    val photoPath: LiveData<MutableList<String?>>
-        get() = _photoPath
+    private val _photoPaths: MutableLiveData<MutableList<String?>> =
+        MutableLiveData(mutableListOf())
+    val photoPaths: LiveData<MutableList<String?>>
+        get() = _photoPaths
 
     fun setSelectedAdapter(adapter: Int) {
         selectedAdapter = adapter
@@ -79,32 +75,29 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore) : ViewMod
         else
             value.value?.toDouble()
 
+        val transactionStore = TransactionStore(ItemDatabase.getDatabase()?.transactionItemDao()!!)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            TransactionStore.init {
-                CoroutineScope(Dispatchers.Main).launch {
-                    val lastItem = TransactionStore.getAllTransactions().lastOrNull()
-                    val id = lastItem?.id
-                    val newId = id?.let { it + 1 } ?: 0
+        viewModelScope.launch {
+            val lastItem = transactionStore.allTransactions.value?.lastOrNull()
+            val id = lastItem?.id
+            val newId = id?.let { it + 1 } ?: 0
 
-                    val photoPathList: List<String?> = photoPath.value?.toList() ?: listOf("")
+            val photoPathList: List<String?> = photoPaths.value?.toList() ?: listOf("")
 
-                    TransactionStore.insertNewTransaction(
-                        TransactionItem(
-                            newId,
-                            Calendar.getInstance().time,
-                            value1 ?: 0.0,
-                            selectedCategoryItem.name,
-                            note.value ?: "",
-                            selectedCategoryItem.mapImgSrc,
-                            photoPathList
-                        )
-                    )
+            transactionStore.insertNewTransaction(
+                TransactionItem(
+                    newId,
+                    Calendar.getInstance().time,
+                    value1 ?: 0.0,
+                    selectedCategoryItem.name,
+                    note.value ?: "",
+                    selectedCategoryItem.mapImgSrc,
+                    photoPathList
+                )
+            )
 
-                    _value.value = ""
-                    _note.value = ""
-                }
-            }
+            _value.value = ""
+            _note.value = ""
         }
 
         (if (selectedAdapter == InputFragment.EXPENSE)
@@ -236,12 +229,13 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore) : ViewMod
     }
 
     fun addPhotoPath() {
-        photoPath.value?.add(currentPhotoPath)
-        _photoPath.value = photoPath.value
+        photoPaths.value?.add(currentPhotoPath)
+        _photoPaths.value = photoPaths.value
     }
 
     fun removePhotoPath(number: Int) {
-        photoPath.value?.removeAt(number - 1)
+        photoPaths.value?.removeAt(number - 1)
+        _photoPaths.value = photoPaths.value
     }
 
     fun setNote(text: String) {

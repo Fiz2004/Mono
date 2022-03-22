@@ -50,6 +50,9 @@
             android:name="log"
             android:defaultValue="false"
             app:argType="boolean" />
+        <action
+            android:id="@+id/action_inputFragment_to_calendarFragment"
+            app:destination="@id/calendarFragment" />
     </fragment>
     <fragment
         android:id="@+id/calculatorFragment"
@@ -123,4 +126,8 @@
             app:popUpTo="@id/categoryFragment"
             app:popUpToInclusive="true" />
     </fragment>
+    <fragment
+        android:id="@+id/calendarFragment"
+        android:name="com.fiz.mono.ui.calendar.CalendarFragment"
+        android:label="CalendarFragment" />
 </navigation>

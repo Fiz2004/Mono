@@ -23,7 +23,6 @@ class CategoryEditFragment : Fragment() {
     private val viewModel: CategoryEditViewModel by viewModels {
         CategoryEditViewModelFactory(
             CategoryStore(
-                requireContext(),
                 ItemDatabase.getDatabase()?.categoryItemDao()!!
             )
         )

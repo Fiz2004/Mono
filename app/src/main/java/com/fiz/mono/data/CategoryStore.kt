@@ -1,11 +1,10 @@
 package com.fiz.mono.data
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.fiz.mono.data.database.CategoryItemDAO
 
-class CategoryStore(context: Context, private val categoryItemDao: CategoryItemDAO) {
+class CategoryStore(private val categoryItemDao: CategoryItemDAO) {
     var allCategoryExpense: LiveData<List<CategoryItem>> = categoryItemDao.getAllExpense()
     var allCategoryIncome: LiveData<List<CategoryItem>> = categoryItemDao.getAllIncome()
 

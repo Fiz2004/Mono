@@ -6,17 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.fiz.mono.R
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
+import com.fiz.mono.data.database.ItemDatabase
 import com.fiz.mono.databinding.FragmentReportBinding
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.getCurrencyFormat
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.themeColor
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -25,7 +24,14 @@ class ReportFragment : Fragment() {
     private var _binding: FragmentReportBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: MainViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
+    private val viewModel: ReportViewModel by viewModels {
+        ReportViewModelFactory(
+            TransactionStore(
+                ItemDatabase.getDatabase()?.transactionItemDao()!!
+            )
+        )
+    }
 
     private lateinit var adapter: TransactionsAdapter
 
@@ -45,43 +51,45 @@ class ReportFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.dataRangeLayout.editTextDate.text =
-            SimpleDateFormat("MMMM, yyyy").format(viewModel.date.time)
+        binding.dataRangeLayout.dateTextView.text =
+            SimpleDateFormat("MMMM, yyyy").format(mainViewModel.date.time)
 
         binding.dataRangeLayout.leftDateRangeImageButton.setOnClickListener {
-            viewModel.date.add(Calendar.MONTH, -1)
-            binding.dataRangeLayout.editTextDate.text =
-                SimpleDateFormat("MMMM, yyyy").format(viewModel.date.time)
-            updateUI()
-            updateAdapter()
+            mainViewModel.date.add(Calendar.MONTH, -1)
+            binding.dataRangeLayout.dateTextView.text =
+                SimpleDateFormat("MMMM, yyyy").format(mainViewModel.date.time)
+            allTransactionsObserve(listOf())
         }
 
         binding.dataRangeLayout.rightDateRangeImageButton.setOnClickListener {
-            viewModel.date.add(Calendar.MONTH, 1)
-            binding.dataRangeLayout.editTextDate.text =
-                SimpleDateFormat("MMMM, yyyy").format(viewModel.date.time)
-            updateUI()
-            updateAdapter()
+            mainViewModel.date.add(Calendar.MONTH, 1)
+            binding.dataRangeLayout.dateTextView.text =
+                SimpleDateFormat("MMMM, yyyy").format(mainViewModel.date.time)
+            allTransactionsObserve(listOf())
         }
 
         binding.allExpenseIncomeToggleButton.addOnButtonCheckedListener { toggleButton, checkedId, isChecked ->
             when (checkedId) {
                 R.id.toggle1 -> {
                     if (isChecked)
-                        viewModel.tabSelectedReport = 0
+                        mainViewModel.tabSelectedReport = 0
                 }
                 R.id.toggle2 -> {
                     if (isChecked)
-                        viewModel.tabSelectedReport = 1
+                        mainViewModel.tabSelectedReport = 1
                 }
                 R.id.toggle3 -> {
                     if (isChecked)
-                        viewModel.tabSelectedReport = 2
+                        mainViewModel.tabSelectedReport = 2
                 }
             }
             if (isChecked) {
-                updateUI()
-                updateAdapter()
+                adapter.submitList(
+                    viewModel.getTransactions(
+                        mainViewModel.tabSelectedReport,
+                        mainViewModel.date
+                    )
+                )
             }
         }
 
@@ -96,107 +104,69 @@ class ReportFragment : Fragment() {
         }
 
         binding.monthlyTextView.setOnClickListener {
-            viewModel.categorySelectedReport = 0
+            mainViewModel.categorySelectedReport = 0
             binding.choiceReportConstraintLayout.visibility = View.GONE
         }
 
         binding.categoryTextView.setOnClickListener {
-            viewModel.categorySelectedReport = 1
+            mainViewModel.categorySelectedReport = 1
             binding.choiceReportConstraintLayout.visibility = View.GONE
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
-            TransactionStore.init {
-                updateUI()
-                updateAdapter()
-            }
-        }
+        viewModel.allTransactions.observe(viewLifecycleOwner, ::allTransactionsObserve)
+
+        adapter = TransactionsAdapter(mainViewModel.currency)
+        binding.transactionsRecyclerView.adapter = adapter
+    }
+
+    private fun allTransactionsObserve(allTransactions: List<TransactionItem>) {
+        binding.valueReportTextView.text =
+            getCurrencyFormat(mainViewModel.currency, viewModel.getCurrentBalance(), false)
+
+        binding.incomeValueReportTextView.text =
+            getCurrencyFormat(
+                mainViewModel.currency,
+                viewModel.getCurrentIncome(mainViewModel.date),
+                false
+            )
+        binding.expenseValueReportTextView.text =
+            getCurrencyFormat(
+                mainViewModel.currency,
+                viewModel.getCurrentExpense(mainViewModel.date),
+                false
+            )
+
+        binding.expenseIncomeValueReportTextView.text =
+            getCurrencyFormat(
+                mainViewModel.currency,
+                viewModel.getCurrentIncome(mainViewModel.date) + viewModel.getCurrentExpense(
+                    mainViewModel.date
+                ),
+                true
+            )
+
+        binding.previousBalanceValueReportTextView.text =
+            getCurrencyFormat(
+                mainViewModel.currency,
+                viewModel.getPreviousBalanceValue(mainViewModel.date),
+                false
+            )
+
+        adapter.submitList(
+            viewModel.getTransactions(
+                mainViewModel.tabSelectedReport,
+                mainViewModel.date
+            )
+        )
     }
 
     private fun updateMenu() {
-        if (viewModel.categorySelectedReport == 0) {
+        if (mainViewModel.categorySelectedReport == 0) {
             binding.monthlyTextView.setTextColor(requireContext().getColorCompat(R.color.blue))
             binding.categoryTextView.setTextColor(requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary))
         } else {
             binding.monthlyTextView.setTextColor(requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary))
             binding.categoryTextView.setTextColor(requireContext().getColorCompat(R.color.blue))
         }
-    }
-
-    private fun updateUI() {
-        val allTransactions = TransactionStore.getAllTransactions()
-        val currentBalance = allTransactions.map { it.value }.fold(0.0) { acc, d -> acc + d }
-        binding.valueReportTextView.text =
-            getCurrencyFormat(viewModel.currency, currentBalance, false)
-
-        val currentYear = viewModel.date.get(Calendar.YEAR)
-        val currentMonth = viewModel.date.get(Calendar.MONTH) + 1
-        val allTransactionsForYear =
-            allTransactions.filter { SimpleDateFormat("yyyy").format(it.date.time) == currentYear.toString() } as MutableList<TransactionItem>
-        val allTransactionsForMonth =
-            allTransactionsForYear.filter { SimpleDateFormat("M").format(it.date.time) == currentMonth.toString() } as MutableList<TransactionItem>
-
-        val currentIncome = allTransactionsForMonth.filter { it.value > 0 }.map { it.value }
-            .fold(0.0) { acc, d -> acc + d }
-        val currentExpense = allTransactionsForMonth.filter { it.value < 0 }.map { it.value }
-            .fold(0.0) { acc, d -> acc + d }
-
-        binding.incomeValueReportTextView.text =
-            getCurrencyFormat(viewModel.currency, currentIncome, false)
-        binding.expenseValueReportTextView.text =
-            getCurrencyFormat(viewModel.currency, currentExpense, false)
-
-        binding.expenseIncomeValueReportTextView.text =
-            getCurrencyFormat(viewModel.currency, currentIncome + currentExpense, true)
-
-        val copyDate = viewModel.date
-        copyDate.add(Calendar.MONTH, -1)
-        val prevYear = copyDate.get(Calendar.YEAR)
-        val prevMonth = copyDate.get(Calendar.MONTH) + 1
-        copyDate.add(Calendar.MONTH, 1)
-
-        val allTransactionsPrevMonthForYear =
-            allTransactions.filter { SimpleDateFormat("yyyy").format(it.date.time) == prevYear.toString() } as MutableList<TransactionItem>
-        val allTransactionsPrevMonthForMonth =
-            allTransactionsPrevMonthForYear.filter { SimpleDateFormat("M").format(it.date.time) == prevMonth.toString() } as MutableList<TransactionItem>
-
-        val prevIncome = allTransactionsPrevMonthForMonth.filter { it.value > 0 }.map { it.value }
-            .fold(0.0) { acc, d -> acc + d }
-        val prevExpense = allTransactionsPrevMonthForMonth.filter { it.value < 0 }.map { it.value }
-            .fold(0.0) { acc, d -> acc + d }
-
-        binding.previousBalanceValueReportTextView.text =
-            getCurrencyFormat(viewModel.currency, prevIncome + prevExpense, false)
-    }
-
-    private fun updateAdapter() {
-        adapter = TransactionsAdapter(viewModel.currency)
-
-        var allTransactions = when (viewModel.tabSelectedReport) {
-            0 -> TransactionStore.getAllTransactions().toMutableList()
-            1 -> TransactionStore.getAllTransactions().filter { it.value < 0 }
-            else -> TransactionStore.getAllTransactions().filter { it.value > 0 }
-        }
-        val currentYear = viewModel.date.get(Calendar.YEAR)
-        val currentMonth = viewModel.date.get(Calendar.MONTH) + 1
-        allTransactions =
-            allTransactions.filter { SimpleDateFormat("yyyy").format(it.date.time) == currentYear.toString() }
-        allTransactions =
-            allTransactions.filter { SimpleDateFormat("M").format(it.date.time) == currentMonth.toString() }
-        allTransactions.sortedByDescending { it.date }
-
-        val groupTransactions =
-            allTransactions.groupBy { SimpleDateFormat("MMM dd, yyyy").format(it.date.time) }
-        val items = mutableListOf<DataItem>()
-        for (date in groupTransactions) {
-            val expense =
-                date.value.filter { it.value < 0 }.map { it.value }.fold(0.0) { acc, d -> acc + d }
-            val income =
-                date.value.filter { it.value > 0 }.map { it.value }.fold(0.0) { acc, d -> acc + d }
-            items += DataItem.InfoDayHeaderItem(InfoDay(date.key, expense, income))
-            items += date.value.map { DataItem.InfoTransactionItem(it) }
-        }
-        adapter.submitList(items)
-        binding.transactionsRecyclerView.adapter = adapter
     }
 }

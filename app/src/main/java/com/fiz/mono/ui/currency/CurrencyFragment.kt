@@ -44,9 +44,7 @@ class CurrencyFragment : Fragment() {
         binding.BGNRadioButton.setOnClickListener(::onRadioButtonClicked)
         binding.VNDRadioButton.setOnClickListener(::onRadioButtonClicked)
 
-        binding.backButton.setOnClickListener {
-            findNavController().popBackStack()
-        }
+        binding.backButton.setOnClickListener(::backButtonOnClickListener)
 
         when (viewModel.currency) {
             "$" -> binding.USDRadioButton.isChecked = true
@@ -58,6 +56,10 @@ class CurrencyFragment : Fragment() {
             "лв" -> binding.BGNRadioButton.isChecked = true
             "đ" -> binding.VNDRadioButton.isChecked = true
         }
+    }
+
+    private fun backButtonOnClickListener(view: View) {
+        findNavController().popBackStack()
     }
 
     private fun onRadioButtonClicked(view: View) {

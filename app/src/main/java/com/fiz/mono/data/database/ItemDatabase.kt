@@ -12,6 +12,7 @@ import com.fiz.mono.data.TransactionItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
 private const val NAME_DATABASE = "category_item_database"
 
@@ -50,6 +51,73 @@ abstract class ItemDatabase : RoomDatabase() {
                 CategoryItem("i3", context.getString(R.string.loan), "user"),
             )
 
+            val allTransactionsDefault = mutableListOf(
+                TransactionItem(
+                    0,
+                    getDate(2022, 1, 24),
+                    -5.49,
+                    context.getString(R.string.food),
+                    "Pizza for lazyday",
+                    "food"
+                ),
+                TransactionItem(
+                    1,
+                    getDate(2022, 1, 24),
+                    50.0,
+                    context.getString(R.string.freelance),
+                    "",
+                    "challenge"
+                ),
+                TransactionItem(
+                    2,
+                    getDate(2022, 1, 24),
+                    -13.16,
+                    context.getString(R.string.shopping),
+                    "New Clothes",
+                    "market"
+                ),
+                TransactionItem(
+                    3,
+                    getDate(2022, 1, 24),
+                    1000.0,
+                    context.getString(R.string.salary),
+                    "Jan",
+                    "money"
+                ),
+                TransactionItem(
+                    4,
+                    getDate(2022, 1, 23),
+                    -3.10,
+                    context.getString(R.string.food),
+                    "Pizza",
+                    "food"
+                ),
+                TransactionItem(
+                    5,
+                    getDate(2022, 1, 23),
+                    50.0,
+                    context.getString(R.string.loan),
+                    "",
+                    "user"
+                ),
+                TransactionItem(
+                    6,
+                    getDate(2022, 1, 20),
+                    -17.50,
+                    context.getString(R.string.food),
+                    "Castrang",
+                    "cat"
+                ),
+                TransactionItem(
+                    7,
+                    getDate(2022, 1, 18),
+                    200.0,
+                    context.getString(R.string.bonus),
+                    "Project bonus",
+                    "coin"
+                )
+            )
+
 
             synchronized(this) {
                 var instance = INSTANCE
@@ -71,6 +139,9 @@ abstract class ItemDatabase : RoomDatabase() {
                                     allCategoryIncomeDefault.forEach {
                                         INSTANCE?.categoryItemDao()?.insert(it)
                                     }
+                                    allTransactionsDefault.forEach {
+                                        INSTANCE?.transactionItemDao()?.insert(it)
+                                    }
                                 }
                             }
                         })
@@ -85,4 +156,10 @@ abstract class ItemDatabase : RoomDatabase() {
             return INSTANCE
         }
     }
+}
+
+fun getDate(year: Int, month: Int, day: Int): Date {
+    val calendar = Calendar.getInstance()
+    calendar.set(year, month, day)
+    return calendar.time
 }

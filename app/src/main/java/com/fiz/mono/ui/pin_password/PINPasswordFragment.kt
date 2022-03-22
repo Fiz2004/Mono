@@ -60,7 +60,7 @@ class PINPasswordFragment : Fragment() {
             return
         }
 
-        binding.backButton.setOnClickListener(::backOnClickListener)
+        binding.backButton.setOnClickListener(::backButtonOnClickListener)
         binding.editButton.setOnClickListener(::editOnClickListener)
 
         binding.editTextNumber1.addTextChangedListener(
@@ -159,7 +159,7 @@ class PINPasswordFragment : Fragment() {
         updateUI()
     }
 
-    private fun backOnClickListener(view: View) {
+    private fun backButtonOnClickListener(view: View) {
         findNavController().popBackStack()
     }
 

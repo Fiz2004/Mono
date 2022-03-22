@@ -1,16 +1,17 @@
 package com.fiz.mono.data.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.fiz.mono.data.TransactionItem
 
 @Dao
 interface TransactionItemDAO {
     @Query("SELECT * FROM TransactionItem")
-    suspend fun getAll(): List<TransactionItem>?
+    fun getAll(): LiveData<List<TransactionItem>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(transactionItem: TransactionItem)
+    suspend fun insert(transactionItem: TransactionItem)
 
     @Delete
-    fun delete(transactionItem: TransactionItem?)
+    suspend fun delete(transactionItem: TransactionItem?)
 }
