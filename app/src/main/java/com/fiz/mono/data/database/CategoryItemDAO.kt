@@ -1,16 +1,23 @@
 package com.fiz.mono.data.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.fiz.mono.data.CategoryItem
 
 @Dao
 interface CategoryItemDAO {
     @Query("SELECT * FROM CategoryItem")
-    suspend fun getAll(): List<CategoryItem>?
+    fun getAll(): LiveData<List<CategoryItem>>
+
+    @Query("SELECT * FROM CategoryItem WHERE id LIKE '%e%'")
+    fun getAllExpense(): LiveData<List<CategoryItem>>
+
+    @Query("SELECT * FROM CategoryItem WHERE id LIKE '%i%'")
+    fun getAllIncome(): LiveData<List<CategoryItem>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(categoryItem: CategoryItem)
+    suspend fun insert(categoryItem: CategoryItem)
 
     @Delete
-    fun delete(categoryItem: CategoryItem?)
+    suspend fun delete(categoryItem: CategoryItem)
 }

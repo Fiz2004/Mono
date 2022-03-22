@@ -1,6 +1,5 @@
 package com.fiz.mono.data
 
-import com.fiz.mono.R
 import com.fiz.mono.data.database.ItemDatabase
 import com.fiz.mono.data.database.TransactionItemDAO
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +26,7 @@ object TransactionStore {
                         -5.49,
                         "Food",
                         "Pizza for lazyday",
-                        R.drawable.food
+                        "food"
                     ),
                     TransactionItem(
                         1,
@@ -35,7 +34,7 @@ object TransactionStore {
                         50.0,
                         "Freelance",
                         "",
-                        R.drawable.challenge
+                        "challenge"
                     ),
                     TransactionItem(
                         2,
@@ -43,7 +42,7 @@ object TransactionStore {
                         -13.16,
                         "Shopping",
                         "New Clothes",
-                        R.drawable.market
+                        "market"
                     ),
                     TransactionItem(
                         3,
@@ -51,7 +50,7 @@ object TransactionStore {
                         1000.0,
                         "Salary",
                         "Jan",
-                        R.drawable.money
+                        "money"
                     ),
                     TransactionItem(
                         4,
@@ -59,7 +58,7 @@ object TransactionStore {
                         -3.10,
                         "Food",
                         "Pizza",
-                        R.drawable.food
+                        "food"
                     ),
                     TransactionItem(
                         5,
@@ -67,7 +66,7 @@ object TransactionStore {
                         50.0,
                         "Loan",
                         "",
-                        R.drawable.user
+                        "user"
                     ),
                     TransactionItem(
                         6,
@@ -75,7 +74,7 @@ object TransactionStore {
                         -17.50,
                         "Food",
                         "Castrang",
-                        R.drawable.cat
+                        "cat"
                     ),
                     TransactionItem(
                         7,
@@ -83,7 +82,7 @@ object TransactionStore {
                         200.0,
                         "Bonus",
                         "Project bonus",
-                        R.drawable.coin
+                        "coin"
                     )
                 )
                 withContext(Dispatchers.Default) {
@@ -104,7 +103,7 @@ object TransactionStore {
                     -5.49,
                     "Food",
                     "Pizza for lazyday",
-                    R.drawable.food
+                    "food"
                 ),
                 TransactionItem(
                     1,
@@ -112,7 +111,7 @@ object TransactionStore {
                     50.0,
                     "Freelance",
                     "",
-                    R.drawable.challenge
+                    "challenge"
                 ),
                 TransactionItem(
                     2,
@@ -120,7 +119,7 @@ object TransactionStore {
                     -13.16,
                     "Shopping",
                     "New Clothes",
-                    R.drawable.market
+                    "market"
                 ),
                 TransactionItem(
                     3,
@@ -128,7 +127,7 @@ object TransactionStore {
                     1000.0,
                     "Salary",
                     "Jan",
-                    R.drawable.money
+                    "money"
                 ),
                 TransactionItem(
                     4,
@@ -136,7 +135,7 @@ object TransactionStore {
                     -3.10,
                     "Food",
                     "Pizza",
-                    R.drawable.food
+                    "food"
                 ),
                 TransactionItem(
                     5,
@@ -144,7 +143,7 @@ object TransactionStore {
                     50.0,
                     "Loan",
                     "",
-                    R.drawable.user
+                    "user"
                 ),
                 TransactionItem(
                     6,
@@ -152,7 +151,7 @@ object TransactionStore {
                     -17.50,
                     "Food",
                     "Castrang",
-                    R.drawable.cat
+                    "cat"
                 ),
                 TransactionItem(
                     7,
@@ -160,7 +159,7 @@ object TransactionStore {
                     200.0,
                     "Bonus",
                     "Project bonus",
-                    R.drawable.coin
+                    "coin"
                 )
             )
             withContext(Dispatchers.Default) {

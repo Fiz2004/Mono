@@ -2,36 +2,40 @@ package com.fiz.mono.ui.category_edit
 
 import android.view.View
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.CategoryStore
+import kotlinx.coroutines.launch
 
-class CategoryEditViewModel : ViewModel() {
-    private var allCategoryExpense = CategoryStore.getAllCategoryExpenseForEdit()
-    private var allCategoryIncome = CategoryStore.getAllCategoryIncomeForEdit()
+class CategoryEditViewModel(private val categoryStore: CategoryStore) : ViewModel() {
+    var allCategoryExpense = categoryStore.getAllCategoryExpenseForEdit()
+    var allCategoryIncome = categoryStore.getAllCategoryIncomeForEdit()
 
     init {
         cleanSelected()
     }
 
     fun getAllCategoryItemExpense(): List<CategoryItem> {
-        return allCategoryExpense.map { it.copy() }
+        return allCategoryExpense.value?.map { it.copy() } ?: listOf()
     }
 
     fun getAllCategoryItemIncome(): List<CategoryItem> {
-        return allCategoryIncome.map { it.copy() }
+        return allCategoryIncome.value?.map { it.copy() } ?: listOf()
     }
 
     fun addSelectItemExpense(position: Int) {
-        allCategoryIncome.find { it.selected }?.let {
+        allCategoryIncome.value?.find { it.selected }?.let {
             it.selected = false
         }
 
-        if (!allCategoryExpense[position].selected) {
-            allCategoryExpense.find { it.selected }?.let {
+        if (!allCategoryExpense.value?.get(position)?.selected!!) {
+            allCategoryExpense.value?.find { it.selected }?.let {
                 it.selected = false
             }
         }
-        allCategoryExpense[position].selected = !allCategoryExpense[position].selected
+        allCategoryExpense.value?.get(position)?.selected =
+            !allCategoryExpense.value?.get(position)?.selected!!
     }
 
     fun getVisibilityRemoveButton(): Int {
@@ -42,60 +46,73 @@ class CategoryEditViewModel : ViewModel() {
     }
 
     private fun isSelected(): Boolean {
-        return allCategoryExpense.any { it.selected } || allCategoryIncome.any { it.selected }
+        return allCategoryExpense.value?.any { it.selected } == true || allCategoryIncome.value?.any { it.selected } == true
     }
 
     fun addSelectItemIncome(position: Int) {
-        allCategoryExpense.find { it.selected }?.let {
+        allCategoryExpense.value?.find { it.selected }?.let {
             it.selected = false
         }
 
-        if (!allCategoryIncome[position].selected) {
-            allCategoryIncome.find { it.selected }?.let {
+        if (!allCategoryIncome.value?.get(position)?.selected!!) {
+            allCategoryIncome.value?.find { it.selected }?.let {
                 it.selected = false
             }
         }
-        allCategoryIncome[position].selected = !allCategoryIncome[position].selected
+        allCategoryIncome.value?.get(position)?.selected =
+            !allCategoryIncome.value?.get(position)?.selected!!
     }
 
     fun removeSelectItem() {
-        allCategoryExpense.indexOfFirst { it.selected }.let {
-            if (it == -1) return@let
-            CategoryStore.removeCategoryExpense(it)
-        }
+        viewModelScope.launch {
+            allCategoryExpense.value?.indexOfFirst { it.selected }.let {
+                if (it == -1) return@let
+                if (it != null) {
+                    categoryStore.removeCategoryExpense(it)
+                }
+            }
 
-        allCategoryIncome.indexOfFirst { it.selected }.let {
-            if (it == -1) return@let
-            CategoryStore.removeCategoryIncome(it)
+            allCategoryIncome.value?.indexOfFirst { it.selected }.let {
+                if (it == -1) return@let
+                if (it != null) {
+                    categoryStore.removeCategoryIncome(it)
+                }
+            }
         }
-
-        allCategoryExpense = CategoryStore.getAllCategoryExpenseForEdit()
-        allCategoryIncome = CategoryStore.getAllCategoryIncomeForEdit()
     }
 
-    fun insertNewCategory(type: String, name: String, icon: Int) {
+    fun insertNewCategory(type: String, name: String, iconID: String) {
         if (type == "") return
-        if (type == CategoryEditFragment.TYPE_EXPENSE) {
-            CategoryStore.insertNewCategoryExpense(name, icon)
-        } else {
-            CategoryStore.insertNewCategoryIncome(name, icon)
+        viewModelScope.launch {
+            if (type == CategoryEditFragment.TYPE_EXPENSE) {
+                categoryStore.insertNewCategoryExpense(name, iconID)
+            } else {
+                categoryStore.insertNewCategoryIncome(name, iconID)
+            }
         }
-        allCategoryExpense = CategoryStore.getAllCategoryExpenseForEdit()
-        allCategoryIncome = CategoryStore.getAllCategoryIncomeForEdit()
     }
 
     fun isClickAddPositionExpense(position: Int): Boolean {
-        return position == allCategoryExpense.size - 1
+        return position == allCategoryExpense.value?.size?.minus(1) ?: false
     }
 
     fun isClickAddPositionIncome(position: Int): Boolean {
-        return position == allCategoryIncome.size - 1
+        return position == allCategoryIncome.value?.size?.minus(1) ?: false
     }
 
     fun cleanSelected() {
-        allCategoryExpense.forEach { it.selected = false }
-        allCategoryIncome.forEach { it.selected = false }
+        allCategoryExpense.value?.forEach { it.selected = false }
+        allCategoryIncome.value?.forEach { it.selected = false }
     }
+}
 
-
+class CategoryEditViewModelFactory(private val categoryStore: CategoryStore) :
+    ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(CategoryEditViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return CategoryEditViewModel(categoryStore) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
 }

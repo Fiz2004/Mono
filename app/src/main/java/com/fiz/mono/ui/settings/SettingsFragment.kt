@@ -75,7 +75,7 @@ class SettingsFragment : Fragment() {
     private fun categoryOnClickListener(view: View) {
         val action =
             SettingsFragmentDirections
-                .actionSettingsFragmentToCategoryFragment("", 0, "")
+                .actionSettingsFragmentToCategoryFragment("", "", "")
         view.findNavController().navigate(action)
     }
 

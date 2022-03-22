@@ -1,163 +1,78 @@
 package com.fiz.mono.data
 
-import com.fiz.mono.R
+import android.content.Context
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
 import com.fiz.mono.data.database.CategoryItemDAO
-import com.fiz.mono.data.database.ItemDatabase
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.util.concurrent.Executors
 
-object CategoryStore {
-    private lateinit var allCategoryExpense: MutableList<CategoryItem>
-    private lateinit var allCategoryIncome: MutableList<CategoryItem>
+class CategoryStore(context: Context, private val categoryItemDao: CategoryItemDAO) {
+    var allCategoryExpense: LiveData<List<CategoryItem>> = categoryItemDao.getAllExpense()
+    var allCategoryIncome: LiveData<List<CategoryItem>> = categoryItemDao.getAllIncome()
 
-    private val categoryItemDao: CategoryItemDAO? =
-        ItemDatabase.getDatabase()?.categoryItemDao()
-
-    suspend fun init(callback: () -> Unit) {
-        var loadItemDao: List<CategoryItem>? = null
-
-        try {
-            loadItemDao = categoryItemDao?.getAll()
-            if (loadItemDao?.size == 0 || loadItemDao == null) {
-                allCategoryExpense = mutableListOf(
-                    CategoryItem("e0", "Bank", R.drawable.bank),
-                    CategoryItem("e1", "Food", R.drawable.food),
-                    CategoryItem("e2", "Medican", R.drawable.medican),
-                    CategoryItem("e3", "Gym", R.drawable.gym),
-                    CategoryItem("e4", "Coffee", R.drawable.coffee),
-                    CategoryItem("e5", "Shopping", R.drawable.market),
-                    CategoryItem("e6", "Cats", R.drawable.cat),
-                    CategoryItem("e7", "Party", R.drawable.party),
-                    CategoryItem("e8", "Gift", R.drawable.gift),
-                    CategoryItem("e9", "Gas", R.drawable.gas),
-                )
-                withContext(Dispatchers.Default) {
-                    allCategoryExpense.forEach {
-                        categoryItemDao?.insert(it)
-                    }
-                }
-            } else {
-                allCategoryExpense =
-                    loadItemDao.filter { it.id[0] == 'e' } as MutableList<CategoryItem>
-            }
-
-            if (loadItemDao?.size == 0 || loadItemDao == null) {
-                allCategoryIncome = mutableListOf(
-                    CategoryItem("i0", "Freelance", R.drawable.challenge),
-                    CategoryItem("i1", "Salary", R.drawable.money),
-                    CategoryItem("i2", "Bonus", R.drawable.coin),
-                    CategoryItem("i3", "Loan", R.drawable.user),
-                )
-                withContext(Dispatchers.Default) {
-                    allCategoryIncome.forEach {
-                        categoryItemDao?.insert(it)
-                    }
-                }
-            } else {
-                allCategoryIncome =
-                    loadItemDao.filter { it.id[0] == 'i' } as MutableList<CategoryItem>
-            }
-            callback()
-
-        } catch (e: Exception) {
-            allCategoryExpense = mutableListOf(
-                CategoryItem("e0", "Bank", R.drawable.bank),
-                CategoryItem("e1", "Food", R.drawable.food),
-                CategoryItem("e2", "Medican", R.drawable.medican),
-                CategoryItem("e3", "Gym", R.drawable.gym),
-                CategoryItem("e4", "Coffee", R.drawable.coffee),
-                CategoryItem("e5", "Shopping", R.drawable.market),
-                CategoryItem("e6", "Cats", R.drawable.cat),
-                CategoryItem("e7", "Party", R.drawable.party),
-                CategoryItem("e8", "Gift", R.drawable.gift),
-                CategoryItem("e9", "Gas", R.drawable.gas),
-            )
-            withContext(Dispatchers.Default) {
-                allCategoryExpense.forEach {
-                    categoryItemDao?.insert(it)
-                }
-            }
-
-            allCategoryIncome = mutableListOf(
-                CategoryItem("i0", "Freelance", R.drawable.challenge),
-                CategoryItem("i1", "Salary", R.drawable.money),
-                CategoryItem("i2", "Bonus", R.drawable.coin),
-                CategoryItem("i3", "Loan", R.drawable.user),
-            )
-            withContext(Dispatchers.Default) {
-                allCategoryExpense.forEach {
-                    categoryItemDao?.insert(it)
-                }
-            }
-            callback()
+    fun getAllCategoryExpenseForEdit(): LiveData<List<CategoryItem>> {
+        return Transformations.map(allCategoryExpense) {
+            val result = emptyList<CategoryItem>().toMutableList()
+            result.addAll(it)
+            result.add(CategoryItem("e", "Add more", ""))
+            result
         }
     }
 
-    fun getAllCategoryExpenseForEdit(): MutableList<CategoryItem> {
-        val result = emptyList<CategoryItem>().toMutableList()
-        result.addAll(allCategoryExpense)
-        result.add(CategoryItem("e", "Add more", null))
-        return result
+    fun getAllCategoryIncomeForEdit(): LiveData<List<CategoryItem>> {
+        return Transformations.map(allCategoryIncome) {
+            val result = emptyList<CategoryItem>().toMutableList()
+            result.addAll(it)
+            result.add(CategoryItem("i", "Add more", ""))
+            result
+        }
     }
 
-    fun getAllCategoryIncomeForEdit(): MutableList<CategoryItem> {
-        val result = emptyList<CategoryItem>().toMutableList()
-        result.addAll(allCategoryIncome)
-        result.add(CategoryItem("i", "Add more", null))
-        return result
+    fun getAllCategoryExpenseForInput(): LiveData<List<CategoryItem>> {
+        return Transformations.map(allCategoryExpense) {
+            val result = emptyList<CategoryItem>().toMutableList()
+            result.addAll(it)
+            result.add(CategoryItem("e", "Edit", ""))
+            result
+        }
     }
 
-    fun getAllCategoryExpenseForInput(): MutableList<CategoryItem> {
-        val result = emptyList<CategoryItem>().toMutableList()
-        result.addAll(allCategoryExpense)
-        result.add(CategoryItem("e", "Edit", null))
-        return result
+    fun getAllCategoryIncomeForInput(): LiveData<List<CategoryItem>> {
+        return Transformations.map(allCategoryIncome) {
+            val result = emptyList<CategoryItem>().toMutableList()
+            result.addAll(it)
+            result.add(CategoryItem("i", "Edit", ""))
+            result
+        }
     }
 
-    fun getAllCategoryIncomeForInput(): MutableList<CategoryItem> {
-        val result = emptyList<CategoryItem>().toMutableList()
-        result.addAll(allCategoryIncome)
-        result.add(CategoryItem("i", "Edit", null))
-        return result
-    }
-
-    fun insertNewCategoryExpense(name: String, icon: Int) {
-        val numberLastItem = allCategoryExpense.lastOrNull()?.id?.substring(1)?.toInt()
+    suspend fun insertNewCategoryExpense(name: String, iconID: String) {
+        val numberLastItem = allCategoryExpense.value?.lastOrNull()?.id?.substring(1)?.toInt()
         val newId = numberLastItem?.let { it + 1 } ?: 0
 
-        val newCategoryItem = CategoryItem("e$newId", name, icon)
+        val newCategoryItem = CategoryItem("e$newId", name, iconID)
 
-        allCategoryExpense.add(newCategoryItem)
-        Executors.newSingleThreadExecutor().execute {
-            categoryItemDao?.insert(newCategoryItem)
-        }
+        categoryItemDao.insert(newCategoryItem)
     }
 
-    fun insertNewCategoryIncome(name: String, icon: Int) {
-        val numberLastItem = allCategoryIncome.lastOrNull()?.id?.substring(1)?.toInt()
+    suspend fun insertNewCategoryIncome(name: String, iconID: String) {
+        val numberLastItem = allCategoryIncome.value?.lastOrNull()?.id?.substring(1)?.toInt()
         val newId = numberLastItem?.let { it + 1 } ?: 0
 
-        val newCategoryItem = CategoryItem("i$newId", name, icon)
+        val newCategoryItem = CategoryItem("i$newId", name, iconID)
 
-        allCategoryIncome.add(newCategoryItem)
-        Executors.newSingleThreadExecutor().execute {
-            categoryItemDao?.insert(newCategoryItem)
+        categoryItemDao.insert(newCategoryItem)
+    }
+
+    suspend fun removeCategoryExpense(position: Int) {
+        allCategoryExpense.value?.get(position)?.let {
+            categoryItemDao.delete(it)
         }
     }
 
-    fun removeCategoryExpense(position: Int) {
-        Executors.newSingleThreadExecutor().execute {
-            categoryItemDao?.delete(allCategoryExpense[position])
+    suspend fun removeCategoryIncome(position: Int) {
+        allCategoryIncome.value?.get(position)?.let {
+            categoryItemDao.delete(it)
         }
-        allCategoryExpense.removeAt(position)
-    }
-
-    fun removeCategoryIncome(position: Int) {
-        Executors.newSingleThreadExecutor().execute {
-            categoryItemDao?.delete(allCategoryExpense[position])
-        }
-        allCategoryIncome.removeAt(position)
     }
 
 }

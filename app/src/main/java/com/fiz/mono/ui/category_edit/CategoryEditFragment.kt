@@ -10,6 +10,8 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.fiz.mono.R
+import com.fiz.mono.data.CategoryStore
+import com.fiz.mono.data.database.ItemDatabase
 import com.fiz.mono.databinding.FragmentCategoryEditBinding
 import com.fiz.mono.util.CategoriesAdapter
 
@@ -18,7 +20,14 @@ class CategoryEditFragment : Fragment() {
     private var _binding: FragmentCategoryEditBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: CategoryEditViewModel by viewModels()
+    private val viewModel: CategoryEditViewModel by viewModels {
+        CategoryEditViewModelFactory(
+            CategoryStore(
+                requireContext(),
+                ItemDatabase.getDatabase()?.categoryItemDao()!!
+            )
+        )
+    }
 
     private lateinit var expenseAdapter: CategoriesAdapter
     private lateinit var incomeAdapter: CategoriesAdapter
@@ -47,12 +56,19 @@ class CategoryEditFragment : Fragment() {
         binding.removeButton.setOnClickListener(::removeButtonOnClickListener)
 
         expenseAdapter = CategoriesAdapter(R.color.red, ::adapterExpenseOnClickListener)
-        expenseAdapter.submitList(viewModel.getAllCategoryItemExpense())
         binding.expenseRecyclerView.adapter = expenseAdapter
 
         incomeAdapter = CategoriesAdapter(R.color.red, ::adapterIncomeOnClickListener)
-        incomeAdapter.submitList(viewModel.getAllCategoryItemIncome())
         binding.incomeRecyclerView.adapter = incomeAdapter
+
+        viewModel.allCategoryExpense.observe(viewLifecycleOwner) {
+            expenseAdapter.submitList(it)
+            incomeAdapter.submitList(viewModel.getAllCategoryItemIncome())
+        }
+        viewModel.allCategoryIncome.observe(viewLifecycleOwner) {
+            expenseAdapter.submitList(viewModel.getAllCategoryItemExpense())
+            incomeAdapter.submitList(it)
+        }
     }
 
     private fun backButtonOnClickListener(v: View): Unit {

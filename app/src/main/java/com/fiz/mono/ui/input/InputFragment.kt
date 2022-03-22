@@ -13,6 +13,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import com.fiz.mono.R
+import com.fiz.mono.data.CategoryStore
+import com.fiz.mono.data.database.ItemDatabase
 import com.fiz.mono.databinding.FragmentInputBinding
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
@@ -29,7 +31,14 @@ class InputFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val mainViewModel: MainViewModel by activityViewModels()
-    private val viewModel: CategoryInputViewModel by viewModels()
+    private val viewModel: CategoryInputViewModel by viewModels {
+        CategoryInputViewModelFactory(
+            CategoryStore(
+                requireContext(),
+                ItemDatabase.getDatabase()?.categoryItemDao()!!
+            )
+        )
+    }
 
     private lateinit var adapter: CategoriesAdapter
 
@@ -70,11 +79,6 @@ class InputFragment : Fragment() {
                     .actionInputFragmentToPINPasswordFragment(PINPasswordFragment.START)
             view.findNavController().navigate(action)
             return
-        }
-
-        if (viewModel.edit) {
-            viewModel.initLoad()
-            viewModel.edit = false
         }
 
         binding.noteCameraEditText.setOnClickListener(::noteCameraOnClickListener)
@@ -122,13 +126,16 @@ class InputFragment : Fragment() {
             } ?: binding.photo3ImageView.setImageBitmap(null)
         }
         viewModel.note.observe(viewLifecycleOwner) {
-//            binding.noteEditText.setText(it.toString())
+            if (binding.noteEditText.text.toString() == it.toString())
+                return@observe
+
+            binding.noteEditText.setText(it.toString())
         }
         viewModel.value.observe(viewLifecycleOwner) {
-//            if (it == 0.0)
-//                binding.valueEditText.setText("")
-//            else
-//                binding.valueEditText.setText(it.toString())
+            if (binding.valueEditText.text.toString() == it.toString())
+                return@observe
+
+            binding.valueEditText.setText(it.toString())
         }
 
         updateUI()
@@ -140,8 +147,8 @@ class InputFragment : Fragment() {
         before: Int,
         count: Int
     ) {
-        viewModel.setValue(text)
-            updateUI()
+        viewModel.setValue(text.toString())
+        updateUI()
     }
 
     private fun noteEditTextOnTextChanged(
@@ -190,7 +197,7 @@ class InputFragment : Fragment() {
                 viewModel.edit = true
                 val action =
                     InputFragmentDirections
-                        .actionInputFragmentToCategoryFragment("", 0, "")
+                        .actionInputFragmentToCategoryFragment("", "", "")
                 view?.findNavController()?.navigate(action)
                 return true
             }
@@ -200,7 +207,7 @@ class InputFragment : Fragment() {
                 viewModel.edit = true
                 val action =
                     InputFragmentDirections
-                        .actionInputFragmentToCategoryFragment("", 0, "")
+                        .actionInputFragmentToCategoryFragment("", "", "")
                 view?.findNavController()?.navigate(action)
                 return true
             }
@@ -278,7 +285,7 @@ class InputFragment : Fragment() {
             }
         }
 
-        if (viewModel.isSelected() && viewModel.value.value != 0.0)
+        if (viewModel.isSelected() && viewModel.value.value?.isNotBlank() == true)
             binding.submitButton.setEnabled()
         else
             binding.submitButton.setDisabled()

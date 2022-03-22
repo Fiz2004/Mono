@@ -98,7 +98,7 @@
             app:nullable="true" />
         <argument
             android:name="icon"
-            app:argType="integer" />
+            app:argType="string" />
         <argument
             android:name="type"
             app:argType="string" />

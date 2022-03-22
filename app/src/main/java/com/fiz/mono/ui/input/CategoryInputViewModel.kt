@@ -12,7 +12,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.ViewModelProvider
 import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.CategoryStore
@@ -28,25 +28,10 @@ import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
-class CategoryInputViewModel : ViewModel() {
+class CategoryInputViewModel(private val categoryStore: CategoryStore) : ViewModel() {
     var edit: Boolean = false
-    private var _allCategoryExpense: MutableLiveData<MutableList<CategoryItem>> = MutableLiveData(mutableListOf())
-    val allCategoryExpense: LiveData<MutableList<CategoryItem>>
-        get() = _allCategoryExpense
-
-    private var _allCategoryIncome: MutableLiveData<MutableList<CategoryItem>> =
-        MutableLiveData(mutableListOf())
-    val allCategoryIncome: LiveData<MutableList<CategoryItem>>
-        get() = _allCategoryIncome
-
-    init {
-        viewModelScope.launch {
-            CategoryStore.init {
-                _allCategoryExpense.value = CategoryStore.getAllCategoryExpenseForInput()
-                _allCategoryIncome.value = CategoryStore.getAllCategoryIncomeForInput()
-            }
-        }
-    }
+    var allCategoryExpense = categoryStore.getAllCategoryExpenseForInput()
+    var allCategoryIncome = categoryStore.getAllCategoryIncomeForInput()
 
     private var selectedAdapter: Int = InputFragment.EXPENSE
 
@@ -56,8 +41,8 @@ class CategoryInputViewModel : ViewModel() {
     val note: LiveData<String>
         get() = _note
 
-    private val _value: MutableLiveData<Double> = MutableLiveData(0.0)
-    val value: LiveData<Double>
+    private val _value: MutableLiveData<String> = MutableLiveData("")
+    val value: LiveData<String>
         get() = _value
 
     private val _photoPath: MutableLiveData<MutableList<String?>> = MutableLiveData(mutableListOf())
@@ -82,46 +67,43 @@ class CategoryInputViewModel : ViewModel() {
         }
     }
 
-    fun setValue(text: CharSequence?) {
-        val value1 = text.toString()
-        _value.value = if (value1.isNotBlank())
-            value1.toDouble()
-        else
-            0.0
+    fun setValue(text: String) {
+        _value.value = text
     }
 
     fun clickSubmit() {
         val selectedCategoryItem = getAllCategoryFromSelected().first { it.selected }
 
         val value1 = if (selectedAdapter == InputFragment.EXPENSE)
-            -value.value!!
+            -value.value?.toDouble()!!
         else
-            value.value
+            value.value?.toDouble()
 
 
         CoroutineScope(Dispatchers.IO).launch {
             TransactionStore.init {
+                CoroutineScope(Dispatchers.Main).launch {
+                    val lastItem = TransactionStore.getAllTransactions().lastOrNull()
+                    val id = lastItem?.id
+                    val newId = id?.let { it + 1 } ?: 0
 
-                val lastItem = TransactionStore.getAllTransactions().lastOrNull()
-                val id = lastItem?.id
-                val newId = id?.let { it + 1 } ?: 0
+                    val photoPathList: List<String?> = photoPath.value?.toList() ?: listOf("")
 
-                val photoPathList: List<String?> = photoPath.value?.toList() ?: listOf("")
-
-                TransactionStore.insertNewTransaction(
-                    TransactionItem(
-                        newId,
-                        Calendar.getInstance().time,
-                        value1 ?: 0.0,
-                        selectedCategoryItem.name,
-                        note.value ?: "",
-                        selectedCategoryItem.imgSrc,
-                        photoPathList
+                    TransactionStore.insertNewTransaction(
+                        TransactionItem(
+                            newId,
+                            Calendar.getInstance().time,
+                            value1 ?: 0.0,
+                            selectedCategoryItem.name,
+                            note.value ?: "",
+                            selectedCategoryItem.mapImgSrc,
+                            photoPathList
+                        )
                     )
-                )
 
-                _value.value = 0.0
-                _note.value = ""
+                    _value.value = ""
+                    _note.value = ""
+                }
             }
         }
 
@@ -253,11 +235,6 @@ class CategoryInputViewModel : ViewModel() {
         return null
     }
 
-    fun initLoad() {
-        _allCategoryExpense.value = CategoryStore.getAllCategoryExpenseForInput()
-        _allCategoryIncome.value = CategoryStore.getAllCategoryIncomeForInput()
-    }
-
     fun addPhotoPath() {
         photoPath.value?.add(currentPhotoPath)
         _photoPath.value = photoPath.value
@@ -269,5 +246,16 @@ class CategoryInputViewModel : ViewModel() {
 
     fun setNote(text: String) {
         _note.value = text
+    }
+}
+
+class CategoryInputViewModelFactory(private val categoryStore: CategoryStore) :
+    ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(CategoryInputViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return CategoryInputViewModel(categoryStore) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

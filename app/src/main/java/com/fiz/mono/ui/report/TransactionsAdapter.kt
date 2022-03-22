@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fiz.mono.R
 import com.fiz.mono.data.TransactionItem
+import com.fiz.mono.data.getDrawableCategoryIcon
 import com.fiz.mono.databinding.ItemTransactionBinding
 import com.fiz.mono.databinding.ItemTransactionDateExpenseIncomeBinding
 import com.fiz.mono.ui.getCurrencyFormat
@@ -54,9 +55,9 @@ class TransactionsAdapter(private val currency: String) :
         private var binding: ItemTransactionBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(transactionItem: TransactionItem, currency: String) {
-            transactionItem.imgSrc?.let {
+            transactionItem.mapImgSrc.let {
                 binding.iconTransactionImageView.setImageResource(
-                    it
+                    getDrawableCategoryIcon(it)
                 )
             }
 

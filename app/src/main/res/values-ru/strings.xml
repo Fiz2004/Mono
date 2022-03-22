@@ -47,4 +47,18 @@
     <string name="expense_income">Расход/Доход</string>
     <string name="previous_balance">Предыдущий баланс</string>
     <string name="all">Все</string>
+    <string name="bank">Банк</string>
+    <string name="food">Еда</string>
+    <string name="medican">медицина</string>
+    <string name="gym">Тренажерный зал</string>
+    <string name="coffee">Кофе</string>
+    <string name="shopping">Поход по магазинам</string>
+    <string name="cats">Кошки</string>
+    <string name="party">Вечеринка</string>
+    <string name="gift">Подарок</string>
+    <string name="gas">Газ</string>
+    <string name="freelance">Внештатный</string>
+    <string name="salary">Зарплата</string>
+    <string name="bonus">Бонус</string>
+    <string name="loan">Займ</string>
 </resources>

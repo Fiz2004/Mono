@@ -1,6 +1,5 @@
 package com.fiz.mono.data
 
-import androidx.annotation.DrawableRes
 import androidx.recyclerview.widget.DiffUtil
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -10,7 +9,7 @@ data class CategoryItem(
     @PrimaryKey
     val id: String,
     val name: String,
-    @DrawableRes val imgSrc: Int?,
+    val mapImgSrc: String,
     var selected: Boolean = false
 )
 

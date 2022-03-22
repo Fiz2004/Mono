@@ -26,8 +26,8 @@ class CategoryAddViewModel : ViewModel() {
         return allCategoryIcon.map { it.copy() }
     }
 
-    fun getSelectedIcon(): Int {
-        return allCategoryIcon.first { it.selected }.imgSrc
+    fun getSelectedIcon(): String {
+        return allCategoryIcon.first { it.selected }.id
     }
 
     fun getVisibilityAddButton(): Int {

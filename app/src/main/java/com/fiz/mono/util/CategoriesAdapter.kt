@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.CategoryItemDiff
+import com.fiz.mono.data.getDrawableCategoryIcon
 import com.fiz.mono.databinding.ItemCategoryBinding
 
 class CategoriesAdapter(private val colorSelected: Int, private val callback: (Int) -> Unit) :
@@ -29,22 +30,23 @@ class CategoriesViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(categoryItem: CategoryItem, colorSelected: Int, callback: (Int) -> Unit) {
         binding.apply {
-            iconImageView.visibility = getIconImageView(categoryItem.imgSrc)
-            categoryItem.imgSrc?.let { iconImageView.setImageResource(it) }
+            iconImageView.visibility = getIconImageView(categoryItem.mapImgSrc)
+            if (categoryItem.mapImgSrc != "")
+                iconImageView.setImageResource(getDrawableCategoryIcon(categoryItem.mapImgSrc))
             descriptionTextView.text = categoryItem.name
             descriptionTextView.setTextAppearanceCompat(
                 root.context,
                 R.style.size12_color_primary
             )
-            descriptionTextView.setTextColor(getColorText(categoryItem.imgSrc))
+            descriptionTextView.setTextColor(getColorText(categoryItem.mapImgSrc))
             cardMaterialCard.strokeColor = getStrokeColor(categoryItem.selected, colorSelected)
 
             root.setOnClickListener { callback(adapterPosition) }
         }
     }
 
-    private fun getColorText(imgSrc: Int?): Int {
-        return if (imgSrc != null)
+    private fun getColorText(imgSrc: String): Int {
+        return if (imgSrc != "")
             binding.root.context.themeColor(com.google.android.material.R.attr.colorPrimary)
         else
             binding.root.context.themeColor(com.google.android.material.R.attr.colorSecondary)
@@ -59,7 +61,7 @@ class CategoriesViewHolder(
         }
     }
 
-    private fun getIconImageView(imgSrc: Int?): Int {
-        return if (imgSrc != null) View.VISIBLE else View.GONE
+    private fun getIconImageView(imgSrc: String): Int {
+        return if (imgSrc != "") View.VISIBLE else View.GONE
     }
 }
