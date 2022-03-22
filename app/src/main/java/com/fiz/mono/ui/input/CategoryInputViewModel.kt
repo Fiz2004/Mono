@@ -15,7 +15,6 @@ import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
-import com.fiz.mono.data.database.ItemDatabase
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
@@ -24,9 +23,12 @@ import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
-class CategoryInputViewModel(private val categoryStore: CategoryStore) : ViewModel() {
+class CategoryInputViewModel(private val categoryStore: CategoryStore, private val transactionStore: TransactionStore) :
+    ViewModel() {
     var allCategoryExpense = categoryStore.getAllCategoryExpenseForInput()
     var allCategoryIncome = categoryStore.getAllCategoryIncomeForInput()
+
+    var allTransaction = transactionStore.getAllTransactionsForInput()
 
     private var selectedAdapter: Int = InputFragment.EXPENSE
 
@@ -74,8 +76,6 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore) : ViewMod
             -value.value?.toDouble()!!
         else
             value.value?.toDouble()
-
-        val transactionStore = TransactionStore(ItemDatabase.getDatabase()?.transactionItemDao()!!)
 
         viewModelScope.launch {
             val lastItem = transactionStore.allTransactions.value?.lastOrNull()
@@ -243,13 +243,17 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore) : ViewMod
     }
 }
 
-class CategoryInputViewModelFactory(private val categoryStore: CategoryStore) :
+class CategoryInputViewModelFactory(
+    private val categoryStore: CategoryStore,
+    private val transactionStore: TransactionStore
+) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(CategoryInputViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return CategoryInputViewModel(categoryStore) as T
+            return CategoryInputViewModel(categoryStore, transactionStore) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+

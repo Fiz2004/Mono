@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.data.CategoryStore
+import com.fiz.mono.data.TransactionStore
 import com.fiz.mono.data.database.ItemDatabase
 import com.fiz.mono.databinding.FragmentCalendarBinding
 import com.fiz.mono.ui.MainViewModel
@@ -27,6 +28,9 @@ class CalendarFragment : Fragment() {
         CalendarViewModelFactory(
             CategoryStore(
                 ItemDatabase.getDatabase()?.categoryItemDao()!!
+            ),
+            TransactionStore(
+                ItemDatabase.getDatabase()?.transactionItemDao()!!
             )
         )
     }
@@ -52,21 +56,16 @@ class CalendarFragment : Fragment() {
         binding.titleTextView.text = SimpleDateFormat("MMММ, yyyy").format(mainViewModel.date.time)
 
         adapter = CalendarAdapter()
-        val list = getDayWeeks().map { DataItem.DayWeekItem(it) } + getTransactionsOfDays().map {
-            DataItem.DayItem(TransactionsDay(it.day, it.expense, it.income))
-        }
-        adapter.submitList(list)
         binding.calendarRecyclerView.adapter = adapter
 
-    }
-
-    private fun getTransactionsOfDays(): List<TransactionsDay> {
-        return listOf(
-            TransactionsDay(1, true, true),
-            TransactionsDay(2, false, true),
-            TransactionsDay(3, true, false),
-            TransactionsDay(4, false, false)
-        )
+        viewModel.allTransaction.observe(viewLifecycleOwner) {
+            val list =
+                getDayWeeks().map { DataItem.DayWeekItem(it) } + viewModel.getTransactionsOfDays(mainViewModel.date)
+                    .map {
+                        DataItem.DayItem(TransactionsDay(it.day, it.expense, it.income))
+                    }
+            adapter.submitList(list)
+        }
     }
 
     private fun getDayWeeks(): List<String> {

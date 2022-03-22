@@ -16,6 +16,7 @@ import androidx.navigation.fragment.navArgs
 import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.CategoryStore
+import com.fiz.mono.data.TransactionStore
 import com.fiz.mono.data.database.ItemDatabase
 import com.fiz.mono.databinding.FragmentInputBinding
 import com.fiz.mono.ui.MainViewModel
@@ -49,7 +50,10 @@ class InputFragment : Fragment() {
     private fun viewModelInit(): () -> CategoryInputViewModelFactory = {
         CategoryInputViewModelFactory(
             CategoryStore(
-                ItemDatabase.getDatabase()?.categoryItemDao()!!
+                ItemDatabase.getDatabase()?.categoryItemDao()!!,
+            ),
+            TransactionStore(
+                ItemDatabase.getDatabase()?.transactionItemDao()!!
             )
         )
     }
@@ -97,6 +101,9 @@ class InputFragment : Fragment() {
             photoPaths.observe(viewLifecycleOwner, ::photoPathObserve)
             note.observe(viewLifecycleOwner, ::noteObserve)
             value.observe(viewLifecycleOwner, ::valueObserve)
+            allTransaction.observe(viewLifecycleOwner) {
+                val add = 0
+            }
         }
 
         updateUI()
@@ -264,7 +271,6 @@ class InputFragment : Fragment() {
         binding.valueEditText.setText(value.toString())
     }
 
-
     private fun photoPathObserve(photoPaths: MutableList<String?>) {
         if (viewModel.photoPaths.value?.size == 3)
             binding.noteCameraEditText.isEnabled = false
@@ -335,7 +341,6 @@ class InputFragment : Fragment() {
             }
         } ?: binding.photo3ImageView.setImageBitmap(null)
     }
-
 
     private fun allCategoryIncomeObserve(allCategoryIncome: List<CategoryItem>) {
         val allCategory = viewModel.getAllCategoryFromSelected()
