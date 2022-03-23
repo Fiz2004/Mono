@@ -274,6 +274,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/edit_image_bg"
+        android:layout_marginStart="@dimen/fragmentPaddingStart"
+        android:layout_marginEnd="@dimen/fragmentPaddingEnd"
         android:padding="24dp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"

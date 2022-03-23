@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.fiz.mono.R
 import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
@@ -15,6 +17,8 @@ import com.fiz.mono.data.database.ItemDatabase
 import com.fiz.mono.databinding.FragmentCalendarBinding
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
+import com.fiz.mono.util.getColorCompat
+import com.fiz.mono.util.themeColor
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -25,21 +29,17 @@ class CalendarFragment : Fragment() {
     private val mainViewModel: MainViewModel by activityViewModels()
     private val viewModel: CalendarViewModel by viewModels(factoryProducer = viewModelInit())
 
+    private val monthsTextView = emptyList<TextView>().toMutableList()
+
     private lateinit var calendarAdapter: CalendarAdapter
     private lateinit var transactionAdapter: TransactionsAdapter
 
     private fun viewModelInit(): () -> CalendarViewModelFactory = {
         val database = ItemDatabase.getDatabase()
-        database?.let {
-            CalendarViewModelFactory(
-                CategoryStore(
-                    database.categoryItemDao()
-                ),
-                TransactionStore(
-                    database.transactionItemDao()
-                )
-            )
-        } ?: throw Error("Database not available")
+        CalendarViewModelFactory(
+            CategoryStore(database?.categoryItemDao()!!),
+            TransactionStore(database.transactionItemDao())
+        )
     }
 
     override fun onCreateView(
@@ -58,23 +58,77 @@ class CalendarFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.backButton.setOnClickListener(::backButtonOnClickListener)
-
-        binding.titleTextView.text =
-            SimpleDateFormat("MMMM, yyyy", Locale.US).format(mainViewModel.date.time)
-
         calendarAdapter = CalendarAdapter(::calendarAdapterOnClickListener)
-        binding.calendarRecyclerView.adapter = calendarAdapter
-
         transactionAdapter = TransactionsAdapter(mainViewModel.currency)
-        binding.transactionRecyclerView.adapter = transactionAdapter
+
+        binding.apply {
+            backButton.setOnClickListener(::backButtonOnClickListener)
+            choiceMonthImageButton.setOnClickListener(::choiceMonthOnClickListener)
+            calendarRecyclerView.adapter = calendarAdapter
+            transactionRecyclerView.adapter = transactionAdapter
+
+            monthsTextView.add(januaryTextView)
+            monthsTextView.add(februaryTextView)
+            monthsTextView.add(marchTextView)
+            monthsTextView.add(aprilTextView)
+            monthsTextView.add(mayTextView)
+            monthsTextView.add(juneTextView)
+            monthsTextView.add(julyTextView)
+            monthsTextView.add(augustTextView)
+            monthsTextView.add(septemberTextView)
+            monthsTextView.add(octoberTextView)
+            monthsTextView.add(novemberTextView)
+            monthsTextView.add(decemberTextView)
+
+            monthsTextView.forEach {
+                it.setOnClickListener {
+                    monthsOnClickListener(
+                        monthsTextView.indexOf(
+                            it
+                        )
+                    )
+                }
+            }
+        }
 
         viewModel.allTransaction.observe(viewLifecycleOwner, ::allTransactionObserve)
+
+        mainViewModel.date.observe(viewLifecycleOwner, ::dateObserve)
+    }
+
+    private fun monthsOnClickListener(numberMonth: Int) {
+        mainViewModel.setMonth(numberMonth)
+        binding.choiceMonthConstraintLayout.visibility = View.GONE
+    }
+
+    private fun choiceMonthOnClickListener(view: View?) {
+        binding.choiceMonthConstraintLayout.visibility =
+            if (binding.choiceMonthConstraintLayout.visibility == View.GONE)
+                View.VISIBLE
+            else
+                View.GONE
+
+        val currentMonth = mainViewModel.date.value?.get(Calendar.MONTH) ?: 0
+
+        for (monthTextView in monthsTextView)
+            if (monthsTextView.indexOf(monthTextView) == (currentMonth))
+                monthTextView.setTextColor(requireContext().getColorCompat(R.color.blue))
+            else
+                monthTextView.setTextColor(requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary))
+
+    }
+
+    private fun dateObserve(calendar: Calendar?) {
+        binding.titleTextView.text =
+            SimpleDateFormat("MMMM, yyyy", Locale.US).format(calendar?.time!!)
+
+        allTransactionObserve(listOf())
     }
 
     private fun allTransactionObserve(allTransaction: List<TransactionItem>) {
-        calendarAdapter.submitList(viewModel.getListCalendarDataItem(mainViewModel.date))
-        val listTransactionsDataItem = viewModel.getListTransactionsDataItem(mainViewModel.date)
+        calendarAdapter.submitList(viewModel.getListCalendarDataItem(mainViewModel.date.value!!))
+        val listTransactionsDataItem =
+            viewModel.getListTransactionsDataItem(mainViewModel.date.value!!)
 
         binding.noTransactionsTextView.visibility = if (listTransactionsDataItem.size == 0)
             View.VISIBLE else View.GONE
@@ -88,10 +142,7 @@ class CalendarFragment : Fragment() {
     private fun calendarAdapterOnClickListener(transactionsDay: TransactionsDay) {
         if (transactionsDay.day == 0) return
 
-        val date = mainViewModel.date
-        date.set(Calendar.DATE, transactionsDay.day)
-
-        allTransactionObserve(listOf())
+        mainViewModel.setDate(transactionsDay.day)
     }
 
     private fun backButtonOnClickListener(view: View) {

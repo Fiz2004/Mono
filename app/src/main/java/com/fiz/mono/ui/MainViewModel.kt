@@ -1,5 +1,6 @@
 package com.fiz.mono.ui
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -14,22 +15,44 @@ class MainViewModel : ViewModel() {
 
     var statePIN = ""
 
-    var date: Calendar = Calendar.getInstance()
+    var date: MutableLiveData<Calendar> = MutableLiveData(Calendar.getInstance())
 
     var tabSelectedReport: Int = 0
 
     var categorySelectedReport = 0
 
-    fun getFormatDate(): String {
-        return SimpleDateFormat("MMM dd, yyyy (EEE)").format(date.time)
+    fun getFormatDate(pattern: String): String {
+        return SimpleDateFormat(pattern, Locale.US).format(date.value?.time ?: "")
     }
 
-    fun datePlusOne() {
-        date.add(Calendar.DAY_OF_YEAR, 1)
+    fun setMonth(month: Int) {
+        date.value?.set(Calendar.MONTH, month)
+        date.value = date.value
     }
 
-    fun dateMinusOne() {
-        date.add(Calendar.DAY_OF_YEAR, -1)
+    fun setDate(day: Int) {
+        date.value?.set(Calendar.DATE, day)
+        date.value = date.value
+    }
+
+    fun dateDayPlusOne() {
+        date.value?.add(Calendar.DAY_OF_YEAR, 1)
+        date.value = date.value
+    }
+
+    fun dateDayMinusOned() {
+        date.value?.add(Calendar.DAY_OF_YEAR, -1)
+        date.value = date.value
+    }
+
+    fun dateMonthPlusOne() {
+        date.value?.add(Calendar.MONTH, 1)
+        date.value = date.value
+    }
+
+    fun dateMonthMinusOne() {
+        date.value?.add(Calendar.MONTH, -1)
+        date.value = date.value
     }
 }
 

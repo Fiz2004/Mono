@@ -156,7 +156,7 @@ class InputFragment : Fragment() {
     }
 
     private fun rightDateRangeOnClickListener(view: View) {
-        mainViewModel.datePlusOne()
+        mainViewModel.dateDayPlusOne()
         updateUI()
     }
 
@@ -168,12 +168,12 @@ class InputFragment : Fragment() {
     }
 
     private fun leftDateRangeOnClickListener(view: View) {
-        mainViewModel.dateMinusOne()
+        mainViewModel.dateDayMinusOned()
         updateUI()
     }
 
     private fun submitButtonOnClickListener(view: View) {
-        viewModel.clickSubmit(mainViewModel.date.time)
+        viewModel.clickSubmit(mainViewModel.date.value?.time!!)
         adapter.submitList(viewModel.getAllCategoryFromSelected())
         updateUI()
     }
@@ -220,7 +220,8 @@ class InputFragment : Fragment() {
 
     private fun updateUI() {
         binding.currencyTextView.text = mainViewModel.currency
-        binding.dataRangeLayout.dateTextView.text = mainViewModel.getFormatDate()
+        binding.dataRangeLayout.dateTextView.text =
+            mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
         binding.ExpenseIncomeTextView.text = viewModel.getTypeFromSelectedAdapter(requireContext())
 
         binding.noteCameraEditText.isEnabled = checkCameraHardware(requireActivity())

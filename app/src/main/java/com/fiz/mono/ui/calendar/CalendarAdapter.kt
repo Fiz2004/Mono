@@ -72,31 +72,34 @@ class DayItemViewHolder(
     fun bind(transactionsDay: TransactionsDay, callback: (TransactionsDay) -> Unit) {
         binding.apply {
             dayOfMonthTextView.text = transactionsDay.getFormatDayOfMonthOrBlank()
-
-            expenseImageView.visibility =
-                if (transactionsDay.expense) View.VISIBLE else View.GONE
-
-            incomeImageView.visibility =
-                if (transactionsDay.income) View.VISIBLE else View.GONE
-
-            cardMaterialCard.backgroundTintList = ColorStateList.valueOf(
-                binding.root.context.run {
-                    if (transactionsDay.today)
-                        themeColor(R.attr.colorGray)
-                    else
-                        themeColor(R.attr.colorBackground)
-                }
-            )
-
-            cardMaterialCard.strokeWidth = if (transactionsDay.selected)
-                2
-            else
-                0
+            expenseImageView.visibility = getVisibility(transactionsDay.expense)
+            incomeImageView.visibility = getVisibility(transactionsDay.income)
+            cardMaterialCard.backgroundTintList = getBackgroundTint(transactionsDay.today)
+            cardMaterialCard.strokeWidth = getStrokeWidth(transactionsDay.selected)
 
             root.setOnClickListener { callback(transactionsDay) }
         }
 
     }
+
+    private fun getVisibility(visibility: Boolean) =
+        if (visibility) View.VISIBLE else View.GONE
+
+    private fun getBackgroundTint(today: Boolean) =
+        ColorStateList.valueOf(
+            binding.root.context.run {
+                if (today)
+                    themeColor(R.attr.colorGray)
+                else
+                    themeColor(R.attr.colorBackground)
+            }
+        )
+
+    private fun getStrokeWidth(selected: Boolean) =
+        if (selected)
+            2
+        else
+            0
 
     companion object {
         fun from(parent: ViewGroup): DayItemViewHolder {
