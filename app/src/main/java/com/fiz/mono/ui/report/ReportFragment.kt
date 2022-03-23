@@ -57,10 +57,10 @@ class ReportFragment : Fragment() {
             dataRangeLayout.leftDateRangeImageButton.setOnClickListener(::leftDateRangeOnClickListener)
             dataRangeLayout.rightDateRangeImageButton.setOnClickListener(::rightDateRangeOnClickListener)
             dataRangeLayout.dateTextView.setOnClickListener(::dateOnClickListener)
-            allExpenseIncomeToggleButton.addOnButtonCheckedListener(::allExpenseIncomeOnButtonCheckedListener)
             choiceReportImageButton.setOnClickListener(::choiceReportOnClickListener)
             monthlyTextView.setOnClickListener(::monthlyOnClickListener)
             categoryTextView.setOnClickListener(::categoryOnClickListener)
+            allExpenseIncomeToggleButton.addOnButtonCheckedListener(::allExpenseIncomeOnButtonCheckedListener)
             transactionsRecyclerView.adapter = adapter
         }
 

@@ -61,7 +61,7 @@
     <string name="salary">Зарплата</string>
     <string name="bonus">Бонус</string>
     <string name="loan">Займ</string>
-    <string name="no_transactions">В этот день сделок не совершается</string>
+    <string name="no_transactions">В этот день сделок не совершалось</string>
     <string name="monthly">По месяцам</string>
     <string name="by_category">По категориям</string>
     <string name="january">Январь</string>

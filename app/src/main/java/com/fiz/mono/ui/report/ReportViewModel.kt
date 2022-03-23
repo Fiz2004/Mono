@@ -50,16 +50,18 @@ class ReportViewModel(private val transactionStore: TransactionStore) : ViewMode
     }
 
     fun getTransactions(tabSelectedReport: Int, date: Calendar): MutableList<TransactionsDataItem> {
-        val groupTransactions =
+        var groupTransactions =
             transactionStore.getGroupTransactionsByDays(date, "MMM dd, yyyy")
 
-        groupTransactions?.map {
+        groupTransactions = groupTransactions?.mapValues {
             when (tabSelectedReport) {
-                0 -> it.value.sortedByDescending { it.date }.toMutableList()
-                1 -> it.value.filter { it.value < 0 }.sortedByDescending { it.date }
-                else -> it.value.filter { it.value > 0 }.sortedByDescending { it.date }
+                0 -> it.value
+                1 -> it.value.filter { it.value < 0 }
+                else -> it.value.filter { it.value > 0 }
             }
         }
+
+        groupTransactions = groupTransactions?.toSortedMap(compareByDescending { it })
 
         val items = mutableListOf<TransactionsDataItem>()
         if (groupTransactions != null) {

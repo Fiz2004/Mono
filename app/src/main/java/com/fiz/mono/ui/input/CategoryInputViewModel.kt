@@ -96,6 +96,7 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
                 )
             )
 
+            _photoPaths.value = emptyList<String>().toMutableList()
             _value.value = ""
             _note.value = ""
         }

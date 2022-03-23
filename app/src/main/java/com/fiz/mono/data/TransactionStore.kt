@@ -92,6 +92,7 @@ class TransactionStore(private val transactionItemDao: TransactionItemDAO) {
         date: Calendar
     ): List<TransactionItem>? {
         val currentDay = date.get(Calendar.DATE)
+        val dayString = if (currentDay < 10) "0$currentDay" else "$currentDay"
 
         val allTransactionsForMonth =
             getAllTransactionsForMonth(date)
@@ -100,7 +101,7 @@ class TransactionStore(private val transactionItemDao: TransactionItemDAO) {
             SimpleDateFormat(
                 "dd",
                 Locale.US
-            ).format(it.date.time) == currentDay.toString()
+            ).format(it.date.time) == dayString
         }
 
         return result
