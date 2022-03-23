@@ -11,7 +11,7 @@
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:backgroundTint="?attr/colorMain"
         android:textAllCaps="false"
         android:textSize="16sp"
@@ -44,12 +44,11 @@
             android:layout_width="match_parent"
             android:layout_height="0dp">
 
-
             <include
                 android:id="@+id/dataRangeLayout"
                 layout="@layout/layout_data_range"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_marginTop="24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -61,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 tools:text="@string/expense"
-                android:textSize="14sp"
+                android:textAppearance="@style/size14_color_secondary"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/dataRangeLayout" />
 
@@ -99,6 +98,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="@string/note"
+                android:textAppearance="@style/size14_color_secondary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"

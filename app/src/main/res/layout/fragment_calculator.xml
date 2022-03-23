@@ -5,16 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingStart="16dp"
-    android:paddingTop="8dp"
     android:paddingEnd="16dp"
     android:paddingBottom="24dp"
     tools:context=".ui.calculator.CalculatorFragment">
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:text="@string/calculator"
-        android:textAlignment="center"
+        android:gravity="center"
         android:textAppearance="@style/size16_color_primary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

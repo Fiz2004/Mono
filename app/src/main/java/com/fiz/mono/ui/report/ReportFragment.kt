@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.fiz.mono.R
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
@@ -14,6 +15,7 @@ import com.fiz.mono.data.database.ItemDatabase
 import com.fiz.mono.databinding.FragmentReportBinding
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.getCurrencyFormat
+import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.themeColor
 import java.text.SimpleDateFormat
@@ -68,6 +70,8 @@ class ReportFragment : Fragment() {
             allTransactionsObserve(listOf())
         }
 
+        binding.dataRangeLayout.dateTextView.setOnClickListener(::dateOnClickListener)
+
         binding.allExpenseIncomeToggleButton.addOnButtonCheckedListener { toggleButton, checkedId, isChecked ->
             when (checkedId) {
                 R.id.toggle1 -> {
@@ -117,6 +121,13 @@ class ReportFragment : Fragment() {
 
         adapter = TransactionsAdapter(mainViewModel.currency)
         binding.transactionsRecyclerView.adapter = adapter
+    }
+
+    private fun dateOnClickListener(view: View) {
+        val action =
+            ReportFragmentDirections
+                .actionReportFragmentToCalendarFragment()
+        findNavController().navigate(action)
     }
 
     private fun allTransactionsObserve(allTransactions: List<TransactionItem>) {

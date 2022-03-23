@@ -9,10 +9,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.data.CategoryStore
+import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
 import com.fiz.mono.data.database.ItemDatabase
 import com.fiz.mono.databinding.FragmentCalendarBinding
 import com.fiz.mono.ui.MainViewModel
+import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -23,17 +25,21 @@ class CalendarFragment : Fragment() {
     private val mainViewModel: MainViewModel by activityViewModels()
     private val viewModel: CalendarViewModel by viewModels(factoryProducer = viewModelInit())
 
-    private lateinit var adapter: CalendarAdapter
+    private lateinit var calendarAdapter: CalendarAdapter
+    private lateinit var transactionAdapter: TransactionsAdapter
 
     private fun viewModelInit(): () -> CalendarViewModelFactory = {
-        CalendarViewModelFactory(
-            CategoryStore(
-                ItemDatabase.getDatabase()?.categoryItemDao()!!
-            ),
-            TransactionStore(
-                ItemDatabase.getDatabase()?.transactionItemDao()!!
+        val database = ItemDatabase.getDatabase()
+        database?.let {
+            CalendarViewModelFactory(
+                CategoryStore(
+                    database.categoryItemDao()
+                ),
+                TransactionStore(
+                    database.transactionItemDao()
+                )
             )
-        )
+        } ?: throw Error("Database not available")
     }
 
     override fun onCreateView(
@@ -57,28 +63,35 @@ class CalendarFragment : Fragment() {
         binding.titleTextView.text =
             SimpleDateFormat("MMMM, yyyy", Locale.US).format(mainViewModel.date.time)
 
-        adapter = CalendarAdapter()
-        binding.calendarRecyclerView.adapter = adapter
+        calendarAdapter = CalendarAdapter(::calendarAdapterOnClickListener)
+        binding.calendarRecyclerView.adapter = calendarAdapter
 
-        viewModel.allTransaction.observe(viewLifecycleOwner) {
-            val list =
-                getDayWeeks().map { DataItem.DayWeekItem(it) } + viewModel.getTransactionsOfDays(mainViewModel.date)
-                    .map {
-                        DataItem.DayItem(
-                            TransactionsDay(
-                                it.day,
-                                it.expense,
-                                it.income,
-                                it.selected
-                            )
-                        )
-                    }
-            adapter.submitList(list)
-        }
+        transactionAdapter = TransactionsAdapter(mainViewModel.currency)
+        binding.transactionRecyclerView.adapter = transactionAdapter
+
+        viewModel.allTransaction.observe(viewLifecycleOwner, ::allTransactionObserve)
     }
 
-    private fun getDayWeeks(): List<String> {
-        return listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")
+    private fun allTransactionObserve(allTransaction: List<TransactionItem>) {
+        calendarAdapter.submitList(viewModel.getListCalendarDataItem(mainViewModel.date))
+        val listTransactionsDataItem = viewModel.getListTransactionsDataItem(mainViewModel.date)
+
+        binding.noTransactionsTextView.visibility = if (listTransactionsDataItem.size == 0)
+            View.VISIBLE else View.GONE
+
+        binding.transactionRecyclerView.visibility = if (listTransactionsDataItem.size == 0)
+            View.GONE else View.VISIBLE
+
+        transactionAdapter.submitList(listTransactionsDataItem)
+    }
+
+    private fun calendarAdapterOnClickListener(transactionsDay: TransactionsDay) {
+        if (transactionsDay.day == 0) return
+
+        val date = mainViewModel.date
+        date.set(Calendar.DATE, transactionsDay.day)
+
+        allTransactionObserve(listOf())
     }
 
     private fun backButtonOnClickListener(view: View) {

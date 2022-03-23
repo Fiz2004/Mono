@@ -21,8 +21,8 @@ import com.fiz.mono.data.database.ItemDatabase
 import com.fiz.mono.databinding.FragmentInputBinding
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
+import com.fiz.mono.ui.shared_adapters.CategoriesAdapter
 import com.fiz.mono.util.ActivityContract
-import com.fiz.mono.util.CategoriesAdapter
 import com.fiz.mono.util.setDisabled
 import com.fiz.mono.util.setEnabled
 import com.google.android.material.tabs.TabLayout
@@ -101,9 +101,7 @@ class InputFragment : Fragment() {
             photoPaths.observe(viewLifecycleOwner, ::photoPathObserve)
             note.observe(viewLifecycleOwner, ::noteObserve)
             value.observe(viewLifecycleOwner, ::valueObserve)
-            allTransaction.observe(viewLifecycleOwner) {
-                val add = 0
-            }
+            allTransaction.observe(viewLifecycleOwner) {}
         }
 
         updateUI()

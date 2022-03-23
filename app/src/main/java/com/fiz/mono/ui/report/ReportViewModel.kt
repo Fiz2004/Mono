@@ -1,10 +1,9 @@
 package com.fiz.mono.ui.report
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
-import java.text.SimpleDateFormat
+import com.fiz.mono.ui.shared_adapters.InfoDay
+import com.fiz.mono.ui.shared_adapters.TransactionsDataItem
 import java.util.*
 
 class ReportViewModel(private val transactionStore: TransactionStore) : ViewModel() {
@@ -15,80 +14,54 @@ class ReportViewModel(private val transactionStore: TransactionStore) : ViewMode
     }
 
     fun getCurrentIncome(date: Calendar): Double {
-        val currentYear = date.get(Calendar.YEAR)
-        val currentMonth = date.get(Calendar.MONTH) + 1
-        val allTransactionsForYear =
-            allTransactions.value?.filter { SimpleDateFormat("yyyy").format(it.date.time) == currentYear.toString() } as MutableList<TransactionItem>
         val allTransactionsForMonth =
-            allTransactionsForYear.filter { SimpleDateFormat("M").format(it.date.time) == currentMonth.toString() } as MutableList<TransactionItem>
+            transactionStore.getAllTransactionsForMonth(date)
 
-        return allTransactionsForMonth.filter { it.value > 0 }.map { it.value }
-            .fold(0.0) { acc, d -> acc + d }
+        return allTransactionsForMonth?.filter { it.value > 0 }?.map { it.value }
+            ?.fold(0.0) { acc, d -> acc + d } ?: 0.0
     }
 
     fun getCurrentExpense(date: Calendar): Double {
-        val currentYear = date.get(Calendar.YEAR)
-        val currentMonth = date.get(Calendar.MONTH) + 1
-        val allTransactionsForYear =
-            allTransactions.value?.filter { SimpleDateFormat("yyyy").format(it.date.time) == currentYear.toString() } as MutableList<TransactionItem>
         val allTransactionsForMonth =
-            allTransactionsForYear.filter { SimpleDateFormat("M").format(it.date.time) == currentMonth.toString() } as MutableList<TransactionItem>
+            transactionStore.getAllTransactionsForMonth(date)
 
-        return allTransactionsForMonth.filter { it.value < 0 }.map { it.value }
-            .fold(0.0) { acc, d -> acc + d }
+        return allTransactionsForMonth?.filter { it.value < 0 }?.map { it.value }
+            ?.fold(0.0) { acc, d -> acc + d } ?: 0.0
     }
 
     fun getPreviousBalanceValue(date: Calendar): Double {
-        date.add(Calendar.MONTH, -1)
-        val prevYear = date.get(Calendar.YEAR)
-        val prevMonth = date.get(Calendar.MONTH) + 1
-        date.add(Calendar.MONTH, 1)
+        val datePrevMonth = Calendar.getInstance()
+        val currentYear = date.get(Calendar.YEAR)
+        val currentMonth = date.get(Calendar.MONTH)
+        val currentDay = date.get(Calendar.DATE)
+        datePrevMonth.set(currentYear, currentMonth, currentDay)
+        datePrevMonth.add(Calendar.MONTH, -1)
 
-        val allTransactionsPrevMonthForYear =
-            allTransactions.value?.filter { SimpleDateFormat("yyyy").format(it.date.time) == prevYear.toString() } as MutableList<TransactionItem>
         val allTransactionsPrevMonthForMonth =
-            allTransactionsPrevMonthForYear.filter { SimpleDateFormat("M").format(it.date.time) == prevMonth.toString() } as MutableList<TransactionItem>
+            transactionStore.getAllTransactionsForMonth(datePrevMonth)
 
-        val prevIncome = allTransactionsPrevMonthForMonth.filter { it.value > 0 }.map { it.value }
-            .fold(0.0) { acc, d -> acc + d }
-        val prevExpense = allTransactionsPrevMonthForMonth.filter { it.value < 0 }.map { it.value }
-            .fold(0.0) { acc, d -> acc + d }
+        val prevIncome = allTransactionsPrevMonthForMonth?.filter { it.value > 0 }?.map { it.value }
+            ?.fold(0.0) { acc, d -> acc + d } ?: 0.0
+        val prevExpense =
+            allTransactionsPrevMonthForMonth?.filter { it.value < 0 }?.map { it.value }
+                ?.fold(0.0) { acc, d -> acc + d } ?: 0.0
 
         return prevIncome + prevExpense
     }
 
-    fun getTransactions(tabSelectedReport: Int, date: Calendar): MutableList<DataItem> {
-        var allTransactionsTemp = when (tabSelectedReport) {
-            0 -> allTransactions.value?.toMutableList()
-            1 -> allTransactions.value?.filter { it.value < 0 }
-            else -> allTransactions.value?.filter { it.value > 0 }
-        }
-        val currentYear = date.get(Calendar.YEAR)
-        val currentMonth = date.get(Calendar.MONTH) + 1
-        allTransactionsTemp =
-            allTransactionsTemp?.filter {
-                SimpleDateFormat(
-                    "yyyy",
-                    Locale.US
-                ).format(it.date.time) == currentYear.toString()
-            }
-        allTransactionsTemp =
-            allTransactionsTemp?.filter {
-                SimpleDateFormat(
-                    "M",
-                    Locale.US
-                ).format(it.date.time) == currentMonth.toString()
-            }
-        allTransactionsTemp?.sortedByDescending { it.date }
-
+    fun getTransactions(tabSelectedReport: Int, date: Calendar): MutableList<TransactionsDataItem> {
         val groupTransactions =
-            allTransactionsTemp?.groupBy {
-                SimpleDateFormat(
-                    "MMM dd, yyyy",
-                    Locale.US
-                ).format(it.date.time)
+            transactionStore.getGroupTransactionsByDays(date, "MMM dd, yyyy")
+
+        groupTransactions?.map {
+            when (tabSelectedReport) {
+                0 -> it.value.sortedByDescending { it.date }.toMutableList()
+                1 -> it.value.filter { it.value < 0 }.sortedByDescending { it.date }
+                else -> it.value.filter { it.value > 0 }.sortedByDescending { it.date }
             }
-        val items = mutableListOf<DataItem>()
+        }
+
+        val items = mutableListOf<TransactionsDataItem>()
         if (groupTransactions != null) {
             for (date in groupTransactions) {
                 val expense =
@@ -97,22 +70,10 @@ class ReportViewModel(private val transactionStore: TransactionStore) : ViewMode
                 val income =
                     date.value.filter { it.value > 0 }.map { it.value }
                         .fold(0.0) { acc, d -> acc + d }
-                items += DataItem.InfoDayHeaderItem(InfoDay(date.key, expense, income))
-                items += date.value.map { DataItem.InfoTransactionItem(it) }
+                items += TransactionsDataItem.InfoDayHeaderItem(InfoDay(date.key, expense, income))
+                items += date.value.map { TransactionsDataItem.InfoTransactionItem(it) }
             }
         }
         return items
-    }
-}
-
-
-class ReportViewModelFactory(private val transactionStore: TransactionStore) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ReportViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return ReportViewModel(transactionStore) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

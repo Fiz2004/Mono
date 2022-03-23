@@ -1,4 +1,4 @@
-package com.fiz.mono.util
+package com.fiz.mono.ui.shared_adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +10,9 @@ import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.CategoryItemDiff
 import com.fiz.mono.data.getDrawableCategoryIcon
 import com.fiz.mono.databinding.ItemCategoryBinding
+import com.fiz.mono.util.getColorCompat
+import com.fiz.mono.util.setTextAppearanceCompat
+import com.fiz.mono.util.themeColor
 
 class CategoriesAdapter(private val colorSelected: Int, private val callback: (Int) -> Unit) :
     ListAdapter<CategoryItem, CategoriesViewHolder>(CategoryItemDiff) {

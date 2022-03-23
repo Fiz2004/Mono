@@ -4,8 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingStart="@dimen/fragmentPaddingStart"
-    android:paddingEnd="@dimen/fragmentPaddingEnd"
     tools:context=".ui.category_add.CategoryAddFragment">
 
     <TextView
@@ -13,6 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/titleMarginTop"
+        android:layout_marginStart="@dimen/fragmentPaddingStart"
+        android:layout_marginEnd="@dimen/fragmentPaddingEnd"
         android:textAlignment="center"
         android:textAppearance="@style/size16_color_primary"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,6 +23,8 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/backButton"
         style="@style/BackButton"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="@dimen/fragmentPaddingEnd"
         app:layout_constraintBottom_toBottomOf="@+id/titleTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -43,6 +45,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
+        android:layout_marginStart="@dimen/fragmentPaddingStart"
+        android:layout_marginEnd="@dimen/fragmentPaddingEnd"
         app:layoutManager="GridLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -67,5 +71,19 @@
         tools:listitem="@layout/item_transaction">
 
     </androidx.recyclerview.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/noTransactionsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/fragmentPaddingStart"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="@dimen/fragmentPaddingEnd"
+        android:text="@string/no_transactions"
+        android:textAppearance="@style/size16_color_secondary"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/calendarRecyclerView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

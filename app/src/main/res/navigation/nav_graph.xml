@@ -68,7 +68,11 @@
         android:id="@+id/reportFragment"
         android:name="com.fiz.mono.ui.report.ReportFragment"
         android:label="fragment_report"
-        tools:layout="@layout/fragment_report" />
+        tools:layout="@layout/fragment_report">
+        <action
+            android:id="@+id/action_reportFragment_to_calendarFragment"
+            app:destination="@id/calendarFragment" />
+    </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.fiz.mono.ui.settings.SettingsFragment"

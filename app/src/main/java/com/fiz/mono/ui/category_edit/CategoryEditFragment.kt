@@ -13,7 +13,7 @@ import com.fiz.mono.R
 import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.data.database.ItemDatabase
 import com.fiz.mono.databinding.FragmentCategoryEditBinding
-import com.fiz.mono.util.CategoriesAdapter
+import com.fiz.mono.ui.shared_adapters.CategoriesAdapter
 
 
 class CategoryEditFragment : Fragment() {

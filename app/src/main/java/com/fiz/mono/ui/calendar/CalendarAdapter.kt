@@ -11,8 +11,8 @@ import com.fiz.mono.databinding.ItemCalendarBinding
 import com.fiz.mono.databinding.ItemCalendarDayWeekBinding
 import com.fiz.mono.util.themeColor
 
-class CalendarAdapter :
-    ListAdapter<DataItem, RecyclerView.ViewHolder>(DataItemDiff) {
+class CalendarAdapter(private val callback: (TransactionsDay) -> Unit) :
+    ListAdapter<CalendarDataItem, RecyclerView.ViewHolder>(DataItemDiff) {
 
     private val ITEM_VIEW_TYPE_DAY_WEEK = 0
     private val ITEM_VIEW_TYPE_DAY = 1
@@ -30,20 +30,20 @@ class CalendarAdapter :
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
-            is DataItem.DayWeekItem -> ITEM_VIEW_TYPE_DAY_WEEK
-            is DataItem.DayItem -> ITEM_VIEW_TYPE_DAY
+            is CalendarDataItem.DayWeekItem -> ITEM_VIEW_TYPE_DAY_WEEK
+            is CalendarDataItem.DayItem -> ITEM_VIEW_TYPE_DAY
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is DayWeekItemViewHolder -> {
-                val dayWeek = getItem(position) as DataItem.DayWeekItem
+                val dayWeek = getItem(position) as CalendarDataItem.DayWeekItem
                 holder.bind(dayWeek.dayWeek)
             }
             is DayItemViewHolder -> {
-                val transactionsDay = getItem(position) as DataItem.DayItem
-                holder.bind(transactionsDay.transactionsDay)
+                val transactionsDay = getItem(position) as CalendarDataItem.DayItem
+                holder.bind(transactionsDay.transactionsDay, callback)
             }
         }
 
@@ -69,23 +69,27 @@ class DayWeekItemViewHolder(
 class DayItemViewHolder(
     private var binding: ItemCalendarBinding
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(transactionsDay: TransactionsDay) {
-        binding.dayOfMonthTextView.text = transactionsDay.getFormatDayOfMonthOrBlank()
+    fun bind(transactionsDay: TransactionsDay, callback: (TransactionsDay) -> Unit) {
+        binding.apply {
+            dayOfMonthTextView.text = transactionsDay.getFormatDayOfMonthOrBlank()
 
-        binding.expenseImageView.visibility =
-            if (transactionsDay.expense) View.VISIBLE else View.GONE
+            expenseImageView.visibility =
+                if (transactionsDay.expense) View.VISIBLE else View.GONE
 
-        binding.incomeImageView.visibility =
-            if (transactionsDay.income) View.VISIBLE else View.GONE
+            incomeImageView.visibility =
+                if (transactionsDay.income) View.VISIBLE else View.GONE
 
-        binding.cardMaterialCard.backgroundTintList = ColorStateList.valueOf(
-            binding.root.context.run {
-                if (transactionsDay.selected)
-                    themeColor(R.attr.colorGray)
-                else
-                    themeColor(R.attr.colorBackground)
-            }
-        )
+            cardMaterialCard.backgroundTintList = ColorStateList.valueOf(
+                binding.root.context.run {
+                    if (transactionsDay.selected)
+                        themeColor(R.attr.colorGray)
+                    else
+                        themeColor(R.attr.colorBackground)
+                }
+            )
+            root.setOnClickListener { callback(transactionsDay) }
+        }
+
     }
 
     companion object {

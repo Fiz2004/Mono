@@ -1,4 +1,4 @@
-package com.fiz.mono.ui.report
+package com.fiz.mono.ui.shared_adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +14,7 @@ import com.fiz.mono.ui.getCurrencyFormat
 import com.fiz.mono.util.getColorCompat
 
 class TransactionsAdapter(private val currency: String) :
-    ListAdapter<DataItem, RecyclerView.ViewHolder>(DataItemDiff) {
+    ListAdapter<TransactionsDataItem, RecyclerView.ViewHolder>(DataItemDiff) {
 
     private val ITEM_VIEW_TYPE_HEADER = 0
     private val ITEM_VIEW_TYPE_ITEM = 1
@@ -32,19 +32,19 @@ class TransactionsAdapter(private val currency: String) :
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
-            is DataItem.InfoDayHeaderItem -> ITEM_VIEW_TYPE_HEADER
-            is DataItem.InfoTransactionItem -> ITEM_VIEW_TYPE_ITEM
+            is TransactionsDataItem.InfoDayHeaderItem -> ITEM_VIEW_TYPE_HEADER
+            is TransactionsDataItem.InfoTransactionItem -> ITEM_VIEW_TYPE_ITEM
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is InfoDayHeaderItemViewHolder -> {
-                val infoDay = getItem(position) as DataItem.InfoDayHeaderItem
+                val infoDay = getItem(position) as TransactionsDataItem.InfoDayHeaderItem
                 holder.bind(infoDay.infoDay, currency)
             }
             is InfoTransactionItemViewHolder -> {
-                val transactionItem = getItem(position) as DataItem.InfoTransactionItem
+                val transactionItem = getItem(position) as TransactionsDataItem.InfoTransactionItem
                 holder.bind(transactionItem.transactionItem, currency)
             }
         }

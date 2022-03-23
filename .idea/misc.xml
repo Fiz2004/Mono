@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable-v24/ic_launcher_background.xml" value="0.1" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.118" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/arrow_right.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/background.xml" value="0.16" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/background_pin_edittext.xml" value="0.1395" />
@@ -16,14 +18,18 @@
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/camera.xml" value="0.123" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/camera1.xml" value="0.123" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/currency_circle.xml" value="0.1625" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/date_range_bg.xml" value="0.173" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/dgg.xml" value="0.123" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/edit_image_bg.xml" value="0.5" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/edit_image_bg_background.xml" value="0.14" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/ic_baseline_refresh_24.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/ic_carret_down.xml" value="0.2625" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/ic_launcher_background.xml" value="0.118" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.1" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/ic_reset_24.xml" value="0.2625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/lock_key.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/mode.xml" value="0.1625" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/mono.xml" value="0.118" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/radiobutton_currency.xml" value="0.2155" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/selector_toggle_button.xml" value="0.1395" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/selector_toggle_button_text.xml" value="0.1395" />
@@ -32,33 +38,34 @@
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/data_expense_income_item.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/data_range_layout.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_calculator.xml" value="0.33" />
-        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_calendar.xml" value="0.2864471996579735" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_calendar.xml" value="0.25" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_category.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_category_add.xml" value="0.22" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_category_edit.xml" value="0.25" />
-        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_currency.xml" value="0.25" />
-        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_input.xml" value="0.1" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_currency.xml" value="0.33" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_input.xml" value="0.14667781027998328" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_on_boarding.xml" value="0.2864471996579735" />
-        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_p_i_n_password.xml" value="0.1" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_p_i_n_password.xml" value="0.33" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_reminder.xml" value="0.2864471996579735" />
-        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_report.xml" value="0.22" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_report.xml" value="0.33" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_settings.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/grid_view_item.xml" value="0.9" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/item_calendar.xml" value="0.9" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/item_category.xml" value="0.1627379873073436" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/item_icon_category.xml" value="0.15503173164097914" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/item_transaction.xml" value="0.25" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/item_transaction_date_expense_income.xml" value="0.25" />
-        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/layout_data_range.xml" value="0.242520398912058" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/layout_data_range.xml" value="0.3215434083601286" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/options_settings_item.xml" value="0.25" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/part_balance_border.xml" value="0.30012825994014536" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/part_expense_income_balance_border.xml" value="0.30012825994014536" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/transaction_item.xml" value="0.25" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/menu/menu_bottom_nav.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/menu/menu_choice_report.xml" value="0.30012825994014536" />
-        <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/drawable/background_tab_layout_report.xml" value="0.3245" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.118" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.118" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/xml/files.xml" value="0.14667781027998328" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/drawable/calculator_page.xml" value="0.1" />
-        <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/drawable/calendar_circle.xml" value="0.3245" />
-        <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/drawable/calendar_circle_income.xml" value="0.3245" />
-        <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/drawable/camera.xml" value="0.3245" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/drawable/input_page.xml" value="0.1" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/drawable/report_page.xml" value="0.1" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/drawable/settings_page.xml" value="0.1" />
@@ -66,17 +73,12 @@
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/font/poppins.xml" value="0.31666666666666665" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_calculator.xml" value="0.15628166160081053" />
-        <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_calendar.xml" value="0.33" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_input.xml" value="0.25" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_on_boarding.xml" value="0.22" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_p_i_n_password.xml" value="0.33" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_reminder.xml" value="0.3072916666666667" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_report.xml" value="0.15628166160081053" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_settings.xml" value="0.25" />
-        <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/item_calendar.xml" value="1.4375" />
-        <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/item_calendar_day_week.xml" value="0.33" />
-        <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/item_category.xml" value="0.33177083333333335" />
-        <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/layout/item_icon_category.xml" value="0.33177083333333335" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/menu/menu_bottom_nav.xml" value="0.2037037037037037" />
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/app/src/main/res/xml/file_paths.xml" value="2.842857142857143" />
       </map>

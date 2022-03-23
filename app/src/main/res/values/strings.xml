@@ -80,4 +80,9 @@
     <string name="bonus">Bonus</string>
     <string name="loan">Loan</string>
 
+    <!--Calendar-->
+    <string name="no_transactions">There are no transactions this day</string>
+    <string name="monthly">Monthly</string>
+    <string name="by_category">Category</string>
+
 </resources>

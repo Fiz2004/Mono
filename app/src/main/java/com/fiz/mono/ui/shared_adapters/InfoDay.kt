@@ -1,4 +1,4 @@
-package com.fiz.mono.ui.report
+package com.fiz.mono.ui.shared_adapters
 
 data class InfoDay(
     val date: String,
