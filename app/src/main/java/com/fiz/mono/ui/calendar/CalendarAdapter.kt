@@ -1,12 +1,15 @@
 package com.fiz.mono.ui.calendar
 
+import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.fiz.mono.R
 import com.fiz.mono.databinding.ItemCalendarBinding
 import com.fiz.mono.databinding.ItemCalendarDayWeekBinding
+import com.fiz.mono.util.themeColor
 
 class CalendarAdapter :
     ListAdapter<DataItem, RecyclerView.ViewHolder>(DataItemDiff) {
@@ -45,41 +48,52 @@ class CalendarAdapter :
         }
 
     }
+}
 
-    class DayWeekItemViewHolder(
-        private var binding: ItemCalendarDayWeekBinding
-    ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(dayWeek: String) {
-            binding.descriptionTextView.text = dayWeek
-        }
-
-        companion object {
-            fun from(parent: ViewGroup): DayWeekItemViewHolder {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val view = ItemCalendarDayWeekBinding.inflate(layoutInflater, parent, false)
-                return DayWeekItemViewHolder(view)
-            }
-        }
+class DayWeekItemViewHolder(
+    private var binding: ItemCalendarDayWeekBinding
+) : RecyclerView.ViewHolder(binding.root) {
+    fun bind(dayWeek: String) {
+        binding.descriptionTextView.text = dayWeek
     }
 
-    class DayItemViewHolder(
-        private var binding: ItemCalendarBinding
-    ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(transactionsDay: TransactionsDay) {
-            binding.descriptionTextView.text = transactionsDay.day.toString()
-            binding.iconImageView1.visibility =
-                if (transactionsDay.expense) View.VISIBLE else View.GONE
-            binding.iconImageView2.visibility =
-                if (transactionsDay.income) View.VISIBLE else View.GONE
+    companion object {
+        fun from(parent: ViewGroup): DayWeekItemViewHolder {
+            val layoutInflater = LayoutInflater.from(parent.context)
+            val view = ItemCalendarDayWeekBinding.inflate(layoutInflater, parent, false)
+            return DayWeekItemViewHolder(view)
         }
+    }
+}
 
-        companion object {
-            fun from(parent: ViewGroup): DayItemViewHolder {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val view =
-                    ItemCalendarBinding.inflate(layoutInflater, parent, false)
-                return DayItemViewHolder(view)
+class DayItemViewHolder(
+    private var binding: ItemCalendarBinding
+) : RecyclerView.ViewHolder(binding.root) {
+    fun bind(transactionsDay: TransactionsDay) {
+        binding.dayOfMonthTextView.text = transactionsDay.getFormatDayOfMonthOrBlank()
+
+        binding.expenseImageView.visibility =
+            if (transactionsDay.expense) View.VISIBLE else View.GONE
+
+        binding.incomeImageView.visibility =
+            if (transactionsDay.income) View.VISIBLE else View.GONE
+
+        binding.cardMaterialCard.backgroundTintList = ColorStateList.valueOf(
+            binding.root.context.run {
+                if (transactionsDay.selected)
+                    themeColor(R.attr.colorGray)
+                else
+                    themeColor(R.attr.colorBackground)
             }
+        )
+    }
+
+    companion object {
+        fun from(parent: ViewGroup): DayItemViewHolder {
+            val layoutInflater = LayoutInflater.from(parent.context)
+            val view =
+                ItemCalendarBinding.inflate(layoutInflater, parent, false)
+            return DayItemViewHolder(view)
         }
     }
 }

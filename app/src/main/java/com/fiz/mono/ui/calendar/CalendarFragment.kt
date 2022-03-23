@@ -14,6 +14,7 @@ import com.fiz.mono.data.database.ItemDatabase
 import com.fiz.mono.databinding.FragmentCalendarBinding
 import com.fiz.mono.ui.MainViewModel
 import java.text.SimpleDateFormat
+import java.util.*
 
 class CalendarFragment : Fragment() {
     private var _binding: FragmentCalendarBinding? = null
@@ -53,7 +54,8 @@ class CalendarFragment : Fragment() {
 
         binding.backButton.setOnClickListener(::backButtonOnClickListener)
 
-        binding.titleTextView.text = SimpleDateFormat("MMММ, yyyy").format(mainViewModel.date.time)
+        binding.titleTextView.text =
+            SimpleDateFormat("MMMM, yyyy", Locale.US).format(mainViewModel.date.time)
 
         adapter = CalendarAdapter()
         binding.calendarRecyclerView.adapter = adapter
@@ -62,7 +64,14 @@ class CalendarFragment : Fragment() {
             val list =
                 getDayWeeks().map { DataItem.DayWeekItem(it) } + viewModel.getTransactionsOfDays(mainViewModel.date)
                     .map {
-                        DataItem.DayItem(TransactionsDay(it.day, it.expense, it.income))
+                        DataItem.DayItem(
+                            TransactionsDay(
+                                it.day,
+                                it.expense,
+                                it.income,
+                                it.selected
+                            )
+                        )
                     }
             adapter.submitList(list)
         }

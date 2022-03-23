@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+
     android:padding="2dp">
 
     <com.google.android.material.card.MaterialCardView
@@ -11,10 +12,10 @@
         style="@style/Widget.Material3.CardView.Elevated"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?attr/colorBackground"
         android:minWidth="51dp"
         android:minHeight="56dp"
         app:cardCornerRadius="4dp"
+        app:cardBackgroundColor="?attr/colorBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,7 +26,7 @@
             android:layout_height="56dp">
 
             <TextView
-                android:id="@+id/descriptionTextView"
+                android:id="@+id/dayOfMonthTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/category"
@@ -37,31 +38,31 @@
                 tools:text="1" />
 
             <ImageView
-                android:id="@+id/iconImageView1"
+                android:id="@+id/expenseImageView"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="8dp"
-                app:layout_constraintTop_toBottomOf="@+id/descriptionTextView"
+                app:layout_constraintEnd_toStartOf="@+id/incomeImageView"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/iconImageView2"
+                app:layout_constraintTop_toBottomOf="@+id/dayOfMonthTextView"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintVertical_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/calendar_circle_expense" />
 
             <ImageView
-                android:id="@+id/iconImageView2"
+                android:id="@+id/incomeImageView"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="8dp"
-                app:layout_constraintTop_toBottomOf="@+id/descriptionTextView"
+                app:layout_constraintStart_toEndOf="@+id/expenseImageView"
                 app:layout_constraintVertical_bias="1.0"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/iconImageView1"
+                app:layout_constraintTop_toBottomOf="@+id/dayOfMonthTextView"
                 app:srcCompat="@drawable/calendar_circle_income" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

@@ -69,7 +69,7 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
         _value.value = text
     }
 
-    fun clickSubmit() {
+    fun clickSubmit(date: Date) {
         val selectedCategoryItem = getAllCategoryFromSelected().first { it.selected }
 
         val value1 = if (selectedAdapter == InputFragment.EXPENSE)
@@ -87,7 +87,7 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
             transactionStore.insertNewTransaction(
                 TransactionItem(
                     newId,
-                    Calendar.getInstance().time,
+                    date,
                     value1 ?: 0.0,
                     selectedCategoryItem.name,
                     note.value ?: "",

@@ -175,7 +175,7 @@ class InputFragment : Fragment() {
     }
 
     private fun submitButtonOnClickListener(view: View) {
-        viewModel.clickSubmit()
+        viewModel.clickSubmit(mainViewModel.date.time)
         adapter.submitList(viewModel.getAllCategoryFromSelected())
         updateUI()
     }

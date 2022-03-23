@@ -115,6 +115,14 @@ abstract class ItemDatabase : RoomDatabase() {
                     context.getString(R.string.bonus),
                     "Project bonus",
                     "coin"
+                ),
+                TransactionItem(
+                    8,
+                    getDate(2022, 1, 5),
+                    10.0,
+                    context.getString(R.string.bonus),
+                    "Project bonus",
+                    "coin"
                 )
             )
 

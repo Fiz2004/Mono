@@ -52,19 +52,19 @@ class ReportFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.dataRangeLayout.dateTextView.text =
-            SimpleDateFormat("MMMM, yyyy").format(mainViewModel.date.time)
+            SimpleDateFormat("LLLL, yyyy", Locale.US).format(mainViewModel.date.time)
 
         binding.dataRangeLayout.leftDateRangeImageButton.setOnClickListener {
             mainViewModel.date.add(Calendar.MONTH, -1)
             binding.dataRangeLayout.dateTextView.text =
-                SimpleDateFormat("MMMM, yyyy").format(mainViewModel.date.time)
+                SimpleDateFormat("LLLL, yyyy", Locale.US).format(mainViewModel.date.time)
             allTransactionsObserve(listOf())
         }
 
         binding.dataRangeLayout.rightDateRangeImageButton.setOnClickListener {
             mainViewModel.date.add(Calendar.MONTH, 1)
             binding.dataRangeLayout.dateTextView.text =
-                SimpleDateFormat("MMMM, yyyy").format(mainViewModel.date.time)
+                SimpleDateFormat("LLLL, yyyy", Locale.US).format(mainViewModel.date.time)
             allTransactionsObserve(listOf())
         }
 

@@ -66,13 +66,28 @@ class ReportViewModel(private val transactionStore: TransactionStore) : ViewMode
         val currentYear = date.get(Calendar.YEAR)
         val currentMonth = date.get(Calendar.MONTH) + 1
         allTransactionsTemp =
-            allTransactionsTemp?.filter { SimpleDateFormat("yyyy").format(it.date.time) == currentYear.toString() }
+            allTransactionsTemp?.filter {
+                SimpleDateFormat(
+                    "yyyy",
+                    Locale.US
+                ).format(it.date.time) == currentYear.toString()
+            }
         allTransactionsTemp =
-            allTransactionsTemp?.filter { SimpleDateFormat("M").format(it.date.time) == currentMonth.toString() }
+            allTransactionsTemp?.filter {
+                SimpleDateFormat(
+                    "M",
+                    Locale.US
+                ).format(it.date.time) == currentMonth.toString()
+            }
         allTransactionsTemp?.sortedByDescending { it.date }
 
         val groupTransactions =
-            allTransactionsTemp?.groupBy { SimpleDateFormat("MMM dd, yyyy").format(it.date.time) }
+            allTransactionsTemp?.groupBy {
+                SimpleDateFormat(
+                    "MMM dd, yyyy",
+                    Locale.US
+                ).format(it.date.time)
+            }
         val items = mutableListOf<DataItem>()
         if (groupTransactions != null) {
             for (date in groupTransactions) {
