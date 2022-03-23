@@ -81,12 +81,18 @@ class DayItemViewHolder(
 
             cardMaterialCard.backgroundTintList = ColorStateList.valueOf(
                 binding.root.context.run {
-                    if (transactionsDay.selected)
+                    if (transactionsDay.today)
                         themeColor(R.attr.colorGray)
                     else
                         themeColor(R.attr.colorBackground)
                 }
             )
+
+            cardMaterialCard.strokeWidth = if (transactionsDay.selected)
+                2
+            else
+                0
+
             root.setOnClickListener { callback(transactionsDay) }
         }
 

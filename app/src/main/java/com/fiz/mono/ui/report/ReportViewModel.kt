@@ -63,15 +63,21 @@ class ReportViewModel(private val transactionStore: TransactionStore) : ViewMode
 
         val items = mutableListOf<TransactionsDataItem>()
         if (groupTransactions != null) {
-            for (date in groupTransactions) {
+            for (transactionsForDay in groupTransactions) {
                 val expense =
-                    date.value.filter { it.value < 0 }.map { it.value }
+                    transactionsForDay.value.filter { it.value < 0 }.map { it.value }
                         .fold(0.0) { acc, d -> acc + d }
                 val income =
-                    date.value.filter { it.value > 0 }.map { it.value }
+                    transactionsForDay.value.filter { it.value > 0 }.map { it.value }
                         .fold(0.0) { acc, d -> acc + d }
-                items += TransactionsDataItem.InfoDayHeaderItem(InfoDay(date.key, expense, income))
-                items += date.value.map { TransactionsDataItem.InfoTransactionItem(it) }
+                items += TransactionsDataItem.InfoDayHeaderItem(
+                    InfoDay(
+                        transactionsForDay.key,
+                        expense,
+                        income
+                    )
+                )
+                items += transactionsForDay.value.map { TransactionsDataItem.InfoTransactionItem(it) }
             }
         }
         return items

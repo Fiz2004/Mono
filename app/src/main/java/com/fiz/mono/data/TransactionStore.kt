@@ -29,9 +29,18 @@ class TransactionStore(private val transactionItemDao: TransactionItemDAO) {
     fun getTransactionDayForCurrentMonthByDays(
         date: Calendar
     ): MutableList<TransactionsDay> {
+        val currentYear = date.get(Calendar.YEAR)
+        val currentMonth = date.get(Calendar.MONTH)
         val currentDay = date.get(Calendar.DATE)
         val dayOfMonth = date.getActualMaximum(Calendar.DAY_OF_MONTH)
         val groupTransactions = getGroupTransactionsByDays(date, "dd")
+
+        val today = Calendar.getInstance()
+        val todayYear = today.get(Calendar.YEAR)
+        val todayMonth = today.get(Calendar.MONTH)
+        val todayDay = today.get(Calendar.DATE)
+        val isToday = currentYear == todayYear && currentMonth == todayMonth
+
 
         val result = emptyList<TransactionsDay>().toMutableList()
         for (day in 1..dayOfMonth) {
@@ -42,7 +51,15 @@ class TransactionStore(private val transactionItemDao: TransactionItemDAO) {
                 income = groupTransactions[dayString]?.any { it.value > 0 } == true
                 expense = groupTransactions[dayString]?.any { it.value < 0 } == true
             }
-            result.add(TransactionsDay(day, expense, income, day == currentDay))
+            result.add(
+                TransactionsDay(
+                    day,
+                    expense,
+                    income,
+                    day == currentDay,
+                    isToday && day == todayDay
+                )
+            )
         }
         return result
     }
@@ -74,8 +91,6 @@ class TransactionStore(private val transactionItemDao: TransactionItemDAO) {
     fun getAllTransactionsForDay(
         date: Calendar
     ): List<TransactionItem>? {
-        val currentYear = date.get(Calendar.YEAR)
-        val currentMonth = date.get(Calendar.MONTH)
         val currentDay = date.get(Calendar.DATE)
 
         val allTransactionsForMonth =
