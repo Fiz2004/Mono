@@ -3,7 +3,6 @@ package com.fiz.mono.util
 import java.util.*
 
 object TimeUtils {
-
     fun getNumberLastDayOfWeek(
         date: Calendar
     ): Int {
@@ -37,5 +36,11 @@ object TimeUtils {
             7
         else
             numberDayOfWeekInLocaleUS - 1
+
+    fun getDate(year: Int, month: Int, day: Int): Date {
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month, day)
+        return calendar.time
+    }
 
 }
