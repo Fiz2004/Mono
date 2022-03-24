@@ -1,19 +1,19 @@
 package com.fiz.mono.data.database
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.fiz.mono.data.CategoryItem
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CategoryItemDAO {
     @Query("SELECT * FROM CategoryItem")
-    fun getAll(): LiveData<List<CategoryItem>>
+    fun getAll(): Flow<List<CategoryItem>>
 
     @Query("SELECT * FROM CategoryItem WHERE id LIKE '%e%'")
-    fun getAllExpense(): LiveData<List<CategoryItem>>
+    fun getAllExpense(): Flow<List<CategoryItem>>
 
     @Query("SELECT * FROM CategoryItem WHERE id LIKE '%i%'")
-    fun getAllIncome(): LiveData<List<CategoryItem>>
+    fun getAllIncome(): Flow<List<CategoryItem>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(categoryItem: CategoryItem)

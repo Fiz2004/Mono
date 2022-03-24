@@ -22,7 +22,7 @@ class MainViewModel : ViewModel() {
     var categorySelectedReport = 0
 
     fun getFormatDate(pattern: String): String {
-        return SimpleDateFormat(pattern, Locale.US).format(date.value?.time ?: "")
+        return SimpleDateFormat(pattern, Locale.getDefault()).format(date.value?.time ?: "")
     }
 
     fun setMonth(month: Int) {

@@ -71,7 +71,7 @@ class ReportFragment : Fragment() {
 
     private fun dateObserve(date: Calendar) {
         binding.dataRangeLayout.dateTextView.text =
-            SimpleDateFormat("LLLL, yyyy", Locale.US).format(date.time)
+            SimpleDateFormat("LLLL, yyyy", Locale.getDefault()).format(date.time)
     }
 
     private fun categoryOnClickListener(view: View) {

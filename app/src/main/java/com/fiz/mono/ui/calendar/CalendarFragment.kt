@@ -11,7 +11,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.App
 import com.fiz.mono.R
-import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.databinding.FragmentCalendarBinding
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
@@ -88,7 +87,7 @@ class CalendarFragment : Fragment() {
             }
         }
 
-        viewModel.allTransaction.observe(viewLifecycleOwner, ::allTransactionObserve)
+//        viewModel.allTransaction.observe(viewLifecycleOwner, ::allTransactionObserve)
 
         mainViewModel.date.observe(viewLifecycleOwner, ::dateObserve)
     }
@@ -117,13 +116,14 @@ class CalendarFragment : Fragment() {
 
     private fun dateObserve(calendar: Calendar?) {
         binding.titleTextView.text =
-            SimpleDateFormat("MMMM, yyyy", Locale.US).format(calendar?.time!!)
+            SimpleDateFormat("MMMM, yyyy", Locale.getDefault()).format(calendar?.time!!)
 
-        allTransactionObserve(listOf())
-    }
+        // Без этого присваивания при выборе декабря приложение крошится
+        binding.calendarRecyclerView.itemAnimator = null
 
-    private fun allTransactionObserve(allTransaction: List<TransactionItem>) {
-        calendarAdapter.submitList(viewModel.getListCalendarDataItem(mainViewModel.date.value!!))
+        val listCalendar = viewModel.getListCalendarDataItem(mainViewModel.date.value!!)
+        calendarAdapter.submitList(listCalendar)
+
         val listTransactionsDataItem =
             viewModel.getListTransactionsDataItem(mainViewModel.date.value!!)
 
@@ -135,6 +135,7 @@ class CalendarFragment : Fragment() {
 
         transactionAdapter.submitList(listTransactionsDataItem)
     }
+
 
     private fun calendarAdapterOnClickListener(transactionsDay: TransactionsDay) {
         if (transactionsDay.day == 0) return

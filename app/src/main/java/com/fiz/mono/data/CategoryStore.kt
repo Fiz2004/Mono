@@ -1,12 +1,17 @@
 package com.fiz.mono.data
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.asLiveData
+import com.fiz.mono.R
 import com.fiz.mono.data.database.CategoryItemDAO
 
 class CategoryStore(private val categoryItemDao: CategoryItemDAO) {
-    var allCategoryExpense: LiveData<List<CategoryItem>> = categoryItemDao.getAllExpense()
-    var allCategoryIncome: LiveData<List<CategoryItem>> = categoryItemDao.getAllIncome()
+    var allCategoryExpense: LiveData<List<CategoryItem>> =
+        categoryItemDao.getAllExpense().asLiveData()
+    var allCategoryIncome: LiveData<List<CategoryItem>> =
+        categoryItemDao.getAllIncome().asLiveData()
 
     fun getAllCategoryExpenseForEdit(): LiveData<List<CategoryItem>> {
         return Transformations.map(allCategoryExpense) {
@@ -71,6 +76,56 @@ class CategoryStore(private val categoryItemDao: CategoryItemDAO) {
     suspend fun removeCategoryIncome(position: Int) {
         allCategoryIncome.value?.get(position)?.let {
             categoryItemDao.delete(it)
+        }
+    }
+
+    suspend fun deleteAll(context: Context) {
+        allCategoryExpense.value?.map {
+            categoryItemDao.delete(it)
+        }
+        allCategoryIncome.value?.map {
+            categoryItemDao.delete(it)
+        }
+
+        val allCategoryExpenseDefault = mutableListOf(
+            CategoryItem("e0", context.getString(R.string.bank), "bank"),
+            CategoryItem("e1", context.getString(R.string.food), "food"),
+            CategoryItem(
+                "e2",
+                context.getString(R.string.medican),
+                "medican"
+            ),
+            CategoryItem("e3", context.getString(R.string.gym), "gym"),
+            CategoryItem(
+                "e4",
+                context.getString(R.string.coffee),
+                "coffee"
+            ),
+            CategoryItem(
+                "e5",
+                context.getString(R.string.shopping),
+                "market"
+            ),
+            CategoryItem("e6", context.getString(R.string.cats), "cat"),
+            CategoryItem("e7", context.getString(R.string.party), "party"),
+            CategoryItem("e8", context.getString(R.string.gift), "gift"),
+            CategoryItem("e9", context.getString(R.string.gas), "gas"),
+        )
+        val allCategoryIncomeDefault = mutableListOf(
+            CategoryItem(
+                "i0",
+                context.getString(R.string.freelance),
+                "challenge"
+            ),
+            CategoryItem("i1", context.getString(R.string.salary), "money"),
+            CategoryItem("i2", context.getString(R.string.bonus), "coin"),
+            CategoryItem("i3", context.getString(R.string.loan), "user"),
+        )
+        allCategoryExpenseDefault.forEach {
+            categoryItemDao.insert(it)
+        }
+        allCategoryIncomeDefault.forEach {
+            categoryItemDao.insert(it)
         }
     }
 

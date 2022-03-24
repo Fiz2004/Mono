@@ -5,11 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import com.fiz.mono.App
+import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentSettingsBinding
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
@@ -31,24 +38,40 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.modeSwitch.setOnCheckedChangeListener(::modeOnClickListener)
+        binding.apply {
+            modeSwitch.setOnCheckedChangeListener(::modeOnClickListener)
 
-        binding.categoryCircleRightImageView.setOnClickListener(::categoryOnClickListener)
-        binding.categoryTextView.setOnClickListener(::categoryOnClickListener)
-        binding.categoryIconImageView.setOnClickListener(::categoryOnClickListener)
+            categoryCircleRightImageView.setOnClickListener(::categoryOnClickListener)
+            categoryTextView.setOnClickListener(::categoryOnClickListener)
+            categoryIconImageView.setOnClickListener(::categoryOnClickListener)
 
-        binding.currencyCircleRightImageView.setOnClickListener(::currencyOnClickListener)
-        binding.currencyTextView.setOnClickListener(::currencyOnClickListener)
-        binding.currencyIconImageView.setOnClickListener(::currencyOnClickListener)
+            currencyCircleRightImageView.setOnClickListener(::currencyOnClickListener)
+            currencyTextView.setOnClickListener(::currencyOnClickListener)
+            currencyIconImageView.setOnClickListener(::currencyOnClickListener)
 
-        binding.pinPasswordCircleRightImageView.setOnClickListener(::pinPasswordOnClickListener)
-        binding.pinPasswordTextView.setOnClickListener(::pinPasswordOnClickListener)
-        binding.pinPasswordIconImageView.setOnClickListener(::pinPasswordOnClickListener)
+            pinPasswordCircleRightImageView.setOnClickListener(::pinPasswordOnClickListener)
+            pinPasswordTextView.setOnClickListener(::pinPasswordOnClickListener)
+            pinPasswordIconImageView.setOnClickListener(::pinPasswordOnClickListener)
 
-        binding.reminderCircleRightImageView.setOnClickListener(::reminderOnClickListener)
-        binding.reminderTextView.setOnClickListener(::reminderOnClickListener)
-        binding.reminderIconImageView.setOnClickListener(::reminderOnClickListener)
+            reminderCircleRightImageView.setOnClickListener(::reminderOnClickListener)
+            reminderTextView.setOnClickListener(::reminderOnClickListener)
+            reminderIconImageView.setOnClickListener(::reminderOnClickListener)
+
+            deleteIconImageView.setOnClickListener(::deleteOnClickListener)
+            deleteTextView.setOnClickListener(::deleteOnClickListener)
+        }
         updateUI()
+    }
+
+
+    private fun deleteOnClickListener(view: View) {
+        CoroutineScope(Dispatchers.Default).launch {
+            (requireActivity().application as App).categoryStore.deleteAll(requireContext())
+            (requireActivity().application as App).transactionStore.deleteAll()
+            withContext(Dispatchers.Main) {
+                Toast.makeText(requireContext(), R.string.delete_all_data, Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     private fun reminderOnClickListener(view: View) {

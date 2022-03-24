@@ -2,13 +2,15 @@ package com.fiz.mono.data
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.asLiveData
 import com.fiz.mono.data.database.TransactionItemDAO
 import com.fiz.mono.ui.calendar.TransactionsDay
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
 class TransactionStore(private val transactionItemDao: TransactionItemDAO) {
-    var allTransactions: LiveData<List<TransactionItem>> = transactionItemDao.getAll()
+    var allTransactions: LiveData<List<TransactionItem>> = transactionItemDao.getAll().asLiveData()
 
     fun getAllTransactionsForInput(): LiveData<List<TransactionItem>> {
         return Transformations.map(allTransactions) {
@@ -22,7 +24,7 @@ class TransactionStore(private val transactionItemDao: TransactionItemDAO) {
         getAllTransactionsForMonth(date)?.groupBy {
             SimpleDateFormat(
                 pattern,
-                Locale.US
+                Locale.getDefault()
             ).format(it.date.time)
         }
 
@@ -75,14 +77,14 @@ class TransactionStore(private val transactionItemDao: TransactionItemDAO) {
             allTransactions.value?.filter {
                 SimpleDateFormat(
                     "yyyy",
-                    Locale.US
+                    Locale.getDefault()
                 ).format(it.date.time) == currentYear.toString()
             }
         val allTransactionsForMonth =
             allTransactionsForYear?.filter {
                 SimpleDateFormat(
                     "M",
-                    Locale.US
+                    Locale.getDefault()
                 ).format(it.date.time) == (currentMonth + 1).toString()
             }
         return allTransactionsForMonth
@@ -100,7 +102,7 @@ class TransactionStore(private val transactionItemDao: TransactionItemDAO) {
         val result = allTransactionsForMonth?.filter {
             SimpleDateFormat(
                 "dd",
-                Locale.US
+                Locale.getDefault()
             ).format(it.date.time) == dayString
         }
 
@@ -109,5 +111,18 @@ class TransactionStore(private val transactionItemDao: TransactionItemDAO) {
 
     suspend fun insertNewTransaction(newTransaction: TransactionItem) {
         transactionItemDao.insert(newTransaction)
+    }
+
+    suspend fun deleteAll() {
+        allTransactions.value?.map {
+            it.photo.map path@{
+                if (it == null) return@path
+                val fdelete = File(it)
+                if (fdelete.exists()) {
+                    fdelete.delete()
+                }
+            }
+            transactionItemDao.delete(it)
+        }
     }
 }
