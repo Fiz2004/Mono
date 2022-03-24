@@ -13,11 +13,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
-import com.fiz.mono.data.CategoryStore
-import com.fiz.mono.data.TransactionStore
-import com.fiz.mono.data.database.ItemDatabase
 import com.fiz.mono.databinding.FragmentInputBinding
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
@@ -49,12 +47,8 @@ class InputFragment : Fragment() {
 
     private fun viewModelInit(): () -> CategoryInputViewModelFactory = {
         CategoryInputViewModelFactory(
-            CategoryStore(
-                ItemDatabase.getDatabase()?.categoryItemDao()!!,
-            ),
-            TransactionStore(
-                ItemDatabase.getDatabase()?.transactionItemDao()!!
-            )
+            (requireActivity().application as App).categoryStore,
+            (requireActivity().application as App).transactionStore
         )
     }
 

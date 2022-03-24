@@ -9,11 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.fiz.mono.App
 import com.fiz.mono.R
-import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.data.TransactionItem
-import com.fiz.mono.data.TransactionStore
-import com.fiz.mono.data.database.ItemDatabase
 import com.fiz.mono.databinding.FragmentCalendarBinding
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
@@ -35,10 +33,9 @@ class CalendarFragment : Fragment() {
     private lateinit var transactionAdapter: TransactionsAdapter
 
     private fun viewModelInit(): () -> CalendarViewModelFactory = {
-        val database = ItemDatabase.getDatabase()
         CalendarViewModelFactory(
-            CategoryStore(database?.categoryItemDao()!!),
-            TransactionStore(database.transactionItemDao())
+            (requireActivity().application as App).categoryStore,
+            (requireActivity().application as App).transactionStore
         )
     }
 
