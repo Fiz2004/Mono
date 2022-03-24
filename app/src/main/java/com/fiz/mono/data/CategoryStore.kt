@@ -13,6 +13,7 @@ class CategoryStore(private val categoryItemDao: CategoryItemDAO) {
     var allCategoryIncome: LiveData<List<CategoryItem>> =
         categoryItemDao.getAllIncome().asLiveData()
 
+
     fun getAllCategoryExpenseForEdit(): LiveData<List<CategoryItem>> {
         return Transformations.map(allCategoryExpense) {
             val result = emptyList<CategoryItem>().toMutableList()

@@ -53,6 +53,10 @@
         <action
             android:id="@+id/action_inputFragment_to_calendarFragment"
             app:destination="@id/calendarFragment" />
+        <argument
+            android:name="transaction"
+            android:defaultValue="-1"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/calculatorFragment"
@@ -61,7 +65,7 @@
         tools:layout="@layout/fragment_calculator" />
     <fragment
         android:id="@+id/reminderFragment"
-        android:name="com.fiz.mono.ui.ReminderFragment"
+        android:name="com.fiz.mono.ui.reminder.ReminderFragment"
         android:label="fragment_reminder"
         tools:layout="@layout/fragment_reminder" />
     <fragment
@@ -133,5 +137,9 @@
     <fragment
         android:id="@+id/calendarFragment"
         android:name="com.fiz.mono.ui.calendar.CalendarFragment"
-        android:label="CalendarFragment" />
+        android:label="CalendarFragment">
+        <action
+            android:id="@+id/action_calendarFragment_to_inputFragment"
+            app:destination="@id/inputFragment" />
+    </fragment>
 </navigation>

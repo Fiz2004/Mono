@@ -82,7 +82,7 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
             val id = lastItem?.id
             val newId = id?.let { it + 1 } ?: 0
 
-            val photoPathList: List<String?> = photoPaths.value?.toList() ?: listOf("")
+            val photoPathList: List<String?> = photoPaths.value?.toList() ?: emptyList()
 
             transactionStore.insertNewTransaction(
                 TransactionItem(
@@ -229,6 +229,10 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
         return null
     }
 
+    fun setPhotoPath(list: MutableList<String?>) {
+        _photoPaths.value = if (list.get(0) == "") emptyList<String?>().toMutableList() else list
+    }
+
     fun addPhotoPath() {
         photoPaths.value?.add(currentPhotoPath)
         _photoPaths.value = photoPaths.value
@@ -241,6 +245,45 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
 
     fun setNote(text: String) {
         _note.value = text
+    }
+
+    fun findTransaction(currentTransaction: Int): TransactionItem? {
+        return transactionStore.allTransactions.value?.find { it.id == currentTransaction }
+    }
+
+    fun setSelected(nameCategory: String) {
+        addSelectItem(getAllCategoryFromSelected().indexOfFirst { it.name == nameCategory })
+    }
+
+    fun removeTransaction(transaction: TransactionItem) {
+        viewModelScope.launch {
+            transactionStore.delete(transaction)
+        }
+    }
+
+    fun clickUpdate(transaction: TransactionItem) {
+        val selectedCategoryItem = getAllCategoryFromSelected().first { it.selected }
+
+        val value1 = if (selectedAdapter == InputFragment.EXPENSE)
+            -value.value?.toDouble()!!
+        else
+            value.value?.toDouble()
+
+        viewModelScope.launch {
+            val photoPathList: List<String?> = photoPaths.value?.toList() ?: emptyList()
+
+            transactionStore.updateTransaction(
+                TransactionItem(
+                    transaction.id,
+                    transaction.date,
+                    value1 ?: 0.0,
+                    selectedCategoryItem.name,
+                    note.value ?: "",
+                    selectedCategoryItem.mapImgSrc,
+                    photoPathList
+                )
+            )
+        }
     }
 }
 

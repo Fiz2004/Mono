@@ -4,9 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -16,6 +18,7 @@ import androidx.navigation.fragment.navArgs
 import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
+import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.databinding.FragmentInputBinding
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
@@ -24,12 +27,17 @@ import com.fiz.mono.util.ActivityContract
 import com.fiz.mono.util.setDisabled
 import com.fiz.mono.util.setEnabled
 import com.google.android.material.tabs.TabLayout
+import kotlin.math.abs
+
 
 class InputFragment : Fragment() {
     private val args: InputFragmentArgs by navArgs()
 
     private var _binding: FragmentInputBinding? = null
     private val binding get() = _binding!!
+
+    var currentTransaction = -1
+    var transaction: TransactionItem? = null
 
     private val mainViewModel: MainViewModel by activityViewModels()
     private val viewModel: CategoryInputViewModel by viewModels(factoryProducer = viewModelInit())
@@ -73,20 +81,76 @@ class InputFragment : Fragment() {
         adapter = CategoriesAdapter(R.color.blue, ::adapterOnClickListener)
         val numberTab = if (viewModel.getSelectedAdapter() == EXPENSE) 0 else 1
 
+        currentTransaction = args.transaction
+        if (currentTransaction != -1)
+            transaction = viewModel.findTransaction(currentTransaction)
+
         binding.apply {
+
             noteCameraEditText.setOnClickListener(::noteCameraOnClickListener)
             deletePhoto1ImageView.setOnClickListener { deletePhotoOnClickListener(1) }
             deletePhoto2ImageView.setOnClickListener { deletePhotoOnClickListener(2) }
             deletePhoto3ImageView.setOnClickListener { deletePhotoOnClickListener(3) }
             submitButton.setOnClickListener(::submitButtonOnClickListener)
-            dataRangeLayout.leftDateRangeImageButton.setOnClickListener(::leftDateRangeOnClickListener)
-            dataRangeLayout.dateTextView.setOnClickListener(::dateOnClickListener)
-            dataRangeLayout.rightDateRangeImageButton.setOnClickListener(::rightDateRangeOnClickListener)
+            backButton.setOnClickListener(::backButtonOnClickListener)
+            removeButton.setOnClickListener(::removeButtonOnClickListener)
+
             valueEditText.doOnTextChanged(::valueEditTextOnTextChanged)
             noteEditText.doOnTextChanged(::noteEditTextOnTextChanged)
-            tabLayout.addOnTabSelectedListener(onTabSelectedListener())
-            tabLayout.getTabAt(numberTab)?.select()
             categoryRecyclerView.adapter = adapter
+
+            if (currentTransaction == -1) {
+                view.findViewById<View>(R.id.dataRangeLayout).visibility = View.VISIBLE
+                dataRangeLayout.leftDateRangeImageButton.setOnClickListener(::leftDateRangeOnClickListener)
+                dataRangeLayout.dateTextView.setOnClickListener(::dateOnClickListener)
+                dataRangeLayout.rightDateRangeImageButton.setOnClickListener(::rightDateRangeOnClickListener)
+                tabLayout.visibility = View.VISIBLE
+                tabLayout.addOnTabSelectedListener(onTabSelectedListener())
+                tabLayout.getTabAt(numberTab)?.select()
+
+                titleTextView.visibility = View.GONE
+                backButton.visibility = View.GONE
+                removeButton.visibility = View.GONE
+
+                (ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams).topToBottom =
+                    R.id.dataRangeLayout
+                (ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams).topMargin =
+                    TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP, 24F, resources.displayMetrics
+                    ).toInt()
+
+                submitButton.text = getString(R.string.submit)
+            } else {
+                view.findViewById<View>(R.id.dataRangeLayout).visibility = View.GONE
+                tabLayout.visibility = View.GONE
+                titleTextView.visibility = View.VISIBLE
+                backButton.visibility = View.VISIBLE
+                removeButton.visibility = View.VISIBLE
+
+                (ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams).topToBottom =
+                    R.id.titleTextView
+                (ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams).topMargin =
+                    TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP, 24F, resources.displayMetrics
+                    ).toInt()
+
+                titleTextView.text = mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
+
+                if (transaction?.value!! > 0)
+                    viewModel.setSelectedAdapter(INCOME)
+                else
+                    viewModel.setSelectedAdapter(EXPENSE)
+
+                transaction!!.value = abs(transaction!!.value)
+
+                ExpenseIncomeTextView.text = viewModel.getTypeFromSelectedAdapter(requireContext())
+
+                viewModel.setValue(transaction!!.value.toString())
+                viewModel.setNote(transaction!!.note)
+                viewModel.setPhotoPath(transaction!!.photo.toMutableList())
+
+                submitButton.text = getString(R.string.update)
+            }
         }
 
         viewModel.apply {
@@ -99,6 +163,15 @@ class InputFragment : Fragment() {
         }
 
         updateUI()
+    }
+
+    private fun removeButtonOnClickListener(view: View?) {
+        viewModel.removeTransaction(transaction!!)
+        findNavController().popBackStack()
+    }
+
+    private fun backButtonOnClickListener(view: View?) {
+        findNavController().popBackStack()
     }
 
     private fun isStartFirstTime(): Boolean {
@@ -167,9 +240,14 @@ class InputFragment : Fragment() {
     }
 
     private fun submitButtonOnClickListener(view: View) {
-        viewModel.clickSubmit(mainViewModel.date.value?.time!!)
-        adapter.submitList(viewModel.getAllCategoryFromSelected())
-        updateUI()
+        if (transaction != null) {
+            viewModel.clickUpdate(transaction!!)
+            findNavController().popBackStack()
+        } else {
+            viewModel.clickSubmit(mainViewModel.date.value?.time!!)
+            adapter.submitList(viewModel.getAllCategoryFromSelected())
+            updateUI()
+        }
     }
 
     private fun adapterOnClickListener(position: Int) {
@@ -336,11 +414,27 @@ class InputFragment : Fragment() {
     }
 
     private fun allCategoryIncomeObserve(allCategoryIncome: List<CategoryItem>) {
+        transaction?.let {
+            if (viewModel.getSelectedAdapter() == INCOME)
+                it.nameCategory.let {
+                    viewModel.setSelected(
+                        it
+                    )
+                }
+        }
         val allCategory = viewModel.getAllCategoryFromSelected()
         adapter.submitList(allCategory)
     }
 
     private fun allCategoryExpenseObserve(allCategoryExpense: List<CategoryItem>) {
+        transaction?.let {
+            if (viewModel.getSelectedAdapter() == EXPENSE)
+                it.nameCategory.let {
+                    viewModel.setSelected(
+                        it
+                    )
+                }
+        }
         val allCategory = viewModel.getAllCategoryFromSelected()
         adapter.submitList(allCategory)
     }

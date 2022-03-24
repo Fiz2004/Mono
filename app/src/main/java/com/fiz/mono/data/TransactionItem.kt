@@ -9,7 +9,7 @@ data class TransactionItem(
     @PrimaryKey
     val id: Int,
     val date: Date,
-    val value: Double,
+    var value: Double,
     val nameCategory: String,
     val note: String,
     val mapImgSrc: String,

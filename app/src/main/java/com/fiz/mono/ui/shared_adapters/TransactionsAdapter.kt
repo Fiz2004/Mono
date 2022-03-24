@@ -13,7 +13,10 @@ import com.fiz.mono.databinding.ItemTransactionDateExpenseIncomeBinding
 import com.fiz.mono.ui.getCurrencyFormat
 import com.fiz.mono.util.getColorCompat
 
-class TransactionsAdapter(private val currency: String) :
+class TransactionsAdapter(
+    private val currency: String,
+    private val callback: (TransactionItem) -> Unit
+) :
     ListAdapter<TransactionsDataItem, RecyclerView.ViewHolder>(DataItemDiff) {
 
     private val ITEM_VIEW_TYPE_HEADER = 0
@@ -45,7 +48,7 @@ class TransactionsAdapter(private val currency: String) :
             }
             is InfoTransactionItemViewHolder -> {
                 val transactionItem = getItem(position) as TransactionsDataItem.InfoTransactionItem
-                holder.bind(transactionItem.transactionItem, currency)
+                holder.bind(transactionItem.transactionItem, currency, callback)
             }
         }
 
@@ -54,7 +57,11 @@ class TransactionsAdapter(private val currency: String) :
     class InfoTransactionItemViewHolder(
         private var binding: ItemTransactionBinding
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(transactionItem: TransactionItem, currency: String) {
+        fun bind(
+            transactionItem: TransactionItem,
+            currency: String,
+            callback: (TransactionItem) -> Unit
+        ) {
             transactionItem.mapImgSrc.let {
                 binding.iconTransactionImageView.setImageResource(
                     getDrawableCategoryIcon(it)
@@ -76,6 +83,7 @@ class TransactionsAdapter(private val currency: String) :
                 binding.valueTextView.text =
                     getCurrencyFormat(currency, transactionItem.value, true)
             }
+            binding.root.setOnClickListener { callback(transactionItem) }
 
         }
 

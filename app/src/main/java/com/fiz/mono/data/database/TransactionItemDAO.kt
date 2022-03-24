@@ -12,6 +12,9 @@ interface TransactionItemDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(transactionItem: TransactionItem)
 
+    @Update
+    suspend fun update(transactionItem: TransactionItem)
+
     @Delete
     suspend fun delete(transactionItem: TransactionItem?)
 }

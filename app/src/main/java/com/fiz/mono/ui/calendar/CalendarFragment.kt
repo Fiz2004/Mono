@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.App
 import com.fiz.mono.R
+import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.databinding.FragmentCalendarBinding
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
@@ -55,7 +56,8 @@ class CalendarFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         calendarAdapter = CalendarAdapter(::calendarAdapterOnClickListener)
-        transactionAdapter = TransactionsAdapter(mainViewModel.currency)
+        transactionAdapter =
+            TransactionsAdapter(mainViewModel.currency, ::transactionAdapterOnClickListener)
 
         binding.apply {
             backButton.setOnClickListener(::backButtonOnClickListener)
@@ -87,9 +89,11 @@ class CalendarFragment : Fragment() {
             }
         }
 
-//        viewModel.allTransaction.observe(viewLifecycleOwner, ::allTransactionObserve)
-
         mainViewModel.date.observe(viewLifecycleOwner, ::dateObserve)
+
+        viewModel.allTransaction.observe(viewLifecycleOwner) {
+            dateObserve(mainViewModel.date.value)
+        }
     }
 
     private fun monthsOnClickListener(numberMonth: Int) {
@@ -141,6 +145,13 @@ class CalendarFragment : Fragment() {
         if (transactionsDay.day == 0) return
 
         mainViewModel.setDate(transactionsDay.day)
+    }
+
+    private fun transactionAdapterOnClickListener(transactionItem: TransactionItem) {
+        val action =
+            CalendarFragmentDirections
+                .actionCalendarFragmentToInputFragment(transaction = transactionItem.id)
+        findNavController().navigate(action)
     }
 
     private fun backButtonOnClickListener(view: View) {

@@ -51,7 +51,7 @@ class ReportFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = TransactionsAdapter(mainViewModel.currency)
+        adapter = TransactionsAdapter(mainViewModel.currency, {})
 
         binding.apply {
             dataRangeLayout.leftDateRangeImageButton.setOnClickListener(::leftDateRangeOnClickListener)

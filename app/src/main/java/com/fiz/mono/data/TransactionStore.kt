@@ -125,4 +125,12 @@ class TransactionStore(private val transactionItemDao: TransactionItemDAO) {
             transactionItemDao.delete(it)
         }
     }
+
+    suspend fun delete(transaction: TransactionItem) {
+        transactionItemDao.delete(transaction)
+    }
+
+    suspend fun updateTransaction(transactionItem: TransactionItem) {
+        transactionItemDao.update(transactionItem)
+    }
 }
