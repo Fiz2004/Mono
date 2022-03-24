@@ -3,6 +3,7 @@ package com.fiz.mono.util
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Build
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import com.fiz.mono.R
@@ -17,7 +18,6 @@ fun TextView.setTextAppearanceCompat(context: Context, resId: Int) {
 }
 
 fun Button.setDisabled() {
-    this.isEnabled = false
     this.backgroundTintList =
         context?.themeColor(R.attr.colorGray)?.let {
             ColorStateList.valueOf(
@@ -29,7 +29,6 @@ fun Button.setDisabled() {
 }
 
 fun Button.setEnabled() {
-    this.isEnabled = true
     this.backgroundTintList =
         context?.getColorCompat(R.color.blue)?.let {
             ColorStateList.valueOf(
@@ -43,7 +42,6 @@ fun Button.setEnabled() {
 }
 
 fun Button.setRemove() {
-    this.isEnabled = true
     this.backgroundTintList =
         context?.getColorCompat(R.color.red)?.let {
             ColorStateList.valueOf(
@@ -54,4 +52,8 @@ fun Button.setRemove() {
         ?.let {
             this.setTextColor(it)
         }
+}
+
+fun View.setVisible(visibility: Boolean) {
+    this.visibility = if (visibility) View.VISIBLE else View.GONE
 }

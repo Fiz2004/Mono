@@ -9,7 +9,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentCategoryAddBinding
+import com.fiz.mono.util.getColorCompat
+import com.fiz.mono.util.setVisible
 
 class CategoryAddFragment : Fragment() {
     private var _binding: FragmentCategoryAddBinding? = null
@@ -37,13 +40,30 @@ class CategoryAddFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.backButton.setOnClickListener(::backButtonOnClickListener)
+        init()
+        bind()
+    }
 
-        binding.addButton.setOnClickListener(::addButtonOnClickListener)
-
+    private fun init() {
         adapter = CategoryIconsAdapter(::adapterOnClickListener)
         adapter.submitList(viewModel.getAllCategoryIcon())
-        binding.expenseRecyclerView.adapter = adapter
+    }
+
+    private fun bind() {
+        binding.apply {
+            navigationBarLayout.backButton.setVisible(true)
+            navigationBarLayout.actionButton.setVisible(false)
+            navigationBarLayout.actionButton.text = getString(R.string.add)
+            navigationBarLayout.actionButton.setTextColor(requireContext().getColorCompat(R.color.blue))
+            navigationBarLayout.choiceImageButton.setVisible(false)
+            navigationBarLayout.titleTextView.text = getString(R.string.add_category)
+
+            navigationBarLayout.backButton.setOnClickListener(::backButtonOnClickListener)
+
+            navigationBarLayout.actionButton.setOnClickListener(::addButtonOnClickListener)
+
+            expenseRecyclerView.adapter = adapter
+        }
     }
 
     private fun backButtonOnClickListener(v: View): Unit {
@@ -67,7 +87,7 @@ class CategoryAddFragment : Fragment() {
 
     private fun adapterOnClickListener(position: Int) {
         viewModel.addSelectItem(position)
-        binding.addButton.visibility = viewModel.getVisibilityAddButton()
+        binding.navigationBarLayout.actionButton.visibility = viewModel.getVisibilityAddButton()
         adapter.submitList(viewModel.getAllCategoryIcon())
     }
 

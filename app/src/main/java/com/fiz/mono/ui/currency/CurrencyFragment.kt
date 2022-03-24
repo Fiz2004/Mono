@@ -12,12 +12,16 @@ import androidx.navigation.fragment.findNavController
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentCurrencyBinding
 import com.fiz.mono.ui.MainViewModel
+import com.fiz.mono.util.setVisible
 
 class CurrencyFragment : Fragment() {
     private var _binding: FragmentCurrencyBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: MainViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
+
+    private var currencyRadioButton =
+        mutableMapOf<String, com.google.android.material.radiobutton.MaterialRadioButton>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,27 +39,29 @@ class CurrencyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.USDRadioButton.setOnClickListener(::onRadioButtonClicked)
-        binding.JPYRadioButton.setOnClickListener(::onRadioButtonClicked)
-        binding.CRCRadioButton.setOnClickListener(::onRadioButtonClicked)
-        binding.GBPRadioButton.setOnClickListener(::onRadioButtonClicked)
-        binding.AZNRadioButton.setOnClickListener(::onRadioButtonClicked)
-        binding.ALLRadioButton.setOnClickListener(::onRadioButtonClicked)
-        binding.BGNRadioButton.setOnClickListener(::onRadioButtonClicked)
-        binding.VNDRadioButton.setOnClickListener(::onRadioButtonClicked)
+        bind()
+    }
 
-        binding.backButton.setOnClickListener(::backButtonOnClickListener)
+    private fun bind() {
+        currencyRadioButton["$"] = binding.USDRadioButton
+        currencyRadioButton["¥"] = binding.JPYRadioButton
+        currencyRadioButton["₡"] = binding.CRCRadioButton
+        currencyRadioButton["£"] = binding.GBPRadioButton
+        currencyRadioButton["₼"] = binding.AZNRadioButton
+        currencyRadioButton["€"] = binding.ALLRadioButton
+        currencyRadioButton["лв"] = binding.BGNRadioButton
+        currencyRadioButton["đ"] = binding.VNDRadioButton
 
-        when (viewModel.currency) {
-            "$" -> binding.USDRadioButton.isChecked = true
-            "¥" -> binding.JPYRadioButton.isChecked = true
-            "₡" -> binding.CRCRadioButton.isChecked = true
-            "£" -> binding.GBPRadioButton.isChecked = true
-            "₼" -> binding.AZNRadioButton.isChecked = true
-            "€" -> binding.ALLRadioButton.isChecked = true
-            "лв" -> binding.BGNRadioButton.isChecked = true
-            "đ" -> binding.VNDRadioButton.isChecked = true
-        }
+        currencyRadioButton[mainViewModel.currency.value]?.isChecked = true
+
+        binding.navigationBarLayout.backButton.setVisible(true)
+        binding.navigationBarLayout.actionButton.setVisible(false)
+        binding.navigationBarLayout.choiceImageButton.setVisible(false)
+        binding.navigationBarLayout.titleTextView.text = getString(R.string.currency)
+
+        currencyRadioButton.values.forEach { it.setOnClickListener(::onRadioButtonClicked) }
+
+        binding.navigationBarLayout.backButton.setOnClickListener(::backButtonOnClickListener)
     }
 
     private fun backButtonOnClickListener(view: View) {
@@ -66,63 +72,21 @@ class CurrencyFragment : Fragment() {
         if (view is RadioButton) {
             val checked = view.isChecked
 
-            binding.USDRadioButton.isChecked = false
-            binding.JPYRadioButton.isChecked = false
-            binding.CRCRadioButton.isChecked = false
-            binding.GBPRadioButton.isChecked = false
-            binding.AZNRadioButton.isChecked = false
-            binding.ALLRadioButton.isChecked = false
-            binding.BGNRadioButton.isChecked = false
-            binding.VNDRadioButton.isChecked = false
+            currencyRadioButton.values.forEach { it.isChecked = false }
+            if (checked) {
+                val selectEntriesRadioButton = currencyRadioButton.entries.find { it.value.id == view.id }
+                selectEntriesRadioButton?.let {
+                    it.value.isChecked = true
+                    mainViewModel.setCurrency(it.key)
 
-            when (view.getId()) {
-                R.id.USDRadioButton ->
-                    if (checked) {
-                        binding.USDRadioButton.isChecked = true
-                        viewModel.currency = binding.iconUSDRadioButton.text.toString()
-                    }
-                R.id.JPYRadioButton ->
-                    if (checked) {
-                        binding.JPYRadioButton.isChecked = true
-                        viewModel.currency = binding.iconJPYRadioButton.text.toString()
-                    }
-                R.id.CRCRadioButton ->
-                    if (checked) {
-                        binding.CRCRadioButton.isChecked = true
-                        viewModel.currency = binding.iconCRCRadioButton.text.toString()
-                    }
-                R.id.GBPRadioButton ->
-                    if (checked) {
-                        binding.GBPRadioButton.isChecked = true
-                        viewModel.currency = binding.iconGBPRadioButton.text.toString()
-                    }
-                R.id.AZNRadioButton ->
-                    if (checked) {
-                        binding.AZNRadioButton.isChecked = true
-                        viewModel.currency = binding.iconAZNRadioButton.text.toString()
-                    }
-                R.id.ALLRadioButton ->
-                    if (checked) {
-                        binding.ALLRadioButton.isChecked = true
-                        viewModel.currency = binding.iconALLRadioButton.text.toString()
-                    }
-                R.id.BGNRadioButton ->
-                    if (checked) {
-                        binding.BGNRadioButton.isChecked = true
-                        viewModel.currency = binding.iconBGNRadioButton.text.toString()
-                    }
-                R.id.VNDRadioButton ->
-                    if (checked) {
-                        binding.VNDRadioButton.isChecked = true
-                        viewModel.currency = binding.iconVNDRadioButton.text.toString()
-                    }
+                    val sharedPreferences = requireActivity().getSharedPreferences(
+                        getString(R.string.preferences),
+                        AppCompatActivity.MODE_PRIVATE
+                    ).edit()
+                    sharedPreferences.putString("currency", it.key)
+                    sharedPreferences.apply()
+                }
             }
-            val sharedPreferences = requireActivity().getSharedPreferences(
-                getString(R.string.preferences),
-                AppCompatActivity.MODE_PRIVATE
-            ).edit()
-            sharedPreferences.putString("currency", viewModel.currency)
-            sharedPreferences.apply()
         }
     }
 }

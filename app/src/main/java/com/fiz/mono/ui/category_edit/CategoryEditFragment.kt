@@ -13,6 +13,8 @@ import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentCategoryEditBinding
 import com.fiz.mono.ui.shared_adapters.CategoriesAdapter
+import com.fiz.mono.util.getColorCompat
+import com.fiz.mono.util.setVisible
 
 
 class CategoryEditFragment : Fragment() {
@@ -46,17 +48,33 @@ class CategoryEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.insertNewCategory(args.type, args.name.toString(), args.icon)
+        init()
+        bind()
+        subscribe()
+    }
 
-        binding.backButton.setOnClickListener(::backButtonOnClickListener)
-        binding.removeButton.setOnClickListener(::removeButtonOnClickListener)
-
+    private fun init() {
+        viewModel.insertNewCategory(args.type, args.name, args.icon)
         expenseAdapter = CategoriesAdapter(R.color.red, ::adapterExpenseOnClickListener)
-        binding.expenseRecyclerView.adapter = expenseAdapter
-
         incomeAdapter = CategoriesAdapter(R.color.red, ::adapterIncomeOnClickListener)
-        binding.incomeRecyclerView.adapter = incomeAdapter
+    }
 
+    private fun bind() {
+        binding.apply {
+            navigationBarLayout.backButton.setVisible(true)
+            navigationBarLayout.actionButton.setVisible(false)
+            navigationBarLayout.actionButton.text = getString(R.string.remove)
+            navigationBarLayout.actionButton.setTextColor(requireContext().getColorCompat(R.color.red))
+            navigationBarLayout.choiceImageButton.setVisible(false)
+            navigationBarLayout.titleTextView.text = getString(R.string.category_edit)
+            navigationBarLayout.backButton.setOnClickListener(::backButtonOnClickListener)
+            navigationBarLayout.actionButton.setOnClickListener(::removeButtonOnClickListener)
+            expenseRecyclerView.adapter = expenseAdapter
+            incomeRecyclerView.adapter = incomeAdapter
+        }
+    }
+
+    private fun subscribe() {
         viewModel.allCategoryExpense.observe(viewLifecycleOwner) {
             expenseAdapter.submitList(it)
             incomeAdapter.submitList(viewModel.getAllCategoryItemIncome())
@@ -73,7 +91,7 @@ class CategoryEditFragment : Fragment() {
 
     private fun removeButtonOnClickListener(v: View): Unit {
         viewModel.removeSelectItem()
-        binding.removeButton.visibility = viewModel.getVisibilityRemoveButton()
+        binding.navigationBarLayout.actionButton.visibility = viewModel.getVisibilityRemoveButton()
         updateAdapters()
     }
 
@@ -88,7 +106,7 @@ class CategoryEditFragment : Fragment() {
         }
 
         viewModel.addSelectItemExpense(position)
-        binding.removeButton.visibility = viewModel.getVisibilityRemoveButton()
+        binding.navigationBarLayout.actionButton.visibility = viewModel.getVisibilityRemoveButton()
         updateAdapters()
     }
 
@@ -103,7 +121,7 @@ class CategoryEditFragment : Fragment() {
         }
 
         viewModel.addSelectItemIncome(position)
-        binding.removeButton.visibility = viewModel.getVisibilityRemoveButton()
+        binding.navigationBarLayout.actionButton.visibility = viewModel.getVisibilityRemoveButton()
         updateAdapters()
     }
 

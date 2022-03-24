@@ -13,6 +13,7 @@ import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentSettingsBinding
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
+import com.fiz.mono.util.setVisible
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,6 +40,12 @@ class SettingsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
+            navigationBarLayout.backButton.setVisible(false)
+            navigationBarLayout.actionButton.setVisible(false)
+            navigationBarLayout.choiceImageButton.setVisible(false)
+            navigationBarLayout.titleTextView.text = getString(R.string.settings)
+
+
             modeSwitch.setOnCheckedChangeListener(::modeOnClickListener)
 
             categoryCircleRightImageView.setOnClickListener(::categoryOnClickListener)
@@ -84,7 +91,7 @@ class SettingsFragment : Fragment() {
     private fun pinPasswordOnClickListener(view: View) {
         val action =
             SettingsFragmentDirections
-                .actionSettingsFragmentToPINPasswordFragment(PINPasswordFragment.SETTINGS)
+                .actionToPINPasswordFragment(PINPasswordFragment.SETTINGS)
         view.findNavController().navigate(action)
     }
 
@@ -98,7 +105,7 @@ class SettingsFragment : Fragment() {
     private fun categoryOnClickListener(view: View) {
         val action =
             SettingsFragmentDirections
-                .actionSettingsFragmentToCategoryFragment("", "", "")
+                .actionToCategoryFragment()
         view.findNavController().navigate(action)
     }
 

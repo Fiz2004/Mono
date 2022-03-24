@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentCalculatorBinding
+import com.fiz.mono.util.setVisible
 
 
 class CalculatorFragment : Fragment() {
@@ -31,6 +33,12 @@ class CalculatorFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.navigationBarLayout.backButton.setVisible(false)
+        binding.navigationBarLayout.actionButton.setVisible(false)
+        binding.navigationBarLayout.choiceImageButton.setVisible(false)
+        binding.navigationBarLayout.titleTextView.text = getString(R.string.calculator)
+
         binding.oneCalendarImageButton.setOnClickListener(::onNumberClick)
         binding.twoCalendarImageButton.setOnClickListener(::onNumberClick)
         binding.threeCalendarImageButton.setOnClickListener(::onNumberClick)

@@ -1,7 +1,6 @@
 package com.fiz.mono.ui.shared_adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -12,6 +11,7 @@ import com.fiz.mono.data.getDrawableCategoryIcon
 import com.fiz.mono.databinding.ItemCategoryBinding
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setTextAppearanceCompat
+import com.fiz.mono.util.setVisible
 import com.fiz.mono.util.themeColor
 
 class CategoriesAdapter(private val colorSelected: Int, private val callback: (Int) -> Unit) :
@@ -33,9 +33,10 @@ class CategoriesViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(categoryItem: CategoryItem, colorSelected: Int, callback: (Int) -> Unit) {
         binding.apply {
-            iconImageView.visibility = getIconImageView(categoryItem.mapImgSrc)
+            iconImageView.setVisible(categoryItem.mapImgSrc != "")
             if (categoryItem.mapImgSrc != "")
                 iconImageView.setImageResource(getDrawableCategoryIcon(categoryItem.mapImgSrc))
+
             descriptionTextView.text = categoryItem.name
             descriptionTextView.setTextAppearanceCompat(
                 root.context,
@@ -62,9 +63,5 @@ class CategoriesViewHolder(
             else
                 themeColor(R.attr.colorGray)
         }
-    }
-
-    private fun getIconImageView(imgSrc: String): Int {
-        return if (imgSrc != "") View.VISIBLE else View.GONE
     }
 }

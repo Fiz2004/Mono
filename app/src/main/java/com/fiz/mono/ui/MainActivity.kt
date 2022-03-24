@@ -212,7 +212,8 @@ class MainActivity : AppCompatActivity() {
     private fun loadPreferences() {
         val sharedPreferences = getSharedPreferences(getString(R.string.preferences), MODE_PRIVATE)
         mainViewModel.firstTime = sharedPreferences.getBoolean("firstTime", true)
-        mainViewModel.currency = sharedPreferences.getString("currency", "$") ?: "$"
+        val loadCurrency = sharedPreferences.getString("currency", "$") ?: "$"
+        mainViewModel.setCurrency(loadCurrency)
         mainViewModel.PIN = sharedPreferences.getString("PIN", "") ?: ""
 
     }

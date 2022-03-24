@@ -8,42 +8,14 @@
     android:paddingEnd="@dimen/fragmentPaddingEnd"
     tools:context=".ui.category_add.CategoryAddFragment">
 
-    <TextView
-        android:id="@+id/titleTextView"
+    <include
+        android:id="@+id/navigationBarLayout"
+        layout="@layout/navigation_bar"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:text="@string/add_category"
-        android:gravity="center"
-        android:textAppearance="@style/size16_color_primary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/backButton"
-        style="@style/BackButton"
-        app:layout_constraintBottom_toBottomOf="@+id/titleTextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/titleTextView" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/addButton"
-        style="@style/Widget.Material3.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/add"
-        android:textAlignment="textEnd"
-        android:textAppearance="@style/size16_color_secondary"
-        android:textColor="@color/blue"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/titleTextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/titleTextView" />
-
 
     <TextView
         android:id="@+id/categoryNameTextView"
@@ -55,7 +27,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/navigationBarLayout" />
 
 
     <com.google.android.material.textfield.TextInputEditText
@@ -90,7 +62,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iconTextView"
-        app:spanCount="4"
+        app:spanCount="@integer/count_columns"
         tools:itemCount="16"
         tools:listitem="@layout/item_category" />
 

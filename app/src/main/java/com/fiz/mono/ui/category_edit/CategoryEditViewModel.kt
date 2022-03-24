@@ -81,8 +81,8 @@ class CategoryEditViewModel(private val categoryStore: CategoryStore) : ViewMode
         }
     }
 
-    fun insertNewCategory(type: String, name: String, iconID: String) {
-        if (type == "") return
+    fun insertNewCategory(type: String?, name: String?, iconID: String?) {
+        if (type == null || name == null || iconID == null) return
         viewModelScope.launch {
             if (type == CategoryEditFragment.TYPE_EXPENSE) {
                 categoryStore.insertNewCategoryExpense(name, iconID)

@@ -106,10 +106,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                tools:text="@string/expense"
                 android:textAppearance="@style/size14_color_secondary"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/dataRangeLayout" />
+                app:layout_constraintTop_toBottomOf="@+id/dataRangeLayout"
+                tools:text="@string/expense" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/valueEditText"
@@ -132,12 +132,12 @@
                 android:layout_height="56dp"
                 android:background="@drawable/edit_image_bg_background"
                 android:gravity="center"
-                tools:text="$"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="32sp"
                 app:layout_constraintBottom_toBottomOf="@+id/valueEditText"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ExpenseIncomeTextView" />
+                app:layout_constraintTop_toBottomOf="@+id/ExpenseIncomeTextView"
+                tools:text="$" />
 
             <TextView
                 android:id="@+id/noteTextView"
@@ -299,9 +299,11 @@
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/noteLayout"
-                app:spanCount="4"
+                app:layout_constraintVertical_bias="0.0"
+                app:spanCount="@integer/count_columns"
                 tools:itemCount="16"
                 tools:listitem="@layout/item_category" />
 
@@ -311,13 +313,14 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/submitButton"
         style="@style/button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:minHeight="48dp"
         android:text="@string/submit"
+        android:textColor="@drawable/button_text_default"
+        app:backgroundTint="@drawable/button_default"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

@@ -16,6 +16,7 @@ import com.fiz.mono.databinding.FragmentCalendarBinding
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.util.getColorCompat
+import com.fiz.mono.util.setVisible
 import com.fiz.mono.util.themeColor
 import java.text.SimpleDateFormat
 import java.util.*
@@ -56,12 +57,17 @@ class CalendarFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         calendarAdapter = CalendarAdapter(::calendarAdapterOnClickListener)
-        transactionAdapter =
-            TransactionsAdapter(mainViewModel.currency, ::transactionAdapterOnClickListener)
+        transactionAdapter = mainViewModel.currency.value?.let {
+            TransactionsAdapter(it, ::transactionAdapterOnClickListener)
+        } ?: TransactionsAdapter("$", ::transactionAdapterOnClickListener)
 
         binding.apply {
-            backButton.setOnClickListener(::backButtonOnClickListener)
-            choiceMonthImageButton.setOnClickListener(::choiceMonthOnClickListener)
+            navigationBarLayout.backButton.setVisible(true)
+            navigationBarLayout.actionButton.setVisible(false)
+            navigationBarLayout.choiceImageButton.setVisible(true)
+
+            navigationBarLayout.backButton.setOnClickListener(::backButtonOnClickListener)
+            navigationBarLayout.choiceImageButton.setOnClickListener(::choiceMonthOnClickListener)
             calendarRecyclerView.adapter = calendarAdapter
             transactionRecyclerView.adapter = transactionAdapter
 
@@ -119,7 +125,7 @@ class CalendarFragment : Fragment() {
     }
 
     private fun dateObserve(calendar: Calendar?) {
-        binding.titleTextView.text =
+        binding.navigationBarLayout.titleTextView.text =
             SimpleDateFormat("MMMM, yyyy", Locale.getDefault()).format(calendar?.time!!)
 
         // Без этого присваивания при выборе декабря приложение крошится
@@ -131,15 +137,11 @@ class CalendarFragment : Fragment() {
         val listTransactionsDataItem =
             viewModel.getListTransactionsDataItem(mainViewModel.date.value!!)
 
-        binding.noTransactionsTextView.visibility = if (listTransactionsDataItem.size == 0)
-            View.VISIBLE else View.GONE
-
-        binding.transactionRecyclerView.visibility = if (listTransactionsDataItem.size == 0)
-            View.GONE else View.VISIBLE
+        binding.noTransactionsTextView.setVisible(listTransactionsDataItem.size == 0)
+        binding.transactionRecyclerView.setVisible(listTransactionsDataItem.size != 0)
 
         transactionAdapter.submitList(listTransactionsDataItem)
     }
-
 
     private fun calendarAdapterOnClickListener(transactionsDay: TransactionsDay) {
         if (transactionsDay.day == 0) return

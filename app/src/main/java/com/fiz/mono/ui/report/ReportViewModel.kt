@@ -9,6 +9,10 @@ import java.util.*
 class ReportViewModel(private val transactionStore: TransactionStore) : ViewModel() {
     val allTransactions = transactionStore.allTransactions
 
+    var tabSelectedReport: Int = 0
+
+    var categorySelectedReport = 0
+
     fun getCurrentBalance(): Double {
         return allTransactions.value?.map { it.value }?.fold(0.0) { acc, d -> acc + d } ?: 0.0
     }

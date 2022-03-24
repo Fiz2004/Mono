@@ -2,13 +2,13 @@ package com.fiz.mono.ui.calendar
 
 import android.content.res.ColorStateList
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fiz.mono.R
 import com.fiz.mono.databinding.ItemCalendarBinding
 import com.fiz.mono.databinding.ItemCalendarDayWeekBinding
+import com.fiz.mono.util.setVisible
 import com.fiz.mono.util.themeColor
 
 class CalendarAdapter(private val callback: (TransactionsDay) -> Unit) :
@@ -72,8 +72,8 @@ class DayItemViewHolder(
     fun bind(transactionsDay: TransactionsDay, callback: (TransactionsDay) -> Unit) {
         binding.apply {
             dayOfMonthTextView.text = transactionsDay.getFormatDayOfMonthOrBlank()
-            expenseImageView.visibility = getVisibility(transactionsDay.expense)
-            incomeImageView.visibility = getVisibility(transactionsDay.income)
+            expenseImageView.setVisible(transactionsDay.expense)
+            incomeImageView.setVisible(transactionsDay.income)
             cardMaterialCard.backgroundTintList = getBackgroundTint(transactionsDay.today)
             cardMaterialCard.strokeWidth = getStrokeWidth(transactionsDay.selected)
 
@@ -81,9 +81,6 @@ class DayItemViewHolder(
         }
 
     }
-
-    private fun getVisibility(visibility: Boolean) =
-        if (visibility) View.VISIBLE else View.GONE
 
     private fun getBackgroundTint(today: Boolean) =
         ColorStateList.valueOf(

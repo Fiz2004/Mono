@@ -1,7 +1,6 @@
 package com.fiz.mono.ui.shared_adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -10,12 +9,13 @@ import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.getDrawableCategoryIcon
 import com.fiz.mono.databinding.ItemTransactionBinding
 import com.fiz.mono.databinding.ItemTransactionDateExpenseIncomeBinding
-import com.fiz.mono.ui.getCurrencyFormat
+import com.fiz.mono.util.currentUtils.getCurrencyFormat
 import com.fiz.mono.util.getColorCompat
+import com.fiz.mono.util.setVisible
 
 class TransactionsAdapter(
     private val currency: String,
-    private val callback: (TransactionItem) -> Unit
+    private val callback: (TransactionItem) -> Unit = {}
 ) :
     ListAdapter<TransactionsDataItem, RecyclerView.ViewHolder>(DataItemDiff) {
 
@@ -62,28 +62,33 @@ class TransactionsAdapter(
             currency: String,
             callback: (TransactionItem) -> Unit
         ) {
-            transactionItem.mapImgSrc.let {
-                binding.iconTransactionImageView.setImageResource(
-                    getDrawableCategoryIcon(it)
-                )
-            }
+            binding.apply {
+                transactionItem.mapImgSrc.let {
+                    iconTransactionImageView.setImageResource(
+                        getDrawableCategoryIcon(it)
+                    )
+                }
 
-            binding.categoryTransactionTextView.text = transactionItem.nameCategory
-            if (transactionItem.note.isNotBlank())
-                binding.noteTransactionTextView.text =
-                    binding.root.context.getString(R.string.transaction_note, transactionItem.note)
-            else
-                binding.noteTransactionTextView.text = ""
-            if (transactionItem.value > 0) {
-                binding.valueTextView.setTextColor(binding.root.context.getColorCompat(R.color.blue))
-                binding.valueTextView.text =
+                categoryTransactionTextView.text = transactionItem.nameCategory
+
+                noteTransactionTextView.text =
+                    if (transactionItem.note.isNotBlank())
+                        root.context.getString(R.string.transaction_note, transactionItem.note)
+                    else
+                        ""
+
+                valueTextView.setTextColor(
+                    if (transactionItem.value > 0)
+                        root.context.getColorCompat(R.color.blue)
+                    else
+                        root.context.getColorCompat(R.color.red)
+                )
+
+                valueTextView.text =
                     getCurrencyFormat(currency, transactionItem.value, true)
-            } else {
-                binding.valueTextView.setTextColor(binding.root.context.getColorCompat(R.color.red))
-                binding.valueTextView.text =
-                    getCurrencyFormat(currency, transactionItem.value, true)
+
+                root.setOnClickListener { callback(transactionItem) }
             }
-            binding.root.setOnClickListener { callback(transactionItem) }
 
         }
 
@@ -100,18 +105,20 @@ class TransactionsAdapter(
         private var binding: ItemTransactionDateExpenseIncomeBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(infoDay: InfoDay, currency: String) {
-            binding.date.text = infoDay.date
-            if (infoDay.expense == 0.0) {
-                binding.expense.visibility = View.GONE
-            } else {
-                binding.expense.visibility = View.VISIBLE
-                binding.expense.text = getCurrencyFormat(currency, infoDay.expense, true)
-            }
-            if (infoDay.income == 0.0) {
-                binding.income.visibility = View.GONE
-            } else {
-                binding.income.visibility = View.VISIBLE
-                binding.income.text = getCurrencyFormat(currency, infoDay.income, true)
+            binding.apply {
+                date.text = infoDay.date
+                expense.setVisible(infoDay.expense != 0.0)
+                expense.text =
+                    if (infoDay.expense != 0.0)
+                        getCurrencyFormat(currency, infoDay.expense, true)
+                    else
+                        ""
+                income.setVisible(infoDay.income != 0.0)
+                income.text =
+                    if (infoDay.income != 0.0)
+                        getCurrencyFormat(currency, infoDay.income, true)
+                    else
+                        ""
             }
         }
 

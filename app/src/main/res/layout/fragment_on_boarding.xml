@@ -74,6 +74,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="29dp"
         android:text="@string/word_continue"
+        android:textColor="@drawable/button_text_default"
+        app:backgroundTint="@drawable/button_default"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

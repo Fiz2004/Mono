@@ -11,47 +11,12 @@
         android:padding="16dp"
         tools:context=".ui.category_edit.CategoryEditFragment">
 
-
-        <TextView
-            android:id="@+id/titleTextView"
+        <include
+            android:id="@+id/navigationBarLayout"
+            layout="@layout/navigation_bar"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:gravity="center"
-            android:text="@string/category_edit"
-            android:textAppearance="@style/size16_color_primary"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/backButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="true"
-            android:text="@string/back"
-            android:textAlignment="textStart"
-            android:textAppearance="@style/size16_color_secondary"
-            app:layout_constraintBottom_toBottomOf="@+id/titleTextView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/removeButton"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/remove"
-            android:textAlignment="textEnd"
-            android:textAppearance="@style/size16_color_secondary"
-            android:textColor="@color/red"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/titleTextView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -65,7 +30,7 @@
             android:textAppearance="@style/size14_color_secondary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
+            app:layout_constraintTop_toBottomOf="@+id/navigationBarLayout" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/expenseRecyclerView"
@@ -78,7 +43,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/expenseTextView"
-            app:spanCount="4"
+            app:spanCount="@integer/count_columns"
             tools:itemCount="16"
             tools:listitem="@layout/item_category" />
 
@@ -105,7 +70,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/incomeTextView"
-            app:spanCount="4"
+            app:spanCount="@integer/count_columns"
             tools:itemCount="16"
             tools:listitem="@layout/item_category" />
 

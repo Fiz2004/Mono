@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,26 +17,20 @@ import androidx.navigation.fragment.navArgs
 import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
-import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.databinding.FragmentInputBinding
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
 import com.fiz.mono.ui.shared_adapters.CategoriesAdapter
 import com.fiz.mono.util.ActivityContract
-import com.fiz.mono.util.setDisabled
-import com.fiz.mono.util.setEnabled
+import com.fiz.mono.util.setVisible
 import com.google.android.material.tabs.TabLayout
-import kotlin.math.abs
-
+import java.util.*
 
 class InputFragment : Fragment() {
     private val args: InputFragmentArgs by navArgs()
 
     private var _binding: FragmentInputBinding? = null
     private val binding get() = _binding!!
-
-    var currentTransaction = -1
-    var transaction: TransactionItem? = null
 
     private val mainViewModel: MainViewModel by activityViewModels()
     private val viewModel: CategoryInputViewModel by viewModels(factoryProducer = viewModelInit())
@@ -49,15 +42,15 @@ class InputFragment : Fragment() {
 
     private var cashCheckCameraHardware: Boolean? = null
 
-    private fun resultCameraActivity(result: Intent?) {
-        viewModel.addPhotoPath()
-    }
-
     private fun viewModelInit(): () -> CategoryInputViewModelFactory = {
         CategoryInputViewModelFactory(
             (requireActivity().application as App).categoryStore,
             (requireActivity().application as App).transactionStore
         )
+    }
+
+    private fun resultCameraActivity(result: Intent?) {
+        viewModel.addPhotoPath()
     }
 
     override fun onCreateView(
@@ -78,100 +71,9 @@ class InputFragment : Fragment() {
 
         if (isStartFirstTime() || isNeedLog()) return
 
-        adapter = CategoriesAdapter(R.color.blue, ::adapterOnClickListener)
-        val numberTab = if (viewModel.getSelectedAdapter() == EXPENSE) 0 else 1
-
-        currentTransaction = args.transaction
-        if (currentTransaction != -1)
-            transaction = viewModel.findTransaction(currentTransaction)
-
-        binding.apply {
-
-            noteCameraEditText.setOnClickListener(::noteCameraOnClickListener)
-            deletePhoto1ImageView.setOnClickListener { deletePhotoOnClickListener(1) }
-            deletePhoto2ImageView.setOnClickListener { deletePhotoOnClickListener(2) }
-            deletePhoto3ImageView.setOnClickListener { deletePhotoOnClickListener(3) }
-            submitButton.setOnClickListener(::submitButtonOnClickListener)
-            backButton.setOnClickListener(::backButtonOnClickListener)
-            removeButton.setOnClickListener(::removeButtonOnClickListener)
-
-            valueEditText.doOnTextChanged(::valueEditTextOnTextChanged)
-            noteEditText.doOnTextChanged(::noteEditTextOnTextChanged)
-            categoryRecyclerView.adapter = adapter
-
-            if (currentTransaction == -1) {
-                view.findViewById<View>(R.id.dataRangeLayout).visibility = View.VISIBLE
-                dataRangeLayout.leftDateRangeImageButton.setOnClickListener(::leftDateRangeOnClickListener)
-                dataRangeLayout.dateTextView.setOnClickListener(::dateOnClickListener)
-                dataRangeLayout.rightDateRangeImageButton.setOnClickListener(::rightDateRangeOnClickListener)
-                tabLayout.visibility = View.VISIBLE
-                tabLayout.addOnTabSelectedListener(onTabSelectedListener())
-                tabLayout.getTabAt(numberTab)?.select()
-
-                titleTextView.visibility = View.GONE
-                backButton.visibility = View.GONE
-                removeButton.visibility = View.GONE
-
-                (ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams).topToBottom =
-                    R.id.dataRangeLayout
-                (ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams).topMargin =
-                    TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP, 24F, resources.displayMetrics
-                    ).toInt()
-
-                submitButton.text = getString(R.string.submit)
-            } else {
-                view.findViewById<View>(R.id.dataRangeLayout).visibility = View.GONE
-                tabLayout.visibility = View.GONE
-                titleTextView.visibility = View.VISIBLE
-                backButton.visibility = View.VISIBLE
-                removeButton.visibility = View.VISIBLE
-
-                (ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams).topToBottom =
-                    R.id.titleTextView
-                (ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams).topMargin =
-                    TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP, 24F, resources.displayMetrics
-                    ).toInt()
-
-                titleTextView.text = mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
-
-                if (transaction?.value!! > 0)
-                    viewModel.setSelectedAdapter(INCOME)
-                else
-                    viewModel.setSelectedAdapter(EXPENSE)
-
-                transaction!!.value = abs(transaction!!.value)
-
-                ExpenseIncomeTextView.text = viewModel.getTypeFromSelectedAdapter(requireContext())
-
-                viewModel.setValue(transaction!!.value.toString())
-                viewModel.setNote(transaction!!.note)
-                viewModel.setPhotoPath(transaction!!.photo.toMutableList())
-
-                submitButton.text = getString(R.string.update)
-            }
-        }
-
-        viewModel.apply {
-            allCategoryExpense.observe(viewLifecycleOwner, ::allCategoryExpenseObserve)
-            allCategoryIncome.observe(viewLifecycleOwner, ::allCategoryIncomeObserve)
-            photoPaths.observe(viewLifecycleOwner, ::photoPathObserve)
-            note.observe(viewLifecycleOwner, ::noteObserve)
-            value.observe(viewLifecycleOwner, ::valueObserve)
-            allTransaction.observe(viewLifecycleOwner) {}
-        }
-
-        updateUI()
-    }
-
-    private fun removeButtonOnClickListener(view: View?) {
-        viewModel.removeTransaction(transaction!!)
-        findNavController().popBackStack()
-    }
-
-    private fun backButtonOnClickListener(view: View?) {
-        findNavController().popBackStack()
+        init()
+        bind()
+        subscribe()
     }
 
     private fun isStartFirstTime(): Boolean {
@@ -189,11 +91,107 @@ class InputFragment : Fragment() {
         if (!args.log && mainViewModel.PIN.isNotBlank()) {
             val action =
                 InputFragmentDirections
-                    .actionInputFragmentToPINPasswordFragment(PINPasswordFragment.START)
+                    .actionToPINPasswordFragment(PINPasswordFragment.START)
             findNavController().navigate(action)
             return true
         }
         return false
+    }
+
+    private fun init() {
+        viewModel.findTransaction(args.transaction)
+
+        adapter = CategoriesAdapter(R.color.blue, ::adapterOnClickListener)
+    }
+
+    private fun bind() {
+        binding.apply {
+            submitButton.text =
+                if (viewModel.transaction == null) getString(R.string.submit) else getString(R.string.update)
+
+            val isInput = viewModel.transaction == null
+            val isEdit = !isInput
+
+            dataRangeLayout.root.setVisible(isInput)
+            tabLayout.setVisible(isInput)
+            titleTextView.setVisible(isEdit)
+            backButton.setVisible(isEdit)
+            removeButton.setVisible(isEdit)
+
+            val expenseIncomeTextViewLayoutParams =
+                ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams
+            expenseIncomeTextViewLayoutParams.topToBottom =
+                if (isInput) R.id.dataRangeLayout else R.id.titleTextView
+
+            if (isInput) {
+                val numberTab = if (viewModel.getSelectedAdapter() == EXPENSE) 0 else 1
+                tabLayout.getTabAt(numberTab)?.select()
+            } else {
+                viewModel.setViewmodelTransaction(viewModel.transaction!!)
+            }
+
+            categoryRecyclerView.adapter = adapter
+
+            noteCameraEditText.setOnClickListener(::noteCameraOnClickListener)
+            deletePhoto1ImageView.setOnClickListener { deletePhotoOnClickListener(1) }
+            deletePhoto2ImageView.setOnClickListener { deletePhotoOnClickListener(2) }
+            deletePhoto3ImageView.setOnClickListener { deletePhotoOnClickListener(3) }
+            submitButton.setOnClickListener(::submitButtonOnClickListener)
+            backButton.setOnClickListener(::backButtonOnClickListener)
+            removeButton.setOnClickListener(::removeButtonOnClickListener)
+            dataRangeLayout.leftDateRangeImageButton.setOnClickListener(::leftDateRangeOnClickListener)
+            dataRangeLayout.dateTextView.setOnClickListener(::dateOnClickListener)
+            dataRangeLayout.rightDateRangeImageButton.setOnClickListener(::rightDateRangeOnClickListener)
+            tabLayout.addOnTabSelectedListener(onTabSelectedListener())
+
+            valueEditText.doOnTextChanged(::valueEditTextOnTextChanged)
+            noteEditText.doOnTextChanged(::noteEditTextOnTextChanged)
+        }
+    }
+
+    private fun subscribe() {
+        viewModel.apply {
+            allCategoryExpense.observe(viewLifecycleOwner, ::allCategoryExpenseObserve)
+            allCategoryIncome.observe(viewLifecycleOwner, ::allCategoryIncomeObserve)
+            photoPaths.observe(viewLifecycleOwner, ::photoPathObserve)
+            note.observe(viewLifecycleOwner, ::noteObserve)
+            value.observe(viewLifecycleOwner, ::valueObserve)
+            allTransaction.observe(viewLifecycleOwner) {}
+            selectedAdapter.observe(viewLifecycleOwner, ::selectedAdapterObserve)
+            selected.observe(viewLifecycleOwner, ::selectedObserve)
+        }
+        mainViewModel.apply {
+            currency.observe(viewLifecycleOwner, ::currencyObserve)
+            date.observe(viewLifecycleOwner, ::dateObserve)
+        }
+    }
+
+    private fun dateObserve(date: Calendar) {
+        binding.dataRangeLayout.dateTextView.text = mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
+        binding.titleTextView.text = mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
+    }
+
+    private fun currencyObserve(currency: String) {
+        binding.currencyTextView.text = currency
+    }
+
+    private fun selectedObserve(selected: Boolean) {
+        binding.submitButton.isEnabled = viewModel.isCanSubmit()
+    }
+
+    private fun selectedAdapterObserve(selectedAdapter: Int) {
+        binding.ExpenseIncomeTextView.text =
+            viewModel.getTypeFromSelectedAdapter(requireContext())
+        binding.submitButton.isEnabled = viewModel.isCanSubmit()
+    }
+
+    private fun removeButtonOnClickListener(view: View?) {
+        viewModel.removeTransaction(viewModel.transaction!!)
+        findNavController().popBackStack()
+    }
+
+    private fun backButtonOnClickListener(view: View?) {
+        findNavController().popBackStack()
     }
 
     private fun valueEditTextOnTextChanged(
@@ -203,7 +201,6 @@ class InputFragment : Fragment() {
         count: Int
     ) {
         viewModel.setValue(text.toString())
-        updateUI()
     }
 
     private fun noteEditTextOnTextChanged(
@@ -224,29 +221,26 @@ class InputFragment : Fragment() {
 
     private fun rightDateRangeOnClickListener(view: View) {
         mainViewModel.dateDayPlusOne()
-        updateUI()
     }
 
     private fun dateOnClickListener(view: View) {
         val action =
             InputFragmentDirections
-                .actionInputFragmentToCalendarFragment()
+                .actionToCalendarFragment()
         findNavController().navigate(action)
     }
 
     private fun leftDateRangeOnClickListener(view: View) {
         mainViewModel.dateDayMinusOned()
-        updateUI()
     }
 
     private fun submitButtonOnClickListener(view: View) {
-        if (transaction != null) {
-            viewModel.clickUpdate(transaction!!)
+        if (viewModel.transaction != null) {
+            viewModel.clickUpdate(viewModel.transaction!!)
             findNavController().popBackStack()
         } else {
             viewModel.clickSubmit(mainViewModel.date.value?.time!!)
             adapter.submitList(viewModel.getAllCategoryFromSelected())
-            updateUI()
         }
     }
 
@@ -254,28 +248,16 @@ class InputFragment : Fragment() {
         if (checkClickEditPosition(position)) return
         viewModel.addSelectItem(position)
         adapter.submitList(viewModel.getAllCategoryFromSelected())
-        updateUI()
     }
 
     private fun checkClickEditPosition(position: Int): Boolean {
-        if (viewModel.getSelectedAdapter() == EXPENSE) {
-            if (viewModel.isClickEditPositionExpense(position)) {
-                viewModel.cleanSelected()
-                val action =
-                    InputFragmentDirections
-                        .actionInputFragmentToCategoryFragment("", "", "")
-                findNavController().navigate(action)
-                return true
-            }
-        } else {
-            if (viewModel.isClickEditPositionIncome(position)) {
-                viewModel.cleanSelected()
-                val action =
-                    InputFragmentDirections
-                        .actionInputFragmentToCategoryFragment("", "", "")
-                findNavController().navigate(action)
-                return true
-            }
+        if (viewModel.isClickEditPosition(position)) {
+            viewModel.cleanSelected()
+            val action =
+                InputFragmentDirections
+                    .actionToCategoryFragment()
+            findNavController().navigate(action)
+            return true
         }
         return false
     }
@@ -288,20 +270,6 @@ class InputFragment : Fragment() {
         viewModel.dispatchTakePictureIntent(requireContext())?.let {
             cameraActivityLauncher.launch(it)
         }
-    }
-
-    private fun updateUI() {
-        binding.currencyTextView.text = mainViewModel.currency
-        binding.dataRangeLayout.dateTextView.text =
-            mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
-        binding.ExpenseIncomeTextView.text = viewModel.getTypeFromSelectedAdapter(requireContext())
-
-        binding.noteCameraEditText.isEnabled = checkCameraHardware(requireActivity())
-
-        if (viewModel.isSelected() && viewModel.value.value?.isNotBlank() == true)
-            binding.submitButton.setEnabled()
-        else
-            binding.submitButton.setDisabled()
     }
 
     private fun onTabSelectedListener() = object : TabLayout.OnTabSelectedListener {
@@ -317,7 +285,6 @@ class InputFragment : Fragment() {
                         adapter.submitList(viewModel.getAllCategoryItemIncome())
                     }
                 }
-                updateUI()
             }
         }
 
@@ -329,72 +296,36 @@ class InputFragment : Fragment() {
     }
 
     private fun noteObserve(note: String) {
-        if (binding.noteEditText.text.toString() == note.toString())
+        if (binding.noteEditText.text.toString() == note)
             return
 
-        binding.noteEditText.setText(note.toString())
+        binding.noteEditText.setText(note)
     }
 
     private fun valueObserve(value: String) {
-        if (binding.valueEditText.text.toString() == value.toString())
+        binding.submitButton.isEnabled = viewModel.isCanSubmit()
+        if (binding.valueEditText.text.toString() == value)
             return
 
-        binding.valueEditText.setText(value.toString())
+        binding.valueEditText.setText(value)
     }
 
     private fun photoPathObserve(photoPaths: MutableList<String?>) {
-        if (viewModel.photoPaths.value?.size == 3)
-            binding.noteCameraEditText.isEnabled = false
+        val countPhoto = viewModel.photoPaths.value?.size ?: 0
 
-        if (viewModel.photoPaths.value?.size == 0) {
-            binding.photo1Card.visibility = View.GONE
-            binding.photo2Card.visibility = View.GONE
-            binding.photo3Card.visibility = View.GONE
+        binding.noteCameraEditText.isEnabled = isCanAddPhoto(countPhoto)
 
-            binding.photo1ImageView.visibility = View.GONE
-            binding.photo2ImageView.visibility = View.GONE
-            binding.photo3ImageView.visibility = View.GONE
+        binding.photo1Card.setVisible(countPhoto > 0)
+        binding.photo2Card.setVisible(countPhoto > 0)
+        binding.photo3Card.setVisible(countPhoto > 0)
 
-            binding.deletePhoto1ImageView.visibility = View.GONE
-            binding.deletePhoto2ImageView.visibility = View.GONE
-            binding.deletePhoto3ImageView.visibility = View.GONE
-        } else {
-            binding.photo1Card.visibility = View.VISIBLE
-            binding.photo2Card.visibility = View.VISIBLE
-            binding.photo3Card.visibility = View.VISIBLE
-            when (viewModel.photoPaths.value?.size) {
-                1 -> {
-                    binding.photo1ImageView.visibility = View.VISIBLE
-                    binding.photo2ImageView.visibility = View.GONE
-                    binding.photo3ImageView.visibility = View.GONE
+        binding.photo1ImageView.setVisible(countPhoto > 0)
+        binding.photo2ImageView.setVisible(countPhoto > 1)
+        binding.photo3ImageView.setVisible(countPhoto > 2)
 
-                    binding.deletePhoto1ImageView.visibility = View.VISIBLE
-                    binding.deletePhoto2ImageView.visibility = View.GONE
-                    binding.deletePhoto3ImageView.visibility = View.GONE
-                }
-                2 -> {
-                    binding.photo1ImageView.visibility = View.VISIBLE
-                    binding.photo2ImageView.visibility = View.VISIBLE
-                    binding.photo3ImageView.visibility = View.GONE
-
-                    binding.deletePhoto1ImageView.visibility = View.VISIBLE
-                    binding.deletePhoto2ImageView.visibility = View.VISIBLE
-                    binding.deletePhoto3ImageView.visibility = View.GONE
-
-                }
-                3 -> {
-                    binding.photo1ImageView.visibility = View.VISIBLE
-                    binding.photo2ImageView.visibility = View.VISIBLE
-                    binding.photo3ImageView.visibility = View.VISIBLE
-
-                    binding.deletePhoto1ImageView.visibility = View.VISIBLE
-                    binding.deletePhoto2ImageView.visibility = View.VISIBLE
-                    binding.deletePhoto3ImageView.visibility = View.VISIBLE
-                }
-            }
-        }
-
-
+        binding.deletePhoto1ImageView.setVisible(countPhoto > 0)
+        binding.deletePhoto1ImageView.setVisible(countPhoto > 1)
+        binding.deletePhoto1ImageView.setVisible(countPhoto > 2)
 
         photoPaths.getOrNull(0)?.let { photoPath ->
             viewModel.setPic(300, 300, photoPath).also {
@@ -413,28 +344,28 @@ class InputFragment : Fragment() {
         } ?: binding.photo3ImageView.setImageBitmap(null)
     }
 
+    private fun isCanAddPhoto(countPhoto: Int): Boolean {
+        if (countPhoto == MAX_PHOTO)
+            return false
+        return checkCameraHardware(requireActivity())
+    }
+
     private fun allCategoryIncomeObserve(allCategoryIncome: List<CategoryItem>) {
-        transaction?.let {
+        viewModel.transaction?.let {
             if (viewModel.getSelectedAdapter() == INCOME)
-                it.nameCategory.let {
-                    viewModel.setSelected(
-                        it
-                    )
-                }
+                viewModel.setSelected(it.nameCategory)
         }
+
         val allCategory = viewModel.getAllCategoryFromSelected()
         adapter.submitList(allCategory)
     }
 
     private fun allCategoryExpenseObserve(allCategoryExpense: List<CategoryItem>) {
-        transaction?.let {
+        viewModel.transaction?.let {
             if (viewModel.getSelectedAdapter() == EXPENSE)
-                it.nameCategory.let {
-                    viewModel.setSelected(
-                        it
-                    )
-                }
+                viewModel.setSelected(it.nameCategory)
         }
+
         val allCategory = viewModel.getAllCategoryFromSelected()
         adapter.submitList(allCategory)
     }
@@ -443,6 +374,7 @@ class InputFragment : Fragment() {
         const val EXPENSE = 0
         const val INCOME = 1
 
+        const val MAX_PHOTO = 3
     }
 }
 

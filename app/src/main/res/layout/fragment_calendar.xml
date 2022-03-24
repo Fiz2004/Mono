@@ -6,218 +6,212 @@
     android:layout_height="match_parent"
     tools:context=".ui.category_add.CategoryAddFragment">
 
-    <TextView
-        android:id="@+id/titleTextView"
+    <include
+        android:id="@+id/navigationBarLayout"
+        layout="@layout/navigation_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/titleMarginTop"
+        android:layout_height="40dp"
         android:layout_marginStart="@dimen/fragmentPaddingStart"
         android:layout_marginEnd="@dimen/fragmentPaddingEnd"
-        android:textAlignment="center"
-        android:textAppearance="@style/size16_color_primary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="February , 2022" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/backButton"
-        style="@style/BackButton"
-        android:layout_marginStart="2dp"
-        android:layout_marginEnd="@dimen/fragmentPaddingEnd"
-        app:layout_constraintBottom_toBottomOf="@+id/titleTextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/titleTextView" />
-
-    <ImageButton
-        android:id="@+id/choiceMonthImageButton"
-        android:layout_width="wrap_content"
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@drawable/ic_carret_down"
-        app:layout_constraintBottom_toBottomOf="@+id/titleTextView"
-        app:layout_constraintEnd_toEndOf="@+id/titleTextView"
-        app:layout_constraintTop_toTopOf="@+id/titleTextView" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/calendarRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginStart="@dimen/fragmentPaddingStart"
-        android:layout_marginEnd="@dimen/fragmentPaddingEnd"
-        app:layoutManager="GridLayoutManager"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleTextView"
-        app:spanCount="7"
-        tools:itemCount="42"
-        tools:listitem="@layout/item_calendar">
-
-    </androidx.recyclerview.widget.RecyclerView>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/transactionRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="24dp"
-        app:layoutManager="LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calendarRecyclerView"
-        tools:itemCount="16"
-        tools:listitem="@layout/item_transaction">
+        app:layout_constraintTop_toBottomOf="@+id/navigationBarLayout">
 
-    </androidx.recyclerview.widget.RecyclerView>
-
-    <TextView
-        android:id="@+id/noTransactionsTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/fragmentPaddingStart"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="@dimen/fragmentPaddingEnd"
-        android:text="@string/no_transactions"
-        android:textAppearance="@style/size16_color_secondary"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calendarRecyclerView" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/choiceMonthConstraintLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/fragmentPaddingStart"
-        android:layout_marginEnd="@dimen/fragmentPaddingEnd"
-        android:background="@drawable/edit_image_bg"
-        android:padding="24dp"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleTextView">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/calendarRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/fragmentPaddingStart"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="@dimen/fragmentPaddingEnd"
+                app:layoutManager="GridLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:spanCount="7"
+                tools:itemCount="42"
+                tools:listitem="@layout/item_calendar">
 
-        <TextView
-            android:id="@+id/januaryTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/january"
-            android:textAppearance="@style/size16_color_primary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            </androidx.recyclerview.widget.RecyclerView>
 
-        <TextView
-            android:id="@+id/februaryTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/february"
-            android:textAppearance="@style/size16_color_primary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/januaryTextView" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/transactionRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:layoutManager="LinearLayoutManager"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/calendarRecyclerView"
+                tools:itemCount="16"
+                tools:listitem="@layout/item_transaction">
 
-        <TextView
-            android:id="@+id/marchTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/march"
-            android:textAppearance="@style/size16_color_primary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/februaryTextView" />
+            </androidx.recyclerview.widget.RecyclerView>
 
-        <TextView
-            android:id="@+id/aprilTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/april"
-            android:textAppearance="@style/size16_color_primary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/marchTextView" />
+            <TextView
+                android:id="@+id/noTransactionsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/fragmentPaddingStart"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="@dimen/fragmentPaddingEnd"
+                android:text="@string/no_transactions"
+                android:textAppearance="@style/size16_color_secondary"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/calendarRecyclerView" />
 
-        <TextView
-            android:id="@+id/mayTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/may"
-            android:textAppearance="@style/size16_color_primary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/aprilTextView" />
 
-        <TextView
-            android:id="@+id/juneTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/june"
-            android:textAppearance="@style/size16_color_primary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mayTextView" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/choiceMonthConstraintLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/fragmentPaddingStart"
+                android:layout_marginEnd="@dimen/fragmentPaddingEnd"
+                android:background="@drawable/edit_image_bg"
+                android:padding="24dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/julyTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/july"
-            android:textAppearance="@style/size16_color_primary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/juneTextView" />
+                <TextView
+                    android:id="@+id/januaryTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/january"
+                    android:textAppearance="@style/size16_color_primary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/augustTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/august"
-            android:textAppearance="@style/size16_color_primary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/julyTextView" />
+                <TextView
+                    android:id="@+id/februaryTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/february"
+                    android:textAppearance="@style/size16_color_primary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/januaryTextView" />
 
-        <TextView
-            android:id="@+id/septemberTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/september"
-            android:textAppearance="@style/size16_color_primary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/augustTextView" />
+                <TextView
+                    android:id="@+id/marchTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/march"
+                    android:textAppearance="@style/size16_color_primary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/februaryTextView" />
 
-        <TextView
-            android:id="@+id/octoberTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/october"
-            android:textAppearance="@style/size16_color_primary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/septemberTextView" />
+                <TextView
+                    android:id="@+id/aprilTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/april"
+                    android:textAppearance="@style/size16_color_primary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/marchTextView" />
 
-        <TextView
-            android:id="@+id/novemberTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/november"
-            android:textAppearance="@style/size16_color_primary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/octoberTextView" />
+                <TextView
+                    android:id="@+id/mayTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/may"
+                    android:textAppearance="@style/size16_color_primary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/aprilTextView" />
 
-        <TextView
-            android:id="@+id/decemberTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/december"
-            android:textAppearance="@style/size16_color_primary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/novemberTextView" />
+                <TextView
+                    android:id="@+id/juneTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/june"
+                    android:textAppearance="@style/size16_color_primary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/mayTextView" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/julyTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/july"
+                    android:textAppearance="@style/size16_color_primary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/juneTextView" />
+
+                <TextView
+                    android:id="@+id/augustTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/august"
+                    android:textAppearance="@style/size16_color_primary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/julyTextView" />
+
+                <TextView
+                    android:id="@+id/septemberTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/september"
+                    android:textAppearance="@style/size16_color_primary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/augustTextView" />
+
+                <TextView
+                    android:id="@+id/octoberTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/october"
+                    android:textAppearance="@style/size16_color_primary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/septemberTextView" />
+
+                <TextView
+                    android:id="@+id/novemberTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/november"
+                    android:textAppearance="@style/size16_color_primary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/octoberTextView" />
+
+                <TextView
+                    android:id="@+id/decemberTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/december"
+                    android:textAppearance="@style/size16_color_primary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/novemberTextView" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -105,7 +105,7 @@ class OnBoardingFragment : Fragment() {
         sharedPreferences.apply()
         val action =
             OnBoardingFragmentDirections
-                .actionOnBoardingFragmentToPINPasswordFragment(PINPasswordFragment.START)
+                .actionToPINPasswordFragment(PINPasswordFragment.START)
         view.findNavController().navigate(action)
     }
 
@@ -123,7 +123,7 @@ class OnBoardingFragment : Fragment() {
             sharedPreferences.apply()
             val action =
                 OnBoardingFragmentDirections
-                    .actionOnBoardingFragmentToPINPasswordFragment(PINPasswordFragment.START)
+                    .actionToPINPasswordFragment(PINPasswordFragment.START)
             view.findNavController().navigate(action)
         }
     }

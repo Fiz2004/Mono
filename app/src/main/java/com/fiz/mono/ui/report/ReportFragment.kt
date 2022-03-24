@@ -12,19 +12,19 @@ import com.fiz.mono.R
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
 import com.fiz.mono.data.database.ItemDatabase
-import com.fiz.mono.databinding.FragmentReportBinding
+import com.fiz.mono.databinding.FragmentReportMonthlyBinding
 import com.fiz.mono.ui.MainViewModel
-import com.fiz.mono.ui.getCurrencyFormat
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
+import com.fiz.mono.util.currentUtils.getCurrencyFormat
 import com.fiz.mono.util.getColorCompat
+import com.fiz.mono.util.setVisible
 import com.fiz.mono.util.themeColor
 import com.google.android.material.button.MaterialButtonToggleGroup
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class ReportFragment : Fragment() {
-    private var _binding: FragmentReportBinding? = null
+    private var _binding: FragmentReportMonthlyBinding? = null
     private val binding get() = _binding!!
 
     private val mainViewModel: MainViewModel by activityViewModels()
@@ -39,7 +39,7 @@ class ReportFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentReportBinding.inflate(inflater, container, false)
+        _binding = FragmentReportMonthlyBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -51,13 +51,20 @@ class ReportFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = TransactionsAdapter(mainViewModel.currency, {})
+        adapter = mainViewModel.currency.value?.let {
+            TransactionsAdapter(it)
+        } ?: TransactionsAdapter("$")
 
         binding.apply {
+            navigationBarLayout.backButton.setVisible(false)
+            navigationBarLayout.actionButton.setVisible(false)
+            navigationBarLayout.choiceImageButton.setVisible(true)
+            navigationBarLayout.titleTextView.text = getString(R.string.month_report)
+
             dataRangeLayout.leftDateRangeImageButton.setOnClickListener(::leftDateRangeOnClickListener)
             dataRangeLayout.rightDateRangeImageButton.setOnClickListener(::rightDateRangeOnClickListener)
             dataRangeLayout.dateTextView.setOnClickListener(::dateOnClickListener)
-            choiceReportImageButton.setOnClickListener(::choiceReportOnClickListener)
+            navigationBarLayout.choiceImageButton.setOnClickListener(::choiceReportOnClickListener)
             monthlyTextView.setOnClickListener(::monthlyOnClickListener)
             categoryTextView.setOnClickListener(::categoryOnClickListener)
             allExpenseIncomeToggleButton.addOnButtonCheckedListener(::allExpenseIncomeOnButtonCheckedListener)
@@ -75,12 +82,12 @@ class ReportFragment : Fragment() {
     }
 
     private fun categoryOnClickListener(view: View) {
-        mainViewModel.categorySelectedReport = 1
+        viewModel.categorySelectedReport = 1
         binding.choiceReportConstraintLayout.visibility = View.GONE
     }
 
     private fun monthlyOnClickListener(view: View) {
-        mainViewModel.categorySelectedReport = 0
+        viewModel.categorySelectedReport = 0
         binding.choiceReportConstraintLayout.visibility = View.GONE
     }
 
@@ -112,21 +119,21 @@ class ReportFragment : Fragment() {
         when (checkedId) {
             R.id.toggle1 -> {
                 if (isChecked)
-                    mainViewModel.tabSelectedReport = 0
+                    viewModel.tabSelectedReport = 0
             }
             R.id.toggle2 -> {
                 if (isChecked)
-                    mainViewModel.tabSelectedReport = 1
+                    viewModel.tabSelectedReport = 1
             }
             R.id.toggle3 -> {
                 if (isChecked)
-                    mainViewModel.tabSelectedReport = 2
+                    viewModel.tabSelectedReport = 2
             }
         }
         if (isChecked) {
             adapter.submitList(
                 viewModel.getTransactions(
-                    mainViewModel.tabSelectedReport,
+                    viewModel.tabSelectedReport,
                     mainViewModel.date.value!!
                 )
             )
@@ -136,30 +143,31 @@ class ReportFragment : Fragment() {
     private fun dateOnClickListener(view: View) {
         val action =
             ReportFragmentDirections
-                .actionReportFragmentToCalendarFragment()
+                .actionToCalendarFragment()
         findNavController().navigate(action)
     }
 
     private fun allTransactionsObserve(allTransactions: List<TransactionItem>) {
+        val currency = mainViewModel.currency.value ?: "$"
         binding.valueReportTextView.text =
-            getCurrencyFormat(mainViewModel.currency, viewModel.getCurrentBalance(), false)
+            getCurrencyFormat(currency, viewModel.getCurrentBalance(), false)
 
         binding.incomeValueReportTextView.text =
             getCurrencyFormat(
-                mainViewModel.currency,
+                currency,
                 viewModel.getCurrentIncome(mainViewModel.date.value!!),
                 false
             )
         binding.expenseValueReportTextView.text =
             getCurrencyFormat(
-                mainViewModel.currency,
+                currency,
                 viewModel.getCurrentExpense(mainViewModel.date.value!!),
                 false
             )
 
         binding.expenseIncomeValueReportTextView.text =
             getCurrencyFormat(
-                mainViewModel.currency,
+                currency,
                 viewModel.getCurrentIncome(mainViewModel.date.value!!) + viewModel.getCurrentExpense(
                     mainViewModel.date.value!!
                 ),
@@ -168,21 +176,21 @@ class ReportFragment : Fragment() {
 
         binding.previousBalanceValueReportTextView.text =
             getCurrencyFormat(
-                mainViewModel.currency,
+                currency,
                 viewModel.getPreviousBalanceValue(mainViewModel.date.value!!),
                 false
             )
 
         adapter.submitList(
             viewModel.getTransactions(
-                mainViewModel.tabSelectedReport,
+                viewModel.tabSelectedReport,
                 mainViewModel.date.value!!
             )
         )
     }
 
     private fun updateMenu() {
-        if (mainViewModel.categorySelectedReport == 0) {
+        if (viewModel.categorySelectedReport == 0) {
             binding.monthlyTextView.setTextColor(requireContext().getColorCompat(R.color.blue))
             binding.categoryTextView.setTextColor(requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary))
         } else {

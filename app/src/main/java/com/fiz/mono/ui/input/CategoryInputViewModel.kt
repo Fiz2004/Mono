@@ -20,6 +20,7 @@ import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
@@ -30,9 +31,17 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
 
     var allTransaction = transactionStore.getAllTransactionsForInput()
 
-    private var selectedAdapter: Int = InputFragment.EXPENSE
+    private var _selectedAdapter: MutableLiveData<Int> = MutableLiveData(InputFragment.EXPENSE)
+    val selectedAdapter: LiveData<Int>
+        get() = _selectedAdapter
+
+    private var _selected: MutableLiveData<Boolean> = MutableLiveData(false)
+    val selected: LiveData<Boolean>
+        get() = _selected
 
     lateinit var currentPhotoPath: String
+
+    var transaction: TransactionItem? = null
 
     private val _note: MutableLiveData<String> = MutableLiveData("")
     val note: LiveData<String>
@@ -48,7 +57,7 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
         get() = _photoPaths
 
     fun setSelectedAdapter(adapter: Int) {
-        selectedAdapter = adapter
+        _selectedAdapter.value = adapter
         if (adapter == InputFragment.EXPENSE)
             allCategoryIncome.value?.forEach { it.selected = false }
         else
@@ -56,7 +65,7 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
     }
 
     fun getTypeFromSelectedAdapter(context: Context): String {
-        return when (selectedAdapter) {
+        return when (selectedAdapter.value) {
             InputFragment.EXPENSE -> context.getString(R.string.expense)
             InputFragment.INCOME -> context.getString(R.string.income)
             else -> {
@@ -72,7 +81,7 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
     fun clickSubmit(date: Date) {
         val selectedCategoryItem = getAllCategoryFromSelected().first { it.selected }
 
-        val value1 = if (selectedAdapter == InputFragment.EXPENSE)
+        val value1 = if (selectedAdapter.value == InputFragment.EXPENSE)
             -value.value?.toDouble()!!
         else
             value.value?.toDouble()
@@ -101,18 +110,17 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
             _note.value = ""
         }
 
-        (if (selectedAdapter == InputFragment.EXPENSE)
+        (if (selectedAdapter.value == InputFragment.EXPENSE)
             allCategoryExpense
         else
             allCategoryIncome).value?.first { it.selected }?.selected = false
     }
 
-    fun isClickEditPositionExpense(position: Int): Boolean {
-        return position == allCategoryExpense.value?.size?.minus(1) ?: throw Error("No allCategoryExpense")
-    }
-
-    fun isClickEditPositionIncome(position: Int): Boolean {
-        return position == allCategoryIncome.value?.size?.minus(1) ?: throw Error("No allCategoryIncome")
+    fun isClickEditPosition(position: Int): Boolean {
+        return if (getSelectedAdapter() == InputFragment.EXPENSE)
+            position == allCategoryExpense.value?.size?.minus(1) ?: throw Error("No allCategoryExpense")
+        else
+            position == allCategoryIncome.value?.size?.minus(1) ?: throw Error("No allCategoryIncome")
     }
 
     fun cleanSelected() {
@@ -125,6 +133,7 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
             addSelectItemExpense(position)
         else
             addSelectItemIncome(position)
+        changeSelected()
     }
 
     private fun addSelectItemExpense(position: Int) {
@@ -157,7 +166,7 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
     }
 
     fun getSelectedAdapter(): Int {
-        return selectedAdapter
+        return selectedAdapter.value ?: InputFragment.EXPENSE
     }
 
     fun isSelected(): Boolean {
@@ -247,8 +256,9 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
         _note.value = text
     }
 
-    fun findTransaction(currentTransaction: Int): TransactionItem? {
-        return transactionStore.allTransactions.value?.find { it.id == currentTransaction }
+    fun findTransaction(currentTransaction: Int) {
+        if (currentTransaction != -1)
+            transaction = transactionStore.allTransactions.value?.find { it.id == currentTransaction }?.copy()
     }
 
     fun setSelected(nameCategory: String) {
@@ -264,7 +274,7 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
     fun clickUpdate(transaction: TransactionItem) {
         val selectedCategoryItem = getAllCategoryFromSelected().first { it.selected }
 
-        val value1 = if (selectedAdapter == InputFragment.EXPENSE)
+        val value1 = if (selectedAdapter.value == InputFragment.EXPENSE)
             -value.value?.toDouble()!!
         else
             value.value?.toDouble()
@@ -284,6 +294,27 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
                 )
             )
         }
+    }
+
+    fun setViewmodelTransaction(transaction: TransactionItem) {
+        if (transaction.value > 0)
+            setSelectedAdapter(InputFragment.INCOME)
+        else
+            setSelectedAdapter(InputFragment.EXPENSE)
+
+        transaction.value = abs(transaction.value)
+
+        setValue(transaction.value.toString())
+        setNote(transaction.note)
+        setPhotoPath(transaction.photo.toMutableList())
+    }
+
+    fun isCanSubmit(): Boolean {
+        return isSelected() && value.value?.isNotBlank() == true
+    }
+
+    fun changeSelected() {
+        _selected.value = !_selected.value!!
     }
 }
 
