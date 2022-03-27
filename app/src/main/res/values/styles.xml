@@ -6,6 +6,11 @@
         <item name="android:textColor">?attr/colorSecondary</item>
     </style>
 
+    <style name="size10_color_primary">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
     <style name="size12_color_primary">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">?attr/colorPrimary</item>

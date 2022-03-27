@@ -81,17 +81,6 @@ class CategoryEditViewModel(private val categoryStore: CategoryStore) : ViewMode
         }
     }
 
-    fun insertNewCategory(type: String?, name: String?, iconID: String?) {
-        if (type == null || name == null || iconID == null) return
-        viewModelScope.launch {
-            if (type == CategoryEditFragment.TYPE_EXPENSE) {
-                categoryStore.insertNewCategoryExpense(name, iconID)
-            } else {
-                categoryStore.insertNewCategoryIncome(name, iconID)
-            }
-        }
-    }
-
     fun isClickAddPositionExpense(position: Int): Boolean {
         return position == allCategoryExpense.value?.size?.minus(1) ?: false
     }

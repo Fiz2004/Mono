@@ -38,6 +38,7 @@
     <string name="note">Note</string>
 
     <string name="month_report">Month Report</string>
+    <string name="category_report">Category Report</string>
 
     <!--Settings-->
     <string name="category">Category</string>

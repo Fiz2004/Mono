@@ -16,7 +16,6 @@ import com.fiz.mono.ui.shared_adapters.CategoriesAdapter
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setVisible
 
-
 class CategoryEditFragment : Fragment() {
     private var _binding: FragmentCategoryEditBinding? = null
     private val binding get() = _binding!!
@@ -29,8 +28,6 @@ class CategoryEditFragment : Fragment() {
 
     private lateinit var expenseAdapter: CategoriesAdapter
     private lateinit var incomeAdapter: CategoriesAdapter
-
-    private val args: CategoryEditFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,7 +51,6 @@ class CategoryEditFragment : Fragment() {
     }
 
     private fun init() {
-        viewModel.insertNewCategory(args.type, args.name, args.icon)
         expenseAdapter = CategoriesAdapter(R.color.red, ::adapterExpenseOnClickListener)
         incomeAdapter = CategoriesAdapter(R.color.red, ::adapterIncomeOnClickListener)
     }

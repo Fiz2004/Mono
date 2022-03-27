@@ -5,41 +5,28 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.fiz.mono.R
-import com.fiz.mono.data.TransactionItem
-import com.fiz.mono.data.TransactionStore
-import com.fiz.mono.data.database.ItemDatabase
-import com.fiz.mono.databinding.FragmentReportMonthlyBinding
-import com.fiz.mono.ui.MainViewModel
-import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
-import com.fiz.mono.util.currentUtils.getCurrencyFormat
+import com.fiz.mono.databinding.FragmentReportBinding
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setVisible
 import com.fiz.mono.util.themeColor
-import com.google.android.material.button.MaterialButtonToggleGroup
-import java.text.SimpleDateFormat
-import java.util.*
 
 class ReportFragment : Fragment() {
-    private var _binding: FragmentReportMonthlyBinding? = null
+    private var _binding: FragmentReportBinding? = null
     private val binding get() = _binding!!
 
-    private val mainViewModel: MainViewModel by activityViewModels()
-    private val viewModel: ReportViewModel by viewModels {
-        val database = ItemDatabase.getDatabase()
-        ReportViewModelFactory(TransactionStore(database?.transactionItemDao()!!))
-    }
+    private lateinit var navController: NavController
 
-    private lateinit var adapter: TransactionsAdapter
+    private val monthlyViewModel: ReportViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentReportMonthlyBinding.inflate(inflater, container, false)
+        _binding = FragmentReportBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -51,43 +38,35 @@ class ReportFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = mainViewModel.currency.value?.let {
-            TransactionsAdapter(it)
-        } ?: TransactionsAdapter("$")
+        val navHostFragment: NavHostFragment =
+            childFragmentManager.findFragmentById(R.id.report_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
 
         binding.apply {
             navigationBarLayout.backButton.setVisible(false)
             navigationBarLayout.actionButton.setVisible(false)
             navigationBarLayout.choiceImageButton.setVisible(true)
             navigationBarLayout.titleTextView.text = getString(R.string.month_report)
-
-            dataRangeLayout.leftDateRangeImageButton.setOnClickListener(::leftDateRangeOnClickListener)
-            dataRangeLayout.rightDateRangeImageButton.setOnClickListener(::rightDateRangeOnClickListener)
-            dataRangeLayout.dateTextView.setOnClickListener(::dateOnClickListener)
             navigationBarLayout.choiceImageButton.setOnClickListener(::choiceReportOnClickListener)
             monthlyTextView.setOnClickListener(::monthlyOnClickListener)
             categoryTextView.setOnClickListener(::categoryOnClickListener)
-            allExpenseIncomeToggleButton.addOnButtonCheckedListener(::allExpenseIncomeOnButtonCheckedListener)
-            transactionsRecyclerView.adapter = adapter
         }
-
-        viewModel.allTransactions.observe(viewLifecycleOwner, ::allTransactionsObserve)
-
-        mainViewModel.date.observe(viewLifecycleOwner, ::dateObserve)
-    }
-
-    private fun dateObserve(date: Calendar) {
-        binding.dataRangeLayout.dateTextView.text =
-            SimpleDateFormat("LLLL, yyyy", Locale.getDefault()).format(date.time)
     }
 
     private fun categoryOnClickListener(view: View) {
-        viewModel.categorySelectedReport = 1
+        monthlyViewModel.categorySelectedReport = 1
+        binding.navigationBarLayout.titleTextView.text = getString(R.string.category_report)
+        val action =
+            ReportMonthlyFragmentDirections
+                .actionReportMonthlyFragmentToSelectCategoryFragment()
+        navController.navigate(action)
         binding.choiceReportConstraintLayout.visibility = View.GONE
     }
 
     private fun monthlyOnClickListener(view: View) {
-        viewModel.categorySelectedReport = 0
+        monthlyViewModel.categorySelectedReport = 0
+        binding.navigationBarLayout.titleTextView.text = getString(R.string.month_report)
+        navController.popBackStack()
         binding.choiceReportConstraintLayout.visibility = View.GONE
     }
 
@@ -101,96 +80,8 @@ class ReportFragment : Fragment() {
         updateMenu()
     }
 
-    private fun rightDateRangeOnClickListener(view: View) {
-        mainViewModel.dateMonthPlusOne()
-        allTransactionsObserve(listOf())
-    }
-
-    private fun leftDateRangeOnClickListener(view: View) {
-        mainViewModel.dateMonthMinusOne()
-        allTransactionsObserve(listOf())
-    }
-
-    private fun allExpenseIncomeOnButtonCheckedListener(
-        toggleButton: MaterialButtonToggleGroup,
-        checkedId: Int,
-        isChecked: Boolean
-    ) {
-        when (checkedId) {
-            R.id.toggle1 -> {
-                if (isChecked)
-                    viewModel.tabSelectedReport = 0
-            }
-            R.id.toggle2 -> {
-                if (isChecked)
-                    viewModel.tabSelectedReport = 1
-            }
-            R.id.toggle3 -> {
-                if (isChecked)
-                    viewModel.tabSelectedReport = 2
-            }
-        }
-        if (isChecked) {
-            adapter.submitList(
-                viewModel.getTransactions(
-                    viewModel.tabSelectedReport,
-                    mainViewModel.date.value!!
-                )
-            )
-        }
-    }
-
-    private fun dateOnClickListener(view: View) {
-        val action =
-            ReportFragmentDirections
-                .actionToCalendarFragment()
-        findNavController().navigate(action)
-    }
-
-    private fun allTransactionsObserve(allTransactions: List<TransactionItem>) {
-        val currency = mainViewModel.currency.value ?: "$"
-        binding.valueReportTextView.text =
-            getCurrencyFormat(currency, viewModel.getCurrentBalance(), false)
-
-        binding.incomeValueReportTextView.text =
-            getCurrencyFormat(
-                currency,
-                viewModel.getCurrentIncome(mainViewModel.date.value!!),
-                false
-            )
-        binding.expenseValueReportTextView.text =
-            getCurrencyFormat(
-                currency,
-                viewModel.getCurrentExpense(mainViewModel.date.value!!),
-                false
-            )
-
-        binding.expenseIncomeValueReportTextView.text =
-            getCurrencyFormat(
-                currency,
-                viewModel.getCurrentIncome(mainViewModel.date.value!!) + viewModel.getCurrentExpense(
-                    mainViewModel.date.value!!
-                ),
-                true
-            )
-
-        binding.previousBalanceValueReportTextView.text =
-            getCurrencyFormat(
-                currency,
-                viewModel.getPreviousBalanceValue(mainViewModel.date.value!!),
-                false
-            )
-
-        adapter.submitList(
-            viewModel.getTransactions(
-                viewModel.tabSelectedReport,
-                mainViewModel.date.value!!
-            )
-        )
-    }
-
     private fun updateMenu() {
-        if (viewModel.categorySelectedReport == 0) {
+        if (monthlyViewModel.categorySelectedReport == 0) {
             binding.monthlyTextView.setTextColor(requireContext().getColorCompat(R.color.blue))
             binding.categoryTextView.setTextColor(requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary))
         } else {

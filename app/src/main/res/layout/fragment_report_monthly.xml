@@ -1,21 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.report.ReportFragment">
-
-    <include
-        android:id="@+id/navigationBarLayout"
-        layout="@layout/navigation_bar"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginStart="@dimen/fragmentPaddingStart"
-        android:layout_marginEnd="@dimen/fragmentPaddingEnd"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.report.ReportMonthlyFragment">
 
     <include
         android:id="@+id/dataRangeLayout"
@@ -27,7 +16,7 @@
         android:layout_marginEnd="@dimen/fragmentPaddingEnd"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/navigationBarLayout" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -80,7 +69,7 @@
                 android:layout_marginEnd="@dimen/fragmentPaddingEnd"
                 android:background="@drawable/edit_image_bg"
                 app:layout_constraintTop_toBottomOf="@+id/currentBalanceReportTextView"
-                tools:showIn="@layout/fragment_report_monthly">
+                tools:showIn="@layout/fragment_report">
 
                 <TextView
                     android:id="@+id/incomeBalanceReportTextView"
@@ -141,7 +130,7 @@
                 android:layout_marginEnd="@dimen/fragmentPaddingEnd"
                 android:background="@drawable/edit_image_bg"
                 app:layout_constraintTop_toBottomOf="@+id/balanceBorder"
-                tools:showIn="@layout/fragment_report_monthly">
+                tools:showIn="@layout/fragment_report">
 
                 <TextView
                     android:id="@+id/expenseIncomeBalanceReportTextView"
@@ -256,42 +245,4 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/choiceReportConstraintLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/fragmentPaddingStart"
-        android:layout_marginEnd="@dimen/fragmentPaddingEnd"
-        android:background="@drawable/edit_image_bg"
-        android:padding="24dp"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleTextView">
-
-        <TextView
-            android:id="@+id/monthlyTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:text="@string/monthly"
-            android:textAppearance="@style/size16_color_primary"
-            android:textColor="?attr/colorSecondary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/categoryTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/by_category"
-            android:textAppearance="@style/size16_color_primary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/monthlyTextView" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

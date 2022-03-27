@@ -9,8 +9,12 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.fiz.mono.App
 import com.fiz.mono.R
+import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.databinding.FragmentCategoryAddBinding
+import com.fiz.mono.ui.category_edit.CategoryEditViewModel
+import com.fiz.mono.ui.category_edit.CategoryEditViewModelFactory
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setVisible
 
@@ -18,7 +22,11 @@ class CategoryAddFragment : Fragment() {
     private var _binding: FragmentCategoryAddBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: CategoryAddViewModel by viewModels()
+    private val viewModel: CategoryAddViewModel by viewModels {
+        CategoryAddViewModelFactory(
+            (requireActivity().application as App).categoryStore
+        )
+    }
 
     private lateinit var adapter: CategoryIconsAdapter
 
@@ -72,14 +80,14 @@ class CategoryAddFragment : Fragment() {
 
     private fun addButtonOnClickListener(view: View): Unit {
         if (viewModel.isSelected() && binding.categoryNameEditText.text?.isNotBlank() == true) {
+
             val name = binding.categoryNameEditText.text.toString()
+
+            viewModel.addNewCategory(name,args.type)
+
             val action =
                 CategoryAddFragmentDirections
-                    .actionCategoryAddFragmentToCategoryFragment(
-                        name,
-                        viewModel.getSelectedIcon(),
-                        args.type
-                    )
+                    .actionCategoryAddFragmentToCategoryFragment()
             view.findNavController().navigate(action)
             return
         }

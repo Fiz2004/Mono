@@ -40,8 +40,6 @@ class InputFragment : Fragment() {
 
     private lateinit var adapter: CategoriesAdapter
 
-    private var cashCheckCameraHardware: Boolean? = null
-
     private fun viewModelInit(): () -> CategoryInputViewModelFactory = {
         CategoryInputViewModelFactory(
             (requireActivity().application as App).categoryStore,
@@ -166,27 +164,8 @@ class InputFragment : Fragment() {
         }
     }
 
-    private fun dateObserve(date: Calendar) {
-        binding.dataRangeLayout.dateTextView.text = mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
-        binding.titleTextView.text = mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
-    }
-
-    private fun currencyObserve(currency: String) {
-        binding.currencyTextView.text = currency
-    }
-
-    private fun selectedObserve(selected: Boolean) {
-        binding.submitButton.isEnabled = viewModel.isCanSubmit()
-    }
-
-    private fun selectedAdapterObserve(selectedAdapter: Int) {
-        binding.ExpenseIncomeTextView.text =
-            viewModel.getTypeFromSelectedAdapter(requireContext())
-        binding.submitButton.isEnabled = viewModel.isCanSubmit()
-    }
-
     private fun removeButtonOnClickListener(view: View?) {
-        viewModel.removeTransaction(viewModel.transaction!!)
+        viewModel.removeTransaction()
         findNavController().popBackStack()
     }
 
@@ -210,13 +189,6 @@ class InputFragment : Fragment() {
         count: Int
     ) {
         viewModel.setNote(text.toString())
-    }
-
-    private fun checkCameraHardware(context: Context): Boolean {
-        if (cashCheckCameraHardware == null)
-            cashCheckCameraHardware =
-                context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
-        return cashCheckCameraHardware ?: false
     }
 
     private fun rightDateRangeOnClickListener(view: View) {
@@ -313,7 +285,7 @@ class InputFragment : Fragment() {
     private fun photoPathObserve(photoPaths: MutableList<String?>) {
         val countPhoto = viewModel.photoPaths.value?.size ?: 0
 
-        binding.noteCameraEditText.isEnabled = isCanAddPhoto(countPhoto)
+        binding.noteCameraEditText.isEnabled = isCanAddPhoto()
 
         binding.photo1Card.setVisible(countPhoto > 0)
         binding.photo2Card.setVisible(countPhoto > 0)
@@ -344,10 +316,8 @@ class InputFragment : Fragment() {
         } ?: binding.photo3ImageView.setImageBitmap(null)
     }
 
-    private fun isCanAddPhoto(countPhoto: Int): Boolean {
-        if (countPhoto == MAX_PHOTO)
-            return false
-        return checkCameraHardware(requireActivity())
+    private fun isCanAddPhoto(): Boolean {
+        return viewModel.checkCameraHardware(requireContext())
     }
 
     private fun allCategoryIncomeObserve(allCategoryIncome: List<CategoryItem>) {
@@ -368,6 +338,25 @@ class InputFragment : Fragment() {
 
         val allCategory = viewModel.getAllCategoryFromSelected()
         adapter.submitList(allCategory)
+    }
+
+    private fun dateObserve(date: Calendar) {
+        binding.dataRangeLayout.dateTextView.text = mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
+        binding.titleTextView.text = mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
+    }
+
+    private fun currencyObserve(currency: String) {
+        binding.currencyTextView.text = currency
+    }
+
+    private fun selectedObserve(selected: Boolean) {
+        binding.submitButton.isEnabled = viewModel.isCanSubmit()
+    }
+
+    private fun selectedAdapterObserve(selectedAdapter: Int) {
+        binding.ExpenseIncomeTextView.text =
+            viewModel.getTypeFromSelectedAdapter(requireContext())
+        binding.submitButton.isEnabled = viewModel.isCanSubmit()
     }
 
     companion object {

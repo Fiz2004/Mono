@@ -2,6 +2,7 @@ package com.fiz.mono.ui.input
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -40,6 +41,8 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
         get() = _selected
 
     lateinit var currentPhotoPath: String
+
+    private var cashCheckCameraHardware: Boolean? = null
 
     var transaction: TransactionItem? = null
 
@@ -265,9 +268,9 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
         addSelectItem(getAllCategoryFromSelected().indexOfFirst { it.name == nameCategory })
     }
 
-    fun removeTransaction(transaction: TransactionItem) {
+    fun removeTransaction() {
         viewModelScope.launch {
-            transactionStore.delete(transaction)
+            transaction?.let { transactionStore.delete(it) }
         }
     }
 
@@ -294,6 +297,15 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
                 )
             )
         }
+    }
+
+    fun checkCameraHardware(context: Context): Boolean {
+        if (photoPaths.value?.size  == InputFragment.MAX_PHOTO)
+            return false
+        if (cashCheckCameraHardware == null)
+            cashCheckCameraHardware =
+                context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
+        return cashCheckCameraHardware ?: false
     }
 
     fun setViewmodelTransaction(transaction: TransactionItem) {
