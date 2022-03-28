@@ -48,6 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:text="@string/monthly"
+            android:focusable="true"
             android:textAppearance="@style/size16_color_primary"
             android:textColor="?attr/colorSecondary"
             app:layout_constraintEnd_toEndOf="parent"
@@ -59,6 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/by_category"
+            android:focusable="true"
             android:textAppearance="@style/size16_color_primary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/monthlyTextView" />

@@ -28,7 +28,7 @@
         android:label="fragment_report_category"
         tools:layout="@layout/fragment_report_category" >
         <argument
-            android:name="name"
+            android:name="id"
             app:argType="string" />
         <argument
             android:name="type"

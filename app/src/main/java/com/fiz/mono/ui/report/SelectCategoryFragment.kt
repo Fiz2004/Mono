@@ -7,15 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentSelectCategoryBinding
-import com.fiz.mono.ui.category_edit.CategoryEditFragmentDirections
-import com.fiz.mono.ui.category_edit.CategoryEditViewModel
-import com.fiz.mono.ui.category_edit.CategoryEditViewModelFactory
 import com.fiz.mono.ui.shared_adapters.CategoriesAdapter
-import com.fiz.mono.util.getColorCompat
 
 class SelectCategoryFragment : Fragment() {
     private var _binding: FragmentSelectCategoryBinding? = null
@@ -77,7 +72,11 @@ class SelectCategoryFragment : Fragment() {
     private fun adapterExpenseOnClickListener(position: Int) {
             val action =
                 SelectCategoryFragmentDirections
-                    .actionSelectCategoryFragmentToReportCategoryFragment(viewModel.allCategoryExpense.value?.get(position)?.name ?:"",TYPE_EXPENSE )
+                    .actionSelectCategoryFragmentToReportCategoryFragment(
+                        viewModel.allCategoryExpense.value?.get(
+                            position
+                        )?.id ?: "", TYPE_EXPENSE
+                    )
             view?.findNavController()?.navigate(action)
             return
     }
@@ -85,7 +84,11 @@ class SelectCategoryFragment : Fragment() {
     private fun adapterIncomeOnClickListener(position: Int) {
             val action =
                 SelectCategoryFragmentDirections
-                    .actionSelectCategoryFragmentToReportCategoryFragment(viewModel.allCategoryIncome.value?.get(position)?.name ?:"",TYPE_INCOME )
+                    .actionSelectCategoryFragmentToReportCategoryFragment(
+                        viewModel.allCategoryIncome.value?.get(
+                            position
+                        )?.id ?: "", TYPE_INCOME
+                    )
             view?.findNavController()?.navigate(action)
             return
     }

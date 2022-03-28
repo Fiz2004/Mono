@@ -78,4 +78,7 @@
     <string name="december">Декабрь</string>
     <string name="update">Обновление</string>
     <string name="category_report">Отчет по категории</string>
+    <string name="month">За месяц</string>
+    <string name="week">За неделю</string>
+    <string name="this_month">В этом месяце</string>
 </resources>

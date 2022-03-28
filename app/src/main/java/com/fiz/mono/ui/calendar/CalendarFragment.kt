@@ -58,8 +58,8 @@ class CalendarFragment : Fragment() {
 
         calendarAdapter = CalendarAdapter(::calendarAdapterOnClickListener)
         transactionAdapter = mainViewModel.currency.value?.let {
-            TransactionsAdapter(it, ::transactionAdapterOnClickListener)
-        } ?: TransactionsAdapter("$", ::transactionAdapterOnClickListener)
+            TransactionsAdapter(it, true, ::transactionAdapterOnClickListener)
+        } ?: TransactionsAdapter("$", true, ::transactionAdapterOnClickListener)
 
         binding.apply {
             navigationBarLayout.backButton.setVisible(true)

@@ -61,7 +61,7 @@ class ReportMonthlyViewModel(private val transactionStore: TransactionStore) : V
                 1 -> it.value.filter { it.value < 0 }
                 else -> it.value.filter { it.value > 0 }
             }
-        }
+        }?.filterValues { it.isNotEmpty() }
 
         groupTransactions = groupTransactions?.toSortedMap(compareByDescending { it })
 

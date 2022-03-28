@@ -15,6 +15,7 @@ import com.fiz.mono.util.setVisible
 
 class TransactionsAdapter(
     private val currency: String,
+    private val isVisibleIcon: Boolean,
     private val callback: (TransactionItem) -> Unit = {}
 ) :
     ListAdapter<TransactionsDataItem, RecyclerView.ViewHolder>(DataItemDiff) {
@@ -48,7 +49,7 @@ class TransactionsAdapter(
             }
             is InfoTransactionItemViewHolder -> {
                 val transactionItem = getItem(position) as TransactionsDataItem.InfoTransactionItem
-                holder.bind(transactionItem.transactionItem, currency, callback)
+                holder.bind(transactionItem.transactionItem, isVisibleIcon, currency, callback)
             }
         }
 
@@ -59,14 +60,18 @@ class TransactionsAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(
             transactionItem: TransactionItem,
+            isVisibleIcon: Boolean,
             currency: String,
             callback: (TransactionItem) -> Unit
         ) {
             binding.apply {
-                transactionItem.mapImgSrc.let {
-                    iconTransactionImageView.setImageResource(
-                        getDrawableCategoryIcon(it)
-                    )
+                iconTransactionImageView.setVisible(isVisibleIcon)
+                if (isVisibleIcon) {
+                    transactionItem.mapImgSrc.let {
+                        iconTransactionImageView.setImageResource(
+                            getDrawableCategoryIcon(it)
+                        )
+                    }
                 }
 
                 categoryTransactionTextView.text = transactionItem.nameCategory

@@ -1,17 +1,15 @@
 package com.fiz.mono.ui.report
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
+import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.data.TransactionItem
-import com.fiz.mono.data.TransactionStore
-import com.fiz.mono.data.database.ItemDatabase
 import com.fiz.mono.databinding.FragmentReportMonthlyBinding
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
@@ -25,9 +23,10 @@ class ReportMonthlyFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val mainViewModel: MainViewModel by activityViewModels()
-    private val monthlyViewModel: ReportMonthlyViewModel by viewModels {
-        val database = ItemDatabase.getDatabase()
-        ReportMonhlyViewModelFactory(TransactionStore(database?.transactionItemDao()!!))
+    private val viewModel: ReportMonthlyViewModel by viewModels {
+        ReportMonhlyViewModelFactory(
+            (requireActivity().application as App).transactionStore
+        )
     }
 
     private lateinit var adapter: TransactionsAdapter
@@ -45,13 +44,10 @@ class ReportMonthlyFragment : Fragment() {
         _binding = null
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = mainViewModel.currency.value?.let {
-            TransactionsAdapter(it)
-        } ?: TransactionsAdapter("$")
+        adapter = TransactionsAdapter(mainViewModel.currency.value ?: "$", true)
 
         binding.apply {
 
@@ -62,7 +58,7 @@ class ReportMonthlyFragment : Fragment() {
             transactionsRecyclerView.adapter = adapter
         }
 
-        monthlyViewModel.allTransactions.observe(viewLifecycleOwner, ::allTransactionsObserve)
+        viewModel.allTransactions.observe(viewLifecycleOwner, ::allTransactionsObserve)
 
         mainViewModel.date.observe(viewLifecycleOwner, ::dateObserve)
     }
@@ -90,21 +86,21 @@ class ReportMonthlyFragment : Fragment() {
         when (checkedId) {
             R.id.toggle1 -> {
                 if (isChecked)
-                    monthlyViewModel.tabSelectedReport = 0
+                    viewModel.tabSelectedReport = 0
             }
             R.id.toggle2 -> {
                 if (isChecked)
-                    monthlyViewModel.tabSelectedReport = 1
+                    viewModel.tabSelectedReport = 1
             }
             R.id.toggle3 -> {
                 if (isChecked)
-                    monthlyViewModel.tabSelectedReport = 2
+                    viewModel.tabSelectedReport = 2
             }
         }
         if (isChecked) {
             adapter.submitList(
-                monthlyViewModel.getTransactions(
-                    monthlyViewModel.tabSelectedReport,
+                viewModel.getTransactions(
+                    viewModel.tabSelectedReport,
                     mainViewModel.date.value!!
                 )
             )
@@ -112,34 +108,31 @@ class ReportMonthlyFragment : Fragment() {
     }
 
     private fun dateOnClickListener(view: View) {
-        val action =
-            ReportFragmentDirections
-                .actionToCalendarFragment()
-        findNavController().navigate(action)
+        (requireParentFragment().parentFragment as ReportFragment).clickData()
     }
 
     private fun allTransactionsObserve(allTransactions: List<TransactionItem>) {
         val currency = mainViewModel.currency.value ?: "$"
         binding.valueReportTextView.text =
-            currentUtils.getCurrencyFormat(currency, monthlyViewModel.getCurrentBalance(), false)
+            currentUtils.getCurrencyFormat(currency, viewModel.getCurrentBalance(), false)
 
         binding.incomeValueReportTextView.text =
             currentUtils.getCurrencyFormat(
                 currency,
-                monthlyViewModel.getCurrentIncome(mainViewModel.date.value!!),
+                viewModel.getCurrentIncome(mainViewModel.date.value!!),
                 false
             )
         binding.expenseValueReportTextView.text =
             currentUtils.getCurrencyFormat(
                 currency,
-                monthlyViewModel.getCurrentExpense(mainViewModel.date.value!!),
+                viewModel.getCurrentExpense(mainViewModel.date.value!!),
                 false
             )
 
         binding.expenseIncomeValueReportTextView.text =
             currentUtils.getCurrencyFormat(
                 currency,
-                monthlyViewModel.getCurrentIncome(mainViewModel.date.value!!) + monthlyViewModel.getCurrentExpense(
+                viewModel.getCurrentIncome(mainViewModel.date.value!!) + viewModel.getCurrentExpense(
                     mainViewModel.date.value!!
                 ),
                 true
@@ -148,13 +141,13 @@ class ReportMonthlyFragment : Fragment() {
         binding.previousBalanceValueReportTextView.text =
             currentUtils.getCurrencyFormat(
                 currency,
-                monthlyViewModel.getPreviousBalanceValue(mainViewModel.date.value!!),
+                viewModel.getPreviousBalanceValue(mainViewModel.date.value!!),
                 false
             )
 
         adapter.submitList(
-            monthlyViewModel.getTransactions(
-                monthlyViewModel.tabSelectedReport,
+            viewModel.getTransactions(
+                viewModel.tabSelectedReport,
                 mainViewModel.date.value!!
             )
         )
