@@ -84,6 +84,21 @@
         <item name="backgroundTint">@drawable/selector_toggle_button</item>
     </style>
 
+    <style name="ToggleButtonPeriod" parent="@style/Widget.Material3.Button.OutlinedButton">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textAppearance">@style/size16_color_secondary</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="strokeColor">?attr/colorGray</item>
+        <item name="android:textColor">@drawable/selector_toggle_button_text</item>
+        <item name="shapeAppearance">@style/ToggleButtonPeriodShape</item>
+        <item name="backgroundTint">@drawable/selector_toggle_button</item>
+    </style>
+
+    <style name="ToggleButtonPeriodShape" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">24dp</item>
+    </style>
+
     <style name="ToggleButtonShape" parent="ShapeAppearance.Material3.MediumComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopLeft">8dp</item>

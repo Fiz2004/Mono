@@ -1,4 +1,4 @@
-package com.fiz.mono.ui.report
+package com.fiz.mono.ui.report.monthly
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

@@ -12,7 +12,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.report.ReportCategoryFragment">
+        tools:context=".ui.report.category.ReportCategoryFragment">
 
 
         <com.google.android.material.button.MaterialButtonToggleGroup
@@ -28,28 +28,26 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/monthToggleButton"
-                style="@style/ToggleButton"
+                style="@style/ToggleButtonPeriod"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="start"
                 android:text="@string/month"
-                android:textAppearance="@style/size16_color_primary"
-                app:cornerRadius="24dp" />
+                android:textAppearance="@style/size16_color_primary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/weekToggleButton"
-                style="@style/ToggleButton"
+                style="@style/ToggleButtonPeriod"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/week"
-                android:textAppearance="@style/size16_color_primary"
-                app:cornerRadius="24dp" />
+                android:textAppearance="@style/size16_color_primary" />
         </com.google.android.material.button.MaterialButtonToggleGroup>
 
         <ImageView
             android:id="@+id/iconBackgroundImageView"
-            android:layout_width="312dp"
-            android:layout_height="312dp"
+            android:layout_width="240dp"
+            android:layout_height="240dp"
             android:layout_marginTop="40dp"
             android:alpha="0.2"
             android:src="@drawable/background_icon_report"
@@ -59,8 +57,8 @@
 
         <ImageView
             android:id="@+id/iconImageView"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:layout_marginTop="32dp"
             app:layout_constraintEnd_toEndOf="@+id/iconBackgroundImageView"
             app:layout_constraintStart_toStartOf="@+id/iconBackgroundImageView"
@@ -105,9 +103,10 @@
             tools:text="$871,81" />
 
         <ImageView
-            android:id="@+id/GraphImageView"
+            android:id="@+id/graphImageView"
             android:layout_width="match_parent"
             android:layout_height="124dp"
+            android:scaleType="center"
             android:layout_marginTop="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -119,10 +118,11 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:clipToPadding="false"
+            android:layout_marginTop="24dp"
             app:layoutManager="LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/GraphImageView"
+            app:layout_constraintTop_toBottomOf="@+id/graphImageView"
             tools:itemCount="16"
             tools:listitem="@layout/item_transaction" />
 

@@ -1,13 +1,17 @@
-package com.fiz.mono.ui.report
+package com.fiz.mono.ui.report.category
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.fiz.mono.data.CategoryStore
+import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
 import com.fiz.mono.ui.shared_adapters.InfoDay
 import com.fiz.mono.ui.shared_adapters.TransactionsDataItem
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.abs
 
 class ReportCategoryViewModel(
     categoryStore: CategoryStore,
@@ -18,13 +22,17 @@ class ReportCategoryViewModel(
 
     val allTransactions = transactionStore.allTransactions
 
+    private val _reportFor = MutableLiveData(ReportCategoryFragment.MONTH)
+    val reportFor: LiveData<Int>
+        get() = _reportFor
+
     fun getTransactions(
         tabSelectedReport: Int,
         date: Calendar,
         nameCategory: String
     ): MutableList<TransactionsDataItem> {
         var groupTransactions =
-            allTransactions.value?.groupBy {
+            allTransactions.value?.sortedByDescending { it.date.time }?.groupBy {
                 SimpleDateFormat(
                     "MMM dd, yyyy",
                     Locale.getDefault()
@@ -34,8 +42,6 @@ class ReportCategoryViewModel(
         groupTransactions = groupTransactions?.mapValues {
             it.value.filter { it.nameCategory == nameCategory }
         }?.filterValues { it.isNotEmpty() }
-
-        groupTransactions = groupTransactions?.toSortedMap(compareByDescending { it })
 
         val items = mutableListOf<TransactionsDataItem>()
         if (groupTransactions != null) {
@@ -57,6 +63,35 @@ class ReportCategoryViewModel(
             }
         }
         return items
+    }
+
+    fun getValueReportCategory(
+        transactions: List<TransactionItem>,
+        currency: String,
+        isExpense: Boolean,
+        categoryName: String
+    ): String {
+        return if (!isExpense) {
+            "+"
+        } else {
+            ""
+        } +
+                currency +
+                abs(transactions
+                    .filter { it.nameCategory == categoryName }
+                    .map { it.value }
+                    .fold(0.0) { acc, d -> acc + d })
+                    .toString()
+    }
+
+    fun clickMonthToggleButton() {
+        if (_reportFor.value == ReportCategoryFragment.MONTH) return
+        _reportFor.value = ReportCategoryFragment.MONTH
+    }
+
+    fun clickWeekToggleButton() {
+        if (_reportFor.value == ReportCategoryFragment.WEEK) return
+        _reportFor.value = ReportCategoryFragment.WEEK
     }
 
 }

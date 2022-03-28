@@ -21,7 +21,7 @@
         android:id="@+id/onBoardingFragment"
         android:name="com.fiz.mono.ui.on_boarding.OnBoardingFragment"
         android:label="fragment_on_boarding"
-        tools:layout="@layout/fragment_on_boarding"></fragment>
+        tools:layout="@layout/fragment_on_boarding" />
     <fragment
         android:id="@+id/PINPasswordFragment"
         android:name="com.fiz.mono.ui.pin_password.PINPasswordFragment"
@@ -71,7 +71,7 @@
         android:id="@+id/reportFragment"
         android:name="com.fiz.mono.ui.report.ReportFragment"
         android:label="fragment_report"
-        tools:layout="@layout/fragment_report"></fragment>
+        tools:layout="@layout/fragment_report" />
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.fiz.mono.ui.settings.SettingsFragment"

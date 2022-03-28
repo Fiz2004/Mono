@@ -1,4 +1,4 @@
-package com.fiz.mono.ui.report
+package com.fiz.mono.ui.report.monthly
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,6 +12,7 @@ import com.fiz.mono.R
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.databinding.FragmentReportMonthlyBinding
 import com.fiz.mono.ui.MainViewModel
+import com.fiz.mono.ui.report.ReportFragment
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.util.currentUtils
 import com.google.android.material.button.MaterialButtonToggleGroup
