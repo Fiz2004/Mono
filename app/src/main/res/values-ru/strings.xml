@@ -81,4 +81,7 @@
     <string name="month">За месяц</string>
     <string name="week">За неделю</string>
     <string name="this_month">В этом месяце</string>
+    <string name="mono_will_reminder_to_note_transaction_on_this_time_everyday">Mono будет напоминать о том, чтобы отмечать транзакции в это время каждый день</string>
+    <string name="set_reminder">Установить напоминание</string>
+    <string name="notification_title">Mono Напоминает</string>
 </resources>

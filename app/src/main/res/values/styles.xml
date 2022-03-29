@@ -79,9 +79,9 @@
         <item name="android:textAppearance">@style/size16_color_secondary</item>
         <item name="strokeWidth">1dp</item>
         <item name="strokeColor">?attr/colorGray</item>
-        <item name="android:textColor">@drawable/selector_toggle_button_text</item>
+        <item name="android:textColor">@drawable/selector_color_toggle_button_text</item>
         <item name="shapeAppearance">@style/ToggleButtonShape</item>
-        <item name="backgroundTint">@drawable/selector_toggle_button</item>
+        <item name="backgroundTint">@drawable/selector_color_toggle_button</item>
     </style>
 
     <style name="ToggleButtonPeriod" parent="@style/Widget.Material3.Button.OutlinedButton">
@@ -89,9 +89,9 @@
         <item name="android:textAppearance">@style/size16_color_secondary</item>
         <item name="strokeWidth">1dp</item>
         <item name="strokeColor">?attr/colorGray</item>
-        <item name="android:textColor">@drawable/selector_toggle_button_text</item>
+        <item name="android:textColor">@drawable/selector_color_toggle_button_text</item>
         <item name="shapeAppearance">@style/ToggleButtonPeriodShape</item>
-        <item name="backgroundTint">@drawable/selector_toggle_button</item>
+        <item name="backgroundTint">@drawable/selector_color_toggle_button</item>
     </style>
 
     <style name="ToggleButtonPeriodShape" parent="ShapeAppearance.Material3.MediumComponent">
@@ -151,5 +151,10 @@
         <item name="android:textAlignment">textStart</item>
         <item name="android:textAppearance">@style/size16_color_secondary</item>
         <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+
+    <style name="size56_color_primary">
+        <item name="android:textSize">56sp</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
     </style>
 </resources>

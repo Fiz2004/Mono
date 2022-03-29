@@ -3,12 +3,15 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable-anydpi-v26/ic_launcher_foreground.xml" value="0.1365" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable-v24/ic_launcher_background.xml" value="0.1" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.118" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/arrow_left.xml" value="0.273" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/arrow_right.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/back.xml" value="0.273" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/background.xml" value="0.16" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/background_edittext_reminder.xml" value="0.23" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/background_edittext_reminder_focus.xml" value="0.23" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/background_icon_report.xml" value="0.156" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/background_pin_edittext.xml" value="0.1395" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/background_pin_error_edittext.xml" value="0.1395" />
@@ -42,6 +45,9 @@
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/mode.xml" value="0.1625" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/mono.xml" value="0.118" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/radiobutton_currency.xml" value="0.2155" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/selector_background_edittext_reminder.xml" value="0.23" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/selector_item_calculator.xml" value="0.23" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/selector_item_input.xml" value="0.23" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/selector_toggle_button.xml" value="0.1395" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/selector_toggle_button_text.xml" value="0.1395" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/drawable/squares_four.xml" value="0.1625" />
@@ -57,7 +63,7 @@
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_input.xml" value="0.1" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_on_boarding.xml" value="0.2864471996579735" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_p_i_n_password.xml" value="0.33" />
-        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_reminder.xml" value="0.2864471996579735" />
+        <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_reminder.xml" value="0.18" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_report.xml" value="0.33" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_report_category.xml" value="0.25" />
         <entry key="..\:/Programs/AndroidStudioProjects/Mono/app/src/main/res/layout/fragment_report_monthly.xml" value="0.25" />
