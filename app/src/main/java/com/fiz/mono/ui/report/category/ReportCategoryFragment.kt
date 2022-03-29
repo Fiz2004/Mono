@@ -18,6 +18,8 @@ import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.categoryIcons
 import com.fiz.mono.databinding.FragmentReportCategoryBinding
 import com.fiz.mono.ui.MainViewModel
+import com.fiz.mono.ui.report.category.ReportCategoryUtils.getValuesForVerticalForMonth
+import com.fiz.mono.ui.report.category.ReportCategoryUtils.getValuesForVerticalForWeek
 import com.fiz.mono.ui.report.select.SelectCategoryFragment
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.ui.shared_adapters.TransactionsDataItem
@@ -26,7 +28,6 @@ import com.fiz.mono.util.themeColor
 import com.google.android.material.button.MaterialButtonToggleGroup
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.abs
 
 
 class ReportCategoryFragment : Fragment() {
@@ -212,7 +213,12 @@ class ReportCategoryFragment : Fragment() {
 
 
         val valuesByMonth =
-            getValuesForVerticalForMonth(usefulHeight)
+            getValuesForVerticalForMonth(
+                viewModel.allTransactions.value, category?.name,
+                Calendar.getInstance(), Calendar.getInstance()
+            ).map {
+                usefulHeight - usefulHeight * it
+            }
 
         val stepWidth = width / 5f
 
@@ -268,7 +274,12 @@ class ReportCategoryFragment : Fragment() {
         paint.strokeWidth = 0f
 
         val valuesByWeek =
-            getValuesForVerticalForWeek(usefulHeight)
+            getValuesForVerticalForWeek(
+                viewModel.allTransactions.value, category?.name,
+                Calendar.getInstance(), Calendar.getInstance()
+            ).map {
+                usefulHeight - usefulHeight * it
+            }
 
         val stepWidth = width / 7f
 
@@ -296,98 +307,6 @@ class ReportCategoryFragment : Fragment() {
         path.lineTo(0f, usefulHeight.toFloat())
         path.close()
         canvas.drawPath(path, paint)
-    }
-
-    private fun getValuesForVerticalForMonth(
-        usefulHeight: Float
-    ): List<Double> {
-        val currentDate = Calendar.getInstance()
-        val monthDate = Calendar.getInstance()
-        monthDate.add(Calendar.MONTH, -7)
-        val countMSInDay = 1000 * 60 * 60 * 24
-        val dayBetween = (currentDate.time.time - monthDate.time.time) / countMSInDay
-
-        val transactions = viewModel.allTransactions.value
-            ?.filter { it.nameCategory == category?.name }
-            ?.filter { it.date.time > (currentDate.time.time - dayBetween * countMSInDay) }
-            ?.sortedBy { it.date }
-            ?.groupBy {
-                SimpleDateFormat(
-                    "MMM",
-                    Locale.getDefault()
-                ).format(it.date.time)
-            }
-
-        val transactionsByMonth = emptyMap<String, Double>().toMutableMap()
-        for (n in 0..6) {
-            monthDate.add(Calendar.MONTH, 1)
-            val nameMonth = SimpleDateFormat(
-                "MMM",
-                Locale.getDefault()
-            ).format(monthDate.time)
-            transactionsByMonth[nameMonth] = transactions
-                ?.filterKeys { it == nameMonth }
-                ?.values
-                ?.firstOrNull()
-                ?.fold(0.0) { acc, d -> acc + d.value }
-                ?: 0.0
-        }
-
-        val max: Double = abs(transactionsByMonth
-            .values
-            .maxByOrNull { abs(it) } ?: 0.0
-        )
-        val valuesByMonth = transactionsByMonth
-            .values
-            .map { usefulHeight - if (max == 0.0) 0.0 else usefulHeight * (abs(it) / max) }
-            .toList()
-        return valuesByMonth
-    }
-
-    private fun getValuesForVerticalForWeek(
-        usefulHeight: Float
-    ): List<Double> {
-        val currentDate = Calendar.getInstance()
-        val DayDate = Calendar.getInstance()
-        DayDate.add(Calendar.DATE, -9)
-        val countMSInDay = 1000 * 60 * 60 * 24
-        val dayBetween = (currentDate.time.time - DayDate.time.time) / countMSInDay
-
-        val transactions = viewModel.allTransactions.value
-            ?.filter { it.nameCategory == category?.name }
-            ?.filter { it.date.time > (currentDate.time.time - dayBetween * countMSInDay) }
-            ?.sortedBy { it.date }
-            ?.groupBy {
-                SimpleDateFormat(
-                    "dd",
-                    Locale.getDefault()
-                ).format(it.date.time)
-            }
-
-        val transactionsByMonth = emptyMap<String, Double>().toMutableMap()
-        for (n in 0..8) {
-            DayDate.add(Calendar.DATE, 1)
-            val nameDay = SimpleDateFormat(
-                "dd",
-                Locale.getDefault()
-            ).format(DayDate.time)
-            transactionsByMonth[nameDay] = transactions
-                ?.filterKeys { it == nameDay }
-                ?.values
-                ?.firstOrNull()
-                ?.fold(0.0) { acc, d -> acc + d.value }
-                ?: 0.0
-        }
-
-        val max: Double = abs(transactionsByMonth
-            .values
-            .maxByOrNull { abs(it) } ?: 0.0
-        )
-        val valuesByMonth = transactionsByMonth
-            .values
-            .map { usefulHeight - if (max == 0.0) 0.0 else usefulHeight * (abs(it) / max) }
-            .toList()
-        return valuesByMonth
     }
 
     private fun drawTextMonth(
