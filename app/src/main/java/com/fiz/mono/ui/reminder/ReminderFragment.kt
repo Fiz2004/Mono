@@ -20,6 +20,7 @@ import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentReminderBinding
 import com.fiz.mono.receiver.AlarmReceiver
 import com.fiz.mono.util.setVisible
+import java.util.*
 
 
 class ReminderFragment : Fragment() {
@@ -162,9 +163,24 @@ class ReminderFragment : Fragment() {
 
     private fun setReminderButtonOnClickListener(view: View?) {
         isReminder = !isReminder
+        val currentTime = Calendar.getInstance()
+        val needTime = Calendar.getInstance()
+        val hours = viewModel.hours.value ?: 0
+        val minutes = viewModel.minutes.value ?: 0
+
+        needTime.set(Calendar.HOUR, hours)
+        needTime.set(Calendar.MINUTE, minutes)
+        if (currentTime.get(Calendar.HOUR) > needTime.get(Calendar.HOUR) &&
+            currentTime.get(Calendar.MINUTE) > needTime.get(Calendar.MINUTE)
+        )
+            needTime.add(Calendar.DATE, -1)
+
+        val differenceTime = (needTime.time.time - currentTime.time.time) / 1000
+
+
         viewModel.setAlarm(
             isReminder,
-            10,
+            differenceTime.toInt(),
             alarmManager,
             notifyPendingIntent,
             requireActivity()
