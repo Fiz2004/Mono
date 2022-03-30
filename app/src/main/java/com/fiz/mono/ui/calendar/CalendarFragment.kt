@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -14,6 +15,7 @@ import com.fiz.mono.R
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.databinding.FragmentCalendarBinding
 import com.fiz.mono.ui.MainViewModel
+import com.fiz.mono.ui.MainViewModelFactory
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setVisible
@@ -25,7 +27,16 @@ class CalendarFragment : Fragment() {
     private var _binding: FragmentCalendarBinding? = null
     private val binding get() = _binding!!
 
-    private val mainViewModel: MainViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels {
+        MainViewModelFactory(
+            (requireActivity().application as App).categoryStore,
+            (requireActivity().application as App).transactionStore,
+            requireActivity().getSharedPreferences(
+                getString(R.string.preferences),
+                AppCompatActivity.MODE_PRIVATE
+            )
+        )
+    }
     private val viewModel: CalendarViewModel by viewModels(factoryProducer = viewModelInit())
 
     private val monthsTextView = emptyList<TextView>().toMutableList()

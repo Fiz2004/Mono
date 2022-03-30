@@ -107,7 +107,7 @@
         android:enabled="true"
         android:text="@string/set_reminder"
         android:textColor="@drawable/button_text_default"
-        app:backgroundTint="@drawable/button_default"
+        app:backgroundTint="@drawable/selector_button_default"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

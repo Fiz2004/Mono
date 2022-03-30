@@ -2,7 +2,8 @@
 <resources>
     <color name="branding_color">#31C66D</color>
 
-    <color name="red">#FE7474</color>
+    <color name="red">#FFFE7474</color>
+    <color name="red_alpha_300">#1EFE7474</color>
     <color name="blue">#5986F2</color>
 
     <color name="expense">#FF9A9A</color>

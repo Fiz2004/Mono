@@ -9,17 +9,28 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentOnBoardingBinding
 import com.fiz.mono.ui.MainViewModel
+import com.fiz.mono.ui.MainViewModelFactory
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
 
 class OnBoardingFragment : Fragment() {
     private var _binding: FragmentOnBoardingBinding? = null
     private val binding get() = _binding!!
 
+    private val mainViewModel: MainViewModel by activityViewModels {
+        MainViewModelFactory(
+            (requireActivity().application as App).categoryStore,
+            (requireActivity().application as App).transactionStore,
+            requireActivity().getSharedPreferences(
+                getString(R.string.preferences),
+                AppCompatActivity.MODE_PRIVATE
+            )
+        )
+    }
     private val viewModel: OnBoardingViewModel by activityViewModels()
-    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,13 +107,7 @@ class OnBoardingFragment : Fragment() {
 
     private fun skipOnClickListener(view: View) {
         viewModel.PIN()
-        mainViewModel.firstTime = false
-        val sharedPreferences = requireActivity().getSharedPreferences(
-            getString(R.string.preferences),
-            AppCompatActivity.MODE_PRIVATE
-        ).edit()
-        sharedPreferences.putBoolean("firstTime", mainViewModel.firstTime)
-        sharedPreferences.apply()
+        mainViewModel.changeFirstTime()
         val action =
             OnBoardingFragmentDirections
                 .actionToPINPasswordFragment(PINPasswordFragment.START)
@@ -114,13 +119,7 @@ class OnBoardingFragment : Fragment() {
 
         if (viewModel.pages.value == 3) {
             viewModel.PIN()
-            mainViewModel.firstTime = false
-            val sharedPreferences = requireActivity().getSharedPreferences(
-                getString(R.string.preferences),
-                AppCompatActivity.MODE_PRIVATE
-            ).edit()
-            sharedPreferences.putBoolean("firstTime", mainViewModel.firstTime)
-            sharedPreferences.apply()
+            mainViewModel.changeFirstTime()
             val action =
                 OnBoardingFragmentDirections
                     .actionToPINPasswordFragment(PINPasswordFragment.START)

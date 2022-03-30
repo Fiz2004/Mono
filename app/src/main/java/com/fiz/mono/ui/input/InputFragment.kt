@@ -1,12 +1,10 @@
 package com.fiz.mono.ui.input
 
-import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -19,6 +17,7 @@ import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.databinding.FragmentInputBinding
 import com.fiz.mono.ui.MainViewModel
+import com.fiz.mono.ui.MainViewModelFactory
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
 import com.fiz.mono.ui.shared_adapters.CategoriesAdapter
 import com.fiz.mono.util.ActivityContract
@@ -32,24 +31,29 @@ class InputFragment : Fragment() {
     private var _binding: FragmentInputBinding? = null
     private val binding get() = _binding!!
 
-    private val mainViewModel: MainViewModel by activityViewModels()
-    private val viewModel: CategoryInputViewModel by viewModels(factoryProducer = viewModelInit())
+    private val mainViewModel: MainViewModel by activityViewModels {
+        MainViewModelFactory(
+            (requireActivity().application as App).categoryStore,
+            (requireActivity().application as App).transactionStore,
+            requireActivity().getSharedPreferences(
+                getString(R.string.preferences),
+                AppCompatActivity.MODE_PRIVATE
+            )
+        )
+    }
 
-    private val cameraActivityLauncher =
-        registerForActivityResult(ActivityContract(), ::resultCameraActivity)
-
-    private lateinit var adapter: CategoriesAdapter
-
-    private fun viewModelInit(): () -> CategoryInputViewModelFactory = {
+    private val viewModel: CategoryInputViewModel by viewModels {
         CategoryInputViewModelFactory(
             (requireActivity().application as App).categoryStore,
             (requireActivity().application as App).transactionStore
         )
     }
 
-    private fun resultCameraActivity(result: Intent?) {
+    private val cameraActivityLauncher = registerForActivityResult(ActivityContract()) {
         viewModel.addPhotoPath()
     }
+
+    private lateinit var adapter: CategoriesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,33 +71,9 @@ class InputFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (isStartFirstTime() || isNeedLog()) return
-
         init()
         bind()
         subscribe()
-    }
-
-    private fun isStartFirstTime(): Boolean {
-        if (mainViewModel.firstTime) {
-            val action =
-                InputFragmentDirections
-                    .actionInputFragmentToOnBoardingFragment()
-            findNavController().navigate(action)
-            return true
-        }
-        return false
-    }
-
-    private fun isNeedLog(): Boolean {
-        if (!args.log && mainViewModel.PIN.isNotBlank()) {
-            val action =
-                InputFragmentDirections
-                    .actionToPINPasswordFragment(PINPasswordFragment.START)
-            findNavController().navigate(action)
-            return true
-        }
-        return false
     }
 
     private fun init() {
@@ -161,6 +141,24 @@ class InputFragment : Fragment() {
         mainViewModel.apply {
             currency.observe(viewLifecycleOwner, ::currencyObserve)
             date.observe(viewLifecycleOwner, ::dateObserve)
+
+            firstTime.observe(viewLifecycleOwner) {
+                if (it) {
+                    val action =
+                        InputFragmentDirections
+                            .actionInputFragmentToOnBoardingFragment()
+                    findNavController().navigate(action)
+                }
+            }
+
+            isConfirmPIN.observe(viewLifecycleOwner) {
+                if (!it) {
+                    val action =
+                        InputFragmentDirections
+                            .actionToPINPasswordFragment(PINPasswordFragment.START)
+                    findNavController().navigate(action)
+                }
+            }
         }
     }
 
@@ -203,7 +201,7 @@ class InputFragment : Fragment() {
     }
 
     private fun leftDateRangeOnClickListener(view: View) {
-        mainViewModel.dateDayMinusOned()
+        mainViewModel.dateDayMinusOne()
     }
 
     private fun submitButtonOnClickListener(view: View) {
@@ -341,7 +339,8 @@ class InputFragment : Fragment() {
     }
 
     private fun dateObserve(date: Calendar) {
-        binding.dataRangeLayout.dateTextView.text = mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
+        binding.dataRangeLayout.dateTextView.text =
+            mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
         binding.titleTextView.text = mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
     }
 

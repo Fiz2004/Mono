@@ -8,6 +8,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -18,6 +19,7 @@ import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.categoryIcons
 import com.fiz.mono.databinding.FragmentReportCategoryBinding
 import com.fiz.mono.ui.MainViewModel
+import com.fiz.mono.ui.MainViewModelFactory
 import com.fiz.mono.ui.report.category.ReportCategoryUtils.getValuesForVerticalForMonth
 import com.fiz.mono.ui.report.category.ReportCategoryUtils.getValuesForVerticalForWeek
 import com.fiz.mono.ui.report.select.SelectCategoryFragment
@@ -36,7 +38,16 @@ class ReportCategoryFragment : Fragment() {
     private var _binding: FragmentReportCategoryBinding? = null
     private val binding get() = _binding!!
 
-    private val mainViewModel: MainViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels {
+        MainViewModelFactory(
+            (requireActivity().application as App).categoryStore,
+            (requireActivity().application as App).transactionStore,
+            requireActivity().getSharedPreferences(
+                getString(R.string.preferences),
+                AppCompatActivity.MODE_PRIVATE
+            )
+        )
+    }
     private val viewModel: ReportCategoryViewModel by viewModels {
         ReportCategoryViewModelFactory(
             (requireActivity().application as App).categoryStore,

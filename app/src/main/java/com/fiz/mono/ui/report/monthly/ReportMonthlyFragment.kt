@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -12,6 +13,7 @@ import com.fiz.mono.R
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.databinding.FragmentReportMonthlyBinding
 import com.fiz.mono.ui.MainViewModel
+import com.fiz.mono.ui.MainViewModelFactory
 import com.fiz.mono.ui.report.ReportFragment
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.util.currentUtils
@@ -23,7 +25,16 @@ class ReportMonthlyFragment : Fragment() {
     private var _binding: FragmentReportMonthlyBinding? = null
     private val binding get() = _binding!!
 
-    private val mainViewModel: MainViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels {
+        MainViewModelFactory(
+            (requireActivity().application as App).categoryStore,
+            (requireActivity().application as App).transactionStore,
+            requireActivity().getSharedPreferences(
+                getString(R.string.preferences),
+                AppCompatActivity.MODE_PRIVATE
+            )
+        )
+    }
     private val viewModel: ReportMonthlyViewModel by viewModels {
         ReportMonhlyViewModelFactory(
             (requireActivity().application as App).transactionStore
