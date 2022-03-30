@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -101,8 +102,40 @@ class ReminderFragment : Fragment() {
             navigationBarLayout.choiceImageButton.setVisible(false)
             navigationBarLayout.titleTextView.text = getString(R.string.reminder)
 
+            hoursEditText.doOnTextChanged { text, start, before, count ->
+                try {
+                    if (text.toString().toInt() > 23)
+                        throw Error("")
+                    else
+                        viewModel.setHours(text.toString().toInt())
+                } catch (e: Exception) {
+                    if (text.toString() != "") {
+                        hoursEditText.error = "error"
+                    }
+                    viewModel.hoursError()
+                }
+            }
+
+            minutesEditText.doOnTextChanged { text, start, before, count ->
+                try {
+                    if (text.toString().toInt() > 59)
+                        throw Error("")
+                    else
+                        viewModel.setMinutes(text.toString().toInt())
+                } catch (e: Exception) {
+                    if (text.toString() != "") {
+                        hoursEditText.error = "error"
+                    }
+                    viewModel.minutesError()
+                }
+            }
+
             navigationBarLayout.backButton.setOnClickListener(::backButtonOnClickListener)
             setReminderButton.setOnClickListener(::setReminderButtonOnClickListener)
+        }
+
+        viewModel.isCanReminder.observe(viewLifecycleOwner) {
+            binding.setReminderButton.isEnabled = it
         }
     }
 
