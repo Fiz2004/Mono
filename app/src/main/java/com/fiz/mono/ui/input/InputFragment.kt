@@ -16,6 +16,8 @@ import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.databinding.FragmentInputBinding
+import com.fiz.mono.ui.MainPreferencesViewModel
+import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.MainViewModelFactory
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
@@ -34,7 +36,12 @@ class InputFragment : Fragment() {
     private val mainViewModel: MainViewModel by activityViewModels {
         MainViewModelFactory(
             (requireActivity().application as App).categoryStore,
-            (requireActivity().application as App).transactionStore,
+            (requireActivity().application as App).transactionStore
+        )
+    }
+
+    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels {
+        MainPreferencesViewModelFactory(
             requireActivity().getSharedPreferences(
                 getString(R.string.preferences),
                 AppCompatActivity.MODE_PRIVATE
@@ -42,8 +49,8 @@ class InputFragment : Fragment() {
         )
     }
 
-    private val viewModel: CategoryInputViewModel by viewModels {
-        CategoryInputViewModelFactory(
+    private val viewModel: InputViewModel by viewModels {
+        InputViewModelFactory(
             (requireActivity().application as App).categoryStore,
             (requireActivity().application as App).transactionStore
         )
@@ -138,9 +145,8 @@ class InputFragment : Fragment() {
             selectedAdapter.observe(viewLifecycleOwner, ::selectedAdapterObserve)
             selected.observe(viewLifecycleOwner, ::selectedObserve)
         }
-        mainViewModel.apply {
+        mainPreferencesViewModel.apply {
             currency.observe(viewLifecycleOwner, ::currencyObserve)
-            date.observe(viewLifecycleOwner, ::dateObserve)
 
             firstTime.observe(viewLifecycleOwner) {
                 if (it) {
@@ -160,6 +166,7 @@ class InputFragment : Fragment() {
                 }
             }
         }
+        mainViewModel.date.observe(viewLifecycleOwner, ::dateObserve)
     }
 
     private fun removeButtonOnClickListener(view: View?) {

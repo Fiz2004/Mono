@@ -12,13 +12,15 @@ import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.databinding.FragmentReportMonthlyBinding
+import com.fiz.mono.ui.MainPreferencesViewModel
+import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.MainViewModelFactory
 import com.fiz.mono.ui.report.ReportFragment
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
+import com.fiz.mono.util.TimeUtils
 import com.fiz.mono.util.currentUtils
 import com.google.android.material.button.MaterialButtonToggleGroup
-import java.text.SimpleDateFormat
 import java.util.*
 
 class ReportMonthlyFragment : Fragment() {
@@ -28,7 +30,12 @@ class ReportMonthlyFragment : Fragment() {
     private val mainViewModel: MainViewModel by activityViewModels {
         MainViewModelFactory(
             (requireActivity().application as App).categoryStore,
-            (requireActivity().application as App).transactionStore,
+            (requireActivity().application as App).transactionStore
+        )
+    }
+
+    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels {
+        MainPreferencesViewModelFactory(
             requireActivity().getSharedPreferences(
                 getString(R.string.preferences),
                 AppCompatActivity.MODE_PRIVATE
@@ -59,7 +66,7 @@ class ReportMonthlyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = TransactionsAdapter(mainViewModel.currency.value ?: "$", true)
+        adapter = TransactionsAdapter(mainPreferencesViewModel.currency.value ?: "$", true)
 
         binding.apply {
 
@@ -76,8 +83,10 @@ class ReportMonthlyFragment : Fragment() {
     }
 
     private fun dateObserve(date: Calendar) {
-        binding.dataRangeLayout.dateTextView.text =
-            SimpleDateFormat("LLLL, yyyy", Locale.getDefault()).format(date.time)
+        binding.dataRangeLayout.dateTextView.text = TimeUtils.getDateMonthYearString(
+            date,
+            resources.getStringArray(R.array.name_month)
+        )
     }
 
     private fun rightDateRangeOnClickListener(view: View) {
@@ -124,7 +133,7 @@ class ReportMonthlyFragment : Fragment() {
     }
 
     private fun allTransactionsObserve(allTransactions: List<TransactionItem>) {
-        val currency = mainViewModel.currency.value ?: "$"
+        val currency = mainPreferencesViewModel.currency.value ?: "$"
         binding.valueReportTextView.text =
             currentUtils.getCurrencyFormat(currency, viewModel.getCurrentBalance(), false)
 

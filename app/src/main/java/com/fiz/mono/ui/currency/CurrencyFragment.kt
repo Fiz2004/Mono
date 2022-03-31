@@ -9,21 +9,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentCurrencyBinding
-import com.fiz.mono.ui.MainViewModel
-import com.fiz.mono.ui.MainViewModelFactory
+import com.fiz.mono.ui.MainPreferencesViewModel
+import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.util.setVisible
 
 class CurrencyFragment : Fragment() {
     private var _binding: FragmentCurrencyBinding? = null
     private val binding get() = _binding!!
 
-    private val mainViewModel: MainViewModel by activityViewModels {
-        MainViewModelFactory(
-            (requireActivity().application as App).categoryStore,
-            (requireActivity().application as App).transactionStore,
+    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels {
+        MainPreferencesViewModelFactory(
             requireActivity().getSharedPreferences(
                 getString(R.string.preferences),
                 AppCompatActivity.MODE_PRIVATE
@@ -63,7 +60,7 @@ class CurrencyFragment : Fragment() {
         currencyRadioButton["лв"] = binding.BGNRadioButton
         currencyRadioButton["đ"] = binding.VNDRadioButton
 
-        currencyRadioButton[mainViewModel.currency.value]?.isChecked = true
+        currencyRadioButton[mainPreferencesViewModel.currency.value]?.isChecked = true
 
         binding.navigationBarLayout.backButton.setVisible(true)
         binding.navigationBarLayout.actionButton.setVisible(false)
@@ -88,14 +85,7 @@ class CurrencyFragment : Fragment() {
                 val selectEntriesRadioButton = currencyRadioButton.entries.find { it.value.id == view.id }
                 selectEntriesRadioButton?.let {
                     it.value.isChecked = true
-                    mainViewModel.setCurrency(it.key)
-
-                    val sharedPreferences = requireActivity().getSharedPreferences(
-                        getString(R.string.preferences),
-                        AppCompatActivity.MODE_PRIVATE
-                    ).edit()
-                    sharedPreferences.putString("currency", it.key)
-                    sharedPreferences.apply()
+                    mainPreferencesViewModel.setCurrency(it.key)
                 }
             }
         }

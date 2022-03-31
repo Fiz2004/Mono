@@ -12,11 +12,9 @@ import androidx.navigation.fragment.findNavController
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentReportBinding
 import com.fiz.mono.ui.report.monthly.ReportMonthlyFragmentDirections
-import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setVisible
-import com.fiz.mono.util.themeColor
 
-class ReportFragment : Fragment() {
+class ReportFragment : Fragment(), ReportDialog.Choicer {
     private var _binding: FragmentReportBinding? = null
     private val binding get() = _binding!!
 
@@ -59,15 +57,9 @@ class ReportFragment : Fragment() {
     private fun subscribe() {
         reportViewModel.categorySelectedReport.observe(viewLifecycleOwner) {
             if (it == MONTHLY) {
-                binding.monthlyTextView.setTextColor(requireContext().getColorCompat(R.color.blue))
-                binding.categoryTextView.setTextColor(requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary))
                 binding.navigationBarLayout.titleTextView.text = getString(R.string.month_report)
-                binding.choiceReportConstraintLayout.visibility = View.GONE
             } else {
-                binding.monthlyTextView.setTextColor(requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary))
-                binding.categoryTextView.setTextColor(requireContext().getColorCompat(R.color.blue))
                 binding.navigationBarLayout.titleTextView.text = getString(R.string.category_report)
-                binding.choiceReportConstraintLayout.visibility = View.GONE
             }
         }
 
@@ -78,8 +70,6 @@ class ReportFragment : Fragment() {
             navigationBarLayout.actionButton.setVisible(false)
             navigationBarLayout.backButton.setOnClickListener(::backButtonOnClickListener)
             navigationBarLayout.choiceImageButton.setOnClickListener(::choiceReportOnClickListener)
-            monthlyTextView.setOnClickListener(::monthlyOnClickListener)
-            categoryTextView.setOnClickListener(::categoryOnClickListener)
         }
     }
 
@@ -87,7 +77,19 @@ class ReportFragment : Fragment() {
         navController.popBackStack()
     }
 
-    private fun categoryOnClickListener(view: View) {
+    private fun choiceReportOnClickListener(view: View) {
+        val reportDialog = ReportDialog()
+        reportDialog.choicer = this
+
+        val args = Bundle()
+        val currentChoice = reportViewModel.categorySelectedReport.value ?: 0
+        args.putInt("currentChoice", currentChoice)
+        reportDialog.arguments = args
+
+        reportDialog.show(childFragmentManager, "Choice Report")
+    }
+
+    override fun choiceCategory() {
         if (reportViewModel.categorySelectedReport.value == CATEGORY) return
         reportViewModel.clickCategory()
         val action =
@@ -96,18 +98,10 @@ class ReportFragment : Fragment() {
         navController.navigate(action)
     }
 
-    private fun monthlyOnClickListener(view: View) {
+    override fun choiceMonthly() {
         if (reportViewModel.categorySelectedReport.value == MONTHLY) return
         reportViewModel.clickMonthly()
         navController.popBackStack()
-    }
-
-    private fun choiceReportOnClickListener(view: View) {
-        binding.choiceReportConstraintLayout.visibility =
-            if (binding.choiceReportConstraintLayout.visibility == View.GONE)
-                View.VISIBLE
-            else
-                View.GONE
     }
 
     fun clickData() {

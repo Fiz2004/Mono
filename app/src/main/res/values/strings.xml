@@ -7,16 +7,24 @@
     <string name="report">Report</string>
     <string name="settings">Settings</string>
     <string name="skip">Skip</string>
-    <string name="word_continue">Continue</string>
-    <string name="getStarted">Get started</string>
 
-    <string name="header1">Easy to add new transaction</string>
-    <string name="header2">Track income and expenses</string>
-    <string name="header3">Comprehensive Report</string>
+    <string-array name="getStarted">
+        <item>Continue</item>
+        <item>Continue</item>
+        <item>Get started</item>
+    </string-array>
 
-    <string name="description1">We always try to bring the best experience to users. Your transactions are recorded as quickly as possible. You will not have any difficulties when you first use MoNo.</string>
-    <string name="description2">Details tracking transactions visually with the adding images features bills.</string>
-    <string name="description3">Supports viewing your balance for monthly, income and expenses, debts, loans as well as reports with category.</string>
+    <string-array name="header">
+        <item>Easy to add new transaction</item>
+        <item>Track income and expenses</item>
+        <item>Comprehensive Report</item>
+    </string-array>
+
+    <string-array name="description">
+        <item>We always try to bring the best experience to users. Your transactions are recorded as quickly as possible. You will not have any difficulties when you first use MoNo.</item>
+        <item>Details tracking transactions visually with the adding images features bills.</item>
+        <item>Supports viewing your balance for monthly, income and expenses, debts, loans as well as reports with category.</item>
+    </string-array>
 
     <string name="pageNumber">%1$d/%2$d</string>
 
@@ -88,18 +96,22 @@
     <string name="by_category">Category</string>
 
     <!--Month-->
-    <string name="january">January</string>
-    <string name="february">February</string>
-    <string name="march">March</string>
-    <string name="april">April</string>
-    <string name="may">May</string>
-    <string name="june">June</string>
-    <string name="july">July</string>
-    <string name="august">August</string>
-    <string name="september">September</string>
-    <string name="october">October</string>
-    <string name="november">November</string>
-    <string name="december">December</string>
+    <string-array name="name_month">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+
+
     <string name="month">Month</string>
     <string name="week">Week</string>
     <string name="this_month">This month</string>
@@ -108,5 +120,6 @@
     <string name="mono_notification_channel_id" translatable="false">mono_channel</string>
     <string name="mono_notification_channel_name" translatable="false">mono</string>
     <string name="notification_title">Mono Reminder</string>
+
 
 </resources>

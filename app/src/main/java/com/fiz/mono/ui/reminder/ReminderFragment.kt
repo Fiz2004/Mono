@@ -177,7 +177,6 @@ class ReminderFragment : Fragment() {
 
         val differenceTime = (needTime.time.time - currentTime.time.time) / 1000
 
-
         viewModel.setAlarm(
             isReminder,
             differenceTime.toInt(),
@@ -185,6 +184,8 @@ class ReminderFragment : Fragment() {
             notifyPendingIntent,
             requireActivity()
         )
+
+        findNavController().popBackStack()
     }
 
     private fun backButtonOnClickListener(view: View) {

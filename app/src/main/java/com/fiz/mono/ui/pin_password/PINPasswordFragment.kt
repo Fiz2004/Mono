@@ -21,6 +21,8 @@ import androidx.navigation.fragment.navArgs
 import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentPINPasswordBinding
+import com.fiz.mono.ui.MainPreferencesViewModel
+import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.MainViewModelFactory
 import com.fiz.mono.util.getColorCompat
@@ -37,13 +39,19 @@ class PINPasswordFragment : Fragment() {
     private val mainViewModel: MainViewModel by activityViewModels {
         MainViewModelFactory(
             (requireActivity().application as App).categoryStore,
-            (requireActivity().application as App).transactionStore,
+            (requireActivity().application as App).transactionStore
+        )
+    }
+
+    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels {
+        MainPreferencesViewModelFactory(
             requireActivity().getSharedPreferences(
                 getString(R.string.preferences),
                 AppCompatActivity.MODE_PRIVATE
             )
         )
     }
+
     private val viewModel: PINPasswordViewModel by viewModels()
 
     override fun onCreateView(
@@ -103,26 +111,26 @@ class PINPasswordFragment : Fragment() {
                 State_Pin.REMOVE -> {
                     binding.decsriptionTextView.text = getString(R.string.delete_PIN)
                     binding.nextPINPasswordButton.text = getString(R.string.remove_PIN)
-                    val pin = mainViewModel.pin.value ?: ""
+                    val pin = mainPreferencesViewModel.pin.value ?: ""
                     numbersEditText.forEachIndexed { index, editText ->
                         editText.setText(pin[index].toString())
                     }
                 }
                 State_Pin.REMOVE_CONFIRM_FINISH -> {
-                    mainViewModel.deletePin()
+                    mainPreferencesViewModel.deletePin()
                     Toast.makeText(requireContext(), "PIN deleted", Toast.LENGTH_SHORT).show()
                     findNavController().popBackStack()
                 }
                 State_Pin.LOGIN_FINISH, State_Pin.CREATE_FINISH -> {
-                    mainViewModel.confirmPin()
+                    mainPreferencesViewModel.confirmPin()
                     val action =
                         PINPasswordFragmentDirections
                             .actionPINPasswordFragmentToInputFragment(true)
                     findNavController().navigate(action)
                 }
                 State_Pin.EDIT_FINISH -> {
-                    mainViewModel.setPin(getPIN())
-                    mainViewModel.confirmPin()
+                    mainPreferencesViewModel.setPin(getPIN())
+                    mainPreferencesViewModel.confirmPin()
 
                     if (args.fromCome == SETTINGS) {
                         findNavController().popBackStack()
@@ -133,7 +141,7 @@ class PINPasswordFragment : Fragment() {
     }
 
     private fun init() {
-        viewModel.initState(args.fromCome, mainViewModel.pin.value ?: "")
+        viewModel.initState(args.fromCome, mainPreferencesViewModel.pin.value ?: "")
     }
 
     private fun bind() {
@@ -185,7 +193,7 @@ class PINPasswordFragment : Fragment() {
     }
 
     private fun nextPINOnClickListener(view: View) {
-        viewModel.updateState(mainViewModel.pin.value ?: "", getPIN())
+        viewModel.updateState(mainPreferencesViewModel.pin.value ?: "", getPIN())
     }
 
     private fun editOnClickListener(view: View) {

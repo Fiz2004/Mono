@@ -18,6 +18,8 @@ import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.categoryIcons
 import com.fiz.mono.databinding.FragmentReportCategoryBinding
+import com.fiz.mono.ui.MainPreferencesViewModel
+import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.MainViewModelFactory
 import com.fiz.mono.ui.report.category.ReportCategoryUtils.getValuesForVerticalForMonth
@@ -41,7 +43,12 @@ class ReportCategoryFragment : Fragment() {
     private val mainViewModel: MainViewModel by activityViewModels {
         MainViewModelFactory(
             (requireActivity().application as App).categoryStore,
-            (requireActivity().application as App).transactionStore,
+            (requireActivity().application as App).transactionStore
+        )
+    }
+
+    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels {
+        MainPreferencesViewModelFactory(
             requireActivity().getSharedPreferences(
                 getString(R.string.preferences),
                 AppCompatActivity.MODE_PRIVATE
@@ -97,7 +104,7 @@ class ReportCategoryFragment : Fragment() {
         viewModel.allTransactions.observe(viewLifecycleOwner) {
             binding.valueReportCategoryTextView.text = viewModel.getValueReportCategory(
                 it,
-                mainViewModel.currency.value!!,
+                mainPreferencesViewModel.currency.value!!,
                 isExpense,
                 category?.name!!
             )
@@ -131,7 +138,7 @@ class ReportCategoryFragment : Fragment() {
 
 
     private fun init() {
-        adapter = TransactionsAdapter(mainViewModel.currency.value ?: "$", false)
+        adapter = TransactionsAdapter(mainPreferencesViewModel.currency.value ?: "$", false)
 
         isExpense = args.type == SelectCategoryFragment.TYPE_EXPENSE
     }

@@ -1,84 +1,109 @@
 package com.fiz.mono.ui.calculator
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class CalculatorViewModel : ViewModel() {
-    private var number1: String = ""
-    private var number2: String = ""
-    private var currentOperator: String = ""
-    private var lastOperation = "="
-    private var history = ""
 
-    fun resetData() {
-        number1 = ""
-        number2 = ""
-        currentOperator = ""
-        lastOperation = "="
-        history = ""
+    private val number1 = MutableLiveData("")
+
+    private val number2 = MutableLiveData("")
+
+    private val currentOperator = MutableLiveData("")
+
+    private val lastOperation = MutableLiveData("")
+
+    private val _history = MutableLiveData("")
+    val history: LiveData<String> = _history
+
+    val result: MediatorLiveData<String> = MediatorLiveData()
+
+    init {
+        result.addSource(number1) {
+            result.value = number1.value + currentOperator.value + number2.value
+        }
+        result.addSource(number2) {
+            result.value = number1.value + currentOperator.value + number2.value
+        }
+        result.addSource(currentOperator) {
+            result.value = number1.value + currentOperator.value + number2.value
+        }
     }
 
-    fun getCurrentOperation(): String {
-        return number1 + currentOperator + number2
+    fun resetData() {
+        number1.value = ""
+        number2.value = ""
+        currentOperator.value = ""
+        lastOperation.value = "="
+        _history.value = ""
     }
 
     fun deleteLastSymbol() {
-        if (currentOperator == "") {
-            number1 = number1.substring(0, number1.length - 1)
+        if (currentOperator.value == "") {
+            number1.value = number1.value?.substring(0, number1.value!!.length - 1)
         } else {
-            number2 = number2.substring(0, number2.length - 1)
+            number2.value = number2.value?.substring(0, number2.value!!.length - 1)
         }
     }
 
     fun numberClick(symbol: String) {
-        if (currentOperator == "") {
-            if (symbol != "." || !number1.contains("."))
-                number1 += symbol
+        if (currentOperator.value == "") {
+            if (symbol != "." || !number1.value!!.contains("."))
+                number1.value += symbol
         } else {
-            if (symbol != "." || !number2.contains("."))
-                number2 += symbol
+            if (symbol != "." || !number2.value!!.contains("."))
+                number2.value += symbol
         }
-        if (lastOperation == "=" && currentOperator != "") {
-            currentOperator = ""
+        if (lastOperation.value == "=" && currentOperator.value != "") {
+            currentOperator.value = ""
         }
     }
 
     fun operatorClick(operator: String) {
-        currentOperator = operator
+        currentOperator.value = operator
         if (operator == "=") {
             try {
                 performOperation()
             } catch (ex: NumberFormatException) {
-                history = ""
+                _history.value = ""
             }
-            currentOperator = ""
+            currentOperator.value = ""
         }
-        lastOperation = currentOperator
+        lastOperation.value = currentOperator.value
     }
 
     private fun performOperation() {
-        var result = ""
-        when (lastOperation) {
-            "/" -> result = if (number2 == "0") {
-                number1 = result
-                number2 = ""
-                ""
-            } else {
-                (number1.toDouble() / number2.toDouble()).toString()
-            }
-            "x" -> result = (number1.toDouble() * number2.toDouble()).toString()
-            "+" -> result = (number1.toDouble() + number2.toDouble()).toString()
-            "-" -> result = (number1.toDouble() - number2.toDouble()).toString()
-        }
-        if (result.length > 8)
-            result = result.substring(8)
-        if (result.toDouble() % 1.0 == 0.0)
-            result = result.toDouble().toInt().toString()
-        history = number1 + lastOperation + number2
-        number1 = result
-        number2 = ""
-    }
+        val n1: Double = number1.value?.toDouble() ?: 0.0
+        val n2: Double = number2.value?.toDouble() ?: 0.0
 
-    fun getHistory(): String {
-        return history
+        var resultOperation = when (lastOperation.value) {
+            "/" -> if (n2 == 0.0) {
+                number1.value = ""
+                number2.value = ""
+                lastOperation.value = ""
+                0.0
+            } else {
+                n1 / n2
+            }
+            "x" -> n1 * n2
+            "+" -> n1 + n2
+            "-" -> n1 - n2
+            else -> 0.0
+        }
+
+        if (resultOperation > 99999999) {
+            resultOperation = 100000000.0
+        }
+
+        result.value = if (resultOperation % 1.0 == 0.0)
+            String.format("%.0f", resultOperation)
+        else
+            String.format("%.2f", resultOperation)
+
+        _history.value = number1.value + lastOperation.value + number2.value
+        number1.value = result.value
+        number2.value = ""
     }
 }

@@ -9,6 +9,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.TransactionItem
+import com.fiz.mono.data.database.dao.CategoryDao
+import com.fiz.mono.data.database.dao.TransactionDao
 import com.fiz.mono.util.TimeUtils.getDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,9 +24,9 @@ private const val NAME_DATABASE = "category_item_database"
     exportSchema = false
 )
 @TypeConverters(Converters::class)
-abstract class ItemDatabase : RoomDatabase() {
-    abstract fun categoryItemDao(): CategoryItemDAO
-    abstract fun transactionItemDao(): TransactionItemDAO
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun categoryItemDao(): CategoryDao
+    abstract fun transactionItemDao(): TransactionDao
 
     private class ItemDatabaseCallback(val context: Context) : RoomDatabase.Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) {
@@ -156,16 +158,16 @@ abstract class ItemDatabase : RoomDatabase() {
 
     companion object {
         @Volatile
-        private var INSTANCE: ItemDatabase? = null
+        private var INSTANCE: AppDatabase? = null
 
-        fun getInstance(context: Context): ItemDatabase {
+        fun getInstance(context: Context): AppDatabase {
             synchronized(this) {
                 var instance = INSTANCE
 
                 if (instance == null) {
                     instance = Room.databaseBuilder(
                         context,
-                        ItemDatabase::class.java,
+                        AppDatabase::class.java,
                         NAME_DATABASE
                     )
                         .fallbackToDestructiveMigration()
@@ -177,7 +179,7 @@ abstract class ItemDatabase : RoomDatabase() {
             }
         }
 
-        fun getDatabase(): ItemDatabase? {
+        fun getDatabase(): AppDatabase? {
             return INSTANCE
         }
     }

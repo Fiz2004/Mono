@@ -1,5 +1,8 @@
 package com.fiz.mono.util
 
+import org.threeten.bp.DateTimeUtils
+import org.threeten.bp.ZoneOffset
+import org.threeten.bp.format.DateTimeFormatter
 import java.util.*
 
 object TimeUtils {
@@ -41,5 +44,11 @@ object TimeUtils {
         val calendar = Calendar.getInstance()
         calendar.set(year, month, day)
         return calendar.time
+    }
+
+    fun getDateMonthYearString(calendar: Calendar?, monthNames: Array<String>): String {
+        val fmt = DateTimeFormatter.ofPattern("yyyy")
+        val d = DateTimeUtils.toInstant(calendar?.time).atOffset(ZoneOffset.UTC).toLocalDateTime()
+        return "${monthNames[d.monthValue - 1]}, ${fmt.format(d)}"
     }
 }

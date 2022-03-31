@@ -5,13 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.asLiveData
 import com.fiz.mono.R
-import com.fiz.mono.data.database.CategoryItemDAO
+import com.fiz.mono.data.database.dao.CategoryDao
 
-class CategoryStore(private val categoryItemDao: CategoryItemDAO) {
+class CategoryStore(private val categoryDao: CategoryDao) {
     var allCategoryExpense: LiveData<List<CategoryItem>> =
-        categoryItemDao.getAllExpense().asLiveData()
+        categoryDao.getAllExpense().asLiveData()
     var allCategoryIncome: LiveData<List<CategoryItem>> =
-        categoryItemDao.getAllIncome().asLiveData()
+        categoryDao.getAllIncome().asLiveData()
 
 
     fun getAllCategoryExpenseForEdit(): LiveData<List<CategoryItem>> {
@@ -56,7 +56,7 @@ class CategoryStore(private val categoryItemDao: CategoryItemDAO) {
 
         val newCategoryItem = CategoryItem("e$newId", name, iconID)
 
-        categoryItemDao.insert(newCategoryItem)
+        categoryDao.insert(newCategoryItem)
     }
 
     suspend fun insertNewCategoryIncome(name: String, iconID: String) {
@@ -65,27 +65,27 @@ class CategoryStore(private val categoryItemDao: CategoryItemDAO) {
 
         val newCategoryItem = CategoryItem("i$newId", name, iconID)
 
-        categoryItemDao.insert(newCategoryItem)
+        categoryDao.insert(newCategoryItem)
     }
 
     suspend fun removeCategoryExpense(position: Int) {
         allCategoryExpense.value?.get(position)?.let {
-            categoryItemDao.delete(it)
+            categoryDao.delete(it)
         }
     }
 
     suspend fun removeCategoryIncome(position: Int) {
         allCategoryIncome.value?.get(position)?.let {
-            categoryItemDao.delete(it)
+            categoryDao.delete(it)
         }
     }
 
     suspend fun deleteAll(context: Context) {
         allCategoryExpense.value?.map {
-            categoryItemDao.delete(it)
+            categoryDao.delete(it)
         }
         allCategoryIncome.value?.map {
-            categoryItemDao.delete(it)
+            categoryDao.delete(it)
         }
 
         val allCategoryExpenseDefault = mutableListOf(
@@ -123,10 +123,10 @@ class CategoryStore(private val categoryItemDao: CategoryItemDAO) {
             CategoryItem("i3", context.getString(R.string.loan), "user"),
         )
         allCategoryExpenseDefault.forEach {
-            categoryItemDao.insert(it)
+            categoryDao.insert(it)
         }
         allCategoryIncomeDefault.forEach {
-            categoryItemDao.insert(it)
+            categoryDao.insert(it)
         }
     }
 

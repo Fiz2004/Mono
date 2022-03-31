@@ -1,11 +1,11 @@
-package com.fiz.mono.data.database
+package com.fiz.mono.data.database.dao
 
 import androidx.room.*
 import com.fiz.mono.data.CategoryItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface CategoryItemDAO {
+interface CategoryDao {
     @Query("SELECT * FROM CategoryItem")
     fun getAll(): Flow<List<CategoryItem>>
 

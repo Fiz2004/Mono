@@ -1,7 +1,8 @@
 package com.fiz.mono.ui.calendar
 
 import androidx.recyclerview.widget.DiffUtil
-import java.text.SimpleDateFormat
+import org.threeten.bp.DayOfWeek
+import org.threeten.bp.format.TextStyle
 import java.util.*
 
 sealed class CalendarDataItem {
@@ -9,25 +10,33 @@ sealed class CalendarDataItem {
     data class DayItem(val transactionsDay: TransactionsDay) : CalendarDataItem()
 
     companion object {
-        fun getListDayWeekItem(): List<DayWeekItem> {
-            val dayOfWeek = Calendar.getInstance()
-            val listDayOfWeek = mutableListOf<String>()
-            for (n in 0..6) {
-                dayOfWeek.set(Calendar.DAY_OF_WEEK, n)
-                var nameDay = SimpleDateFormat(
-                    "EE",
-                    Locale.getDefault()
-                ).format(dayOfWeek.time)
-                nameDay = nameDay.take(2)
-                listDayOfWeek.add(nameDay)
-            }
-            val result = mutableListOf<String>()
-            result.addAll(listDayOfWeek.drop(2))
-            result.addAll(listDayOfWeek.take(2))
-            return listDayOfWeek.map { DayWeekItem(it) }
+        fun getListCalendarDataItem(transactionsForDaysCurrentMonth: List<TransactionsDay>): List<CalendarDataItem> {
+            return getDayWeekItemsNameDaysOfWeekTwoCharsCapitalize() +
+                    getDayItems(transactionsForDaysCurrentMonth)
         }
 
-        fun getListDayItem(list: List<TransactionsDay>): List<DayItem> {
+        private fun getDayWeekItemsNameDaysOfWeekTwoCharsCapitalize(): List<DayWeekItem> {
+            fun String.capitalizeNow(): String {
+                return this.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.getDefault()
+                    ) else it.toString()
+                }
+            }
+
+            val nameDaysOfWeek =
+                DayOfWeek.values()
+                    .map { it.getDisplayName(TextStyle.SHORT, Locale.getDefault()) }
+
+            val dayWeekItemsNameDaysOfWeekTwoCharsCapitalize = nameDaysOfWeek.map {
+                DayWeekItem(it.take(2).capitalizeNow())
+            }
+
+            return dayWeekItemsNameDaysOfWeekTwoCharsCapitalize
+
+        }
+
+        private fun getDayItems(list: List<TransactionsDay>): List<DayItem> {
             return list.map { DayItem(it.copy()) }
         }
     }

@@ -25,7 +25,10 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-class CategoryInputViewModel(private val categoryStore: CategoryStore, private val transactionStore: TransactionStore) :
+class InputViewModel(
+    private val categoryStore: CategoryStore,
+    private val transactionStore: TransactionStore
+) :
     ViewModel() {
     var allCategoryExpense = categoryStore.getAllCategoryExpenseForInput()
     var allCategoryIncome = categoryStore.getAllCategoryIncomeForInput()
@@ -330,15 +333,15 @@ class CategoryInputViewModel(private val categoryStore: CategoryStore, private v
     }
 }
 
-class CategoryInputViewModelFactory(
+class InputViewModelFactory(
     private val categoryStore: CategoryStore,
     private val transactionStore: TransactionStore
 ) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(CategoryInputViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(InputViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return CategoryInputViewModel(categoryStore, transactionStore) as T
+            return InputViewModel(categoryStore, transactionStore) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

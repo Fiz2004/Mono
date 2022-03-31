@@ -19,8 +19,7 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels {
         MainViewModelFactory(
             (application as App).categoryStore,
-            (application as App).transactionStore,
-            getSharedPreferences(getString(R.string.preferences), MODE_PRIVATE)
+            (application as App).transactionStore
         )
     }
 

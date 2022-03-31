@@ -6,15 +6,27 @@
     <string name="report">Отчет</string>
     <string name="settings">Настройки</string>
     <string name="skip">Пропустить</string>
-    <string name="header1">Легко добавить новую транзакцию</string>
-    <string name="header2">Отслеживать доходы и расходы</string>
+
     <string name="pageNumber">%1$d/%2$d</string>
-    <string name="header3">Всеобъемлющий отчет</string>
-    <string name="description1">Мы всегда стараемся предоставить пользователям наилучший опыт. Ваши транзакции регистрируются как можно быстрее. У вас не возникнет никаких трудностей при первом использовании MoNo.</string>
-    <string name="description2">Подробная информация о визуальном отслеживании транзакций с помощью функций добавления изображений счетов.</string>
-    <string name="description3">Поддерживает просмотр вашего баланса за месяц, доходов и расходов, долгов, кредитов, а также отчетов по категориям.</string>
-    <string name="word_continue">Продолжать</string>
-    <string name="getStarted">Начать</string>
+
+    <string-array name="header">
+        <item>Легко добавить новую транзакцию</item>
+        <item>Отслеживать доходы и расходы</item>
+        <item>Всеобъемлющий отчет</item>
+    </string-array>
+
+    <string-array name="description">
+        <item>Мы всегда стараемся предоставить пользователям наилучший опыт. Ваши транзакции регистрируются как можно быстрее. У вас не возникнет никаких трудностей при первом использовании MoNo.</item>
+        <item>Подробная информация о визуальном отслеживании транзакций с помощью функций добавления изображений счетов.</item>
+        <item>Поддерживает просмотр вашего баланса за месяц, доходов и расходов, долгов, кредитов, а также отчетов по категориям.</item>
+    </string-array>
+
+    <string-array name="getStarted">
+        <item>Продолжить</item>
+        <item>Продолжить</item>
+        <item>Начать</item>
+    </string-array>
+
     <string name="next">Следующий</string>
     <string name="enter_PIN">Пожалуйста, введите свой PIN-код, чтобы продолжить.</string>
     <string name="set_pin_password">Установить PIN-код и пароль</string>
@@ -64,18 +76,23 @@
     <string name="no_transactions">В этот день сделок не совершалось</string>
     <string name="monthly">По месяцам</string>
     <string name="by_category">По категориям</string>
-    <string name="january">Январь</string>
-    <string name="february">Февраль</string>
-    <string name="march">Март</string>
-    <string name="april">Апрель</string>
-    <string name="may">Май</string>
-    <string name="june">Июнь</string>
-    <string name="july">Июль</string>
-    <string name="august">Август</string>
-    <string name="september">Сентябрь</string>
-    <string name="october">Октябрь</string>
-    <string name="november">Ноябрь</string>
-    <string name="december">Декабрь</string>
+
+    <!--Месяца-->
+    <string-array name="name_month">
+        <item>Январь</item>
+        <item>Февраль</item>
+        <item>Март</item>
+        <item>Апрель</item>
+        <item>Май</item>
+        <item>Июнь</item>
+        <item>Июль</item>
+        <item>Август</item>
+        <item>Сентябрь</item>
+        <item>Октябрь</item>
+        <item>Ноябрь</item>
+        <item>Декабрь</item>
+    </string-array>
+
     <string name="update">Обновление</string>
     <string name="category_report">Отчет по категории</string>
     <string name="month">За месяц</string>

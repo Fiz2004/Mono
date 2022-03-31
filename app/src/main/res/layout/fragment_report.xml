@@ -30,42 +30,4 @@
         app:navGraph="@navigation/nav_graph_report" />
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/choiceReportConstraintLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/fragmentPaddingStart"
-        android:layout_marginEnd="@dimen/fragmentPaddingEnd"
-        android:background="@drawable/edit_image_bg"
-        android:padding="24dp"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/navigationBarLayout">
-
-        <TextView
-            android:id="@+id/monthlyTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:text="@string/monthly"
-            android:focusable="true"
-            android:textAppearance="@style/size16_color_primary"
-            android:textColor="?attr/colorSecondary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/categoryTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/by_category"
-            android:focusable="true"
-            android:textAppearance="@style/size16_color_primary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/monthlyTextView" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

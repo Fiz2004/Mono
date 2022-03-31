@@ -34,60 +34,69 @@ class CalculatorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.navigationBarLayout.backButton.setVisible(false)
-        binding.navigationBarLayout.actionButton.setVisible(false)
-        binding.navigationBarLayout.choiceImageButton.setVisible(false)
-        binding.navigationBarLayout.titleTextView.text = getString(R.string.calculator)
+        bind()
+        subscribe()
+    }
 
-        binding.oneCalendarImageButton.setOnClickListener(::onNumberClick)
-        binding.twoCalendarImageButton.setOnClickListener(::onNumberClick)
-        binding.threeCalendarImageButton.setOnClickListener(::onNumberClick)
-        binding.fourCalendarImageButton.setOnClickListener(::onNumberClick)
-        binding.fiveCalendarImageButton.setOnClickListener(::onNumberClick)
-        binding.sixCalendarImageButton.setOnClickListener(::onNumberClick)
-        binding.sevenCalendarImageButton.setOnClickListener(::onNumberClick)
-        binding.eightCalendarImageButton.setOnClickListener(::onNumberClick)
-        binding.nineCalendarImageButton.setOnClickListener(::onNumberClick)
-        binding.zeroCalendarImageButton.setOnClickListener(::onNumberClick)
-        binding.pointCalendarImageButton.setOnClickListener(::onNumberClick)
+    internal fun bind() {
+        binding.apply {
+            navigationBarLayout.backButton.setVisible(false)
+            navigationBarLayout.actionButton.setVisible(false)
+            navigationBarLayout.choiceImageButton.setVisible(false)
+            navigationBarLayout.titleTextView.text = getString(R.string.calculator)
 
-        binding.timesCalendarImageButton.setOnClickListener(::onOperationClick)
-        binding.dividedCalendarImageButton.setOnClickListener(::onOperationClick)
-        binding.plusCalendarImageButton.setOnClickListener(::onOperationClick)
-        binding.minusCalendarImageButton.setOnClickListener(::onOperationClick)
-        binding.equalsCalendarImageButton.setOnClickListener(::onOperationClick)
+            oneCalendarImageButton.setOnClickListener(::onNumberClick)
+            twoCalendarImageButton.setOnClickListener(::onNumberClick)
+            threeCalendarImageButton.setOnClickListener(::onNumberClick)
+            fourCalendarImageButton.setOnClickListener(::onNumberClick)
+            fiveCalendarImageButton.setOnClickListener(::onNumberClick)
+            sixCalendarImageButton.setOnClickListener(::onNumberClick)
+            sevenCalendarImageButton.setOnClickListener(::onNumberClick)
+            eightCalendarImageButton.setOnClickListener(::onNumberClick)
+            nineCalendarImageButton.setOnClickListener(::onNumberClick)
+            zeroCalendarImageButton.setOnClickListener(::onNumberClick)
+            pointCalendarImageButton.setOnClickListener(::onNumberClick)
 
-        binding.resetCalendarImageButton.setOnClickListener {
-            viewModel.resetData()
-            updateUI()
-        }
+            timesCalendarImageButton.setOnClickListener(::onOperationClick)
+            dividedCalendarImageButton.setOnClickListener(::onOperationClick)
+            plusCalendarImageButton.setOnClickListener(::onOperationClick)
+            minusCalendarImageButton.setOnClickListener(::onOperationClick)
+            equalsCalendarImageButton.setOnClickListener(::onOperationClick)
 
-        binding.acCalendarImageButton.setOnClickListener {
-            viewModel.resetData()
-            updateUI()
-        }
-        binding.deleteCalendarImageButton.setOnClickListener {
-            if (binding.resultCalendarTextView.text == "") return@setOnClickListener
-            viewModel.deleteLastSymbol()
-            updateUI()
+            resetCalendarImageButton.setOnClickListener {
+                viewModel.resetData()
+            }
+
+            acCalendarImageButton.setOnClickListener {
+                viewModel.resetData()
+            }
+
+            deleteCalendarImageButton.setOnClickListener {
+                if (binding.resultCalendarTextView.text == "")
+                    return@setOnClickListener
+                viewModel.deleteLastSymbol()
+            }
         }
     }
 
-    private fun updateUI() {
-        binding.resultCalendarTextView.text = viewModel.getCurrentOperation()
-        binding.operationCalendarTextView.text = viewModel.getHistory()
+    private fun subscribe() {
+        viewModel.result.observe(viewLifecycleOwner) {
+            binding.resultCalendarTextView.text = it
+        }
+
+        viewModel.history.observe(viewLifecycleOwner) {
+            binding.operationCalendarTextView.text = it
+        }
     }
 
     private fun onNumberClick(view: View) {
         val button: Button = view as Button
         viewModel.numberClick(button.text.toString())
-        updateUI()
     }
 
     private fun onOperationClick(view: View) {
         val button: Button = view as Button
         viewModel.operatorClick(button.text.toString())
-        updateUI()
     }
 
 }

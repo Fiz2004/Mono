@@ -1,11 +1,11 @@
-package com.fiz.mono.data.database
+package com.fiz.mono.data.database.dao
 
 import androidx.room.*
 import com.fiz.mono.data.TransactionItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface TransactionItemDAO {
+interface TransactionDao {
     @Query("SELECT * FROM TransactionItem")
     fun getAll(): Flow<List<TransactionItem>>
 

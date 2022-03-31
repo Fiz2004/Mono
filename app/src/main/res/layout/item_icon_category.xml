@@ -18,7 +18,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:strokeColor="?attr/colorGray"
+        app:strokeColor="@drawable/selector_color_gray_activated_blue"
         app:strokeWidth="2dp">
 
 
@@ -29,7 +29,7 @@
             android:layout_gravity="center"
             android:scaleType="centerCrop"
             app:srcCompat="@drawable/tennis_ball"
-            app:tint="?attr/colorPrimary"
+            app:tint="@drawable/selector_color_primary_activated_blue"
             tools:srcCompat="@drawable/tennis_ball" />
     </com.google.android.material.card.MaterialCardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

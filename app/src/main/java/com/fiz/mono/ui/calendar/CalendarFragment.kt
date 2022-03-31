@@ -4,52 +4,45 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.databinding.FragmentCalendarBinding
+import com.fiz.mono.ui.MainPreferencesViewModel
+import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.MainViewModelFactory
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
-import com.fiz.mono.util.getColorCompat
+import com.fiz.mono.util.TimeUtils.getDateMonthYearString
 import com.fiz.mono.util.setVisible
-import com.fiz.mono.util.themeColor
-import java.text.SimpleDateFormat
 import java.util.*
 
-class CalendarFragment : Fragment() {
+class CalendarFragment : Fragment(), MonthDialog.Choicer {
     private var _binding: FragmentCalendarBinding? = null
     private val binding get() = _binding!!
 
     private val mainViewModel: MainViewModel by activityViewModels {
         MainViewModelFactory(
             (requireActivity().application as App).categoryStore,
-            (requireActivity().application as App).transactionStore,
+            (requireActivity().application as App).transactionStore
+        )
+    }
+
+    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels {
+        MainPreferencesViewModelFactory(
             requireActivity().getSharedPreferences(
                 getString(R.string.preferences),
                 AppCompatActivity.MODE_PRIVATE
             )
         )
     }
-    private val viewModel: CalendarViewModel by viewModels(factoryProducer = viewModelInit())
-
-    private val monthsTextView = emptyList<TextView>().toMutableList()
 
     private lateinit var calendarAdapter: CalendarAdapter
     private lateinit var transactionAdapter: TransactionsAdapter
-
-    private fun viewModelInit(): () -> CalendarViewModelFactory = {
-        CalendarViewModelFactory(
-            (requireActivity().application as App).categoryStore,
-            (requireActivity().application as App).transactionStore
-        )
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,11 +60,20 @@ class CalendarFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        calendarAdapter = CalendarAdapter(::calendarAdapterOnClickListener)
-        transactionAdapter = mainViewModel.currency.value?.let {
-            TransactionsAdapter(it, true, ::transactionAdapterOnClickListener)
-        } ?: TransactionsAdapter("$", true, ::transactionAdapterOnClickListener)
+        init()
+        bind()
+        subscribe()
+    }
 
+    internal fun init() {
+        calendarAdapter = CalendarAdapter(::calendarAdapterOnClickListener)
+
+        val currency = mainPreferencesViewModel.currency.value ?: "$"
+        transactionAdapter =
+            TransactionsAdapter(currency, true, ::transactionAdapterOnClickListener)
+    }
+
+    private fun bind() {
         binding.apply {
             navigationBarLayout.backButton.setVisible(true)
             navigationBarLayout.actionButton.setVisible(false)
@@ -79,77 +81,49 @@ class CalendarFragment : Fragment() {
 
             navigationBarLayout.backButton.setOnClickListener(::backButtonOnClickListener)
             navigationBarLayout.choiceImageButton.setOnClickListener(::choiceMonthOnClickListener)
+
             calendarRecyclerView.adapter = calendarAdapter
             transactionRecyclerView.adapter = transactionAdapter
-
-            monthsTextView.add(januaryTextView)
-            monthsTextView.add(februaryTextView)
-            monthsTextView.add(marchTextView)
-            monthsTextView.add(aprilTextView)
-            monthsTextView.add(mayTextView)
-            monthsTextView.add(juneTextView)
-            monthsTextView.add(julyTextView)
-            monthsTextView.add(augustTextView)
-            monthsTextView.add(septemberTextView)
-            monthsTextView.add(octoberTextView)
-            monthsTextView.add(novemberTextView)
-            monthsTextView.add(decemberTextView)
-
-            monthsTextView.forEach {
-                it.setOnClickListener {
-                    monthsOnClickListener(
-                        monthsTextView.indexOf(
-                            it
-                        )
-                    )
-                }
-            }
         }
+    }
 
+    private fun subscribe() {
         mainViewModel.date.observe(viewLifecycleOwner, ::dateObserve)
 
-        viewModel.allTransaction.observe(viewLifecycleOwner) {
+        mainViewModel.allTransaction.observe(viewLifecycleOwner) {
             dateObserve(mainViewModel.date.value)
         }
     }
 
-    private fun monthsOnClickListener(numberMonth: Int) {
-        mainViewModel.setMonth(numberMonth)
-        binding.choiceMonthConstraintLayout.visibility = View.GONE
-    }
-
     private fun choiceMonthOnClickListener(view: View?) {
-        binding.choiceMonthConstraintLayout.visibility =
-            if (binding.choiceMonthConstraintLayout.visibility == View.GONE)
-                View.VISIBLE
-            else
-                View.GONE
+        val monthDialog = MonthDialog()
+        monthDialog.choicer = this
 
+        val args = Bundle()
         val currentMonth = mainViewModel.date.value?.get(Calendar.MONTH) ?: 0
+        args.putInt("currentMonth", currentMonth)
+        monthDialog.arguments = args
 
-        for (monthTextView in monthsTextView)
-            if (monthsTextView.indexOf(monthTextView) == (currentMonth))
-                monthTextView.setTextColor(requireContext().getColorCompat(R.color.blue))
-            else
-                monthTextView.setTextColor(requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary))
-
+        monthDialog.show(childFragmentManager, "Choice Month")
     }
 
     private fun dateObserve(calendar: Calendar?) {
-        binding.navigationBarLayout.titleTextView.text =
-            SimpleDateFormat("MMMM, yyyy", Locale.getDefault()).format(calendar?.time!!)
+        binding.navigationBarLayout.titleTextView.text = getDateMonthYearString(
+            calendar,
+            resources.getStringArray(R.array.name_month)
+        )
 
         // Без этого присваивания при выборе декабря приложение крошится
         binding.calendarRecyclerView.itemAnimator = null
 
-        val listCalendar = viewModel.getListCalendarDataItem(mainViewModel.date.value!!)
+        val listCalendar = mainViewModel.getListCalendarDataItem()
         calendarAdapter.submitList(listCalendar)
 
         val listTransactionsDataItem =
-            viewModel.getListTransactionsDataItem(mainViewModel.date.value!!)
+            mainViewModel.getListTransactionsDataItem()
 
-        binding.noTransactionsTextView.setVisible(listTransactionsDataItem.size == 0)
-        binding.transactionRecyclerView.setVisible(listTransactionsDataItem.size != 0)
+        binding.noTransactionsTextView.setVisible(listTransactionsDataItem.isEmpty())
+        binding.transactionRecyclerView.setVisible(listTransactionsDataItem.isNotEmpty())
 
         transactionAdapter.submitList(listTransactionsDataItem)
     }
@@ -169,6 +143,10 @@ class CalendarFragment : Fragment() {
 
     private fun backButtonOnClickListener(view: View) {
         findNavController().popBackStack()
+    }
+
+    override fun choiceMonth(numberMonth: Int) {
+        mainViewModel.setMonth(numberMonth)
     }
 
 }

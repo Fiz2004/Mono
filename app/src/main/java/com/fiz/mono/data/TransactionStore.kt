@@ -3,14 +3,15 @@ package com.fiz.mono.data
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.asLiveData
-import com.fiz.mono.data.database.TransactionItemDAO
+import com.fiz.mono.data.database.dao.TransactionDao
 import com.fiz.mono.ui.calendar.TransactionsDay
+import com.fiz.mono.util.TimeUtils
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TransactionStore(private val transactionItemDao: TransactionItemDAO) {
-    var allTransactions: LiveData<List<TransactionItem>> = transactionItemDao.getAll().asLiveData()
+class TransactionStore(private val transactionDao: TransactionDao) {
+    var allTransactions: LiveData<List<TransactionItem>> = transactionDao.getAll().asLiveData()
 
     fun getAllTransactionsForInput(): LiveData<List<TransactionItem>> {
         return Transformations.map(allTransactions) {
@@ -110,7 +111,7 @@ class TransactionStore(private val transactionItemDao: TransactionItemDAO) {
     }
 
     suspend fun insertNewTransaction(newTransaction: TransactionItem) {
-        transactionItemDao.insert(newTransaction)
+        transactionDao.insert(newTransaction)
     }
 
     suspend fun deleteAll() {
@@ -122,15 +123,39 @@ class TransactionStore(private val transactionItemDao: TransactionItemDAO) {
                     fdelete.delete()
                 }
             }
-            transactionItemDao.delete(it)
+            transactionDao.delete(it)
         }
     }
 
     suspend fun delete(transaction: TransactionItem) {
-        transactionItemDao.delete(transaction)
+        transactionDao.delete(transaction)
     }
 
     suspend fun updateTransaction(transactionItem: TransactionItem) {
-        transactionItemDao.update(transactionItem)
+        transactionDao.update(transactionItem)
+    }
+
+    fun getTransactionsForDaysCurrentMonth(date: Calendar): List<TransactionsDay> {
+        val result = emptyList<TransactionsDay>().toMutableList()
+        result.addAll(getEmptyTransactionDayBeforeCurrentMonth(date))
+        val transactionDayForCurrentMonthByDays =
+            getTransactionDayForCurrentMonthByDays(date)
+        result.addAll(transactionDayForCurrentMonthByDays)
+        result.addAll(getEmptyTransactionDayAfterCurrentMonth(date))
+        return result
+    }
+
+    private fun getEmptyTransactionDayBeforeCurrentMonth(
+        date: Calendar
+    ): MutableList<TransactionsDay> {
+        val numberFirstDayOfWeek = TimeUtils.getNumberFirstDayOfWeek(date)
+        return TransactionsDay.getListEmptyTransactionDay(numberFirstDayOfWeek - 1)
+    }
+
+    private fun getEmptyTransactionDayAfterCurrentMonth(
+        date: Calendar
+    ): MutableList<TransactionsDay> {
+        val dayOfWeekLastDay = TimeUtils.getNumberLastDayOfWeek(date)
+        return TransactionsDay.getListEmptyTransactionDay(7 - dayOfWeekLastDay)
     }
 }
