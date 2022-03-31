@@ -39,7 +39,7 @@ fun NotificationManager.sendNotification(messageBody: String, applicationContext
         .setContentIntent(contentPendingIntent)
         .setAutoCancel(true)
         .setContentText(messageBody)
-        .setPriority(NotificationCompat.PRIORITY_HIGH)
+        .setPriority(NotificationCompat.PRIORITY_MAX)
 
     notify(NOTIFICATION_ID, builder.build())
 }

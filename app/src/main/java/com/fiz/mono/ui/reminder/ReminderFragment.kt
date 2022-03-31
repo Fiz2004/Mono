@@ -168,9 +168,9 @@ class ReminderFragment : Fragment() {
         val hours = viewModel.hours.value ?: 0
         val minutes = viewModel.minutes.value ?: 0
 
-        needTime.set(Calendar.HOUR, hours)
+        needTime.set(Calendar.HOUR_OF_DAY, hours)
         needTime.set(Calendar.MINUTE, minutes)
-        if (currentTime.get(Calendar.HOUR) > needTime.get(Calendar.HOUR) &&
+        if (currentTime.get(Calendar.HOUR_OF_DAY) > needTime.get(Calendar.HOUR_OF_DAY) &&
             currentTime.get(Calendar.MINUTE) > needTime.get(Calendar.MINUTE)
         )
             needTime.add(Calendar.DATE, -1)
