@@ -8,6 +8,7 @@ import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentOnBoardingBinding
@@ -28,7 +29,7 @@ class OnBoardingFragment : Fragment() {
             )
         )
     }
-    private val viewModel: OnBoardingViewModel by activityViewModels()
+    private val viewModel: OnBoardingViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,23 +63,25 @@ class OnBoardingFragment : Fragment() {
         viewModel.pages.observe(viewLifecycleOwner) {
 
             binding.apply {
-                pageNumberOnBoardingTextView.text =
-                    getString(R.string.pageNumber, it + 1, 3)
-                skipOnBoardingButton.setVisible(it != 2)
-                headerOnBoardingTextView.text = resources.getStringArray(R.array.header)[it]
-                descriptionOnBoardingTextView.text =
-                    resources.getStringArray(R.array.description)[it]
-                continueOnBoardingButton.text =
-                    resources.getStringArray(R.array.getStarted)[it]
+                if (it < 3) {
+                    pageNumberOnBoardingTextView.text =
+                        getString(R.string.pageNumber, it + 1, 3)
+                    skipOnBoardingButton.setVisible(it != 2)
+                    headerOnBoardingTextView.text = resources.getStringArray(R.array.header)[it]
+                    descriptionOnBoardingTextView.text =
+                        resources.getStringArray(R.array.description)[it]
+                    continueOnBoardingButton.text =
+                        resources.getStringArray(R.array.getStarted)[it]
 
-                imageOnBoardingImageView
-                    .setImageResource(
-                        when (it) {
-                            0 -> R.drawable.illustration1
-                            1 -> R.drawable.illustration2
-                            else -> R.drawable.illustration3
-                        }
-                    )
+                    imageOnBoardingImageView
+                        .setImageResource(
+                            when (it) {
+                                0 -> R.drawable.illustration1
+                                1 -> R.drawable.illustration2
+                                else -> R.drawable.illustration3
+                            }
+                        )
+                }
             }
         }
 

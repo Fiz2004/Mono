@@ -18,13 +18,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentPINPasswordBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
 import com.fiz.mono.ui.MainPreferencesViewModelFactory
-import com.fiz.mono.ui.MainViewModel
-import com.fiz.mono.ui.MainViewModelFactory
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setVisible
 
@@ -35,13 +32,6 @@ class PINPasswordFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var numbersEditText: List<EditText>
-
-    private val mainViewModel: MainViewModel by activityViewModels {
-        MainViewModelFactory(
-            (requireActivity().application as App).categoryStore,
-            (requireActivity().application as App).transactionStore
-        )
-    }
 
     private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels {
         MainPreferencesViewModelFactory(
@@ -245,7 +235,6 @@ class PINPasswordFragment : Fragment() {
     private fun getPIN() =
         numbersEditText[0].text.toString() + numbersEditText[1].text +
                 numbersEditText[2].text + numbersEditText[3].text
-
 
     private fun showKeyboard() {
         (context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(

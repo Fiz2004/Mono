@@ -19,7 +19,6 @@ import com.fiz.mono.databinding.FragmentInputBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
 import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.ui.MainViewModel
-import com.fiz.mono.ui.MainViewModelFactory
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
 import com.fiz.mono.ui.shared_adapters.CategoriesAdapter
 import com.fiz.mono.util.ActivityContract
@@ -33,12 +32,14 @@ class InputFragment : Fragment() {
     private var _binding: FragmentInputBinding? = null
     private val binding get() = _binding!!
 
-    private val mainViewModel: MainViewModel by activityViewModels {
-        MainViewModelFactory(
+    private val viewModel: InputViewModel by viewModels {
+        InputViewModelFactory(
             (requireActivity().application as App).categoryStore,
             (requireActivity().application as App).transactionStore
         )
     }
+
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels {
         MainPreferencesViewModelFactory(
@@ -48,8 +49,6 @@ class InputFragment : Fragment() {
             )
         )
     }
-
-    private val viewModel: InputViewModel by viewModels()
 
     private val cameraActivityLauncher = registerForActivityResult(ActivityContract()) {
         viewModel.addPhotoPath()
@@ -79,7 +78,7 @@ class InputFragment : Fragment() {
     }
 
     private fun init() {
-        viewModel.transaction = mainViewModel.findTransaction(args.transaction)
+        viewModel.transaction = viewModel.findTransaction(args.transaction)
 
         adapter = CategoriesAdapter(R.color.blue, ::adapterOnClickListener)
     }
@@ -131,16 +130,13 @@ class InputFragment : Fragment() {
 
     private fun subscribe() {
         viewModel.apply {
+            allCategoryExpenseForInput.observe(viewLifecycleOwner, ::allCategoryExpenseObserve)
+            allCategoryIncomeForInput.observe(viewLifecycleOwner, ::allCategoryIncomeObserve)
             photoPaths.observe(viewLifecycleOwner, ::photoPathObserve)
             note.observe(viewLifecycleOwner, ::noteObserve)
             value.observe(viewLifecycleOwner, ::valueObserve)
             selectedAdapter.observe(viewLifecycleOwner, ::selectedAdapterObserve)
             selected.observe(viewLifecycleOwner, ::selectedObserve)
-        }
-        mainViewModel.apply {
-            allCategoryExpenseForInput.observe(viewLifecycleOwner, ::allCategoryExpenseObserve)
-            allCategoryIncomeForInput.observe(viewLifecycleOwner, ::allCategoryIncomeObserve)
-            mainViewModel.allTransaction.observe(viewLifecycleOwner) {}
         }
         mainPreferencesViewModel.apply {
             currency.observe(viewLifecycleOwner, ::currencyObserve)
@@ -167,7 +163,7 @@ class InputFragment : Fragment() {
     }
 
     private fun removeButtonOnClickListener(view: View?) {
-        mainViewModel.removeTransaction(viewModel.transaction)
+        viewModel.removeTransaction(viewModel.transaction)
         findNavController().popBackStack()
     }
 
@@ -209,34 +205,34 @@ class InputFragment : Fragment() {
     }
 
     private fun submitButtonOnClickListener(view: View) {
-        val selectedCategoryItem = mainViewModel.getSelectedInputForInput(viewModel.selectedAdapter.value)
+        val selectedCategoryItem = viewModel.getSelectedInputForInput(viewModel.selectedAdapter.value)
         if (viewModel.transaction != null) {
             val transaction = viewModel.getTransactionItemForUpdate(selectedCategoryItem) ?: return
-            mainViewModel.clickUpdate(
+            viewModel.clickUpdate(
                 transaction
             )
             findNavController().popBackStack()
         } else {
-            val newId = mainViewModel.getNewId()
+            val newId = viewModel.getNewId()
             val transaction =
                 viewModel.getTransactionItemForNew(selectedCategoryItem, newId, mainViewModel.date.value!!)
-            mainViewModel.clickSubmit(transaction)
-            mainViewModel.cleanSelectedForInput()
+            viewModel.clickSubmit(transaction)
+            viewModel.cleanSelectedForInput()
             viewModel.clickSubmit()
-            adapter.submitList(mainViewModel.getAllCategoryFromSelectedForInput(viewModel.selectedAdapter.value))
+            adapter.submitList(viewModel.getAllCategoryFromSelectedForInput(viewModel.selectedAdapter.value))
         }
     }
 
     private fun adapterOnClickListener(position: Int) {
         if (checkClickEditPosition(position)) return
-        mainViewModel.addSelectItem(position, viewModel.selectedAdapter.value)
+        viewModel.addSelectItem(position, viewModel.selectedAdapter.value)
         viewModel.changeSelected()
-        adapter.submitList(mainViewModel.getAllCategoryFromSelectedForInput(viewModel.selectedAdapter.value))
+        adapter.submitList(viewModel.getAllCategoryFromSelectedForInput(viewModel.selectedAdapter.value))
     }
 
     private fun checkClickEditPosition(position: Int): Boolean {
-        if (mainViewModel.isClickEditPosition(position, viewModel.selectedAdapter.value)) {
-            mainViewModel.cleanSelectedForInput()
+        if (viewModel.isClickEditPosition(position, viewModel.selectedAdapter.value)) {
+            viewModel.cleanSelectedForInput()
             val action =
                 InputFragmentDirections
                     .actionToCategoryFragment()
@@ -262,13 +258,13 @@ class InputFragment : Fragment() {
                 when (tab.text) {
                     getString(R.string.expense) -> {
                         viewModel.setSelectedAdapter(EXPENSE)
-                        mainViewModel.cleanSelectedForInput()
-                        adapter.submitList(mainViewModel.getCopyAllCategoryItemExpenseForInput())
+                        viewModel.cleanSelectedForInput()
+                        adapter.submitList(viewModel.getCopyAllCategoryItemExpenseForInput())
                     }
                     getString(R.string.income) -> {
                         viewModel.setSelectedAdapter(INCOME)
-                        mainViewModel.cleanSelectedForInput()
-                        adapter.submitList(mainViewModel.getCopyAllCategoryItemIncomeForInput())
+                        viewModel.cleanSelectedForInput()
+                        adapter.submitList(viewModel.getCopyAllCategoryItemIncomeForInput())
                     }
                 }
             }
@@ -290,7 +286,7 @@ class InputFragment : Fragment() {
 
     private fun valueObserve(value: String) {
         binding.submitButton.isEnabled =
-            viewModel.isCanSubmit() && mainViewModel.isSelectedForInput(viewModel.selectedAdapter.value)
+            viewModel.isCanSubmit() && viewModel.isSelectedForInput(viewModel.selectedAdapter.value)
         if (binding.valueEditText.text.toString() == value)
             return
 
@@ -338,20 +334,20 @@ class InputFragment : Fragment() {
     private fun allCategoryIncomeObserve(allCategoryIncome: List<CategoryItem>) {
         viewModel.transaction?.let {
             if (viewModel.getSelectedAdapter() == INCOME)
-                mainViewModel.setSelected(viewModel.selectedAdapter.value, it.nameCategory)
+                viewModel.setSelected(viewModel.selectedAdapter.value, it.nameCategory)
         }
 
-        val allCategory = mainViewModel.getAllCategoryFromSelectedForInput(viewModel.selectedAdapter.value)
+        val allCategory = viewModel.getAllCategoryFromSelectedForInput(viewModel.selectedAdapter.value)
         adapter.submitList(allCategory)
     }
 
     private fun allCategoryExpenseObserve(allCategoryExpense: List<CategoryItem>) {
         viewModel.transaction?.let {
             if (viewModel.getSelectedAdapter() == EXPENSE)
-                mainViewModel.setSelected(viewModel.selectedAdapter.value, it.nameCategory)
+                viewModel.setSelected(viewModel.selectedAdapter.value, it.nameCategory)
         }
 
-        val allCategory = mainViewModel.getAllCategoryFromSelectedForInput(viewModel.selectedAdapter.value)
+        val allCategory = viewModel.getAllCategoryFromSelectedForInput(viewModel.selectedAdapter.value)
         adapter.submitList(allCategory)
     }
 
@@ -367,14 +363,14 @@ class InputFragment : Fragment() {
 
     private fun selectedObserve(selected: Boolean) {
         binding.submitButton.isEnabled =
-            viewModel.isCanSubmit() && mainViewModel.isSelectedForInput(viewModel.selectedAdapter.value)
+            viewModel.isCanSubmit() && viewModel.isSelectedForInput(viewModel.selectedAdapter.value)
     }
 
     private fun selectedAdapterObserve(selectedAdapter: Int) {
         binding.ExpenseIncomeTextView.text =
             viewModel.getTypeFromSelectedAdapter(requireContext())
         binding.submitButton.isEnabled =
-            viewModel.isCanSubmit() && mainViewModel.isSelectedForInput(viewModel.selectedAdapter.value)
+            viewModel.isCanSubmit() && viewModel.isSelectedForInput(viewModel.selectedAdapter.value)
     }
 
     companion object {
@@ -384,4 +380,6 @@ class InputFragment : Fragment() {
         const val MAX_PHOTO = 3
     }
 }
+
+
 

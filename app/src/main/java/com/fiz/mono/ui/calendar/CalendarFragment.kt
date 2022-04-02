@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.App
 import com.fiz.mono.R
@@ -15,7 +16,6 @@ import com.fiz.mono.databinding.FragmentCalendarBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
 import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.ui.MainViewModel
-import com.fiz.mono.ui.MainViewModelFactory
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.util.TimeUtils.getDateMonthYearString
 import com.fiz.mono.util.setVisible
@@ -25,12 +25,13 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
     private var _binding: FragmentCalendarBinding? = null
     private val binding get() = _binding!!
 
-    private val mainViewModel: MainViewModel by activityViewModels {
-        MainViewModelFactory(
-            (requireActivity().application as App).categoryStore,
+    private val viewModel: CalendarViewModel by viewModels {
+        CalendarViewModelFactory(
             (requireActivity().application as App).transactionStore
         )
     }
+
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels {
         MainPreferencesViewModelFactory(
@@ -90,7 +91,7 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
     private fun subscribe() {
         mainViewModel.date.observe(viewLifecycleOwner, ::dateObserve)
 
-        mainViewModel.allTransaction.observe(viewLifecycleOwner) {
+        viewModel.allTransactions.observe(viewLifecycleOwner) {
             dateObserve(mainViewModel.date.value)
         }
     }
@@ -116,11 +117,11 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
         // Без этого присваивания при выборе декабря приложение крошится
         binding.calendarRecyclerView.itemAnimator = null
 
-        val listCalendar = mainViewModel.getListCalendarDataItem()
+        val listCalendar = viewModel.getListCalendarDataItem(mainViewModel.date.value)
         calendarAdapter.submitList(listCalendar)
 
         val listTransactionsDataItem =
-            mainViewModel.getListTransactionsDataItem()
+            viewModel.getListTransactionsDataItem(mainViewModel.date.value)
 
         binding.noTransactionsTextView.setVisible(listTransactionsDataItem.isEmpty())
         binding.transactionRecyclerView.setVisible(listTransactionsDataItem.isNotEmpty())

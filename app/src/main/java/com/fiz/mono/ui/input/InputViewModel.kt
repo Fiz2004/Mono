@@ -10,12 +10,13 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.core.content.FileProvider
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
+import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.data.TransactionItem
+import com.fiz.mono.data.TransactionStore
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -24,7 +25,10 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-class InputViewModel : ViewModel() {
+class InputViewModel(
+    private val categoryStore: CategoryStore,
+    private val transactionStore: TransactionStore
+) : ViewModel() {
     private var _selectedAdapter: MutableLiveData<Int> = MutableLiveData(InputFragment.EXPENSE)
     val selectedAdapter: LiveData<Int>
         get() = _selectedAdapter
@@ -39,6 +43,9 @@ class InputViewModel : ViewModel() {
 
     var transaction: TransactionItem? = null
 
+    var allCategoryExpenseForInput = categoryStore.getAllCategoryExpenseForInput()
+    var allCategoryIncomeForInput = categoryStore.getAllCategoryIncomeForInput()
+
     private val _note: MutableLiveData<String> = MutableLiveData("")
     val note: LiveData<String>
         get() = _note
@@ -51,6 +58,110 @@ class InputViewModel : ViewModel() {
         MutableLiveData(mutableListOf())
     val photoPaths: LiveData<MutableList<String?>>
         get() = _photoPaths
+
+    fun getNewId(): Int {
+        val lastItem = transactionStore.allTransactions.value?.lastOrNull()
+        val id = lastItem?.id
+        return id?.let { it + 1 } ?: 0
+    }
+
+    fun isClickEditPosition(position: Int, selectedAdapter: Int?): Boolean {
+        return if (selectedAdapter == InputFragment.EXPENSE)
+            position == allCategoryExpenseForInput.value?.size?.minus(1) ?: 0
+        else
+            position == allCategoryIncomeForInput.value?.size?.minus(1) ?: 0
+    }
+
+    fun getCopyAllCategoryItemExpenseForInput(): List<CategoryItem> {
+        return allCategoryExpenseForInput.value?.map { it.copy() } ?: listOf()
+    }
+
+    fun getCopyAllCategoryItemIncomeForInput(): List<CategoryItem> {
+        return allCategoryIncomeForInput.value?.map { it.copy() } ?: listOf()
+    }
+
+    private fun addSelectItemExpenseForInput(position: Int) {
+        if (!allCategoryExpenseForInput.value?.get(position)?.selected!!) {
+            allCategoryExpenseForInput.value?.find { it.selected }?.let {
+                it.selected = false
+            }
+        }
+
+        allCategoryExpenseForInput.value?.get(position)!!.selected =
+            !allCategoryExpenseForInput.value?.get(position)!!.selected
+    }
+
+    private fun addSelectItemIncomeForInput(position: Int) {
+        if (!allCategoryIncomeForInput.value?.get(position)?.selected!!) {
+            allCategoryIncomeForInput.value?.find { it.selected }?.let {
+                it.selected = false
+            }
+        }
+
+        allCategoryIncomeForInput.value?.get(position)?.selected =
+            !allCategoryIncomeForInput.value?.get(position)?.selected!!
+    }
+
+    fun addSelectItem(position: Int, selectedAdapter: Int?) {
+        if (selectedAdapter == InputFragment.EXPENSE)
+            addSelectItemExpenseForInput(position)
+        else
+            addSelectItemIncomeForInput(position)
+    }
+
+    fun cleanSelectedForInput() {
+        allCategoryExpenseForInput.value?.forEach { it.selected = false }
+        allCategoryIncomeForInput.value?.forEach { it.selected = false }
+    }
+
+    fun getAllCategoryFromSelectedForInput(selectedAdapter: Int?): List<CategoryItem> {
+        return if (selectedAdapter == InputFragment.EXPENSE)
+            getCopyAllCategoryItemExpenseForInput()
+        else
+            getCopyAllCategoryItemIncomeForInput()
+    }
+
+    fun setSelected(selectedAdapter: Int?, nameCategory: String) {
+        addSelectItem(
+            getAllCategoryFromSelectedForInput(selectedAdapter).indexOfFirst { it.name == nameCategory },
+            selectedAdapter
+        )
+    }
+
+    fun isSelectedForInput(selectedAdapter: Int?): Boolean {
+        return getAllCategoryFromSelectedForInput(selectedAdapter).firstOrNull { it.selected } != null
+    }
+
+    fun getSelectedInputForInput(selectedAdapter: Int?): CategoryItem {
+        return getAllCategoryFromSelectedForInput(selectedAdapter).first { it.selected }
+    }
+
+    fun findTransaction(currentTransaction: Int): TransactionItem? {
+        return if (currentTransaction != -1)
+            transactionStore.allTransactions.value?.find { it.id == currentTransaction }?.copy()
+        else
+            null
+    }
+
+    fun removeTransaction(transaction: TransactionItem?) {
+        viewModelScope.launch {
+            transaction?.let { transactionStore.delete(it) }
+        }
+    }
+
+    fun clickUpdate(transaction: TransactionItem) {
+        viewModelScope.launch {
+            transactionStore.updateTransaction(transaction)
+        }
+    }
+
+    fun clickSubmit(
+        transaction: TransactionItem
+    ) {
+        viewModelScope.launch {
+            transactionStore.insertNewTransaction(transaction)
+        }
+    }
 
     fun setSelectedAdapter(adapter: Int) {
         _selectedAdapter.value = adapter
@@ -223,6 +334,20 @@ class InputViewModel : ViewModel() {
 
     fun changeSelected() {
         _selected.value = !_selected.value!!
+    }
+}
+
+class InputViewModelFactory(
+    private val categoryStore: CategoryStore,
+    private val transactionStore: TransactionStore
+) :
+    ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(InputViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return InputViewModel(categoryStore, transactionStore) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
 

@@ -21,7 +21,6 @@ import com.fiz.mono.databinding.FragmentReportCategoryBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
 import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.ui.MainViewModel
-import com.fiz.mono.ui.MainViewModelFactory
 import com.fiz.mono.ui.report.category.ReportCategoryUtils.getValuesForVerticalForMonth
 import com.fiz.mono.ui.report.category.ReportCategoryUtils.getValuesForVerticalForWeek
 import com.fiz.mono.ui.report.select.SelectCategoryFragment
@@ -33,19 +32,13 @@ import com.google.android.material.button.MaterialButtonToggleGroup
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class ReportCategoryFragment : Fragment() {
     private val args: ReportCategoryFragmentArgs by navArgs()
 
     private var _binding: FragmentReportCategoryBinding? = null
     private val binding get() = _binding!!
 
-    private val mainViewModel: MainViewModel by activityViewModels {
-        MainViewModelFactory(
-            (requireActivity().application as App).categoryStore,
-            (requireActivity().application as App).transactionStore
-        )
-    }
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels {
         MainPreferencesViewModelFactory(
@@ -133,9 +126,7 @@ class ReportCategoryFragment : Fragment() {
             list
         )
 
-
     }
-
 
     private fun init() {
         adapter = TransactionsAdapter(mainPreferencesViewModel.currency.value ?: "$", false)
@@ -168,7 +159,6 @@ class ReportCategoryFragment : Fragment() {
             drawGraph(viewModel.reportFor.value ?: MONTH)
         }
     }
-
 
     private fun monthWeekOnButtonCheckedListener(
         toggleButton: MaterialButtonToggleGroup,
@@ -228,7 +218,6 @@ class ReportCategoryFragment : Fragment() {
                 R.color.income
         )
         paintStroke.strokeWidth = 2f * resources.displayMetrics.density
-
 
         val valuesByMonth =
             getValuesForVerticalForMonth(
@@ -400,7 +389,6 @@ class ReportCategoryFragment : Fragment() {
             context.resources.displayMetrics
         )
     }
-
 
     private fun getShader(usefulHeight: Float) = LinearGradient(
         0f, 0f, 0f, usefulHeight.toFloat(),

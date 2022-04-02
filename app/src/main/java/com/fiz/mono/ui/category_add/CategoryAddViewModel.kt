@@ -2,14 +2,31 @@ package com.fiz.mono.ui.category_add
 
 import android.view.View
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.fiz.mono.data.CategoryIcon
+import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.data.categoryIcons
+import com.fiz.mono.ui.category_edit.CategoryEditFragment
+import kotlinx.coroutines.launch
 
-class CategoryAddViewModel : ViewModel() {
+class CategoryAddViewModel(
+    private val categoryStore: CategoryStore
+) : ViewModel() {
     private val allCategoryIcon = categoryIcons
 
     init {
         allCategoryIcon.forEach { it.selected = false }
+    }
+
+    fun addNewCategory(name: String, type: String, selectedIcon: String) {
+        viewModelScope.launch {
+            if (type == CategoryEditFragment.TYPE_EXPENSE) {
+                categoryStore.insertNewCategoryExpense(name, selectedIcon)
+            } else {
+                categoryStore.insertNewCategoryIncome(name, selectedIcon)
+            }
+        }
     }
 
     fun addSelectItem(position: Int) {
@@ -39,5 +56,18 @@ class CategoryAddViewModel : ViewModel() {
 
     fun isSelected(): Boolean {
         return allCategoryIcon.any { it.selected }
+    }
+}
+
+class CategoryAddViewModelFactory(
+    private val categoryStore: CategoryStore
+) :
+    ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(CategoryAddViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return CategoryAddViewModel(categoryStore) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

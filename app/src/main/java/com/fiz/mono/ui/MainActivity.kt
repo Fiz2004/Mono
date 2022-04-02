@@ -1,12 +1,10 @@
 package com.fiz.mono.ui
 
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.ActivityMainBinding
 import com.fiz.mono.util.setVisible
@@ -15,13 +13,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var navController: NavController
-
-    private val mainViewModel: MainViewModel by viewModels {
-        MainViewModelFactory(
-            (application as App).categoryStore,
-            (application as App).transactionStore
-        )
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

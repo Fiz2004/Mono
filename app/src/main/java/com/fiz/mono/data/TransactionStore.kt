@@ -1,7 +1,6 @@
 package com.fiz.mono.data
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.asLiveData
 import com.fiz.mono.data.database.dao.TransactionDao
 import com.fiz.mono.ui.calendar.TransactionsDay
@@ -12,14 +11,6 @@ import java.util.*
 
 class TransactionStore(private val transactionDao: TransactionDao) {
     var allTransactions: LiveData<List<TransactionItem>> = transactionDao.getAll().asLiveData()
-
-    fun getAllTransactionsForInput(): LiveData<List<TransactionItem>> {
-        return Transformations.map(allTransactions) {
-            val result = emptyList<TransactionItem>().toMutableList()
-            result.addAll(it)
-            result
-        }
-    }
 
     fun getGroupTransactionsByDays(date: Calendar, pattern: String) =
         getAllTransactionsForMonth(date)?.groupBy {
