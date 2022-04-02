@@ -73,29 +73,29 @@ class CategoryEditFragment : Fragment() {
     }
 
     private fun subscribe() {
-        mainViewModel.allCategoryExpense.observe(viewLifecycleOwner) {
+        mainViewModel.allCategoryExpenseForEdit.observe(viewLifecycleOwner) {
             expenseAdapter.submitList(it)
-            incomeAdapter.submitList(mainViewModel.getAllCategoryItemIncome())
+            incomeAdapter.submitList(mainViewModel.getCopyAllCategoryItemIncomeForEdit())
         }
-        mainViewModel.allCategoryIncome.observe(viewLifecycleOwner) {
-            expenseAdapter.submitList(mainViewModel.getAllCategoryItemExpense())
+        mainViewModel.allCategoryIncomeForEdit.observe(viewLifecycleOwner) {
+            expenseAdapter.submitList(mainViewModel.getCopyAllCategoryItemExpenseForEdit())
             incomeAdapter.submitList(it)
         }
     }
 
-    private fun backButtonOnClickListener(v: View): Unit {
+    private fun backButtonOnClickListener(v: View) {
         findNavController().popBackStack()
     }
 
-    private fun removeButtonOnClickListener(v: View): Unit {
+    private fun removeButtonOnClickListener(v: View) {
         mainViewModel.removeSelectItem()
-        binding.navigationBarLayout.actionButton.setVisible(mainViewModel.isSelected())
+        binding.navigationBarLayout.actionButton.setVisible(mainViewModel.isSelectedForEdit())
         updateAdapters()
     }
 
     private fun adapterExpenseOnClickListener(position: Int) {
         if (mainViewModel.isClickAddPositionExpense(position)) {
-            mainViewModel.cleanSelected()
+            mainViewModel.cleanSelectedForEdit()
             val action =
                 CategoryEditFragmentDirections
                     .actionCategoryFragmentToCategoryAddFragment(TYPE_EXPENSE)
@@ -103,14 +103,14 @@ class CategoryEditFragment : Fragment() {
             return
         }
 
-        mainViewModel.addSelectItemExpense(position)
-        binding.navigationBarLayout.actionButton.setVisible(mainViewModel.isSelected())
+        mainViewModel.addSelectItemExpenseForEdit(position)
+        binding.navigationBarLayout.actionButton.setVisible(mainViewModel.isSelectedForEdit())
         updateAdapters()
     }
 
     private fun adapterIncomeOnClickListener(position: Int) {
         if (mainViewModel.isClickAddPositionIncome(position)) {
-            mainViewModel.cleanSelected()
+            mainViewModel.cleanSelectedForEdit()
             val action =
                 CategoryEditFragmentDirections
                     .actionCategoryFragmentToCategoryAddFragment(TYPE_INCOME)
@@ -118,14 +118,14 @@ class CategoryEditFragment : Fragment() {
             return
         }
 
-        mainViewModel.addSelectItemIncome(position)
-        binding.navigationBarLayout.actionButton.setVisible(mainViewModel.isSelected())
+        mainViewModel.addSelectItemIncomeForEdit(position)
+        binding.navigationBarLayout.actionButton.setVisible(mainViewModel.isSelectedForEdit())
         updateAdapters()
     }
 
     private fun updateAdapters() {
-        incomeAdapter.submitList(mainViewModel.getAllCategoryItemIncome())
-        expenseAdapter.submitList(mainViewModel.getAllCategoryItemExpense())
+        incomeAdapter.submitList(mainViewModel.getCopyAllCategoryItemIncomeForEdit())
+        expenseAdapter.submitList(mainViewModel.getCopyAllCategoryItemExpenseForEdit())
     }
 
     companion object {

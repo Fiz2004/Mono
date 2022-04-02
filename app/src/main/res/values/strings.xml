@@ -31,6 +31,7 @@
     <string name="next">Next</string>
     <string name="back">Back</string>
     <string name="edit">Edit</string>
+    <string name="add_more">Add more</string>
     <string name="set_pin_password">Set PIN password</string>
     <string name="enter_PIN">Please enter your PIN password to continue.</string>
     <string name="confirm_PIN">Please confirm your PIN password.</string>

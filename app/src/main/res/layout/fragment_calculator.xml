@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp"
+    android:paddingStart="@dimen/fragmentPaddingStart"
+    android:paddingEnd="@dimen/fragmentPaddingEnd"
     android:paddingBottom="24dp"
     tools:context=".ui.calculator.CalculatorFragment">
 
@@ -20,11 +20,12 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/navigationBarLayout">
+        app:layout_constraintTop_toBottomOf="@+id/navigationBarLayout"
+        app:layout_constraintVertical_bias="1.0">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -36,11 +37,10 @@
                 android:layout_height="wrap_content"
                 android:textColor="?attr/colorSecondary"
                 android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/resultCalendarTextView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.2"
                 tools:text="41.82 x 2" />
 
@@ -51,20 +51,21 @@
                 android:gravity="end"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="56sp"
+                app:layout_constraintBottom_toTopOf="@+id/buttons"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/operationCalendarTextView"
                 tools:text="83.64" />
 
             <LinearLayout
+                android:id="@+id/buttons"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:minHeight="340dp"
                 android:orientation="horizontal"
+                android:baselineAligned="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/resultCalendarTextView">
+                app:layout_constraintStart_toStartOf="parent">
 
 
                 <LinearLayout

@@ -10,13 +10,12 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.core.content.FileProvider
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
-import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.data.TransactionItem
-import com.fiz.mono.data.TransactionStore
-import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -25,16 +24,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-class InputViewModel(
-    private val categoryStore: CategoryStore,
-    private val transactionStore: TransactionStore
-) :
-    ViewModel() {
-    var allCategoryExpense = categoryStore.getAllCategoryExpenseForInput()
-    var allCategoryIncome = categoryStore.getAllCategoryIncomeForInput()
-
-    var allTransaction = transactionStore.getAllTransactionsForInput()
-
+class InputViewModel : ViewModel() {
     private var _selectedAdapter: MutableLiveData<Int> = MutableLiveData(InputFragment.EXPENSE)
     val selectedAdapter: LiveData<Int>
         get() = _selectedAdapter
@@ -64,10 +54,6 @@ class InputViewModel(
 
     fun setSelectedAdapter(adapter: Int) {
         _selectedAdapter.value = adapter
-        if (adapter == InputFragment.EXPENSE)
-            allCategoryIncome.value?.forEach { it.selected = false }
-        else
-            allCategoryExpense.value?.forEach { it.selected = false }
     }
 
     fun getTypeFromSelectedAdapter(context: Context): String {
@@ -80,111 +66,58 @@ class InputViewModel(
         }
     }
 
+    fun getTransactionItemForUpdate(selectedCategoryItem: CategoryItem): TransactionItem? {
+        val valueTransaction = value.value?.toDouble()!! *
+                if (selectedAdapter.value == InputFragment.EXPENSE)
+                    -1
+                else
+                    1
+
+        return transaction?.let {
+            TransactionItem(
+                it.id,
+                it.date,
+                valueTransaction,
+                selectedCategoryItem.name,
+                note.value ?: "",
+                selectedCategoryItem.mapImgSrc,
+                photoPaths.value ?: emptyList()
+            )
+        }
+    }
+
+    fun getTransactionItemForNew(selectedCategoryItem: CategoryItem, newId: Int, date: Calendar): TransactionItem {
+        val valueTransaction = value.value?.toDouble()!! *
+                if (selectedAdapter.value == InputFragment.EXPENSE)
+                    -1
+                else
+                    1
+
+
+        return TransactionItem(
+            newId,
+            date.time,
+            valueTransaction,
+            selectedCategoryItem.name,
+            note.value ?: "",
+            selectedCategoryItem.mapImgSrc,
+            photoPaths.value ?: emptyList()
+        )
+
+    }
+
     fun setValue(text: String) {
         _value.value = text
     }
 
-    fun clickSubmit(date: Date) {
-        val selectedCategoryItem = getAllCategoryFromSelected().first { it.selected }
-
-        val value1 = if (selectedAdapter.value == InputFragment.EXPENSE)
-            -value.value?.toDouble()!!
-        else
-            value.value?.toDouble()
-
-        viewModelScope.launch {
-            val lastItem = transactionStore.allTransactions.value?.lastOrNull()
-            val id = lastItem?.id
-            val newId = id?.let { it + 1 } ?: 0
-
-            val photoPathList: List<String?> = photoPaths.value?.toList() ?: emptyList()
-
-            transactionStore.insertNewTransaction(
-                TransactionItem(
-                    newId,
-                    date,
-                    value1 ?: 0.0,
-                    selectedCategoryItem.name,
-                    note.value ?: "",
-                    selectedCategoryItem.mapImgSrc,
-                    photoPathList
-                )
-            )
-
-            _photoPaths.value = emptyList<String>().toMutableList()
-            _value.value = ""
-            _note.value = ""
-        }
-
-        (if (selectedAdapter.value == InputFragment.EXPENSE)
-            allCategoryExpense
-        else
-            allCategoryIncome).value?.first { it.selected }?.selected = false
-    }
-
-    fun isClickEditPosition(position: Int): Boolean {
-        return if (getSelectedAdapter() == InputFragment.EXPENSE)
-            position == allCategoryExpense.value?.size?.minus(1) ?: throw Error("No allCategoryExpense")
-        else
-            position == allCategoryIncome.value?.size?.minus(1) ?: throw Error("No allCategoryIncome")
-    }
-
-    fun cleanSelected() {
-        allCategoryExpense.value?.forEach { it.selected = false }
-        allCategoryIncome.value?.forEach { it.selected = false }
-    }
-
-    fun addSelectItem(position: Int) {
-        if (getSelectedAdapter() == InputFragment.EXPENSE)
-            addSelectItemExpense(position)
-        else
-            addSelectItemIncome(position)
-        changeSelected()
-    }
-
-    private fun addSelectItemExpense(position: Int) {
-        if (!allCategoryExpense.value?.get(position)?.selected!!) {
-            allCategoryExpense.value?.find { it.selected }?.let {
-                it.selected = false
-            }
-        }
-
-        allCategoryExpense.value?.get(position)!!.selected =
-            !allCategoryExpense.value?.get(position)!!.selected
-    }
-
-    private fun addSelectItemIncome(position: Int) {
-        if (!allCategoryIncome.value?.get(position)?.selected!!) {
-            allCategoryIncome.value?.find { it.selected }?.let {
-                it.selected = false
-            }
-        }
-
-        allCategoryIncome.value?.get(position)?.selected =
-            !allCategoryIncome.value?.get(position)?.selected!!
-    }
-
-    fun getAllCategoryFromSelected(): List<CategoryItem> {
-        return if (getSelectedAdapter() == InputFragment.EXPENSE)
-            getAllCategoryItemExpense()
-        else
-            getAllCategoryItemIncome()
+    fun clickSubmit() {
+        _photoPaths.value = emptyList<String>().toMutableList()
+        _value.value = ""
+        _note.value = ""
     }
 
     fun getSelectedAdapter(): Int {
         return selectedAdapter.value ?: InputFragment.EXPENSE
-    }
-
-    fun isSelected(): Boolean {
-        return getAllCategoryFromSelected().firstOrNull { it.selected } != null
-    }
-
-    fun getAllCategoryItemExpense(): List<CategoryItem> {
-        return allCategoryExpense.value?.map { it.copy() } ?: mutableListOf()
-    }
-
-    fun getAllCategoryItemIncome(): List<CategoryItem> {
-        return allCategoryIncome.value?.map { it.copy() } ?: mutableListOf()
     }
 
     fun dispatchTakePictureIntent(context: Context): Intent? {
@@ -213,7 +146,7 @@ class InputViewModel(
 
     @Throws(IOException::class)
     fun createImageFile(context: Context): File {
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val storageDir: File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
         return File.createTempFile(
             "JPEG_${timeStamp}_",
@@ -262,48 +195,8 @@ class InputViewModel(
         _note.value = text
     }
 
-    fun findTransaction(currentTransaction: Int) {
-        if (currentTransaction != -1)
-            transaction = transactionStore.allTransactions.value?.find { it.id == currentTransaction }?.copy()
-    }
-
-    fun setSelected(nameCategory: String) {
-        addSelectItem(getAllCategoryFromSelected().indexOfFirst { it.name == nameCategory })
-    }
-
-    fun removeTransaction() {
-        viewModelScope.launch {
-            transaction?.let { transactionStore.delete(it) }
-        }
-    }
-
-    fun clickUpdate(transaction: TransactionItem) {
-        val selectedCategoryItem = getAllCategoryFromSelected().first { it.selected }
-
-        val value1 = if (selectedAdapter.value == InputFragment.EXPENSE)
-            -value.value?.toDouble()!!
-        else
-            value.value?.toDouble()
-
-        viewModelScope.launch {
-            val photoPathList: List<String?> = photoPaths.value?.toList() ?: emptyList()
-
-            transactionStore.updateTransaction(
-                TransactionItem(
-                    transaction.id,
-                    transaction.date,
-                    value1 ?: 0.0,
-                    selectedCategoryItem.name,
-                    note.value ?: "",
-                    selectedCategoryItem.mapImgSrc,
-                    photoPathList
-                )
-            )
-        }
-    }
-
     fun checkCameraHardware(context: Context): Boolean {
-        if (photoPaths.value?.size  == InputFragment.MAX_PHOTO)
+        if (photoPaths.value?.size == InputFragment.MAX_PHOTO)
             return false
         if (cashCheckCameraHardware == null)
             cashCheckCameraHardware =
@@ -325,25 +218,11 @@ class InputViewModel(
     }
 
     fun isCanSubmit(): Boolean {
-        return isSelected() && value.value?.isNotBlank() == true
+        return value.value?.isNotBlank() == true
     }
 
     fun changeSelected() {
         _selected.value = !_selected.value!!
-    }
-}
-
-class InputViewModelFactory(
-    private val categoryStore: CategoryStore,
-    private val transactionStore: TransactionStore
-) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(InputViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return InputViewModel(categoryStore, transactionStore) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
 

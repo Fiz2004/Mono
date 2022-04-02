@@ -8,7 +8,13 @@ import com.jakewharton.threetenabp.AndroidThreeTen
 
 class App : Application() {
     val database by lazy { AppDatabase.getDatabase() }
-    val categoryStore by lazy { CategoryStore(database?.categoryItemDao()!!) }
+    val categoryStore by lazy {
+        CategoryStore(
+            database?.categoryItemDao()!!,
+            resources.getString(R.string.edit),
+            resources.getString(R.string.add_more)
+        )
+    }
     val transactionStore by lazy { TransactionStore(database?.transactionItemDao()!!) }
 
     override fun onCreate() {

@@ -6,9 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.CategoryStore
+import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
 import com.fiz.mono.ui.calendar.CalendarDataItem
 import com.fiz.mono.ui.category_edit.CategoryEditFragment
+import com.fiz.mono.ui.input.InputFragment
 import com.fiz.mono.ui.shared_adapters.TransactionsDataItem
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -18,13 +20,44 @@ class MainViewModel(
     private val categoryStore: CategoryStore,
     private val transactionStore: TransactionStore
 ) : ViewModel() {
-    var allCategoryExpense = categoryStore.getAllCategoryExpenseForInput()
-    var allCategoryIncome = categoryStore.getAllCategoryIncomeForInput()
+    var allCategoryExpenseForEdit = categoryStore.getAllCategoryExpenseForEdit()
+    var allCategoryIncomeForEdit = categoryStore.getAllCategoryIncomeForEdit()
 
-    var allTransaction = transactionStore.getAllTransactionsForInput()
+    var allCategoryExpenseForInput = categoryStore.getAllCategoryExpenseForInput()
+    var allCategoryIncomeForInput = categoryStore.getAllCategoryIncomeForInput()
+
+    var allTransaction = transactionStore.allTransactions
 
     private var _date = MutableLiveData(Calendar.getInstance())
     val date: LiveData<Calendar> = _date
+
+    fun setSelected(selectedAdapter: Int?, nameCategory: String) {
+        addSelectItem(
+            getAllCategoryFromSelectedForInput(selectedAdapter).indexOfFirst { it.name == nameCategory },
+            selectedAdapter
+        )
+    }
+
+    fun getAllCategoryFromSelectedForEdit(selectedAdapter: Int?): List<CategoryItem> {
+        return if (selectedAdapter == InputFragment.EXPENSE)
+            getCopyAllCategoryItemExpenseForEdit()
+        else
+            getCopyAllCategoryItemIncomeForEdit()
+    }
+
+    fun getAllCategoryFromSelectedForInput(selectedAdapter: Int?): List<CategoryItem> {
+        return if (selectedAdapter == InputFragment.EXPENSE)
+            getCopyAllCategoryItemExpenseForInput()
+        else
+            getCopyAllCategoryItemIncomeForInput()
+    }
+
+    fun isClickEditPosition(position: Int, selectedAdapter: Int?): Boolean {
+        return if (selectedAdapter == InputFragment.EXPENSE)
+            position == allCategoryExpenseForInput.value?.size?.minus(1) ?: 0
+        else
+            position == allCategoryIncomeForInput.value?.size?.minus(1) ?: 0
+    }
 
     fun getListCalendarDataItem(date: Calendar? = _date.value): List<CalendarDataItem> {
         if (date == null) return listOf()
@@ -53,56 +86,110 @@ class MainViewModel(
         }
     }
 
-    fun getAllCategoryItemExpense(): List<CategoryItem> {
-        return allCategoryExpense.value?.map { it.copy() } ?: listOf()
+    fun getCopyAllCategoryItemExpenseForEdit(): List<CategoryItem> {
+        return allCategoryExpenseForEdit.value?.map { it.copy() } ?: listOf()
     }
 
-    fun getAllCategoryItemIncome(): List<CategoryItem> {
-        return allCategoryIncome.value?.map { it.copy() } ?: listOf()
+    fun getCopyAllCategoryItemIncomeForEdit(): List<CategoryItem> {
+        return allCategoryIncomeForEdit.value?.map { it.copy() } ?: listOf()
     }
 
-    fun addSelectItemExpense(position: Int) {
-        allCategoryIncome.value?.find { it.selected }?.let {
+    fun getCopyAllCategoryItemExpenseForInput(): List<CategoryItem> {
+        return allCategoryExpenseForInput.value?.map { it.copy() } ?: listOf()
+    }
+
+    fun getCopyAllCategoryItemIncomeForInput(): List<CategoryItem> {
+        return allCategoryIncomeForInput.value?.map { it.copy() } ?: listOf()
+    }
+
+    fun addSelectItemExpenseForEdit(position: Int) {
+        allCategoryIncomeForEdit.value?.find { it.selected }?.let {
             it.selected = false
         }
 
-        if (!allCategoryExpense.value?.get(position)?.selected!!) {
-            allCategoryExpense.value?.find { it.selected }?.let {
+        if (!allCategoryExpenseForEdit.value?.get(position)?.selected!!) {
+            allCategoryExpenseForEdit.value?.find { it.selected }?.let {
                 it.selected = false
             }
         }
-        allCategoryExpense.value?.get(position)?.selected =
-            !allCategoryExpense.value?.get(position)?.selected!!
+        allCategoryExpenseForEdit.value?.get(position)?.selected =
+            !allCategoryExpenseForEdit.value?.get(position)?.selected!!
     }
 
-    fun isSelected(): Boolean {
-        return allCategoryExpense.value?.any { it.selected } == true || allCategoryIncome.value?.any { it.selected } == true
+    fun isSelectedForEdit(): Boolean {
+        return allCategoryExpenseForEdit.value?.any { it.selected } == true || allCategoryIncomeForEdit.value?.any { it.selected } == true
     }
 
-    fun addSelectItemIncome(position: Int) {
-        allCategoryExpense.value?.find { it.selected }?.let {
+    fun isSelectedForInput(selectedAdapter: Int?): Boolean {
+        return getAllCategoryFromSelectedForInput(selectedAdapter).firstOrNull { it.selected } != null
+    }
+
+    fun removeTransaction(transaction: TransactionItem?) {
+        viewModelScope.launch {
+            transaction?.let { transactionStore.delete(it) }
+        }
+    }
+
+    fun findTransaction(currentTransaction: Int): TransactionItem? {
+        return if (currentTransaction != -1)
+            transactionStore.allTransactions.value?.find { it.id == currentTransaction }?.copy()
+        else
+            null
+    }
+
+    private fun addSelectItemExpenseForInput(position: Int) {
+        if (!allCategoryExpenseForInput.value?.get(position)?.selected!!) {
+            allCategoryExpenseForInput.value?.find { it.selected }?.let {
+                it.selected = false
+            }
+        }
+
+        allCategoryExpenseForInput.value?.get(position)!!.selected =
+            !allCategoryExpenseForInput.value?.get(position)!!.selected
+    }
+
+    private fun addSelectItemIncomeForInput(position: Int) {
+        if (!allCategoryIncomeForInput.value?.get(position)?.selected!!) {
+            allCategoryIncomeForInput.value?.find { it.selected }?.let {
+                it.selected = false
+            }
+        }
+
+        allCategoryIncomeForInput.value?.get(position)?.selected =
+            !allCategoryIncomeForInput.value?.get(position)?.selected!!
+    }
+
+    fun addSelectItem(position: Int, selectedAdapter: Int?) {
+        if (selectedAdapter == InputFragment.EXPENSE)
+            addSelectItemExpenseForInput(position)
+        else
+            addSelectItemIncomeForInput(position)
+    }
+
+    fun addSelectItemIncomeForEdit(position: Int) {
+        allCategoryExpenseForEdit.value?.find { it.selected }?.let {
             it.selected = false
         }
 
-        if (!allCategoryIncome.value?.get(position)?.selected!!) {
-            allCategoryIncome.value?.find { it.selected }?.let {
+        if (!allCategoryIncomeForEdit.value?.get(position)?.selected!!) {
+            allCategoryIncomeForEdit.value?.find { it.selected }?.let {
                 it.selected = false
             }
         }
-        allCategoryIncome.value?.get(position)?.selected =
-            !allCategoryIncome.value?.get(position)?.selected!!
+        allCategoryIncomeForEdit.value?.get(position)?.selected =
+            !allCategoryIncomeForEdit.value?.get(position)?.selected!!
     }
 
     fun removeSelectItem() {
         viewModelScope.launch {
-            allCategoryExpense.value?.indexOfFirst { it.selected }.let {
+            allCategoryExpenseForEdit.value?.indexOfFirst { it.selected }.let {
                 if (it == -1) return@let
                 if (it != null) {
                     categoryStore.removeCategoryExpense(it)
                 }
             }
 
-            allCategoryIncome.value?.indexOfFirst { it.selected }.let {
+            allCategoryIncomeForEdit.value?.indexOfFirst { it.selected }.let {
                 if (it == -1) return@let
                 if (it != null) {
                     categoryStore.removeCategoryIncome(it)
@@ -111,19 +198,47 @@ class MainViewModel(
         }
     }
 
+    fun clickUpdate(transaction: TransactionItem) {
+        viewModelScope.launch {
+            transactionStore.updateTransaction(transaction)
+        }
+    }
+
+    fun getSelectedInputForInput(selectedAdapter: Int?): CategoryItem {
+        return getAllCategoryFromSelectedForInput(selectedAdapter).first { it.selected }
+    }
+
+    fun clickSubmit(
+        transaction: TransactionItem
+    ) {
+        viewModelScope.launch {
+            transactionStore.insertNewTransaction(transaction)
+        }
+    }
+
+    fun getNewId(): Int {
+        val lastItem = allTransaction.value?.lastOrNull()
+        val id = lastItem?.id
+        return id?.let { it + 1 } ?: 0
+    }
+
     fun isClickAddPositionExpense(position: Int): Boolean {
-        return position == allCategoryExpense.value?.size?.minus(1) ?: false
+        return position == allCategoryExpenseForEdit.value?.size?.minus(1) ?: false
     }
 
     fun isClickAddPositionIncome(position: Int): Boolean {
-        return position == allCategoryIncome.value?.size?.minus(1) ?: false
+        return position == allCategoryIncomeForEdit.value?.size?.minus(1) ?: false
     }
 
-    fun cleanSelected() {
-        allCategoryExpense.value?.forEach { it.selected = false }
-        allCategoryIncome.value?.forEach { it.selected = false }
+    fun cleanSelectedForEdit() {
+        allCategoryExpenseForEdit.value?.forEach { it.selected = false }
+        allCategoryIncomeForEdit.value?.forEach { it.selected = false }
     }
 
+    fun cleanSelectedForInput() {
+        allCategoryExpenseForInput.value?.forEach { it.selected = false }
+        allCategoryIncomeForInput.value?.forEach { it.selected = false }
+    }
 
     fun setMonth(month: Int) {
         _date.value?.set(Calendar.MONTH, month)

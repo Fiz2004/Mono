@@ -7,18 +7,21 @@ import androidx.lifecycle.asLiveData
 import com.fiz.mono.R
 import com.fiz.mono.data.database.dao.CategoryDao
 
-class CategoryStore(private val categoryDao: CategoryDao) {
+class CategoryStore(
+    private val categoryDao: CategoryDao,
+    private val editString: String,
+    private val addMoreString: String
+) {
     var allCategoryExpense: LiveData<List<CategoryItem>> =
         categoryDao.getAllExpense().asLiveData()
     var allCategoryIncome: LiveData<List<CategoryItem>> =
         categoryDao.getAllIncome().asLiveData()
 
-
     fun getAllCategoryExpenseForEdit(): LiveData<List<CategoryItem>> {
         return Transformations.map(allCategoryExpense) {
             val result = emptyList<CategoryItem>().toMutableList()
             result.addAll(it)
-            result.add(CategoryItem("e", "Add more", ""))
+            result.add(CategoryItem("e", addMoreString, ""))
             result
         }
     }
@@ -27,7 +30,7 @@ class CategoryStore(private val categoryDao: CategoryDao) {
         return Transformations.map(allCategoryIncome) {
             val result = emptyList<CategoryItem>().toMutableList()
             result.addAll(it)
-            result.add(CategoryItem("i", "Add more", ""))
+            result.add(CategoryItem("i", addMoreString, ""))
             result
         }
     }
@@ -36,7 +39,7 @@ class CategoryStore(private val categoryDao: CategoryDao) {
         return Transformations.map(allCategoryExpense) {
             val result = emptyList<CategoryItem>().toMutableList()
             result.addAll(it)
-            result.add(CategoryItem("e", "Edit", ""))
+            result.add(CategoryItem("e", editString, ""))
             result
         }
     }
@@ -45,7 +48,7 @@ class CategoryStore(private val categoryDao: CategoryDao) {
         return Transformations.map(allCategoryIncome) {
             val result = emptyList<CategoryItem>().toMutableList()
             result.addAll(it)
-            result.add(CategoryItem("i", "Edit", ""))
+            result.add(CategoryItem("i", editString, ""))
             result
         }
     }
