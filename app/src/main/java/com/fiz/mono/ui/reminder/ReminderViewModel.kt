@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.os.SystemClock
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.AlarmManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
@@ -11,6 +12,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.fiz.mono.R
 import com.fiz.mono.util.cancelNotifications
 
 class ReminderViewModel : ViewModel() {
@@ -23,6 +25,8 @@ class ReminderViewModel : ViewModel() {
 
     val isCanReminder: MediatorLiveData<Boolean> = MediatorLiveData()
 
+    var notify = MutableLiveData(false)
+
     init {
         isCanReminder.addSource(hours) {
             isCanReminder.value = it != 0 && _minutes.value != 0
@@ -33,23 +37,19 @@ class ReminderViewModel : ViewModel() {
     }
 
     fun setAlarm(
-        isChecked: Boolean,
         time: Int,
         alarmManager: AlarmManager,
         notifyPendingIntent: PendingIntent,
         requireActivity: FragmentActivity
     ) {
-        when (isChecked) {
-            true -> startTimer(time, alarmManager, notifyPendingIntent, requireActivity)
-            false -> cancelNotification(alarmManager, notifyPendingIntent)
-        }
+        startTimer(time, alarmManager, notifyPendingIntent, requireActivity)
     }
 
     private fun startTimer(
         timerLengthSelection: Int,
         alarmManager: AlarmManager,
         notifyPendingIntent: PendingIntent,
-        requireActivity: FragmentActivity
+        requireActivity: FragmentActivity,
     ) {
         val selectedInterval = timerLengthSelection * 1000
         val triggerTime = SystemClock.elapsedRealtime() + selectedInterval
@@ -67,9 +67,17 @@ class ReminderViewModel : ViewModel() {
             triggerTime,
             notifyPendingIntent
         )
+
+        requireActivity.getSharedPreferences(
+            requireActivity.getString(R.string.preferences),
+            AppCompatActivity.MODE_PRIVATE
+        ).edit()
+            .putInt("notify hours", hours.value ?: 0)
+            .putInt("notify minutes", minutes.value ?: 0)
+            .apply()
     }
 
-    private fun cancelNotification(alarmManager: AlarmManager, notifyPendingIntent: PendingIntent) {
+    fun cancelNotification(alarmManager: AlarmManager, notifyPendingIntent: PendingIntent) {
         alarmManager.cancel(notifyPendingIntent)
     }
 

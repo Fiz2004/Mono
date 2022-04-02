@@ -1,9 +1,6 @@
 package com.fiz.mono.ui.reminder
 
-import android.app.AlarmManager
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -12,6 +9,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -19,12 +18,13 @@ import androidx.navigation.fragment.findNavController
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentReminderBinding
 import com.fiz.mono.receiver.AlarmReceiver
+import com.fiz.mono.util.cancelNotifications
 import com.fiz.mono.util.setVisible
 import java.util.*
 
+val REQUEST_CODE_REMINDER = 0
 
 class ReminderFragment : Fragment() {
-    private val REQUEST_CODE = 0
 
     private var _binding: FragmentReminderBinding? = null
     private val binding get() = _binding!!
@@ -38,8 +38,6 @@ class ReminderFragment : Fragment() {
 
     private lateinit var notifyPendingIntent: PendingIntent
 
-    var isReminder: Boolean = false
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -52,20 +50,20 @@ class ReminderFragment : Fragment() {
         )
 
         alarmManager =
-            requireActivity().application.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        notifyIntent = Intent(requireActivity().application, AlarmReceiver::class.java)
+            (requireActivity().application as Application).getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        notifyIntent = Intent((requireActivity().application as Application), AlarmReceiver::class.java)
 
         alarm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PendingIntent.getBroadcast(
-                requireActivity().application,
-                REQUEST_CODE,
+                (requireActivity().application as Application),
+                REQUEST_CODE_REMINDER,
                 notifyIntent,
                 PendingIntent.FLAG_IMMUTABLE
             )
         } else {
             PendingIntent.getBroadcast(
-                requireActivity().application,
-                REQUEST_CODE,
+                (requireActivity().application as Application),
+                REQUEST_CODE_REMINDER,
                 notifyIntent,
                 PendingIntent.FLAG_NO_CREATE
             )
@@ -73,15 +71,15 @@ class ReminderFragment : Fragment() {
 
         notifyPendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PendingIntent.getBroadcast(
-                requireActivity().application,
-                REQUEST_CODE,
+                (requireActivity().application as Application),
+                REQUEST_CODE_REMINDER,
                 notifyIntent,
                 PendingIntent.FLAG_IMMUTABLE
             )
         } else {
             PendingIntent.getBroadcast(
-                requireActivity().application,
-                REQUEST_CODE,
+                (requireActivity().application as Application),
+                REQUEST_CODE_REMINDER,
                 notifyIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT
             )
@@ -131,12 +129,67 @@ class ReminderFragment : Fragment() {
                 }
             }
 
+            val notificationManager =
+                ContextCompat.getSystemService(
+                    requireActivity(),
+                    NotificationManager::class.java
+                ) as NotificationManager
+
+            val hours = requireActivity().getSharedPreferences(
+                requireActivity().getString(R.string.preferences),
+                AppCompatActivity.MODE_PRIVATE
+            ).getInt("notify hours", 0)
+            val minutes = requireActivity().getSharedPreferences(
+                requireActivity().getString(R.string.preferences),
+                AppCompatActivity.MODE_PRIVATE
+            ).getInt("notify minutes", 0)
+
+            if (hours != 0 && minutes != 0) {
+                viewModel.notify.value = true
+            }
+
             navigationBarLayout.backButton.setOnClickListener(::backButtonOnClickListener)
             setReminderButton.setOnClickListener(::setReminderButtonOnClickListener)
         }
 
         viewModel.isCanReminder.observe(viewLifecycleOwner) {
             binding.setReminderButton.isEnabled = it
+        }
+
+        viewModel.hours.observe(viewLifecycleOwner) {
+            if (binding.hoursEditText.text.toString() != it.toString())
+                binding.hoursEditText.setText(it.toString())
+        }
+        viewModel.minutes.observe(viewLifecycleOwner) {
+            if (binding.minutesEditText.text.toString() != it.toString())
+                binding.minutesEditText.setText(it.toString())
+        }
+
+        viewModel.notify.observe(viewLifecycleOwner) {
+            if (it) {
+                val hours = requireActivity().getSharedPreferences(
+                    requireActivity().getString(R.string.preferences),
+                    AppCompatActivity.MODE_PRIVATE
+                ).getInt("notify hours", 0)
+                val minutes = requireActivity().getSharedPreferences(
+                    requireActivity().getString(R.string.preferences),
+                    AppCompatActivity.MODE_PRIVATE
+                ).getInt("notify minutes", 0)
+
+                binding.setReminderButton.isEnabled = true
+                binding.setReminderButton.isCheckable = true
+                binding.hoursEditText.isEnabled = false
+                binding.minutesEditText.isEnabled = false
+                binding.setReminderButton.text = getString(R.string.remove_reminder)
+                binding.setReminderButton.invalidate()
+                viewModel.setHours(hours)
+                viewModel.setMinutes(minutes)
+            } else {
+                binding.setReminderButton.isCheckable = false
+                binding.hoursEditText.isEnabled = true
+                binding.minutesEditText.isEnabled = true
+                binding.setReminderButton.text = getString(R.string.set_reminder)
+            }
         }
     }
 
@@ -145,7 +198,7 @@ class ReminderFragment : Fragment() {
             val notificationChannel = NotificationChannel(
                 channelId,
                 channelName,
-                NotificationManager.IMPORTANCE_LOW
+                NotificationManager.IMPORTANCE_HIGH
             )
 
             notificationChannel.enableLights(true)
@@ -162,30 +215,42 @@ class ReminderFragment : Fragment() {
     }
 
     private fun setReminderButtonOnClickListener(view: View?) {
-        isReminder = !isReminder
-        val currentTime = Calendar.getInstance()
-        val needTime = Calendar.getInstance()
-        val hours = viewModel.hours.value ?: 0
-        val minutes = viewModel.minutes.value ?: 0
+        if (viewModel.notify.value == true) {
+            viewModel.notify.value = false
+            viewModel.cancelNotification(alarmManager, notifyPendingIntent)
+            val notificationManager =
+                ContextCompat.getSystemService(
+                    requireActivity(),
+                    NotificationManager::class.java
+                ) as NotificationManager
+            notificationManager.cancelNotifications()
+        } else {
 
-        needTime.set(Calendar.HOUR_OF_DAY, hours)
-        needTime.set(Calendar.MINUTE, minutes)
-        if (currentTime.get(Calendar.HOUR_OF_DAY) > needTime.get(Calendar.HOUR_OF_DAY) &&
-            currentTime.get(Calendar.MINUTE) > needTime.get(Calendar.MINUTE)
-        )
-            needTime.add(Calendar.DATE, -1)
+            val currentTime = Calendar.getInstance()
+            val needTime = Calendar.getInstance()
+            val hours = viewModel.hours.value ?: 0
+            val minutes = viewModel.minutes.value ?: 0
 
-        val differenceTime = (needTime.time.time - currentTime.time.time) / 1000
+            needTime.set(Calendar.HOUR_OF_DAY, hours)
+            needTime.set(Calendar.MINUTE, minutes)
+            if (currentTime.get(Calendar.HOUR_OF_DAY) > needTime.get(Calendar.HOUR_OF_DAY) &&
+                currentTime.get(Calendar.MINUTE) > needTime.get(Calendar.MINUTE)
+            )
+                needTime.add(Calendar.DATE, -1)
 
-        viewModel.setAlarm(
-            isReminder,
-            differenceTime.toInt(),
-            alarmManager,
-            notifyPendingIntent,
-            requireActivity()
-        )
+            val differenceTime = (needTime.time.time - currentTime.time.time) / 1000
 
-        findNavController().popBackStack()
+            viewModel.setAlarm(
+                differenceTime.toInt(),
+                alarmManager,
+                notifyPendingIntent,
+                requireActivity()
+            )
+
+            viewModel.notify.value = true
+
+            findNavController().popBackStack()
+        }
     }
 
     private fun backButtonOnClickListener(view: View) {
