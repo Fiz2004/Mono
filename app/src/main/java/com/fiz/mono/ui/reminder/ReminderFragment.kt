@@ -104,12 +104,23 @@ class ReminderFragment : Fragment() {
         }
 
         viewModel.hours.observe(viewLifecycleOwner) {
-            if (binding.hoursEditText.text.toString() != it.toString())
-                binding.hoursEditText.setText(it.toString())
+            if (binding.hoursEditText.text.toString() != it.toString() && binding.hoursEditText.text.toString() != "")
+                binding.hoursEditText.setText(
+                    if (it != 0)
+                        it.toString()
+                    else
+                        ""
+                )
+
         }
         viewModel.minutes.observe(viewLifecycleOwner) {
-            if (binding.minutesEditText.text.toString() != it.toString())
-                binding.minutesEditText.setText(it.toString())
+            if (binding.minutesEditText.text.toString() != it.toString() && binding.hoursEditText.text.toString() != "")
+                binding.minutesEditText.setText(
+                    if (it != 0)
+                        it.toString()
+                    else
+                        ""
+                )
         }
 
         viewModel.notify.observe(viewLifecycleOwner) {
