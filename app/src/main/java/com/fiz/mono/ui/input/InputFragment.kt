@@ -51,7 +51,8 @@ class InputFragment : Fragment() {
     }
 
     private val cameraActivityLauncher = registerForActivityResult(ActivityContract()) {
-        viewModel.addPhotoPath()
+        if (it == 1)
+            viewModel.addPhotoPath()
     }
 
     private lateinit var adapter: CategoriesAdapter
@@ -307,8 +308,8 @@ class InputFragment : Fragment() {
         binding.photo3ImageView.setVisible(countPhoto > 2)
 
         binding.deletePhoto1ImageView.setVisible(countPhoto > 0)
-        binding.deletePhoto1ImageView.setVisible(countPhoto > 1)
-        binding.deletePhoto1ImageView.setVisible(countPhoto > 2)
+        binding.deletePhoto2ImageView.setVisible(countPhoto > 1)
+        binding.deletePhoto3ImageView.setVisible(countPhoto > 2)
 
         photoPaths.getOrNull(0)?.let { photoPath ->
             viewModel.setPic(300, 300, photoPath).also {
