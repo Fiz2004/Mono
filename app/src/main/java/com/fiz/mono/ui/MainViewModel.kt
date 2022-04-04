@@ -20,6 +20,8 @@ class MainViewModel : ViewModel() {
     }
 
     fun setDate(day: Int) {
+        if (day == 0) return
+
         _date.value?.set(Calendar.DATE, day)
         _date.value = date.value
     }

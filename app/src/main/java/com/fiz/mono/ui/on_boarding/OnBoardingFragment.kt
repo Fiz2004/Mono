@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentOnBoardingBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
@@ -35,7 +35,7 @@ class OnBoardingFragment : Fragment() {
         super.onCreate(savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             if (viewModel.pages.value != 0)
-                viewModel.prevPages()
+                viewModel.clickBackPress()
             else
                 activity?.onBackPressed()
         }
@@ -57,11 +57,22 @@ class OnBoardingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.continueOnBoardingButton.setOnClickListener(::continueOnClickListener)
-        binding.skipOnBoardingButton.setOnClickListener(::skipOnClickListener)
+        bindListener()
+        subscribe()
+    }
 
+    private fun bindListener() {
+        binding.continueOnBoardingButton.setOnClickListener {
+            viewModel.clickNextPages()
+        }
+
+        binding.skipOnBoardingButton.setOnClickListener {
+            viewModel.clickSkipButton()
+        }
+    }
+
+    private fun subscribe() {
         viewModel.pages.observe(viewLifecycleOwner) {
-
             binding.apply {
                 if (it < 3) {
                     pageNumberOnBoardingTextView.text =
@@ -85,27 +96,15 @@ class OnBoardingFragment : Fragment() {
             }
         }
 
-    }
-
-    private fun skipOnClickListener(view: View) {
-        viewModel.PIN()
-        mainPreferencesViewModel.changeFirstTime()
-        val action =
-            OnBoardingFragmentDirections
-                .actionToPINPasswordFragment(PINPasswordFragment.START)
-        view.findNavController().navigate(action)
-    }
-
-    private fun continueOnClickListener(view: View) {
-        viewModel.nextPages()
-
-        if (viewModel.pages.value == 3) {
-            viewModel.PIN()
-            mainPreferencesViewModel.changeFirstTime()
-            val action =
-                OnBoardingFragmentDirections
-                    .actionToPINPasswordFragment(PINPasswordFragment.START)
-            view.findNavController().navigate(action)
+        viewModel.isNextScreen.observe(viewLifecycleOwner) {
+            if (it) {
+                mainPreferencesViewModel.changeFirstTime()
+                val action =
+                    OnBoardingFragmentDirections
+                        .actionToPINPasswordFragment(PINPasswordFragment.START)
+                findNavController().navigate(action)
+                viewModel.isNextScreenRefresh()
+            }
         }
     }
 }

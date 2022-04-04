@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
@@ -31,4 +33,11 @@ fun Context.getColorCompat(
     } else {
         this.resources.getColor(colorRes)
     }
+}
+
+fun Context.showKeyboard(view: View) {
+    (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(
+        view,
+        InputMethodManager.SHOW_IMPLICIT
+    )
 }

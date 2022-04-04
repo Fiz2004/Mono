@@ -35,6 +35,7 @@ class CalculatorFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         bind()
+        bindListener()
         subscribe()
     }
 
@@ -44,7 +45,11 @@ class CalculatorFragment : Fragment() {
             navigationBarLayout.actionButton.setVisible(false)
             navigationBarLayout.choiceImageButton.setVisible(false)
             navigationBarLayout.titleTextView.text = getString(R.string.calculator)
+        }
+    }
 
+    private fun bindListener() {
+        binding.apply {
             oneCalendarImageButton.setOnClickListener(::onNumberClick)
             twoCalendarImageButton.setOnClickListener(::onNumberClick)
             threeCalendarImageButton.setOnClickListener(::onNumberClick)
@@ -79,16 +84,6 @@ class CalculatorFragment : Fragment() {
         }
     }
 
-    private fun subscribe() {
-        viewModel.result.observe(viewLifecycleOwner) {
-            binding.resultCalendarTextView.text = it
-        }
-
-        viewModel.history.observe(viewLifecycleOwner) {
-            binding.operationCalendarTextView.text = it
-        }
-    }
-
     private fun onNumberClick(view: View) {
         val button: Button = view as Button
         viewModel.numberClick(button.text.toString())
@@ -97,6 +92,16 @@ class CalculatorFragment : Fragment() {
     private fun onOperationClick(view: View) {
         val button: Button = view as Button
         viewModel.operatorClick(button.text.toString())
+    }
+
+    private fun subscribe() {
+        viewModel.result.observe(viewLifecycleOwner) {
+            binding.resultCalendarTextView.text = it
+        }
+
+        viewModel.history.observe(viewLifecycleOwner) {
+            binding.operationCalendarTextView.text = it
+        }
     }
 
 }

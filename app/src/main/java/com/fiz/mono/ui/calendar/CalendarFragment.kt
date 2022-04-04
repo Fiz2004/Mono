@@ -11,7 +11,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.App
 import com.fiz.mono.R
-import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.databinding.FragmentCalendarBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
 import com.fiz.mono.ui.MainPreferencesViewModelFactory
@@ -63,20 +62,27 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
 
         init()
         bind()
+        bindListener()
         subscribe()
     }
 
     internal fun init() {
-        calendarAdapter = CalendarAdapter(::calendarAdapterOnClickListener)
+        calendarAdapter = CalendarAdapter { transactionsDay ->
+            mainViewModel.setDate(transactionsDay.day)
+        }
 
         val currency = mainPreferencesViewModel.currency.value ?: "$"
         transactionAdapter =
             TransactionsAdapter(
                 (requireActivity().application as App).categoryIconStore,
                 currency,
-                true,
-                ::transactionAdapterOnClickListener
-            )
+                true
+            ) { transactionItem ->
+                val action =
+                    CalendarFragmentDirections
+                        .actionCalendarFragmentToInputFragment(transaction = transactionItem.id)
+                findNavController().navigate(action)
+            }
     }
 
     private fun bind() {
@@ -84,75 +90,59 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
             navigationBarLayout.backButton.setVisible(true)
             navigationBarLayout.actionButton.setVisible(false)
             navigationBarLayout.choiceImageButton.setVisible(true)
-
-            navigationBarLayout.backButton.setOnClickListener(::backButtonOnClickListener)
-            navigationBarLayout.choiceImageButton.setOnClickListener(::choiceMonthOnClickListener)
-
             calendarRecyclerView.adapter = calendarAdapter
             transactionRecyclerView.adapter = transactionAdapter
         }
     }
 
-    private fun subscribe() {
-        mainViewModel.date.observe(viewLifecycleOwner, ::dateObserve)
+    private fun bindListener() {
+        binding.apply {
+            navigationBarLayout.backButton.setOnClickListener {
+                viewModel.clickBackButton()
+            }
 
-        viewModel.allTransactions.observe(viewLifecycleOwner) {
-            dateObserve(mainViewModel.date.value)
+            navigationBarLayout.choiceImageButton.setOnClickListener {
+                val monthDialog = MonthDialog()
+                monthDialog.choicer = this@CalendarFragment
+
+                val args = Bundle()
+                val currentMonth = mainViewModel.date.value?.get(Calendar.MONTH) ?: 0
+                args.putInt("currentMonth", currentMonth)
+                monthDialog.arguments = args
+
+                monthDialog.show(childFragmentManager, "Choice Month")
+            }
         }
     }
 
-    private fun choiceMonthOnClickListener(view: View?) {
-        val monthDialog = MonthDialog()
-        monthDialog.choicer = this
+    private fun subscribe() {
+        mainViewModel.date.observe(viewLifecycleOwner) {
+            binding.navigationBarLayout.titleTextView.text = getDateMonthYearString(
+                it,
+                resources.getStringArray(R.array.name_month)
+            )
+            viewModel.changeData()
+        }
 
-        val args = Bundle()
-        val currentMonth = mainViewModel.date.value?.get(Calendar.MONTH) ?: 0
-        args.putInt("currentMonth", currentMonth)
-        monthDialog.arguments = args
+        viewModel.allTransactions.observe(viewLifecycleOwner) {
+            // Без этого присваивания при выборе декабря приложение крошится
+            binding.calendarRecyclerView.itemAnimator = null
 
-        monthDialog.show(childFragmentManager, "Choice Month")
+            val listCalendar = viewModel.getListCalendarDataItem(mainViewModel.date.value)
+            calendarAdapter.submitList(listCalendar)
+
+            val listTransactionsDataItem =
+                viewModel.getListTransactionsDataItem(mainViewModel.date.value)
+
+            binding.noTransactionsTextView.setVisible(listTransactionsDataItem.isEmpty())
+            binding.transactionRecyclerView.setVisible(listTransactionsDataItem.isNotEmpty())
+
+            transactionAdapter.submitList(listTransactionsDataItem)
+        }
     }
 
-    private fun dateObserve(calendar: Calendar?) {
-        binding.navigationBarLayout.titleTextView.text = getDateMonthYearString(
-            calendar,
-            resources.getStringArray(R.array.name_month)
-        )
-
-        // Без этого присваивания при выборе декабря приложение крошится
-        binding.calendarRecyclerView.itemAnimator = null
-
-        val listCalendar = viewModel.getListCalendarDataItem(mainViewModel.date.value)
-        calendarAdapter.submitList(listCalendar)
-
-        val listTransactionsDataItem =
-            viewModel.getListTransactionsDataItem(mainViewModel.date.value)
-
-        binding.noTransactionsTextView.setVisible(listTransactionsDataItem.isEmpty())
-        binding.transactionRecyclerView.setVisible(listTransactionsDataItem.isNotEmpty())
-
-        transactionAdapter.submitList(listTransactionsDataItem)
-    }
-
-    private fun calendarAdapterOnClickListener(transactionsDay: TransactionsDay) {
-        if (transactionsDay.day == 0) return
-
-        mainViewModel.setDate(transactionsDay.day)
-    }
-
-    private fun transactionAdapterOnClickListener(transactionItem: TransactionItem) {
-        val action =
-            CalendarFragmentDirections
-                .actionCalendarFragmentToInputFragment(transaction = transactionItem.id)
-        findNavController().navigate(action)
-    }
-
-    private fun backButtonOnClickListener(view: View) {
-        findNavController().popBackStack()
-    }
 
     override fun choiceMonth(numberMonth: Int) {
         mainViewModel.setMonth(numberMonth)
     }
-
 }
