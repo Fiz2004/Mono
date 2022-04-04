@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.fiz.mono.data.CategoryIcon
 import com.fiz.mono.data.CategoryIconStore
 import com.fiz.mono.data.CategoryStore
-import com.fiz.mono.ui.category_edit.CategoryEditFragment
+import com.fiz.mono.ui.category_edit.CategoryEditViewModel.Companion.TYPE_EXPENSE
 import kotlinx.coroutines.launch
 
 class CategoryAddViewModel(
@@ -22,9 +22,10 @@ class CategoryAddViewModel(
     private val nameCategory: MutableLiveData<String> =
         MutableLiveData("")
 
-    val isReturn = MutableLiveData(false)
+    private val _isReturn = MutableLiveData(false)
+    val isReturn: LiveData<Boolean> = _isReturn
 
-    var type: String = CategoryEditFragment.TYPE_EXPENSE
+    var type: String = TYPE_EXPENSE
 
     fun init(type: String) {
         this.type = type
@@ -54,11 +55,11 @@ class CategoryAddViewModel(
             categoryStore.addNewCategory(name, type, selectedIcon)
         }
 
-        isReturn.value = true
+        _isReturn.value = true
     }
 
     fun clickBackButton() {
-        isReturn.value = true
+        _isReturn.value = true
     }
 }
 

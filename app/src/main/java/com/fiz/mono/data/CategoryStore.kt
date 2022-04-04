@@ -6,7 +6,7 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.asLiveData
 import com.fiz.mono.R
 import com.fiz.mono.data.database.dao.CategoryDao
-import com.fiz.mono.ui.category_edit.CategoryEditFragment
+import com.fiz.mono.ui.category_edit.CategoryEditViewModel.Companion.TYPE_EXPENSE
 
 class CategoryStore(
     private val categoryDao: CategoryDao,
@@ -54,13 +54,18 @@ class CategoryStore(
         }
     }
 
-    suspend fun removeCategoryExpense(position: Int) {
+    fun cleanSelected() {
+        allCategoryExpense.value?.forEach { it.selected = false }
+        allCategoryIncome.value?.forEach { it.selected = false }
+    }
+
+    private suspend fun removeCategoryExpense(position: Int) {
         allCategoryExpense.value?.get(position)?.let {
             categoryDao.delete(it)
         }
     }
 
-    suspend fun removeCategoryIncome(position: Int) {
+    private suspend fun removeCategoryIncome(position: Int) {
         allCategoryIncome.value?.get(position)?.let {
             categoryDao.delete(it)
         }
@@ -117,7 +122,7 @@ class CategoryStore(
     }
 
     suspend fun addNewCategory(name: String, type: String, selectedIcon: String) {
-        if (type == CategoryEditFragment.TYPE_EXPENSE) {
+        if (type == TYPE_EXPENSE) {
             insertNewCategoryExpense(name, selectedIcon)
         } else {
             insertNewCategoryIncome(name, selectedIcon)
@@ -140,5 +145,62 @@ class CategoryStore(
         val newCategoryItem = CategoryItem("i$newId", name, iconID)
 
         categoryDao.insert(newCategoryItem)
+    }
+
+    fun selectExpense(position: Int) {
+        allCategoryIncome.value?.find { it.selected }?.let {
+            it.selected = false
+        }
+
+        if (!allCategoryExpense.value?.get(position)?.selected!!) {
+            allCategoryExpense.value?.find { it.selected }?.let {
+                it.selected = false
+            }
+        }
+
+        allCategoryExpense.value?.get(position)?.selected =
+            !allCategoryExpense.value?.get(position)?.selected!!
+    }
+
+    fun isClickAddPositionExpense(position: Int): Boolean {
+        return position == allCategoryExpense.value?.size ?: false
+    }
+
+    fun isClickAddPositionIncome(position: Int): Boolean {
+        return position == allCategoryIncome.value?.size ?: false
+    }
+
+    fun addSelectItemIncomeForEdit(position: Int) {
+        allCategoryExpense.value?.find { it.selected }?.let {
+            it.selected = false
+        }
+
+        if (!allCategoryIncome.value?.get(position)?.selected!!) {
+            allCategoryIncome.value?.find { it.selected }?.let {
+                it.selected = false
+            }
+        }
+        allCategoryIncome.value?.get(position)?.selected =
+            !allCategoryIncome.value?.get(position)?.selected!!
+    }
+
+    fun isSelect(): Boolean {
+        return allCategoryExpense.value?.any { it.selected } == true || allCategoryIncome.value?.any { it.selected } == true
+    }
+
+    suspend fun remove() {
+        allCategoryExpense.value?.indexOfFirst { it.selected }.let {
+            if (it == -1) return@let
+            if (it != null) {
+                removeCategoryExpense(it)
+            }
+        }
+
+        allCategoryIncome.value?.indexOfFirst { it.selected }.let {
+            if (it == -1) return@let
+            if (it != null) {
+                removeCategoryIncome(it)
+            }
+        }
     }
 }

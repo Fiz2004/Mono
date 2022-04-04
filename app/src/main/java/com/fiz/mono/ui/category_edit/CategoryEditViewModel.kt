@@ -1,114 +1,88 @@
 package com.fiz.mono.ui.category_edit
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavDirections
 import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.CategoryStore
-import com.fiz.mono.ui.input.InputFragment
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
 
 class CategoryEditViewModel(
     private val categoryStore: CategoryStore
 ) : ViewModel() {
-    var allCategoryExpenseForEdit = categoryStore.getAllCategoryExpenseForEdit()
-    var allCategoryIncomeForEdit = categoryStore.getAllCategoryIncomeForEdit()
+    private var _allCategoryExpense: MutableLiveData<List<CategoryItem>> =
+        categoryStore.getAllCategoryExpenseForEdit() as MutableLiveData
+    val allCategoryExpense: LiveData<List<CategoryItem>> = _allCategoryExpense
 
-    private var _date = MutableLiveData(Calendar.getInstance())
-    val date: LiveData<Calendar> = _date
+    private var _allCategoryIncome: MutableLiveData<List<CategoryItem>> =
+        categoryStore.getAllCategoryIncomeForEdit() as MutableLiveData
+    val allCategoryIncome: LiveData<List<CategoryItem>> = _allCategoryIncome
 
-    fun getAllCategoryFromSelectedForEdit(selectedAdapter: Int?): List<CategoryItem> {
-        return if (selectedAdapter == InputFragment.EXPENSE)
-            getCopyAllCategoryItemExpenseForEdit()
-        else
-            getCopyAllCategoryItemIncomeForEdit()
-    }
+    private val _isReturn = MutableLiveData(false)
+    val isReturn: LiveData<Boolean> = _isReturn
 
-    fun getFormatDate(pattern: String): String {
-        return SimpleDateFormat(pattern, Locale.getDefault()).format(date.value?.time ?: "")
-    }
+    private val _isMoveAdd = MutableLiveData(false)
+    val isMoveAdd: LiveData<Boolean> = _isMoveAdd
 
-    fun getCopyAllCategoryItemExpenseForEdit(): List<CategoryItem> {
-        return allCategoryExpenseForEdit.value?.map { it.copy() } ?: listOf()
-    }
+    var type: String = TYPE_EXPENSE
 
-    fun getCopyAllCategoryItemIncomeForEdit(): List<CategoryItem> {
-        return allCategoryIncomeForEdit.value?.map { it.copy() } ?: listOf()
-    }
-
-    fun addSelectItemExpenseForEdit(position: Int) {
-        allCategoryIncomeForEdit.value?.find { it.selected }?.let {
-            it.selected = false
+    fun expenseRecyclerView(position: Int) {
+        if (categoryStore.isClickAddPositionExpense(position)) {
+            categoryStore.cleanSelected()
+            type = TYPE_EXPENSE
+            _isMoveAdd.value = true
+            return
         }
 
-        if (!allCategoryExpenseForEdit.value?.get(position)?.selected!!) {
-            allCategoryExpenseForEdit.value?.find { it.selected }?.let {
-                it.selected = false
-            }
-        }
-        allCategoryExpenseForEdit.value?.get(position)?.selected =
-            !allCategoryExpenseForEdit.value?.get(position)?.selected!!
+        categoryStore.selectExpense(position)
+        _allCategoryExpense.value = allCategoryExpense.value
+        _allCategoryIncome.value = allCategoryIncome.value
     }
 
-    fun isSelectedForEdit(): Boolean {
-        return allCategoryExpenseForEdit.value?.any { it.selected } == true || allCategoryIncomeForEdit.value?.any { it.selected } == true
+    fun incomeRecyclerView(position: Int) {
+        if (categoryStore.isClickAddPositionIncome(position)) {
+            categoryStore.cleanSelected()
+            type = TYPE_INCOME
+            _isMoveAdd.value = true
+            return
+        }
+
+        categoryStore.addSelectItemIncomeForEdit(position)
+        _allCategoryExpense.value = allCategoryExpense.value
+        _allCategoryIncome.value = allCategoryIncome.value
     }
 
-    fun addSelectItemIncomeForEdit(position: Int) {
-        allCategoryExpenseForEdit.value?.find { it.selected }?.let {
-            it.selected = false
-        }
-
-        if (!allCategoryIncomeForEdit.value?.get(position)?.selected!!) {
-            allCategoryIncomeForEdit.value?.find { it.selected }?.let {
-                it.selected = false
-            }
-        }
-        allCategoryIncomeForEdit.value?.get(position)?.selected =
-            !allCategoryIncomeForEdit.value?.get(position)?.selected!!
+    fun isSelect(): Boolean {
+        return categoryStore.isSelect()
     }
 
     fun removeSelectItem() {
         viewModelScope.launch {
-            allCategoryExpenseForEdit.value?.indexOfFirst { it.selected }.let {
-                if (it == -1) return@let
-                if (it != null) {
-                    categoryStore.removeCategoryExpense(it)
-                }
-            }
-
-            allCategoryIncomeForEdit.value?.indexOfFirst { it.selected }.let {
-                if (it == -1) return@let
-                if (it != null) {
-                    categoryStore.removeCategoryIncome(it)
-                }
-            }
+            categoryStore.remove()
         }
     }
 
-    fun isClickAddPositionExpense(position: Int): Boolean {
-        return position == allCategoryExpenseForEdit.value?.size?.minus(1) ?: false
+    fun clickBackButton() {
+        _isReturn.value = true
     }
 
-    fun isClickAddPositionIncome(position: Int): Boolean {
-        return position == allCategoryIncomeForEdit.value?.size?.minus(1) ?: false
+    fun moveAdd() {
+        _isMoveAdd.value = false
     }
 
-    fun cleanSelectedForEdit() {
-        allCategoryExpenseForEdit.value?.forEach { it.selected = false }
-        allCategoryIncomeForEdit.value?.forEach { it.selected = false }
+    fun getActionForMoveAdd(): NavDirections {
+        return if (type == TYPE_EXPENSE)
+            CategoryEditFragmentDirections
+                .actionCategoryFragmentToCategoryAddFragment(TYPE_EXPENSE)
+        else
+            CategoryEditFragmentDirections
+                .actionCategoryFragmentToCategoryAddFragment(TYPE_INCOME)
     }
-}
 
-class CategoryEditViewModelFactory(
-    private val categoryStore: CategoryStore
-) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(CategoryEditViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return CategoryEditViewModel(categoryStore) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
+    companion object {
+        const val TYPE_EXPENSE = "expense"
+        const val TYPE_INCOME = "income"
     }
 }

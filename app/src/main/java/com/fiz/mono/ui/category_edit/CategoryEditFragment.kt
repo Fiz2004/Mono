@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.App
 import com.fiz.mono.R
@@ -46,20 +45,25 @@ class CategoryEditFragment : Fragment() {
 
         init()
         bind()
+        bindListener()
         subscribe()
     }
 
     private fun init() {
+        // TODO Invent to Remove the transmission categoryIconStore
         expenseAdapter = CategoriesAdapter(
             (requireActivity().application as App).categoryIconStore,
-            R.color.red,
-            ::adapterExpenseOnClickListener
-        )
+            R.color.red
+        ) { position ->
+            viewModel.expenseRecyclerView(position)
+        }
+
         incomeAdapter = CategoriesAdapter(
             (requireActivity().application as App).categoryIconStore,
-            R.color.red,
-            ::adapterIncomeOnClickListener
-        )
+            R.color.red
+        ) { position ->
+            viewModel.incomeRecyclerView(position)
+        }
     }
 
     private fun bind() {
@@ -70,71 +74,46 @@ class CategoryEditFragment : Fragment() {
             navigationBarLayout.actionButton.setTextColor(requireContext().getColorCompat(R.color.red))
             navigationBarLayout.choiceImageButton.setVisible(false)
             navigationBarLayout.titleTextView.text = getString(R.string.category_edit)
-            navigationBarLayout.backButton.setOnClickListener(::backButtonOnClickListener)
-            navigationBarLayout.actionButton.setOnClickListener(::removeButtonOnClickListener)
             expenseRecyclerView.adapter = expenseAdapter
             incomeRecyclerView.adapter = incomeAdapter
         }
     }
 
+    private fun bindListener() {
+        binding.apply {
+            navigationBarLayout.backButton.setOnClickListener {
+                viewModel.clickBackButton()
+            }
+
+            navigationBarLayout.actionButton.setOnClickListener {
+                viewModel.removeSelectItem()
+            }
+        }
+    }
+
     private fun subscribe() {
-        viewModel.allCategoryExpenseForEdit.observe(viewLifecycleOwner) {
-            expenseAdapter.submitList(it)
-            incomeAdapter.submitList(viewModel.getCopyAllCategoryItemIncomeForEdit())
-        }
-        viewModel.allCategoryIncomeForEdit.observe(viewLifecycleOwner) {
-            expenseAdapter.submitList(viewModel.getCopyAllCategoryItemExpenseForEdit())
-            incomeAdapter.submitList(it)
-        }
-    }
-
-    private fun backButtonOnClickListener(v: View) {
-        findNavController().popBackStack()
-    }
-
-    private fun removeButtonOnClickListener(v: View) {
-        viewModel.removeSelectItem()
-        binding.navigationBarLayout.actionButton.setVisible(viewModel.isSelectedForEdit())
-        updateAdapters()
-    }
-
-    private fun adapterExpenseOnClickListener(position: Int) {
-        if (viewModel.isClickAddPositionExpense(position)) {
-            viewModel.cleanSelectedForEdit()
-            val action =
-                CategoryEditFragmentDirections
-                    .actionCategoryFragmentToCategoryAddFragment(TYPE_EXPENSE)
-            view?.findNavController()?.navigate(action)
-            return
+        viewModel.allCategoryExpense.observe(viewLifecycleOwner) { categoryItem ->
+            expenseAdapter.submitList(categoryItem.map { it.copy() })
+            binding.navigationBarLayout.actionButton.setVisible(viewModel.isSelect())
         }
 
-        viewModel.addSelectItemExpenseForEdit(position)
-        binding.navigationBarLayout.actionButton.setVisible(viewModel.isSelectedForEdit())
-        updateAdapters()
-    }
-
-    private fun adapterIncomeOnClickListener(position: Int) {
-        if (viewModel.isClickAddPositionIncome(position)) {
-            viewModel.cleanSelectedForEdit()
-            val action =
-                CategoryEditFragmentDirections
-                    .actionCategoryFragmentToCategoryAddFragment(TYPE_INCOME)
-            view?.findNavController()?.navigate(action)
-            return
+        viewModel.allCategoryIncome.observe(viewLifecycleOwner) { categoryItem ->
+            incomeAdapter.submitList(categoryItem.map { it.copy() })
+            binding.navigationBarLayout.actionButton.setVisible(viewModel.isSelect())
         }
 
-        viewModel.addSelectItemIncomeForEdit(position)
-        binding.navigationBarLayout.actionButton.setVisible(viewModel.isSelectedForEdit())
-        updateAdapters()
-    }
+        // TODO Invent to Remove moveAdd()
+        viewModel.isMoveAdd.observe(viewLifecycleOwner) {
+            if (it) {
+                val action = viewModel.getActionForMoveAdd()
+                findNavController().navigate(action)
+                viewModel.moveAdd()
+            }
+        }
 
-    private fun updateAdapters() {
-        incomeAdapter.submitList(viewModel.getCopyAllCategoryItemIncomeForEdit())
-        expenseAdapter.submitList(viewModel.getCopyAllCategoryItemExpenseForEdit())
-    }
-
-    companion object {
-        const val TYPE_EXPENSE = "expense"
-        const val TYPE_INCOME = "income"
+        viewModel.isReturn.observe(viewLifecycleOwner) {
+            if (it)
+                findNavController().popBackStack()
+        }
     }
 }
