@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
@@ -24,6 +26,7 @@ import java.util.*
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+
 
 class InputViewModel(
     private val categoryStore: CategoryStore,
@@ -197,7 +200,11 @@ class InputViewModel(
         }
     }
 
-    fun getTransactionItemForNew(selectedCategoryItem: CategoryItem, newId: Int, date: Calendar): TransactionItem {
+    fun getTransactionItemForNew(
+        selectedCategoryItem: CategoryItem,
+        newId: Int,
+        date: Calendar
+    ): TransactionItem {
         val valueTransaction = value.value?.toDouble()!! *
                 if (selectedAdapter.value == InputFragment.EXPENSE)
                     -1
@@ -233,23 +240,21 @@ class InputViewModel(
 
     fun dispatchTakePictureIntent(context: Context): Intent? {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            takePictureIntent.resolveActivity(context.packageManager)?.also {
-                val photoFile: File? = try {
-                    createImageFile(context)
-                } catch (ex: IOException) {
-                    Toast.makeText(context, "I can't create a file", Toast.LENGTH_LONG).show()
-                    null
-                }
+            val photoFile: File? = try {
+                createImageFile(context)
+            } catch (ex: IOException) {
+                Toast.makeText(context, "I can't create a file", Toast.LENGTH_LONG).show()
+                null
+            }
 
-                photoFile?.also {
-                    val photoURI: Uri = FileProvider.getUriForFile(
-                        context,
-                        "com.fiz.mono.fileprovider",
-                        it
-                    )
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    return takePictureIntent
-                }
+            photoFile?.also {
+                val photoURI: Uri = FileProvider.getUriForFile(
+                    context,
+                    "com.fiz.mono.fileprovider",
+                    it
+                )
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                return takePictureIntent
             }
         }
         return null
@@ -257,7 +262,8 @@ class InputViewModel(
 
     @Throws(IOException::class)
     fun createImageFile(context: Context): File {
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val timeStamp: String =
+            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val storageDir: File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
         return File.createTempFile(
             "JPEG_${timeStamp}_",
@@ -273,6 +279,8 @@ class InputViewModel(
             inJustDecodeBounds = true
         }
         BitmapFactory.decodeFile(path, bmOptions)
+        val exif = ExifInterface(path)
+        val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)
 
         val photoW: Int = bmOptions.outWidth
         val photoH: Int = bmOptions.outHeight
@@ -283,12 +291,43 @@ class InputViewModel(
         bmOptions.inSampleSize = scaleFactor
 
         BitmapFactory.decodeFile(path, bmOptions)?.also { bitmap ->
-            return bitmap
+            return if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
+                val matrix = Matrix()
+                matrix.postRotate(90f)
+                Bitmap.createBitmap(
+                    bitmap,
+                    0,
+                    0,
+                    bitmap.width,
+                    bitmap.height,
+                    matrix,
+                    true
+                )
+            } else
+                bitmap
         }
         return null
     }
 
-    fun setPhotoPath(list: MutableList<String?>) {
+    fun getExifRotation(imageFile: File?): Int {
+        return if (imageFile == null) 0 else try {
+            val exif = ExifInterface(imageFile.absolutePath)
+            when (exif.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_UNDEFINED
+            )) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> 90
+                ExifInterface.ORIENTATION_ROTATE_180 -> 180
+                ExifInterface.ORIENTATION_ROTATE_270 -> 270
+                else -> ExifInterface.ORIENTATION_UNDEFINED
+            }
+        } catch (e: IOException) {
+            //  Log.e("Error getting Exif data", e);
+            0
+        }
+    }
+
+    private fun setPhotoPath(list: MutableList<String?>) {
         _photoPaths.value = if (list.get(0) == "") emptyList<String?>().toMutableList() else list
     }
 

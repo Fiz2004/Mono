@@ -1,8 +1,6 @@
 package com.fiz.mono.ui.pin_password
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.view.LayoutInflater
@@ -98,38 +96,28 @@ class PINPasswordFragment : Fragment() {
                 viewModel.clickEditButton()
             }
 
-            numbersEditText[0].addTextChangedListener(
-                textWatcher(
-                    numbersEditText[0],
-                    numbersEditText[1]
-                )
-            )
-
-            numbersEditText[1].addTextChangedListener(
-                textWatcher(
-                    numbersEditText[1],
-                    numbersEditText[2]
-                )
-            )
-
-            numbersEditText[2].addTextChangedListener(
-                textWatcher(
-                    numbersEditText[2],
-                    numbersEditText[3]
-                )
-            )
-
-            numbersEditText[3].addTextChangedListener(
-                textWatcher(
-                    numbersEditText[3],
-                    nextPINPasswordButton
-                )
-            )
-
             numbersEditText.forEach { editText ->
                 val number = numbersEditText.indexOf(editText)
                 editText.doOnTextChanged { text, start, before, count ->
                     viewModel.setText(number, text)
+
+                    if (before == count) return@doOnTextChanged
+
+                    if (text?.length == 1) {
+                        viewModel.exitError()
+                        numbersEditText.forEach {
+                            if (it.text.isBlank()) {
+                                it.requestFocus()
+                                return@doOnTextChanged
+                            }
+                        }
+                        nextPINPasswordButton.requestFocus()
+                    }
+
+                    if (text.toString().length > 1) {
+                        editText.setText(text?.get(1).toString())
+                        editText.setSelection(1)
+                    }
                 }
 
 
@@ -231,25 +219,6 @@ class PINPasswordFragment : Fragment() {
             if (viewModel.statePIN.value == State_Pin.REMOVE) return@observe
             binding.nextPINPasswordButton.isEnabled = viewModel.isNextPINPasswordButtonEnabled()
         }
-    }
-
-    private fun textWatcher(editText: EditText, next: View) = object : TextWatcher {
-        override fun onTextChanged(cs: CharSequence, start: Int, before: Int, count: Int) {
-            if (before == count) return
-            if (cs.isNotEmpty()) {
-                viewModel.exitError()
-                if (next is EditText)
-                    if (next.text.isBlank())
-                        next.requestFocus()
-            }
-            if (cs.length > 1) {
-                editText.setText(cs[1].toString())
-                editText.setSelection(1)
-            }
-        }
-
-        override fun beforeTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-        override fun afterTextChanged(s: Editable) {}
     }
 
     companion object {

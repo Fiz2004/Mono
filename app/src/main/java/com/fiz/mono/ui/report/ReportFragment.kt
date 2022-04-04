@@ -56,11 +56,11 @@ class ReportFragment : Fragment(), ReportDialog.Choicer {
 
     private fun subscribe() {
         reportViewModel.categorySelectedReport.observe(viewLifecycleOwner) {
-            if (it == MONTHLY) {
-                binding.navigationBarLayout.titleTextView.text = getString(R.string.month_report)
-            } else {
-                binding.navigationBarLayout.titleTextView.text = getString(R.string.category_report)
-            }
+            binding.navigationBarLayout.titleTextView.text =
+                if (it == MONTHLY)
+                    getString(R.string.month_report)
+                else
+                    getString(R.string.category_report)
         }
 
     }
