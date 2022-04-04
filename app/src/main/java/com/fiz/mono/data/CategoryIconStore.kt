@@ -80,6 +80,10 @@ class CategoryIconStore {
     fun getSelectedIcon(): String {
         return categoryIcons.first { it.selected }.id
     }
+
+    fun isNotSelected(): Boolean {
+        return !isSelected()
+    }
 }
 
 fun getDrawableCategoryIcon(storage: CategoryIconStore, id: String): Int {

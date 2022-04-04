@@ -6,6 +6,7 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.asLiveData
 import com.fiz.mono.R
 import com.fiz.mono.data.database.dao.CategoryDao
+import com.fiz.mono.ui.category_edit.CategoryEditFragment
 
 class CategoryStore(
     private val categoryDao: CategoryDao,
@@ -51,24 +52,6 @@ class CategoryStore(
             result.add(CategoryItem("i", editString, ""))
             result
         }
-    }
-
-    suspend fun insertNewCategoryExpense(name: String, iconID: String) {
-        val numberLastItem = allCategoryExpense.value?.lastOrNull()?.id?.substring(1)?.toInt()
-        val newId = numberLastItem?.let { it + 1 } ?: 0
-
-        val newCategoryItem = CategoryItem("e$newId", name, iconID)
-
-        categoryDao.insert(newCategoryItem)
-    }
-
-    suspend fun insertNewCategoryIncome(name: String, iconID: String) {
-        val numberLastItem = allCategoryIncome.value?.lastOrNull()?.id?.substring(1)?.toInt()
-        val newId = numberLastItem?.let { it + 1 } ?: 0
-
-        val newCategoryItem = CategoryItem("i$newId", name, iconID)
-
-        categoryDao.insert(newCategoryItem)
     }
 
     suspend fun removeCategoryExpense(position: Int) {
@@ -133,4 +116,29 @@ class CategoryStore(
         }
     }
 
+    suspend fun addNewCategory(name: String, type: String, selectedIcon: String) {
+        if (type == CategoryEditFragment.TYPE_EXPENSE) {
+            insertNewCategoryExpense(name, selectedIcon)
+        } else {
+            insertNewCategoryIncome(name, selectedIcon)
+        }
+    }
+
+    private suspend fun insertNewCategoryExpense(name: String, iconID: String) {
+        val numberLastItem = allCategoryExpense.value?.lastOrNull()?.id?.substring(1)?.toInt()
+        val newId = numberLastItem?.let { it + 1 } ?: 0
+
+        val newCategoryItem = CategoryItem("e$newId", name, iconID)
+
+        categoryDao.insert(newCategoryItem)
+    }
+
+    private suspend fun insertNewCategoryIncome(name: String, iconID: String) {
+        val numberLastItem = allCategoryIncome.value?.lastOrNull()?.id?.substring(1)?.toInt()
+        val newId = numberLastItem?.let { it + 1 } ?: 0
+
+        val newCategoryItem = CategoryItem("i$newId", name, iconID)
+
+        categoryDao.insert(newCategoryItem)
+    }
 }

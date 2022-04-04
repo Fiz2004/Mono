@@ -19,7 +19,7 @@ class CategoryAddViewModel(
         MutableLiveData(categoryIconStore.categoryIcons)
     val allCategoryIcon: LiveData<MutableList<CategoryIcon>> = _allCategoryIcon
 
-    private val _nameCategory: MutableLiveData<String> =
+    private val nameCategory: MutableLiveData<String> =
         MutableLiveData("")
 
     val isReturn = MutableLiveData(false)
@@ -41,28 +41,20 @@ class CategoryAddViewModel(
     }
 
     fun setCategoryName(text: CharSequence?) {
-        _nameCategory.value = text.toString()
+        nameCategory.value = text.toString()
     }
 
     fun clickAddButton() {
-        if (categoryIconStore.isSelected() && _nameCategory.value?.isNotBlank() == true) {
+        if (nameCategory.value?.isNotBlank() != true) return
+        if (categoryIconStore.isNotSelected()) return
 
-            val name = _nameCategory.value ?: return
-            val selectedIcon = categoryIconStore.getSelectedIcon()
-            addNewCategory(name, type, selectedIcon)
-
-            isReturn.value = true
-        }
-    }
-
-    private fun addNewCategory(name: String, type: String, selectedIcon: String) {
+        val name = nameCategory.value ?: return
+        val selectedIcon = categoryIconStore.getSelectedIcon()
         viewModelScope.launch {
-            if (type == CategoryEditFragment.TYPE_EXPENSE) {
-                categoryStore.insertNewCategoryExpense(name, selectedIcon)
-            } else {
-                categoryStore.insertNewCategoryIncome(name, selectedIcon)
-            }
+            categoryStore.addNewCategory(name, type, selectedIcon)
         }
+
+        isReturn.value = true
     }
 
     fun clickBackButton() {
