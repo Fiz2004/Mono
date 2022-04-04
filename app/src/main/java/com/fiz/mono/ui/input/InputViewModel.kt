@@ -27,18 +27,24 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-
 class InputViewModel(
     private val categoryStore: CategoryStore,
     private val transactionStore: TransactionStore
 ) : ViewModel() {
     private var _selectedAdapter: MutableLiveData<Int> = MutableLiveData(InputFragment.EXPENSE)
-    val selectedAdapter: LiveData<Int>
-        get() = _selectedAdapter
+    val selectedAdapter: LiveData<Int> = _selectedAdapter
 
     private var _selected: MutableLiveData<Boolean> = MutableLiveData(false)
-    val selected: LiveData<Boolean>
-        get() = _selected
+    val selected: LiveData<Boolean> = _selected
+
+    private val _isReturn = MutableLiveData(false)
+    val isReturn: LiveData<Boolean> = _isReturn
+
+    private val _isMoveEdit = MutableLiveData(false)
+    val isMoveEdit: LiveData<Boolean> = _isMoveEdit
+
+    private val _isMoveCalendar = MutableLiveData(false)
+    val isMoveCalendar: LiveData<Boolean> = _isMoveCalendar
 
     lateinit var currentPhotoPath: String
 
@@ -54,36 +60,40 @@ class InputViewModel(
     var allCategoryIncome: LiveData<List<CategoryItem>> = _allCategoryIncome
 
     private val _note: MutableLiveData<String> = MutableLiveData("")
-    val note: LiveData<String>
-        get() = _note
+    val note: LiveData<String> = _note
 
     private val _value: MutableLiveData<String> = MutableLiveData("")
-    val value: LiveData<String>
-        get() = _value
+    val value: LiveData<String> = _value
 
     private val _photoPaths: MutableLiveData<MutableList<String?>> =
         MutableLiveData(mutableListOf())
-    val photoPaths: LiveData<MutableList<String?>>
-        get() = _photoPaths
+    val photoPaths: LiveData<MutableList<String?>> = _photoPaths
 
-    fun getNewId(): Int {
+    private val _photoBitmap: LiveData<List<Bitmap?>> = Transformations.map(photoPaths) { listPaths ->
+        listPaths.map { path ->
+            path?.let { setPic(300, 300, it) }
+        }
+    }
+    val photoBitmap: LiveData<List<Bitmap?>> = _photoBitmap
+
+    private fun getNewId(): Int {
         val lastItem = transactionStore.allTransactions.value?.lastOrNull()
         val id = lastItem?.id
         return id?.let { it + 1 } ?: 0
     }
 
-    fun isClickEditPosition(position: Int, selectedAdapter: Int?): Boolean {
+    private fun isClickEditPosition(position: Int, selectedAdapter: Int?): Boolean {
         return if (selectedAdapter == InputFragment.EXPENSE)
             position == allCategoryExpense.value?.size?.minus(1) ?: 0
         else
             position == allCategoryIncome.value?.size?.minus(1) ?: 0
     }
 
-    fun getCopyAllCategoryItemExpenseForInput(): List<CategoryItem> {
+    private fun getCopyAllCategoryItemExpenseForInput(): List<CategoryItem> {
         return allCategoryExpense.value?.map { it.copy() } ?: listOf()
     }
 
-    fun getCopyAllCategoryItemIncomeForInput(): List<CategoryItem> {
+    private fun getCopyAllCategoryItemIncomeForInput(): List<CategoryItem> {
         return allCategoryIncome.value?.map { it.copy() } ?: listOf()
     }
 
@@ -109,7 +119,7 @@ class InputViewModel(
             !allCategoryIncome.value?.get(position)?.selected!!
     }
 
-    fun addSelectItem(position: Int, selectedAdapter: Int?) {
+    private fun addSelectItem(position: Int, selectedAdapter: Int?) {
         if (selectedAdapter == InputFragment.EXPENSE)
             addSelectItemExpenseForInput(position)
         else
@@ -135,27 +145,28 @@ class InputViewModel(
         )
     }
 
-    fun isSelectedForInput(selectedAdapter: Int?): Boolean {
+    private fun isSelectedForInput(selectedAdapter: Int?): Boolean {
         return getAllCategoryFromSelectedForInput(selectedAdapter).firstOrNull { it.selected } != null
     }
 
-    fun getSelectedInputForInput(selectedAdapter: Int?): CategoryItem {
+    private fun getSelectedInputForInput(selectedAdapter: Int?): CategoryItem {
         return getAllCategoryFromSelectedForInput(selectedAdapter).first { it.selected }
     }
 
-    fun removeTransaction(transaction: TransactionItem?) {
+    fun removeTransaction() {
         viewModelScope.launch {
-            transaction?.let { transactionStore.delete(it) }
+            transaction.value?.let { transactionStore.delete(it) }
         }
+        _isReturn.value = true
     }
 
-    fun clickUpdate(transaction: TransactionItem) {
+    private fun clickUpdate(transaction: TransactionItem) {
         viewModelScope.launch {
             transactionStore.updateTransaction(transaction)
         }
     }
 
-    fun clickSubmit(
+    private fun clickSubmit(
         transaction: TransactionItem
     ) {
         viewModelScope.launch {
@@ -226,7 +237,7 @@ class InputViewModel(
         _value.value = text
     }
 
-    fun clickSubmit() {
+    private fun clickSubmit() {
         _photoPaths.value = emptyList<String>().toMutableList()
         _value.value = ""
         _note.value = ""
@@ -335,6 +346,12 @@ class InputViewModel(
     }
 
     fun removePhotoPath(number: Int) {
+        photoPaths.value?.get(number - 1)?.let {
+            val fDelete: File = File(it)
+            if (fDelete.exists()) {
+                fDelete.delete()
+            }
+        }
         photoPaths.value?.removeAt(number - 1)
         _photoPaths.value = photoPaths.value
     }
@@ -365,11 +382,11 @@ class InputViewModel(
         setPhotoPath(transaction.photo.toMutableList())
     }
 
-    fun isCanSubmit(): Boolean {
+    private fun isCanSubmit(): Boolean {
         return value.value?.isNotBlank() == true
     }
 
-    fun changeSelected() {
+    private fun changeSelected() {
         _selected.value = !_selected.value!!
     }
 
@@ -380,19 +397,80 @@ class InputViewModel(
     fun isSubmitButtonEnabled(): Boolean {
         return isCanSubmit() && isSelectedForInput(selectedAdapter.value)
     }
-}
 
-class InputViewModelFactory(
-    private val categoryStore: CategoryStore,
-    private val transactionStore: TransactionStore
-) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(InputViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return InputViewModel(categoryStore, transactionStore) as T
+    fun isReturnRefresh() {
+        _isReturn.value = false
+    }
+
+    fun clickBackButton() {
+        _isReturn.value = true
+    }
+
+    fun clickRecyclerView(position: Int) {
+        if (checkClickEditPosition(position)) return
+        addSelectItem(position, selectedAdapter.value)
+        changeSelected()
+        _allCategoryExpense.value = allCategoryExpense.value
+        _allCategoryIncome.value = allCategoryIncome.value
+    }
+
+    private fun checkClickEditPosition(position: Int): Boolean {
+        if (isClickEditPosition(position, selectedAdapter.value)) {
+            cleanSelectedForInput()
+            _isMoveEdit.value = true
+            return true
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
+        return false
+    }
+
+    fun isMoveEditRefresh() {
+        _isMoveEdit.value = false
+    }
+
+    fun clickSubmitButton(date: Calendar) {
+        val selectedCategoryItem =
+            getSelectedInputForInput(selectedAdapter.value)
+        if (transaction.value != null) {
+            val transaction =
+                getTransactionItemForUpdate(selectedCategoryItem) ?: return
+            clickUpdate(
+                transaction
+            )
+            _isReturn.value = true
+        } else {
+            val newId = getNewId()
+            val transaction =
+                getTransactionItemForNew(
+                    selectedCategoryItem,
+                    newId,
+                    date
+                )
+            clickSubmit(transaction)
+            cleanSelectedForInput()
+            clickSubmit()
+            _allCategoryExpense.value = allCategoryExpense.value
+            _allCategoryIncome.value = allCategoryIncome.value
+        }
+    }
+
+    fun isMoveCalendarRefresh() {
+        _isMoveCalendar.value = false
+    }
+
+    fun clickDate() {
+        _isMoveCalendar.value = true
+    }
+
+    // TODO не вызывается, причина не понятна
+    override fun onCleared() {
+        super.onCleared()
+        photoPaths.value?.forEach {
+            it?.let {
+                val fDelete: File = File(it)
+                if (fDelete.exists()) {
+                    fDelete.delete()
+                }
+            }
+        }
     }
 }
-

@@ -82,9 +82,10 @@ class InputFragment : Fragment() {
 
         adapter = CategoriesAdapter(
             (requireActivity().application as App).categoryIconStore,
-            R.color.blue,
-            ::adapterOnClickListener
-        )
+            R.color.blue
+        ) { position ->
+            viewModel.clickRecyclerView(position)
+        }
     }
 
     private fun bind() {
@@ -95,21 +96,48 @@ class InputFragment : Fragment() {
 
     private fun bindListener() {
         binding.apply {
-            noteCameraEditText.setOnClickListener(::noteCameraOnClickListener)
-            deletePhoto1ImageView.setOnClickListener { deletePhotoOnClickListener(1) }
-            deletePhoto2ImageView.setOnClickListener { deletePhotoOnClickListener(2) }
-            deletePhoto3ImageView.setOnClickListener { deletePhotoOnClickListener(3) }
-            submitButton.setOnClickListener(::submitButtonOnClickListener)
-            backButton.setOnClickListener(::backButtonOnClickListener)
 
-            removeButton.setOnClickListener {
-                viewModel.removeTransaction(viewModel.transaction.value)
-                findNavController().popBackStack()
+            noteCameraEditText.setOnClickListener {
+                viewModel.dispatchTakePictureIntent(requireContext())?.let {
+                    cameraActivityLauncher.launch(it)
+                }
             }
 
-            dataRangeLayout.leftDateRangeImageButton.setOnClickListener(::leftDateRangeOnClickListener)
-            dataRangeLayout.dateTextView.setOnClickListener(::dateOnClickListener)
-            dataRangeLayout.rightDateRangeImageButton.setOnClickListener(::rightDateRangeOnClickListener)
+            deletePhoto1ImageView.setOnClickListener {
+                viewModel.removePhotoPath(1)
+            }
+
+            deletePhoto2ImageView.setOnClickListener {
+                viewModel.removePhotoPath(2)
+            }
+
+            deletePhoto3ImageView.setOnClickListener {
+                viewModel.removePhotoPath(3)
+            }
+
+            submitButton.setOnClickListener {
+                viewModel.clickSubmitButton(mainViewModel.date.value!!)
+            }
+
+            backButton.setOnClickListener {
+                viewModel.clickBackButton()
+            }
+
+            removeButton.setOnClickListener {
+                viewModel.removeTransaction()
+            }
+
+            dataRangeLayout.leftDateRangeImageButton.setOnClickListener {
+                mainViewModel.dateDayMinusOne()
+            }
+
+            dataRangeLayout.dateTextView.setOnClickListener {
+                viewModel.clickDate()
+            }
+
+            dataRangeLayout.rightDateRangeImageButton.setOnClickListener {
+                mainViewModel.dateDayPlusOne()
+            }
 
             tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -157,9 +185,53 @@ class InputFragment : Fragment() {
                 adapter.submitList(allCategory)
             }
 
-            photoPaths.observe(viewLifecycleOwner, ::photoPathObserve)
-            note.observe(viewLifecycleOwner, ::noteObserve)
-            value.observe(viewLifecycleOwner, ::valueObserve)
+            photoPaths.observe(viewLifecycleOwner) { photoPaths ->
+                val countPhoto = viewModel.photoPaths.value?.size ?: 0
+
+                binding.noteCameraEditText.isEnabled = isCanAddPhoto()
+
+                binding.photo1Card.setVisible(countPhoto > 0)
+                binding.photo2Card.setVisible(countPhoto > 0)
+                binding.photo3Card.setVisible(countPhoto > 0)
+
+                binding.photo1ImageView.setVisible(countPhoto > 0)
+                binding.photo2ImageView.setVisible(countPhoto > 1)
+                binding.photo3ImageView.setVisible(countPhoto > 2)
+
+                binding.deletePhoto1ImageView.setVisible(countPhoto > 0)
+                binding.deletePhoto2ImageView.setVisible(countPhoto > 1)
+                binding.deletePhoto3ImageView.setVisible(countPhoto > 2)
+            }
+
+            photoBitmap.observe(viewLifecycleOwner) {
+                it.getOrNull(0)?.let { bitmap ->
+                    binding.photo1ImageView.setImageBitmap(bitmap)
+                } ?: binding.photo1ImageView.setImageBitmap(null)
+
+                it.getOrNull(1)?.let { bitmap ->
+                    binding.photo2ImageView.setImageBitmap(bitmap)
+                } ?: binding.photo2ImageView.setImageBitmap(null)
+
+                it.getOrNull(2)?.let { bitmap ->
+                    binding.photo3ImageView.setImageBitmap(bitmap)
+                } ?: binding.photo3ImageView.setImageBitmap(null)
+            }
+
+            note.observe(viewLifecycleOwner) { note ->
+                if (binding.noteEditText.text.toString() == note)
+                    return@observe
+
+                binding.noteEditText.setText(note)
+            }
+
+            value.observe(viewLifecycleOwner) { value ->
+                binding.submitButton.isEnabled = viewModel.isSubmitButtonEnabled()
+                if (binding.valueEditText.text.toString() == value)
+                    return@observe
+
+                binding.valueEditText.setText(value)
+            }
+
             selectedAdapter.observe(viewLifecycleOwner) {
                 binding.ExpenseIncomeTextView.text =
                     viewModel.getTypeFromSelectedAdapter(requireContext())
@@ -195,6 +267,33 @@ class InputFragment : Fragment() {
                     viewModel.setViewmodelTransaction(viewModel.transaction.value!!)
                 }
             }
+
+            isReturn.observe(viewLifecycleOwner) {
+                if (it) {
+                    findNavController().popBackStack()
+                    viewModel.isReturnRefresh()
+                }
+            }
+
+            isMoveEdit.observe(viewLifecycleOwner) {
+                if (it) {
+                    val action =
+                        InputFragmentDirections
+                            .actionToCategoryFragment()
+                    findNavController().navigate(action)
+                    viewModel.isMoveEditRefresh()
+                }
+            }
+
+            isMoveCalendar.observe(viewLifecycleOwner) {
+                if (it) {
+                    val action =
+                        InputFragmentDirections
+                            .actionToCalendarFragment()
+                    findNavController().navigate(action)
+                    viewModel.isMoveCalendarRefresh()
+                }
+            }
         }
 
         mainPreferencesViewModel.apply {
@@ -226,128 +325,6 @@ class InputFragment : Fragment() {
                 mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
             binding.titleTextView.text = mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
         }
-    }
-
-    private fun backButtonOnClickListener(view: View?) {
-        findNavController().popBackStack()
-    }
-
-    private fun rightDateRangeOnClickListener(view: View) {
-        mainViewModel.dateDayPlusOne()
-    }
-
-    private fun dateOnClickListener(view: View) {
-        val action =
-            InputFragmentDirections
-                .actionToCalendarFragment()
-        findNavController().navigate(action)
-    }
-
-    private fun leftDateRangeOnClickListener(view: View) {
-        mainViewModel.dateDayMinusOne()
-    }
-
-    private fun submitButtonOnClickListener(view: View) {
-        val selectedCategoryItem =
-            viewModel.getSelectedInputForInput(viewModel.selectedAdapter.value)
-        if (viewModel.transaction != null) {
-            val transaction = viewModel.getTransactionItemForUpdate(selectedCategoryItem) ?: return
-            viewModel.clickUpdate(
-                transaction
-            )
-            findNavController().popBackStack()
-        } else {
-            val newId = viewModel.getNewId()
-            val transaction =
-                viewModel.getTransactionItemForNew(
-                    selectedCategoryItem,
-                    newId,
-                    mainViewModel.date.value!!
-                )
-            viewModel.clickSubmit(transaction)
-            viewModel.cleanSelectedForInput()
-            viewModel.clickSubmit()
-            adapter.submitList(viewModel.getAllCategoryFromSelectedForInput(viewModel.selectedAdapter.value))
-        }
-    }
-
-    private fun adapterOnClickListener(position: Int) {
-        if (checkClickEditPosition(position)) return
-        viewModel.addSelectItem(position, viewModel.selectedAdapter.value)
-        viewModel.changeSelected()
-        adapter.submitList(viewModel.getAllCategoryFromSelectedForInput(viewModel.selectedAdapter.value))
-    }
-
-    private fun checkClickEditPosition(position: Int): Boolean {
-        if (viewModel.isClickEditPosition(position, viewModel.selectedAdapter.value)) {
-            viewModel.cleanSelectedForInput()
-            val action =
-                InputFragmentDirections
-                    .actionToCategoryFragment()
-            findNavController().navigate(action)
-            return true
-        }
-        return false
-    }
-
-    private fun deletePhotoOnClickListener(number: Int) {
-        viewModel.removePhotoPath(number)
-    }
-
-    private fun noteCameraOnClickListener(view: View) {
-        viewModel.dispatchTakePictureIntent(requireContext())?.let {
-            cameraActivityLauncher.launch(it)
-        }
-    }
-
-    private fun noteObserve(note: String) {
-        if (binding.noteEditText.text.toString() == note)
-            return
-
-        binding.noteEditText.setText(note)
-    }
-
-    private fun valueObserve(value: String) {
-        binding.submitButton.isEnabled =
-            viewModel.isCanSubmit() && viewModel.isSelectedForInput(viewModel.selectedAdapter.value)
-        if (binding.valueEditText.text.toString() == value)
-            return
-
-        binding.valueEditText.setText(value)
-    }
-
-    private fun photoPathObserve(photoPaths: MutableList<String?>) {
-        val countPhoto = viewModel.photoPaths.value?.size ?: 0
-
-        binding.noteCameraEditText.isEnabled = isCanAddPhoto()
-
-        binding.photo1Card.setVisible(countPhoto > 0)
-        binding.photo2Card.setVisible(countPhoto > 0)
-        binding.photo3Card.setVisible(countPhoto > 0)
-
-        binding.photo1ImageView.setVisible(countPhoto > 0)
-        binding.photo2ImageView.setVisible(countPhoto > 1)
-        binding.photo3ImageView.setVisible(countPhoto > 2)
-
-        binding.deletePhoto1ImageView.setVisible(countPhoto > 0)
-        binding.deletePhoto2ImageView.setVisible(countPhoto > 1)
-        binding.deletePhoto3ImageView.setVisible(countPhoto > 2)
-
-        photoPaths.getOrNull(0)?.let { photoPath ->
-            viewModel.setPic(300, 300, photoPath).also {
-                binding.photo1ImageView.setImageBitmap(it)
-            }
-        } ?: binding.photo1ImageView.setImageBitmap(null)
-        photoPaths.getOrNull(1)?.let { photoPath ->
-            viewModel.setPic(300, 300, photoPath).also {
-                binding.photo2ImageView.setImageBitmap(it)
-            }
-        } ?: binding.photo2ImageView.setImageBitmap(null)
-        photoPaths.getOrNull(2)?.let { photoPath ->
-            viewModel.setPic(300, 300, photoPath).also {
-                binding.photo3ImageView.setImageBitmap(it)
-            }
-        } ?: binding.photo3ImageView.setImageBitmap(null)
     }
 
     private fun isCanAddPhoto(): Boolean {

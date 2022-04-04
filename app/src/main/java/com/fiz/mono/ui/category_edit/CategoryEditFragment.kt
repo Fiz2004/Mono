@@ -55,14 +55,14 @@ class CategoryEditFragment : Fragment() {
             (requireActivity().application as App).categoryIconStore,
             R.color.red
         ) { position ->
-            viewModel.expenseRecyclerView(position)
+            viewModel.clickExpenseRecyclerView(position)
         }
 
         incomeAdapter = CategoriesAdapter(
             (requireActivity().application as App).categoryIconStore,
             R.color.red
         ) { position ->
-            viewModel.incomeRecyclerView(position)
+            viewModel.clickIncomeRecyclerView(position)
         }
     }
 

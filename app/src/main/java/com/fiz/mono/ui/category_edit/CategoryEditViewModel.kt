@@ -28,7 +28,7 @@ class CategoryEditViewModel(
 
     var type: String = TYPE_EXPENSE
 
-    fun expenseRecyclerView(position: Int) {
+    fun clickExpenseRecyclerView(position: Int) {
         if (categoryStore.isClickAddPositionExpense(position)) {
             categoryStore.cleanSelected()
             type = TYPE_EXPENSE
@@ -41,7 +41,7 @@ class CategoryEditViewModel(
         _allCategoryIncome.value = allCategoryIncome.value
     }
 
-    fun incomeRecyclerView(position: Int) {
+    fun clickIncomeRecyclerView(position: Int) {
         if (categoryStore.isClickAddPositionIncome(position)) {
             categoryStore.cleanSelected()
             type = TYPE_INCOME
