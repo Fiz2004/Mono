@@ -16,7 +16,6 @@ import androidx.navigation.fragment.navArgs
 import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
-import com.fiz.mono.data.categoryIcons
 import com.fiz.mono.databinding.FragmentReportCategoryBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
 import com.fiz.mono.ui.MainPreferencesViewModelFactory
@@ -111,7 +110,8 @@ class ReportCategoryFragment : Fragment() {
     private fun updateUI(allCategoryTransaction: List<CategoryItem>) {
         category = allCategoryTransaction.find { it.id == args.id }
 
-        val icon = categoryIcons.find { it.id == category?.mapImgSrc }
+        val icon =
+            (requireActivity().application as App).categoryIconStore.categoryIcons.find { it.id == category?.mapImgSrc }
 
         icon?.imgSrc?.let { binding.iconImageView.setImageResource(it) }
 
@@ -129,7 +129,11 @@ class ReportCategoryFragment : Fragment() {
     }
 
     private fun init() {
-        adapter = TransactionsAdapter(mainPreferencesViewModel.currency.value ?: "$", false)
+        adapter = TransactionsAdapter(
+            (requireActivity().application as App).categoryIconStore,
+            mainPreferencesViewModel.currency.value ?: "$",
+            false
+        )
 
         isExpense = args.type == SelectCategoryFragment.TYPE_EXPENSE
     }

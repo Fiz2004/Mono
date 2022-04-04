@@ -1,6 +1,7 @@
 package com.fiz.mono
 
 import android.app.Application
+import com.fiz.mono.data.CategoryIconStore
 import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.data.TransactionStore
 import com.fiz.mono.data.database.AppDatabase
@@ -16,6 +17,7 @@ class App : Application() {
         )
     }
     val transactionStore by lazy { TransactionStore(database?.transactionItemDao()!!) }
+    val categoryIconStore by lazy { CategoryIconStore() }
 
     override fun onCreate() {
         super.onCreate()

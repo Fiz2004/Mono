@@ -50,8 +50,16 @@ class CategoryEditFragment : Fragment() {
     }
 
     private fun init() {
-        expenseAdapter = CategoriesAdapter(R.color.red, ::adapterExpenseOnClickListener)
-        incomeAdapter = CategoriesAdapter(R.color.red, ::adapterIncomeOnClickListener)
+        expenseAdapter = CategoriesAdapter(
+            (requireActivity().application as App).categoryIconStore,
+            R.color.red,
+            ::adapterExpenseOnClickListener
+        )
+        incomeAdapter = CategoriesAdapter(
+            (requireActivity().application as App).categoryIconStore,
+            R.color.red,
+            ::adapterIncomeOnClickListener
+        )
     }
 
     private fun bind() {

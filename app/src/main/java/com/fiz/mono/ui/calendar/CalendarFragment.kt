@@ -71,7 +71,12 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
 
         val currency = mainPreferencesViewModel.currency.value ?: "$"
         transactionAdapter =
-            TransactionsAdapter(currency, true, ::transactionAdapterOnClickListener)
+            TransactionsAdapter(
+                (requireActivity().application as App).categoryIconStore,
+                currency,
+                true,
+                ::transactionAdapterOnClickListener
+            )
     }
 
     private fun bind() {

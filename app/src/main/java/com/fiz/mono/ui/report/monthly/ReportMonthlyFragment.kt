@@ -60,7 +60,11 @@ class ReportMonthlyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = TransactionsAdapter(mainPreferencesViewModel.currency.value ?: "$", true)
+        adapter = TransactionsAdapter(
+            (requireActivity().application as App).categoryIconStore,
+            mainPreferencesViewModel.currency.value ?: "$",
+            true
+        )
 
         binding.apply {
 

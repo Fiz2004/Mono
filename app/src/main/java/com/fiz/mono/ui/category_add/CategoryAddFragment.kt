@@ -21,7 +21,8 @@ class CategoryAddFragment : Fragment() {
 
     private val viewModel: CategoryAddViewModel by viewModels {
         CategoryAddViewModelFactory(
-            (requireActivity().application as App).categoryStore
+            (requireActivity().application as App).categoryStore,
+            (requireActivity().application as App).categoryIconStore,
         )
     }
 

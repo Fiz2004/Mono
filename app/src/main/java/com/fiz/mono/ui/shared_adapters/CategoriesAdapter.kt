@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fiz.mono.R
+import com.fiz.mono.data.CategoryIconStore
 import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.CategoryItemDiff
 import com.fiz.mono.data.getDrawableCategoryIcon
@@ -14,7 +15,11 @@ import com.fiz.mono.util.setTextAppearanceCompat
 import com.fiz.mono.util.setVisible
 import com.fiz.mono.util.themeColor
 
-class CategoriesAdapter(private val colorSelected: Int, private val callback: (Int) -> Unit) :
+class CategoriesAdapter(
+    private val categoryIconStore: CategoryIconStore,
+    private val colorSelected: Int,
+    private val callback: (Int) -> Unit
+) :
     ListAdapter<CategoryItem, CategoriesViewHolder>(CategoryItemDiff) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoriesViewHolder {
         val binding =
@@ -24,18 +29,28 @@ class CategoriesAdapter(private val colorSelected: Int, private val callback: (I
 
     override fun onBindViewHolder(holder: CategoriesViewHolder, position: Int) {
         val categoryItem = getItem(position)
-        holder.bind(categoryItem, colorSelected, callback)
+        holder.bind(categoryIconStore, categoryItem, colorSelected, callback)
     }
 }
 
 class CategoriesViewHolder(
     private var binding: ItemCategoryBinding
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(categoryItem: CategoryItem, colorSelected: Int, callback: (Int) -> Unit) {
+    fun bind(
+        categoryIconStore: CategoryIconStore,
+        categoryItem: CategoryItem,
+        colorSelected: Int,
+        callback: (Int) -> Unit
+    ) {
         binding.apply {
             iconImageView.setVisible(categoryItem.mapImgSrc != "")
             if (categoryItem.mapImgSrc != "")
-                iconImageView.setImageResource(getDrawableCategoryIcon(categoryItem.mapImgSrc))
+                iconImageView.setImageResource(
+                    getDrawableCategoryIcon(
+                        categoryIconStore,
+                        categoryItem.mapImgSrc
+                    )
+                )
 
             descriptionTextView.text = categoryItem.name
             descriptionTextView.setTextAppearanceCompat(

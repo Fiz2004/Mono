@@ -81,7 +81,11 @@ class InputFragment : Fragment() {
     private fun init() {
         viewModel.transaction = viewModel.findTransaction(args.transaction)
 
-        adapter = CategoriesAdapter(R.color.blue, ::adapterOnClickListener)
+        adapter = CategoriesAdapter(
+            (requireActivity().application as App).categoryIconStore,
+            R.color.blue,
+            ::adapterOnClickListener
+        )
     }
 
     private fun bind() {
