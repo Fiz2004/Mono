@@ -118,11 +118,6 @@
                 android:name="type"
                 android:defaultValue="expense"
                 app:argType="string" />
-            <action
-                android:id="@+id/action_categoryAddFragment_to_categoryFragment"
-                app:destination="@id/categoryEditFragment"
-                app:popUpTo="@id/categoryEditFragment"
-                app:popUpToInclusive="true" />
         </fragment>
     </navigation>
 </navigation>

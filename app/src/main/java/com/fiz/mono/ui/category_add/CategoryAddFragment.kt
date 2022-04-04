@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.fiz.mono.App
@@ -47,11 +47,16 @@ class CategoryAddFragment : Fragment() {
 
         init()
         bind()
+        bindListener()
+        subscribe()
     }
 
     private fun init() {
-        adapter = CategoryIconsAdapter(::adapterOnClickListener)
-        adapter.submitList(viewModel.getAllCategoryIcon())
+        viewModel.init(args.type)
+
+        adapter = CategoryIconsAdapter { position ->
+            viewModel.clickRecyclerView(position)
+        }
     }
 
     private fun bind() {
@@ -62,38 +67,35 @@ class CategoryAddFragment : Fragment() {
             navigationBarLayout.actionButton.setTextColor(requireContext().getColorCompat(R.color.blue))
             navigationBarLayout.choiceImageButton.setVisible(false)
             navigationBarLayout.titleTextView.text = getString(R.string.add_category)
-
-            navigationBarLayout.backButton.setOnClickListener(::backButtonOnClickListener)
-
-            navigationBarLayout.actionButton.setOnClickListener(::addButtonOnClickListener)
-
-            expenseRecyclerView.adapter = adapter
+            categoryIconRecyclerView.adapter = adapter
         }
     }
 
-    private fun backButtonOnClickListener(v: View): Unit {
-        findNavController().popBackStack()
-    }
+    private fun bindListener() {
+        binding.apply {
+            navigationBarLayout.backButton.setOnClickListener {
+                viewModel.clickBackButton()
+            }
 
-    private fun addButtonOnClickListener(view: View): Unit {
-        if (viewModel.isSelected() && binding.categoryNameEditText.text?.isNotBlank() == true) {
+            navigationBarLayout.actionButton.setOnClickListener {
+                viewModel.clickAddButton()
+            }
 
-            val name = binding.categoryNameEditText.text.toString()
-
-            viewModel.addNewCategory(name, args.type, viewModel.getSelectedIcon())
-
-            val action =
-                CategoryAddFragmentDirections
-                    .actionCategoryAddFragmentToCategoryFragment()
-            view.findNavController().navigate(action)
-            return
+            categoryNameEditText.doOnTextChanged { text, start, before, count ->
+                viewModel.setCategoryName(text)
+            }
         }
     }
 
-    private fun adapterOnClickListener(position: Int) {
-        viewModel.addSelectItem(position)
-        binding.navigationBarLayout.actionButton.visibility = viewModel.getVisibilityAddButton()
-        adapter.submitList(viewModel.getAllCategoryIcon())
-    }
+    private fun subscribe() {
+        viewModel.allCategoryIcon.observe(viewLifecycleOwner) {
+            adapter.submitList(it.map { categoryIcon -> categoryIcon.copy() })
+            binding.navigationBarLayout.actionButton.setVisible(viewModel.getVisibilityAddButton())
+        }
 
+        viewModel.isReturn.observe(viewLifecycleOwner) {
+            if (it)
+                findNavController().popBackStack()
+        }
+    }
 }

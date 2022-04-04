@@ -1,8 +1,8 @@
 package com.fiz.mono.ui.category_add
 
-import android.view.View
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.data.CategoryIcon
 import com.fiz.mono.data.CategoryStore
@@ -13,13 +13,56 @@ import kotlinx.coroutines.launch
 class CategoryAddViewModel(
     private val categoryStore: CategoryStore
 ) : ViewModel() {
-    private val allCategoryIcon = categoryIcons
+    private val _allCategoryIcon: MutableLiveData<MutableList<CategoryIcon>> =
+        MutableLiveData(categoryIcons)
+    val allCategoryIcon: LiveData<MutableList<CategoryIcon>> = _allCategoryIcon
 
-    init {
-        allCategoryIcon.forEach { it.selected = false }
+    private val _nameCategory: MutableLiveData<String> =
+        MutableLiveData("")
+
+    val isReturn = MutableLiveData(false)
+
+    var type: String = CategoryEditFragment.TYPE_EXPENSE
+
+    fun init(type: String) {
+        this.type = type
+        allCategoryIcon.value?.map { it.selected = false }
     }
 
-    fun addNewCategory(name: String, type: String, selectedIcon: String) {
+    fun clickRecyclerView(position: Int) {
+        if (!allCategoryIcon.value?.get(position)?.selected!!) {
+            allCategoryIcon.value!!.find { it.selected }?.let {
+                it.selected = false
+            }
+        }
+
+        allCategoryIcon.value!![position].selected = !allCategoryIcon.value!![position].selected
+        _allCategoryIcon.value = allCategoryIcon.value!!
+    }
+
+    fun getVisibilityAddButton(): Boolean {
+        return isSelected()
+    }
+
+    private fun isSelected(): Boolean {
+        return allCategoryIcon.value?.any { it.selected } ?: false
+    }
+
+    fun setCategoryName(text: CharSequence?) {
+        _nameCategory.value = text.toString()
+    }
+
+    fun clickAddButton() {
+        if (isSelected() && _nameCategory.value?.isNotBlank() == true) {
+
+            val name = _nameCategory.value ?: return
+            addNewCategory(name, type, getSelectedIcon())
+
+            isReturn.value = true
+        }
+    }
+
+    private fun addNewCategory(name: String, type: String, selectedIcon: String) {
         viewModelScope.launch {
             if (type == CategoryEditFragment.TYPE_EXPENSE) {
                 categoryStore.insertNewCategoryExpense(name, selectedIcon)
@@ -29,45 +72,12 @@ class CategoryAddViewModel(
         }
     }
 
-    fun addSelectItem(position: Int) {
-        if (!allCategoryIcon[position].selected) {
-            allCategoryIcon.find { it.selected }?.let {
-                it.selected = false
-            }
-        }
-
-        allCategoryIcon[position].selected = !allCategoryIcon[position].selected
+    private fun getSelectedIcon(): String {
+        return allCategoryIcon.value?.first { it.selected }?.id ?: ""
     }
 
-    fun getAllCategoryIcon(): List<CategoryIcon> {
-        return allCategoryIcon.map { it.copy() }
-    }
-
-    fun getSelectedIcon(): String {
-        return allCategoryIcon.first { it.selected }.id
-    }
-
-    fun getVisibilityAddButton(): Int {
-        return if (isSelected())
-            View.VISIBLE
-        else
-            View.GONE
-    }
-
-    fun isSelected(): Boolean {
-        return allCategoryIcon.any { it.selected }
+    fun clickBackButton() {
+        isReturn.value = true
     }
 }
 
-class CategoryAddViewModelFactory(
-    private val categoryStore: CategoryStore
-) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(CategoryAddViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return CategoryAddViewModel(categoryStore) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}

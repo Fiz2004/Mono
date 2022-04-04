@@ -48,7 +48,7 @@
             android:textAppearance="@style/size14_color_secondary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/expenseRecyclerView" />
+            app:layout_constraintTop_toBottomOf="@+id/categoryIconRecyclerView" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/incomeRecyclerView"

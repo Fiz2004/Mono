@@ -52,7 +52,7 @@
         app:layout_constraintTop_toBottomOf="@+id/categoryNameEditText" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/expenseRecyclerView"
+        android:id="@+id/categoryIconRecyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
