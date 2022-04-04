@@ -20,7 +20,7 @@ class TransactionStore(private val transactionDao: TransactionDao) {
             ).format(it.date.time)
         }
 
-    fun getTransactionDayForCurrentMonthByDays(
+    private fun getTransactionDayForCurrentMonthByDays(
         date: Calendar
     ): MutableList<TransactionsDay> {
         val currentYear = date.get(Calendar.YEAR)
@@ -148,5 +148,12 @@ class TransactionStore(private val transactionDao: TransactionDao) {
     ): MutableList<TransactionsDay> {
         val dayOfWeekLastDay = TimeUtils.getNumberLastDayOfWeek(date)
         return TransactionsDay.getListEmptyTransactionDay(7 - dayOfWeekLastDay)
+    }
+
+    fun getTransactionByID(transaction: Int): TransactionItem? {
+        return if (transaction != -1)
+            allTransactions.value?.find { it.id == transaction }?.copy()
+        else
+            null
     }
 }

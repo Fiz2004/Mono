@@ -14,7 +14,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.fiz.mono.App
 import com.fiz.mono.R
-import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.databinding.FragmentInputBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
 import com.fiz.mono.ui.MainPreferencesViewModelFactory
@@ -24,7 +23,6 @@ import com.fiz.mono.ui.shared_adapters.CategoriesAdapter
 import com.fiz.mono.util.ActivityContract
 import com.fiz.mono.util.setVisible
 import com.google.android.material.tabs.TabLayout
-import java.util.*
 
 class InputFragment : Fragment() {
     private val args: InputFragmentArgs by navArgs()
@@ -75,11 +73,12 @@ class InputFragment : Fragment() {
 
         init()
         bind()
+        bindListener()
         subscribe()
     }
 
     private fun init() {
-        viewModel.transaction = viewModel.findTransaction(args.transaction)
+        viewModel.init(args.transaction)
 
         adapter = CategoriesAdapter(
             (requireActivity().application as App).categoryIconStore,
@@ -90,64 +89,121 @@ class InputFragment : Fragment() {
 
     private fun bind() {
         binding.apply {
-            submitButton.text =
-                if (viewModel.transaction == null) getString(R.string.submit) else getString(R.string.update)
-
-            val isInput = viewModel.transaction == null
-            val isEdit = !isInput
-
-            dataRangeLayout.root.setVisible(isInput)
-            tabLayout.setVisible(isInput)
-            titleTextView.setVisible(isEdit)
-            backButton.setVisible(isEdit)
-            removeButton.setVisible(isEdit)
-
-            val expenseIncomeTextViewLayoutParams =
-                ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams
-            expenseIncomeTextViewLayoutParams.topToBottom =
-                if (isInput) R.id.dataRangeLayout else R.id.titleTextView
-
-            if (isInput) {
-                val numberTab = if (viewModel.getSelectedAdapter() == EXPENSE) 0 else 1
-                tabLayout.getTabAt(numberTab)?.select()
-            } else {
-                viewModel.setViewmodelTransaction(viewModel.transaction!!)
-            }
-
             categoryRecyclerView.adapter = adapter
+        }
+    }
 
+    private fun bindListener() {
+        binding.apply {
             noteCameraEditText.setOnClickListener(::noteCameraOnClickListener)
             deletePhoto1ImageView.setOnClickListener { deletePhotoOnClickListener(1) }
             deletePhoto2ImageView.setOnClickListener { deletePhotoOnClickListener(2) }
             deletePhoto3ImageView.setOnClickListener { deletePhotoOnClickListener(3) }
             submitButton.setOnClickListener(::submitButtonOnClickListener)
             backButton.setOnClickListener(::backButtonOnClickListener)
-            removeButton.setOnClickListener(::removeButtonOnClickListener)
+
+            removeButton.setOnClickListener {
+                viewModel.removeTransaction(viewModel.transaction.value)
+                findNavController().popBackStack()
+            }
+
             dataRangeLayout.leftDateRangeImageButton.setOnClickListener(::leftDateRangeOnClickListener)
             dataRangeLayout.dateTextView.setOnClickListener(::dateOnClickListener)
             dataRangeLayout.rightDateRangeImageButton.setOnClickListener(::rightDateRangeOnClickListener)
-            tabLayout.addOnTabSelectedListener(onTabSelectedListener())
 
-            valueEditText.doOnTextChanged(::valueEditTextOnTextChanged)
-            noteEditText.doOnTextChanged(::noteEditTextOnTextChanged)
+            tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: TabLayout.Tab?) {
+                    when (tab?.position) {
+                        0 -> viewModel.setSelectedAdapter(EXPENSE)
+                        1 -> viewModel.setSelectedAdapter(INCOME)
+                    }
+                }
+
+                override fun onTabUnselected(tab: TabLayout.Tab?) {}
+                override fun onTabReselected(tab: TabLayout.Tab?) {}
+            })
+
+            valueEditText.doOnTextChanged { text, start, before, count ->
+                viewModel.setValue(text.toString())
+            }
+
+            noteEditText.doOnTextChanged { text, start, before, count ->
+                viewModel.setNote(text.toString())
+            }
         }
     }
 
     private fun subscribe() {
         viewModel.apply {
-            allCategoryExpenseForInput.observe(viewLifecycleOwner, ::allCategoryExpenseObserve)
-            allCategoryIncomeForInput.observe(viewLifecycleOwner, ::allCategoryIncomeObserve)
+            allCategoryExpense.observe(viewLifecycleOwner) {
+                viewModel.transaction.value?.let {
+                    if (viewModel.getSelectedAdapter() == EXPENSE)
+                        viewModel.setSelected(viewModel.selectedAdapter.value, it.nameCategory)
+                }
+
+                val allCategory =
+                    viewModel.getAllCategoryFromSelectedForInput(viewModel.selectedAdapter.value)
+                adapter.submitList(allCategory)
+            }
+
+            allCategoryIncome.observe(viewLifecycleOwner) {
+                viewModel.transaction.value?.let {
+                    if (viewModel.getSelectedAdapter() == INCOME)
+                        viewModel.setSelected(viewModel.selectedAdapter.value, it.nameCategory)
+                }
+
+                val allCategory =
+                    viewModel.getAllCategoryFromSelectedForInput(viewModel.selectedAdapter.value)
+                adapter.submitList(allCategory)
+            }
+
             photoPaths.observe(viewLifecycleOwner, ::photoPathObserve)
             note.observe(viewLifecycleOwner, ::noteObserve)
             value.observe(viewLifecycleOwner, ::valueObserve)
-            selectedAdapter.observe(viewLifecycleOwner, ::selectedAdapterObserve)
-            selected.observe(viewLifecycleOwner, ::selectedObserve)
-        }
-        mainPreferencesViewModel.apply {
-            currency.observe(viewLifecycleOwner, ::currencyObserve)
+            selectedAdapter.observe(viewLifecycleOwner) {
+                binding.ExpenseIncomeTextView.text =
+                    viewModel.getTypeFromSelectedAdapter(requireContext())
+                binding.submitButton.isEnabled = viewModel.isSubmitButtonEnabled()
+            }
 
-            firstTime.observe(viewLifecycleOwner) {
-                if (it) {
+            selected.observe(viewLifecycleOwner) {
+                binding.submitButton.isEnabled = viewModel.isSubmitButtonEnabled()
+            }
+
+            transaction.observe(viewLifecycleOwner) {
+                val isInput = it == null
+                val isEdit = !isInput
+
+                binding.submitButton.text =
+                    if (isInput) getString(R.string.submit) else getString(R.string.update)
+
+                binding.dataRangeLayout.root.setVisible(isInput)
+                binding.tabLayout.setVisible(isInput)
+                binding.titleTextView.setVisible(isEdit)
+                binding.backButton.setVisible(isEdit)
+                binding.removeButton.setVisible(isEdit)
+
+                val expenseIncomeTextViewLayoutParams =
+                    binding.ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams
+                expenseIncomeTextViewLayoutParams.topToBottom =
+                    if (isInput) R.id.dataRangeLayout else R.id.titleTextView
+
+                if (isInput) {
+                    val numberTab = if (viewModel.getSelectedAdapter() == EXPENSE) 0 else 1
+                    binding.tabLayout.getTabAt(numberTab)?.select()
+                } else {
+                    viewModel.setViewmodelTransaction(viewModel.transaction.value!!)
+                }
+            }
+        }
+
+        mainPreferencesViewModel.apply {
+            currency.observe(viewLifecycleOwner) { currency ->
+                binding.currencyTextView.text = currency
+            }
+
+            isFirstTime.observe(viewLifecycleOwner) { isFirstTime ->
+                if (isFirstTime) {
                     val action =
                         InputFragmentDirections
                             .actionInputFragmentToOnBoardingFragment()
@@ -155,8 +211,8 @@ class InputFragment : Fragment() {
                 }
             }
 
-            isConfirmPIN.observe(viewLifecycleOwner) {
-                if (!it) {
+            isConfirmPIN.observe(viewLifecycleOwner) { isConfirmPIN ->
+                if (!isConfirmPIN) {
                     val action =
                         InputFragmentDirections
                             .actionToPINPasswordFragment(PINPasswordFragment.START)
@@ -164,34 +220,16 @@ class InputFragment : Fragment() {
                 }
             }
         }
-        mainViewModel.date.observe(viewLifecycleOwner, ::dateObserve)
-    }
 
-    private fun removeButtonOnClickListener(view: View?) {
-        viewModel.removeTransaction(viewModel.transaction)
-        findNavController().popBackStack()
+        mainViewModel.date.observe(viewLifecycleOwner) {
+            binding.dataRangeLayout.dateTextView.text =
+                mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
+            binding.titleTextView.text = mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
+        }
     }
 
     private fun backButtonOnClickListener(view: View?) {
         findNavController().popBackStack()
-    }
-
-    private fun valueEditTextOnTextChanged(
-        text: CharSequence?,
-        start: Int,
-        before: Int,
-        count: Int
-    ) {
-        viewModel.setValue(text.toString())
-    }
-
-    private fun noteEditTextOnTextChanged(
-        text: CharSequence?,
-        start: Int,
-        before: Int,
-        count: Int
-    ) {
-        viewModel.setNote(text.toString())
     }
 
     private fun rightDateRangeOnClickListener(view: View) {
@@ -210,7 +248,8 @@ class InputFragment : Fragment() {
     }
 
     private fun submitButtonOnClickListener(view: View) {
-        val selectedCategoryItem = viewModel.getSelectedInputForInput(viewModel.selectedAdapter.value)
+        val selectedCategoryItem =
+            viewModel.getSelectedInputForInput(viewModel.selectedAdapter.value)
         if (viewModel.transaction != null) {
             val transaction = viewModel.getTransactionItemForUpdate(selectedCategoryItem) ?: return
             viewModel.clickUpdate(
@@ -220,7 +259,11 @@ class InputFragment : Fragment() {
         } else {
             val newId = viewModel.getNewId()
             val transaction =
-                viewModel.getTransactionItemForNew(selectedCategoryItem, newId, mainViewModel.date.value!!)
+                viewModel.getTransactionItemForNew(
+                    selectedCategoryItem,
+                    newId,
+                    mainViewModel.date.value!!
+                )
             viewModel.clickSubmit(transaction)
             viewModel.cleanSelectedForInput()
             viewModel.clickSubmit()
@@ -254,31 +297,6 @@ class InputFragment : Fragment() {
     private fun noteCameraOnClickListener(view: View) {
         viewModel.dispatchTakePictureIntent(requireContext())?.let {
             cameraActivityLauncher.launch(it)
-        }
-    }
-
-    private fun onTabSelectedListener() = object : TabLayout.OnTabSelectedListener {
-        override fun onTabSelected(tab: TabLayout.Tab?) {
-            if (tab != null) {
-                when (tab.text) {
-                    getString(R.string.expense) -> {
-                        viewModel.setSelectedAdapter(EXPENSE)
-                        viewModel.cleanSelectedForInput()
-                        adapter.submitList(viewModel.getCopyAllCategoryItemExpenseForInput())
-                    }
-                    getString(R.string.income) -> {
-                        viewModel.setSelectedAdapter(INCOME)
-                        viewModel.cleanSelectedForInput()
-                        adapter.submitList(viewModel.getCopyAllCategoryItemIncomeForInput())
-                    }
-                }
-            }
-        }
-
-        override fun onTabUnselected(tab: TabLayout.Tab?) {
-        }
-
-        override fun onTabReselected(tab: TabLayout.Tab?) {
         }
     }
 
@@ -334,48 +352,6 @@ class InputFragment : Fragment() {
 
     private fun isCanAddPhoto(): Boolean {
         return viewModel.checkCameraHardware(requireContext())
-    }
-
-    private fun allCategoryIncomeObserve(allCategoryIncome: List<CategoryItem>) {
-        viewModel.transaction?.let {
-            if (viewModel.getSelectedAdapter() == INCOME)
-                viewModel.setSelected(viewModel.selectedAdapter.value, it.nameCategory)
-        }
-
-        val allCategory = viewModel.getAllCategoryFromSelectedForInput(viewModel.selectedAdapter.value)
-        adapter.submitList(allCategory)
-    }
-
-    private fun allCategoryExpenseObserve(allCategoryExpense: List<CategoryItem>) {
-        viewModel.transaction?.let {
-            if (viewModel.getSelectedAdapter() == EXPENSE)
-                viewModel.setSelected(viewModel.selectedAdapter.value, it.nameCategory)
-        }
-
-        val allCategory = viewModel.getAllCategoryFromSelectedForInput(viewModel.selectedAdapter.value)
-        adapter.submitList(allCategory)
-    }
-
-    private fun dateObserve(date: Calendar) {
-        binding.dataRangeLayout.dateTextView.text =
-            mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
-        binding.titleTextView.text = mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
-    }
-
-    private fun currencyObserve(currency: String) {
-        binding.currencyTextView.text = currency
-    }
-
-    private fun selectedObserve(selected: Boolean) {
-        binding.submitButton.isEnabled =
-            viewModel.isCanSubmit() && viewModel.isSelectedForInput(viewModel.selectedAdapter.value)
-    }
-
-    private fun selectedAdapterObserve(selectedAdapter: Int) {
-        binding.ExpenseIncomeTextView.text =
-            viewModel.getTypeFromSelectedAdapter(requireContext())
-        binding.submitButton.isEnabled =
-            viewModel.isCanSubmit() && viewModel.isSelectedForInput(viewModel.selectedAdapter.value)
     }
 
     companion object {

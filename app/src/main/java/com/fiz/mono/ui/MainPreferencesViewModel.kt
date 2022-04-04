@@ -9,7 +9,7 @@ class MainPreferencesViewModel(
     private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
     private var _firstTime = MutableLiveData(false)
-    val firstTime: LiveData<Boolean> = _firstTime
+    val isFirstTime: LiveData<Boolean> = _firstTime
 
     private var _currency = MutableLiveData("$")
     val currency: LiveData<String> = _currency
@@ -39,7 +39,7 @@ class MainPreferencesViewModel(
     fun changeFirstTime() {
         _firstTime.value = false
         sharedPreferences.edit()
-            .putBoolean("firstTime", firstTime.value ?: false)
+            .putBoolean("firstTime", isFirstTime.value ?: false)
             .apply()
     }
 

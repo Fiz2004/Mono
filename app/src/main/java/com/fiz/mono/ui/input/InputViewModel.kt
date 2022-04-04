@@ -6,12 +6,12 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import android.media.ExifInterface
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.*
 import com.fiz.mono.R
 import com.fiz.mono.data.CategoryItem
@@ -44,10 +44,14 @@ class InputViewModel(
 
     private var cashCheckCameraHardware: Boolean? = null
 
-    var transaction: TransactionItem? = null
+    private val _transaction: MutableLiveData<TransactionItem?> = MutableLiveData(null)
+    val transaction: LiveData<TransactionItem?> = _transaction
 
-    var allCategoryExpenseForInput = categoryStore.getAllCategoryExpenseForInput()
-    var allCategoryIncomeForInput = categoryStore.getAllCategoryIncomeForInput()
+    private var _allCategoryExpense =
+        categoryStore.getAllCategoryExpenseForInput() as MutableLiveData
+    val allCategoryExpense: LiveData<List<CategoryItem>> = _allCategoryExpense
+    private var _allCategoryIncome = categoryStore.getAllCategoryIncomeForInput() as MutableLiveData
+    var allCategoryIncome: LiveData<List<CategoryItem>> = _allCategoryIncome
 
     private val _note: MutableLiveData<String> = MutableLiveData("")
     val note: LiveData<String>
@@ -70,39 +74,39 @@ class InputViewModel(
 
     fun isClickEditPosition(position: Int, selectedAdapter: Int?): Boolean {
         return if (selectedAdapter == InputFragment.EXPENSE)
-            position == allCategoryExpenseForInput.value?.size?.minus(1) ?: 0
+            position == allCategoryExpense.value?.size?.minus(1) ?: 0
         else
-            position == allCategoryIncomeForInput.value?.size?.minus(1) ?: 0
+            position == allCategoryIncome.value?.size?.minus(1) ?: 0
     }
 
     fun getCopyAllCategoryItemExpenseForInput(): List<CategoryItem> {
-        return allCategoryExpenseForInput.value?.map { it.copy() } ?: listOf()
+        return allCategoryExpense.value?.map { it.copy() } ?: listOf()
     }
 
     fun getCopyAllCategoryItemIncomeForInput(): List<CategoryItem> {
-        return allCategoryIncomeForInput.value?.map { it.copy() } ?: listOf()
+        return allCategoryIncome.value?.map { it.copy() } ?: listOf()
     }
 
     private fun addSelectItemExpenseForInput(position: Int) {
-        if (!allCategoryExpenseForInput.value?.get(position)?.selected!!) {
-            allCategoryExpenseForInput.value?.find { it.selected }?.let {
+        if (!allCategoryExpense.value?.get(position)?.selected!!) {
+            allCategoryExpense.value?.find { it.selected }?.let {
                 it.selected = false
             }
         }
 
-        allCategoryExpenseForInput.value?.get(position)!!.selected =
-            !allCategoryExpenseForInput.value?.get(position)!!.selected
+        allCategoryExpense.value?.get(position)!!.selected =
+            !allCategoryExpense.value?.get(position)!!.selected
     }
 
     private fun addSelectItemIncomeForInput(position: Int) {
-        if (!allCategoryIncomeForInput.value?.get(position)?.selected!!) {
-            allCategoryIncomeForInput.value?.find { it.selected }?.let {
+        if (!allCategoryIncome.value?.get(position)?.selected!!) {
+            allCategoryIncome.value?.find { it.selected }?.let {
                 it.selected = false
             }
         }
 
-        allCategoryIncomeForInput.value?.get(position)?.selected =
-            !allCategoryIncomeForInput.value?.get(position)?.selected!!
+        allCategoryIncome.value?.get(position)?.selected =
+            !allCategoryIncome.value?.get(position)?.selected!!
     }
 
     fun addSelectItem(position: Int, selectedAdapter: Int?) {
@@ -113,8 +117,8 @@ class InputViewModel(
     }
 
     fun cleanSelectedForInput() {
-        allCategoryExpenseForInput.value?.forEach { it.selected = false }
-        allCategoryIncomeForInput.value?.forEach { it.selected = false }
+        allCategoryExpense.value?.forEach { it.selected = false }
+        allCategoryIncome.value?.forEach { it.selected = false }
     }
 
     fun getAllCategoryFromSelectedForInput(selectedAdapter: Int?): List<CategoryItem> {
@@ -139,13 +143,6 @@ class InputViewModel(
         return getAllCategoryFromSelectedForInput(selectedAdapter).first { it.selected }
     }
 
-    fun findTransaction(currentTransaction: Int): TransactionItem? {
-        return if (currentTransaction != -1)
-            transactionStore.allTransactions.value?.find { it.id == currentTransaction }?.copy()
-        else
-            null
-    }
-
     fun removeTransaction(transaction: TransactionItem?) {
         viewModelScope.launch {
             transaction?.let { transactionStore.delete(it) }
@@ -168,15 +165,16 @@ class InputViewModel(
 
     fun setSelectedAdapter(adapter: Int) {
         _selectedAdapter.value = adapter
+        _allCategoryExpense.value = allCategoryExpense.value
+        _allCategoryIncome.value = allCategoryIncome.value
+        allCategoryExpense.value?.forEach { it.selected = false }
+        allCategoryIncome.value?.forEach { it.selected = false }
     }
 
     fun getTypeFromSelectedAdapter(context: Context): String {
         return when (selectedAdapter.value) {
             InputFragment.EXPENSE -> context.getString(R.string.expense)
-            InputFragment.INCOME -> context.getString(R.string.income)
-            else -> {
-                throw Error("Not adapter")
-            }
+            else -> context.getString(R.string.income)
         }
     }
 
@@ -187,7 +185,7 @@ class InputViewModel(
                 else
                     1
 
-        return transaction?.let {
+        return transaction.value?.let {
             TransactionItem(
                 it.id,
                 it.date,
@@ -373,6 +371,14 @@ class InputViewModel(
 
     fun changeSelected() {
         _selected.value = !_selected.value!!
+    }
+
+    fun init(transaction: Int) {
+        _transaction.value = transactionStore.getTransactionByID(transaction)
+    }
+
+    fun isSubmitButtonEnabled(): Boolean {
+        return isCanSubmit() && isSelectedForInput(selectedAdapter.value)
     }
 }
 
