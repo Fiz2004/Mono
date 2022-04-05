@@ -56,6 +56,7 @@ class InputViewModel(
     private var _allCategoryExpense =
         categoryStore.getAllCategoryExpenseForInput() as MutableLiveData
     val allCategoryExpense: LiveData<List<CategoryItem>> = _allCategoryExpense
+
     private var _allCategoryIncome = categoryStore.getAllCategoryIncomeForInput() as MutableLiveData
     var allCategoryIncome: LiveData<List<CategoryItem>> = _allCategoryIncome
 

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -87,6 +88,13 @@ class PINPasswordFragment : Fragment() {
     }
 
     private fun bindListener() {
+
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            if (viewModel.statePIN.value != State_Pin.LOGIN) {
+                activity?.onBackPressed()
+            }
+        }
+
         binding.apply {
             navigationBarLayout.backButton.setOnClickListener {
                 viewModel.clickBackButton()
@@ -190,22 +198,20 @@ class PINPasswordFragment : Fragment() {
                 State_Pin.REMOVE_CONFIRM_FINISH -> {
                     mainPreferencesViewModel.deletePin()
                     Toast.makeText(requireContext(), "PIN deleted", Toast.LENGTH_SHORT).show()
+
                     findNavController().popBackStack()
                 }
-                State_Pin.LOGIN_FINISH, State_Pin.CREATE_FINISH -> {
-                    mainPreferencesViewModel.confirmPin()
-                    val action =
-                        PINPasswordFragmentDirections
-                            .actionPINPasswordFragmentToInputFragment(true)
-                    findNavController().navigate(action)
-                }
-                State_Pin.EDIT_FINISH -> {
+                State_Pin.LOGIN_FINISH -> {
                     mainPreferencesViewModel.setPin(viewModel.getPIN())
                     mainPreferencesViewModel.confirmPin()
 
-                    if (args.fromCome == SETTINGS) {
-                        findNavController().popBackStack()
-                    }
+                    findNavController().popBackStack()
+                }
+                State_Pin.EDIT_FINISH, State_Pin.CREATE_FINISH -> {
+                    mainPreferencesViewModel.setPin(viewModel.getPIN())
+                    mainPreferencesViewModel.confirmPin()
+
+                    findNavController().popBackStack()
                 }
             }
         }
