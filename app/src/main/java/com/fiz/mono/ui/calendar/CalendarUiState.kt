@@ -132,4 +132,10 @@ data class CalendarUiState(
 
         return result
     }
+
+    fun getNewId(): Int {
+        val lastItem = allTransactions.value?.lastOrNull()
+        val id = lastItem?.id
+        return id?.let { it + 1 } ?: 0
+    }
 }
