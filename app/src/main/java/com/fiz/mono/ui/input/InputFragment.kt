@@ -9,7 +9,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.fiz.mono.App
@@ -23,6 +25,7 @@ import com.fiz.mono.ui.shared_adapters.CategoriesAdapter
 import com.fiz.mono.util.ActivityContract
 import com.fiz.mono.util.setVisible
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.launch
 
 class InputFragment : Fragment() {
     private val args: InputFragmentArgs by navArgs()
@@ -30,7 +33,7 @@ class InputFragment : Fragment() {
     private var _binding: FragmentInputBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: InputViewModel by viewModels {
+    private val viewModel: InputViewModel by activityViewModels {
         InputViewModelFactory(
             (requireActivity().application as App).categoryStore,
             (requireActivity().application as App).transactionStore
@@ -164,134 +167,120 @@ class InputFragment : Fragment() {
     private fun subscribe() {
         viewModel.apply {
             allCategoryExpense.observe(viewLifecycleOwner) {
-                viewModel.transaction.value?.let {
+                viewModel.inputUiState.value.transaction?.let {
                     if (viewModel.getSelectedAdapter() == EXPENSE)
-                        viewModel.setSelected(viewModel.selectedAdapter.value, it.nameCategory)
+                        viewModel.setSelected(
+                            viewModel.inputUiState.value.selectedAdapter,
+                            it.nameCategory
+                        )
                 }
 
                 val allCategory =
-                    viewModel.getAllCategoryFromSelectedForInput(viewModel.selectedAdapter.value)
+                    viewModel.getAllCategoryFromSelectedForInput(viewModel.inputUiState.value.selectedAdapter)
                 adapter.submitList(allCategory)
             }
 
             allCategoryIncome.observe(viewLifecycleOwner) {
-                viewModel.transaction.value?.let {
+                viewModel.inputUiState.value.transaction?.let {
                     if (viewModel.getSelectedAdapter() == INCOME)
-                        viewModel.setSelected(viewModel.selectedAdapter.value, it.nameCategory)
+                        viewModel.setSelected(
+                            viewModel.inputUiState.value.selectedAdapter,
+                            it.nameCategory
+                        )
                 }
 
                 val allCategory =
-                    viewModel.getAllCategoryFromSelectedForInput(viewModel.selectedAdapter.value)
+                    viewModel.getAllCategoryFromSelectedForInput(viewModel.inputUiState.value.selectedAdapter)
                 adapter.submitList(allCategory)
             }
 
-            photoPaths.observe(viewLifecycleOwner) { photoPaths ->
-                val countPhoto = viewModel.photoPaths.value?.size ?: 0
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.inputUiState.collect { inputUiState ->
+                        binding.ExpenseIncomeTextView.text =
+                            viewModel.getTypeFromSelectedAdapter(requireContext())
+                        binding.submitButton.isEnabled = viewModel.isSubmitButtonEnabled()
 
-                binding.noteCameraEditText.isEnabled = isCanAddPhoto()
+                        if (inputUiState.isReturn) {
+                            findNavController().popBackStack()
+                            viewModel.isReturnRefresh()
+                        }
 
-                binding.photo1Card.setVisible(countPhoto > 0)
-                binding.photo2Card.setVisible(countPhoto > 0)
-                binding.photo3Card.setVisible(countPhoto > 0)
+                        if (inputUiState.isMoveEdit) {
+                            val action =
+                                InputFragmentDirections
+                                    .actionToCategoryFragment()
+                            findNavController().navigate(action)
+                            viewModel.isMoveEditRefresh()
+                        }
 
-                binding.photo1ImageView.setVisible(countPhoto > 0)
-                binding.photo2ImageView.setVisible(countPhoto > 1)
-                binding.photo3ImageView.setVisible(countPhoto > 2)
+                        if (inputUiState.isMoveCalendar) {
+                            val action =
+                                InputFragmentDirections
+                                    .actionToCalendarFragment()
+                            findNavController().navigate(action)
+                            viewModel.isMoveCalendarRefresh()
+                        }
 
-                binding.deletePhoto1ImageView.setVisible(countPhoto > 0)
-                binding.deletePhoto2ImageView.setVisible(countPhoto > 1)
-                binding.deletePhoto3ImageView.setVisible(countPhoto > 2)
-            }
+                        if (binding.noteEditText.text.toString() != inputUiState.note)
+                            binding.noteEditText.setText(inputUiState.note)
 
-            photoBitmap.observe(viewLifecycleOwner) {
-                it.getOrNull(0)?.let { bitmap ->
-                    binding.photo1ImageView.setImageBitmap(bitmap)
-                } ?: binding.photo1ImageView.setImageBitmap(null)
+                        if (binding.valueEditText.text.toString() != inputUiState.value)
+                            binding.valueEditText.setText(inputUiState.value)
 
-                it.getOrNull(1)?.let { bitmap ->
-                    binding.photo2ImageView.setImageBitmap(bitmap)
-                } ?: binding.photo2ImageView.setImageBitmap(null)
+                        val isInput = inputUiState.transaction == null
+                        val isEdit = !isInput
 
-                it.getOrNull(2)?.let { bitmap ->
-                    binding.photo3ImageView.setImageBitmap(bitmap)
-                } ?: binding.photo3ImageView.setImageBitmap(null)
-            }
+                        binding.submitButton.text =
+                            if (isInput) getString(R.string.submit) else getString(R.string.update)
 
-            note.observe(viewLifecycleOwner) { note ->
-                if (binding.noteEditText.text.toString() == note)
-                    return@observe
+                        binding.dataRangeLayout.root.setVisible(isInput)
+                        binding.tabLayout.setVisible(isInput)
+                        binding.titleTextView.setVisible(isEdit)
+                        binding.backButton.setVisible(isEdit)
+                        binding.removeButton.setVisible(isEdit)
 
-                binding.noteEditText.setText(note)
-            }
+                        val expenseIncomeTextViewLayoutParams =
+                            binding.ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams
+                        expenseIncomeTextViewLayoutParams.topToBottom =
+                            if (isInput) R.id.dataRangeLayout else R.id.titleTextView
 
-            value.observe(viewLifecycleOwner) { value ->
-                binding.submitButton.isEnabled = viewModel.isSubmitButtonEnabled()
-                if (binding.valueEditText.text.toString() == value)
-                    return@observe
+                        if (isInput) {
+                            val numberTab = if (viewModel.getSelectedAdapter() == EXPENSE) 0 else 1
+                            binding.tabLayout.getTabAt(numberTab)?.select()
+                        } else {
+                            viewModel.setViewModelTransaction(viewModel.inputUiState.value.transaction!!)
+                        }
 
-                binding.valueEditText.setText(value)
-            }
+                        val countPhoto = viewModel.inputUiState.value.photoPaths.size
 
-            selectedAdapter.observe(viewLifecycleOwner) {
-                binding.ExpenseIncomeTextView.text =
-                    viewModel.getTypeFromSelectedAdapter(requireContext())
-                binding.submitButton.isEnabled = viewModel.isSubmitButtonEnabled()
-            }
+                        binding.noteCameraEditText.isEnabled = isCanAddPhoto()
 
-            selected.observe(viewLifecycleOwner) {
-                binding.submitButton.isEnabled = viewModel.isSubmitButtonEnabled()
-            }
+                        binding.photo1Card.setVisible(countPhoto > 0)
+                        binding.photo2Card.setVisible(countPhoto > 0)
+                        binding.photo3Card.setVisible(countPhoto > 0)
 
-            transaction.observe(viewLifecycleOwner) {
-                val isInput = it == null
-                val isEdit = !isInput
+                        binding.photo1ImageView.setVisible(countPhoto > 0)
+                        binding.photo2ImageView.setVisible(countPhoto > 1)
+                        binding.photo3ImageView.setVisible(countPhoto > 2)
 
-                binding.submitButton.text =
-                    if (isInput) getString(R.string.submit) else getString(R.string.update)
+                        binding.deletePhoto1ImageView.setVisible(countPhoto > 0)
+                        binding.deletePhoto2ImageView.setVisible(countPhoto > 1)
+                        binding.deletePhoto3ImageView.setVisible(countPhoto > 2)
 
-                binding.dataRangeLayout.root.setVisible(isInput)
-                binding.tabLayout.setVisible(isInput)
-                binding.titleTextView.setVisible(isEdit)
-                binding.backButton.setVisible(isEdit)
-                binding.removeButton.setVisible(isEdit)
+                        viewModel.inputUiState.value.photoBitmap.getOrNull(0)?.let { bitmap ->
+                            binding.photo1ImageView.setImageBitmap(bitmap)
+                        } ?: binding.photo1ImageView.setImageBitmap(null)
 
-                val expenseIncomeTextViewLayoutParams =
-                    binding.ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams
-                expenseIncomeTextViewLayoutParams.topToBottom =
-                    if (isInput) R.id.dataRangeLayout else R.id.titleTextView
+                        viewModel.inputUiState.value.photoBitmap.getOrNull(1)?.let { bitmap ->
+                            binding.photo2ImageView.setImageBitmap(bitmap)
+                        } ?: binding.photo2ImageView.setImageBitmap(null)
 
-                if (isInput) {
-                    val numberTab = if (viewModel.getSelectedAdapter() == EXPENSE) 0 else 1
-                    binding.tabLayout.getTabAt(numberTab)?.select()
-                } else {
-                    viewModel.setViewmodelTransaction(viewModel.transaction.value!!)
-                }
-            }
+                        viewModel.inputUiState.value.photoBitmap.getOrNull(2)?.let { bitmap ->
+                            binding.photo3ImageView.setImageBitmap(bitmap)
+                        } ?: binding.photo3ImageView.setImageBitmap(null)
+                    }
 
-            isReturn.observe(viewLifecycleOwner) {
-                if (it) {
-                    findNavController().popBackStack()
-                    viewModel.isReturnRefresh()
-                }
-            }
-
-            isMoveEdit.observe(viewLifecycleOwner) {
-                if (it) {
-                    val action =
-                        InputFragmentDirections
-                            .actionToCategoryFragment()
-                    findNavController().navigate(action)
-                    viewModel.isMoveEditRefresh()
-                }
-            }
-
-            isMoveCalendar.observe(viewLifecycleOwner) {
-                if (it) {
-                    val action =
-                        InputFragmentDirections
-                            .actionToCalendarFragment()
-                    findNavController().navigate(action)
-                    viewModel.isMoveCalendarRefresh()
                 }
             }
         }
@@ -320,7 +309,8 @@ class InputFragment : Fragment() {
             }
         }
 
-        mainViewModel.date.observe(viewLifecycleOwner) {
+        mainViewModel.date.observe(viewLifecycleOwner)
+        {
             binding.dataRangeLayout.dateTextView.text =
                 mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
             binding.titleTextView.text = mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")

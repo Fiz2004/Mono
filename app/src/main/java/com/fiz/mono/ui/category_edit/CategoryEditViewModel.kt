@@ -26,36 +26,49 @@ class CategoryEditViewModel(
     private val _isMoveAdd = MutableLiveData(false)
     val isMoveAdd: LiveData<Boolean> = _isMoveAdd
 
+    private val _isSelected = MutableLiveData(false)
+    val isSelected: LiveData<Boolean> = _isSelected
+
     var type: String = TYPE_EXPENSE
 
     fun clickExpenseRecyclerView(position: Int) {
-        if (categoryStore.isClickAddPositionExpense(position)) {
-            categoryStore.cleanSelected()
-            type = TYPE_EXPENSE
-            _isMoveAdd.value = true
-            return
-        }
+        viewModelScope.launch {
+            if (categoryStore.isClickAddPositionExpense(position)) {
+                categoryStore.cleanSelected()
+                isSelect()
+                type = TYPE_EXPENSE
+                _isMoveAdd.value = true
+                return@launch
+            }
 
-        categoryStore.selectExpense(position)
-        _allCategoryExpense.value = allCategoryExpense.value
-        _allCategoryIncome.value = allCategoryIncome.value
+            categoryStore.selectExpense(position)
+            isSelect()
+            _allCategoryExpense.value = allCategoryExpense.value
+            _allCategoryIncome.value = allCategoryIncome.value
+        }
     }
 
     fun clickIncomeRecyclerView(position: Int) {
-        if (categoryStore.isClickAddPositionIncome(position)) {
-            categoryStore.cleanSelected()
-            type = TYPE_INCOME
-            _isMoveAdd.value = true
-            return
-        }
+        viewModelScope.launch {
+            if (categoryStore.isClickAddPositionIncome(position)) {
+                categoryStore.cleanSelected()
+                isSelect()
+                type = TYPE_INCOME
+                _isMoveAdd.value = true
+                return@launch
+            }
 
-        categoryStore.addSelectItemIncomeForEdit(position)
-        _allCategoryExpense.value = allCategoryExpense.value
-        _allCategoryIncome.value = allCategoryIncome.value
+            categoryStore.selectIncome(position)
+            isSelect()
+            _allCategoryExpense.value = allCategoryExpense.value
+            _allCategoryIncome.value = allCategoryIncome.value
+        }
     }
 
-    fun isSelect(): Boolean {
-        return categoryStore.isSelect()
+    fun isSelect() {
+        viewModelScope.launch {
+            _isSelected.value = categoryStore.isSelect()
+        }
     }
 
     fun removeSelectItem() {

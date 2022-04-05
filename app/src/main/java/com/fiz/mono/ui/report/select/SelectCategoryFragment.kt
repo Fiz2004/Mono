@@ -6,11 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentSelectCategoryBinding
 import com.fiz.mono.ui.shared_adapters.CategoriesAdapter
+import kotlinx.coroutines.launch
 
 class SelectCategoryFragment : Fragment() {
     private var _binding: FragmentSelectCategoryBinding? = null
@@ -67,38 +71,43 @@ class SelectCategoryFragment : Fragment() {
     }
 
     private fun subscribe() {
-        viewModel.allCategoryExpense.observe(viewLifecycleOwner) {
-            expenseAdapter.submitList(it)
-            incomeAdapter.submitList(viewModel.allCategoryIncome.value)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.allCategoryExpense.collect {
+                    expenseAdapter.submitList(it)
+                    incomeAdapter.submitList(viewModel.allCategoryIncome.value)
+                }
+            }
         }
+
         viewModel.allCategoryIncome.observe(viewLifecycleOwner) {
-            expenseAdapter.submitList(viewModel.allCategoryExpense.value)
+//            expenseAdapter.submitList(viewModel.allCategoryExpense)
             incomeAdapter.submitList(it)
         }
     }
 
     private fun adapterExpenseOnClickListener(position: Int) {
-            val action =
-                SelectCategoryFragmentDirections
-                    .actionSelectCategoryFragmentToReportCategoryFragment(
-                        viewModel.allCategoryExpense.value?.get(
-                            position
-                        )?.id ?: "", TYPE_EXPENSE
-                    )
-            view?.findNavController()?.navigate(action)
-            return
+//            val action =
+//                SelectCategoryFragmentDirections
+//                    .actionSelectCategoryFragmentToReportCategoryFragment(
+//                        viewModel.allCategoryExpense.value?.get(
+//                            position
+//                        )?.id ?: "", TYPE_EXPENSE
+//                    )
+//            view?.findNavController()?.navigate(action)
+        return
     }
 
     private fun adapterIncomeOnClickListener(position: Int) {
-            val action =
-                SelectCategoryFragmentDirections
-                    .actionSelectCategoryFragmentToReportCategoryFragment(
-                        viewModel.allCategoryIncome.value?.get(
-                            position
-                        )?.id ?: "", TYPE_INCOME
-                    )
-            view?.findNavController()?.navigate(action)
-            return
+        val action =
+            SelectCategoryFragmentDirections
+                .actionSelectCategoryFragmentToReportCategoryFragment(
+                    viewModel.allCategoryIncome.value?.get(
+                        position
+                    )?.id ?: "", TYPE_INCOME
+                )
+        view?.findNavController()?.navigate(action)
+        return
     }
 
     companion object {

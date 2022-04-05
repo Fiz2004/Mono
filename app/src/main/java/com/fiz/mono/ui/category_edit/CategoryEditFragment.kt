@@ -94,12 +94,14 @@ class CategoryEditFragment : Fragment() {
     private fun subscribe() {
         viewModel.allCategoryExpense.observe(viewLifecycleOwner) { categoryItem ->
             expenseAdapter.submitList(categoryItem.map { it.copy() })
-            binding.navigationBarLayout.actionButton.setVisible(viewModel.isSelect())
         }
 
         viewModel.allCategoryIncome.observe(viewLifecycleOwner) { categoryItem ->
             incomeAdapter.submitList(categoryItem.map { it.copy() })
-            binding.navigationBarLayout.actionButton.setVisible(viewModel.isSelect())
+        }
+
+        viewModel.isSelected.observe(viewLifecycleOwner) {
+            binding.navigationBarLayout.actionButton.setVisible(it)
         }
 
         // TODO Invent to Remove moveAdd()

@@ -7,19 +7,21 @@ import androidx.lifecycle.asLiveData
 import com.fiz.mono.R
 import com.fiz.mono.data.database.dao.CategoryDao
 import com.fiz.mono.ui.category_edit.CategoryEditViewModel.Companion.TYPE_EXPENSE
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 class CategoryStore(
     private val categoryDao: CategoryDao,
     private val editString: String,
     private val addMoreString: String
 ) {
-    var allCategoryExpense: LiveData<List<CategoryItem>> =
-        categoryDao.getAllExpense().asLiveData()
+    var allCategoryExpense: Flow<List<CategoryItem>> =
+        categoryDao.getAllExpense()
     var allCategoryIncome: LiveData<List<CategoryItem>> =
         categoryDao.getAllIncome().asLiveData()
 
     fun getAllCategoryExpenseForEdit(): LiveData<List<CategoryItem>> {
-        return Transformations.map(allCategoryExpense) {
+        return Transformations.map(allCategoryExpense.asLiveData()) {
             val result = emptyList<CategoryItem>().toMutableList()
             result.addAll(it)
             result.add(CategoryItem("e", addMoreString, ""))
@@ -37,7 +39,7 @@ class CategoryStore(
     }
 
     fun getAllCategoryExpenseForInput(): LiveData<List<CategoryItem>> {
-        return Transformations.map(allCategoryExpense) {
+        return Transformations.map(allCategoryExpense.asLiveData()) {
             val result = emptyList<CategoryItem>().toMutableList()
             result.addAll(it)
             result.add(CategoryItem("e", editString, ""))
@@ -54,13 +56,13 @@ class CategoryStore(
         }
     }
 
-    fun cleanSelected() {
-        allCategoryExpense.value?.forEach { it.selected = false }
+    suspend fun cleanSelected() {
+        allCategoryExpense.first().forEach { it.selected = false }
         allCategoryIncome.value?.forEach { it.selected = false }
     }
 
     private suspend fun removeCategoryExpense(position: Int) {
-        allCategoryExpense.value?.get(position)?.let {
+        allCategoryExpense.first().get(position).let {
             categoryDao.delete(it)
         }
     }
@@ -72,7 +74,7 @@ class CategoryStore(
     }
 
     suspend fun deleteAll(context: Context) {
-        allCategoryExpense.value?.map {
+        allCategoryExpense.first().map {
             categoryDao.delete(it)
         }
         allCategoryIncome.value?.map {
@@ -130,7 +132,7 @@ class CategoryStore(
     }
 
     private suspend fun insertNewCategoryExpense(name: String, iconID: String) {
-        val numberLastItem = allCategoryExpense.value?.lastOrNull()?.id?.substring(1)?.toInt()
+        val numberLastItem = allCategoryExpense.first().lastOrNull()?.id?.substring(1)?.toInt()
         val newId = numberLastItem?.let { it + 1 } ?: 0
 
         val newCategoryItem = CategoryItem("e$newId", name, iconID)
@@ -147,31 +149,31 @@ class CategoryStore(
         categoryDao.insert(newCategoryItem)
     }
 
-    fun selectExpense(position: Int) {
+    suspend fun selectExpense(position: Int) {
         allCategoryIncome.value?.find { it.selected }?.let {
             it.selected = false
         }
 
-        if (!allCategoryExpense.value?.get(position)?.selected!!) {
-            allCategoryExpense.value?.find { it.selected }?.let {
+        if (!allCategoryExpense.first()[position].selected) {
+            allCategoryExpense.first().find { it.selected }?.let {
                 it.selected = false
             }
         }
 
-        allCategoryExpense.value?.get(position)?.selected =
-            !allCategoryExpense.value?.get(position)?.selected!!
+        allCategoryExpense.first()[position].selected =
+            !allCategoryExpense.first()[position].selected
     }
 
-    fun isClickAddPositionExpense(position: Int): Boolean {
-        return position == allCategoryExpense.value?.size ?: false
+    suspend fun isClickAddPositionExpense(position: Int): Boolean {
+        return position == allCategoryExpense.first().size
     }
 
     fun isClickAddPositionIncome(position: Int): Boolean {
         return position == allCategoryIncome.value?.size ?: false
     }
 
-    fun addSelectItemIncomeForEdit(position: Int) {
-        allCategoryExpense.value?.find { it.selected }?.let {
+    suspend fun selectIncome(position: Int) {
+        allCategoryExpense.first().find { it.selected }?.let {
             it.selected = false
         }
 
@@ -184,14 +186,16 @@ class CategoryStore(
             !allCategoryIncome.value?.get(position)?.selected!!
     }
 
-    fun isSelect(): Boolean {
-        return allCategoryExpense.value?.any { it.selected } == true || allCategoryIncome.value?.any { it.selected } == true
+    suspend fun isSelect(): Boolean {
+        return allCategoryExpense.first()
+            .any { it.selected } || allCategoryIncome.value?.any { it.selected } == true
+
     }
 
     suspend fun remove() {
-        allCategoryExpense.value?.indexOfFirst { it.selected }.let {
-            if (it == -1) return@let
-            if (it != null) {
+        allCategoryExpense.collect {
+            it.indexOfFirst { it.selected }.let {
+                if (it == -1) return@let
                 removeCategoryExpense(it)
             }
         }
