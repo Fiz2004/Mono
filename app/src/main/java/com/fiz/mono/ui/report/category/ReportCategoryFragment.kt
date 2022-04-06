@@ -98,7 +98,7 @@ class ReportCategoryFragment : Fragment() {
                 it,
                 mainPreferencesViewModel.currency.value!!,
                 isExpense,
-                category?.name!!
+                category?.name ?: ""
             )
         }
 

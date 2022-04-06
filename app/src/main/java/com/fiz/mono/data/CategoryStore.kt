@@ -17,8 +17,8 @@ class CategoryStore(
 ) {
     var allCategoryExpense: Flow<List<CategoryItem>> =
         categoryDao.getAllExpense()
-    var allCategoryIncome: LiveData<List<CategoryItem>> =
-        categoryDao.getAllIncome().asLiveData()
+    var allCategoryIncome: Flow<List<CategoryItem>> =
+        categoryDao.getAllIncome()
 
     fun getAllCategoryExpenseForEdit(): LiveData<List<CategoryItem>> {
         return Transformations.map(allCategoryExpense.asLiveData()) {
@@ -30,7 +30,7 @@ class CategoryStore(
     }
 
     fun getAllCategoryIncomeForEdit(): LiveData<List<CategoryItem>> {
-        return Transformations.map(allCategoryIncome) {
+        return Transformations.map(allCategoryIncome.asLiveData()) {
             val result = emptyList<CategoryItem>().toMutableList()
             result.addAll(it)
             result.add(CategoryItem("i", addMoreString, ""))
@@ -48,7 +48,7 @@ class CategoryStore(
     }
 
     fun getAllCategoryIncomeForInput(): LiveData<List<CategoryItem>> {
-        return Transformations.map(allCategoryIncome) {
+        return Transformations.map(allCategoryIncome.asLiveData()) {
             val result = emptyList<CategoryItem>().toMutableList()
             result.addAll(it)
             result.add(CategoryItem("i", editString, ""))
@@ -58,17 +58,17 @@ class CategoryStore(
 
     suspend fun cleanSelected() {
         allCategoryExpense.first().forEach { it.selected = false }
-        allCategoryIncome.value?.forEach { it.selected = false }
+        allCategoryIncome.first().forEach { it.selected = false }
     }
 
     private suspend fun removeCategoryExpense(position: Int) {
-        allCategoryExpense.first().get(position).let {
+        allCategoryExpense.first()[position].let {
             categoryDao.delete(it)
         }
     }
 
     private suspend fun removeCategoryIncome(position: Int) {
-        allCategoryIncome.value?.get(position)?.let {
+        allCategoryIncome.first()[position].let {
             categoryDao.delete(it)
         }
     }
@@ -77,7 +77,7 @@ class CategoryStore(
         allCategoryExpense.first().map {
             categoryDao.delete(it)
         }
-        allCategoryIncome.value?.map {
+        allCategoryIncome.first().map {
             categoryDao.delete(it)
         }
 
@@ -141,7 +141,7 @@ class CategoryStore(
     }
 
     private suspend fun insertNewCategoryIncome(name: String, iconID: String) {
-        val numberLastItem = allCategoryIncome.value?.lastOrNull()?.id?.substring(1)?.toInt()
+        val numberLastItem = allCategoryIncome.first().lastOrNull()?.id?.substring(1)?.toInt()
         val newId = numberLastItem?.let { it + 1 } ?: 0
 
         val newCategoryItem = CategoryItem("i$newId", name, iconID)
@@ -150,26 +150,30 @@ class CategoryStore(
     }
 
     suspend fun selectExpense(position: Int) {
-        allCategoryIncome.value?.find { it.selected }?.let {
+        allCategoryIncome.first().find { it.selected }?.let {
             it.selected = false
         }
 
-        if (!allCategoryExpense.first()[position].selected) {
-            allCategoryExpense.first().find { it.selected }?.let {
+        val list = allCategoryExpense.first()
+
+        if (!list[position].selected) {
+            list.find { it.selected }?.let {
                 it.selected = false
             }
         }
 
-        allCategoryExpense.first()[position].selected =
-            !allCategoryExpense.first()[position].selected
+        list[position].selected =
+            !list[position].selected
+
+        categoryDao.updateAll(list)
     }
 
     suspend fun isClickAddPositionExpense(position: Int): Boolean {
         return position == allCategoryExpense.first().size
     }
 
-    fun isClickAddPositionIncome(position: Int): Boolean {
-        return position == allCategoryIncome.value?.size ?: false
+    suspend fun isClickAddPositionIncome(position: Int): Boolean {
+        return position == allCategoryIncome.first().size
     }
 
     suspend fun selectIncome(position: Int) {
@@ -177,18 +181,23 @@ class CategoryStore(
             it.selected = false
         }
 
-        if (!allCategoryIncome.value?.get(position)?.selected!!) {
-            allCategoryIncome.value?.find { it.selected }?.let {
+        val list = allCategoryIncome.first()
+
+        if (!list[position].selected) {
+            list.find { it.selected }?.let {
                 it.selected = false
             }
         }
-        allCategoryIncome.value?.get(position)?.selected =
-            !allCategoryIncome.value?.get(position)?.selected!!
+
+        list[position].selected =
+            !list[position].selected
+
+        categoryDao.updateAll(list)
     }
 
     suspend fun isSelect(): Boolean {
         return allCategoryExpense.first()
-            .any { it.selected } || allCategoryIncome.value?.any { it.selected } == true
+            .any { it.selected } || allCategoryIncome.first().any { it.selected }
 
     }
 
@@ -200,11 +209,9 @@ class CategoryStore(
             }
         }
 
-        allCategoryIncome.value?.indexOfFirst { it.selected }.let {
+        allCategoryIncome.first().indexOfFirst { it.selected }.let {
             if (it == -1) return@let
-            if (it != null) {
-                removeCategoryIncome(it)
-            }
+            removeCategoryIncome(it)
         }
     }
 }

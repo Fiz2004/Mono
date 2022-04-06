@@ -18,6 +18,12 @@ interface CategoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(categoryItem: CategoryItem)
 
+    @Update
+    suspend fun update(categoryItem: CategoryItem)
+
+    @Update
+    suspend fun updateAll(categoryItems: List<CategoryItem>)
+
     @Delete
     suspend fun delete(categoryItem: CategoryItem)
 }

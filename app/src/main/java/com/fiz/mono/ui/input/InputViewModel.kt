@@ -19,7 +19,7 @@ import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.data.CategoryStore
 import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.TransactionStore
-import com.fiz.mono.util.BitmapUtils.setPic
+import com.fiz.mono.util.BitmapUtils.getBitmapsFrom
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,9 +41,14 @@ data class InputUiState(
     val selectedAdapter: Int = InputFragment.EXPENSE,
     val transaction: TransactionItem? = null,
     val photoPaths: MutableList<String?> = mutableListOf(),
-    val photoBitmap: List<Bitmap?> = photoPaths.map { path ->
-        path?.let { setPic(300, 300, it) }
-    }
+    val photoBitmap: List<Bitmap?> = getBitmapsFrom(photoPaths = photoPaths)
+)
+
+data class CategoryItemUiState(
+    val id: String,
+    val name: String,
+    val imgSrc: String,
+    var selected: Boolean = false
 )
 
 class InputViewModel(

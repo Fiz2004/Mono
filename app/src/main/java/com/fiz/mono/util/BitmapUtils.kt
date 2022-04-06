@@ -42,4 +42,10 @@ object BitmapUtils {
         }
         return null
     }
+
+    fun getBitmapsFrom(photoPaths: MutableList<String?>): List<Bitmap?> {
+        return photoPaths.map { path ->
+            path?.let { setPic(300, 300, it) }
+        }
+    }
 }
