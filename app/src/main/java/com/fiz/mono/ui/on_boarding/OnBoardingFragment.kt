@@ -9,12 +9,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentOnBoardingBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
 import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.util.setVisible
+import kotlinx.coroutines.launch
 
 class OnBoardingFragment : Fragment() {
     private var _binding: FragmentOnBoardingBinding? = null
@@ -33,7 +37,7 @@ class OnBoardingFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (viewModel.pages.value != 0)
+            if (viewModel.onBoardingUiState.value.pages != 0)
                 viewModel.clickBackPress()
             else
                 activity?.onBackPressed()
@@ -71,35 +75,39 @@ class OnBoardingFragment : Fragment() {
     }
 
     private fun subscribe() {
-        viewModel.pages.observe(viewLifecycleOwner) {
-            binding.apply {
-                if (it < 3) {
-                    pageNumberOnBoardingTextView.text =
-                        getString(R.string.pageNumber, it + 1, 3)
-                    skipOnBoardingButton.setVisible(it != 2)
-                    headerOnBoardingTextView.text = resources.getStringArray(R.array.header)[it]
-                    descriptionOnBoardingTextView.text =
-                        resources.getStringArray(R.array.description)[it]
-                    continueOnBoardingButton.text =
-                        resources.getStringArray(R.array.getStarted)[it]
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.onBoardingUiState.collect { onBoardingUiState ->
 
-                    imageOnBoardingImageView
-                        .setImageResource(
-                            when (it) {
-                                0 -> R.drawable.illustration1
-                                1 -> R.drawable.illustration2
-                                else -> R.drawable.illustration3
-                            }
-                        )
+                    binding.apply {
+                        if (onBoardingUiState.pages < 3) {
+                            pageNumberOnBoardingTextView.text =
+                                getString(R.string.pageNumber, onBoardingUiState.pages + 1, 3)
+                            skipOnBoardingButton.setVisible(onBoardingUiState.pages != 2)
+                            headerOnBoardingTextView.text =
+                                resources.getStringArray(R.array.header)[onBoardingUiState.pages]
+                            descriptionOnBoardingTextView.text =
+                                resources.getStringArray(R.array.description)[onBoardingUiState.pages]
+                            continueOnBoardingButton.text =
+                                resources.getStringArray(R.array.getStarted)[onBoardingUiState.pages]
+
+                            imageOnBoardingImageView
+                                .setImageResource(
+                                    when (onBoardingUiState.pages) {
+                                        0 -> R.drawable.illustration1
+                                        1 -> R.drawable.illustration2
+                                        else -> R.drawable.illustration3
+                                    }
+                                )
+                        }
+
+                        if (onBoardingUiState.isNextScreen) {
+                            mainPreferencesViewModel.changeFirstTime()
+                            findNavController().popBackStack()
+                        }
+                    }
+
                 }
-            }
-        }
-
-        viewModel.isNextScreen.observe(viewLifecycleOwner) {
-            if (it) {
-                mainPreferencesViewModel.changeFirstTime()
-                findNavController().popBackStack()
-                viewModel.isNextScreenRefresh()
             }
         }
     }

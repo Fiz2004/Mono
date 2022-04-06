@@ -5,22 +5,19 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fiz.mono.R
-import com.fiz.mono.data.CategoryIconStore
-import com.fiz.mono.data.CategoryItem
-import com.fiz.mono.data.CategoryItemDiff
-import com.fiz.mono.data.getDrawableCategoryIcon
 import com.fiz.mono.databinding.ItemCategoryBinding
+import com.fiz.mono.ui.models.CategoryItemDiff
+import com.fiz.mono.ui.models.CategoryUiState
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setTextAppearanceCompat
 import com.fiz.mono.util.setVisible
 import com.fiz.mono.util.themeColor
 
 class CategoriesAdapter(
-    private val categoryIconStore: CategoryIconStore,
     private val colorSelected: Int,
     private val callback: (Int) -> Unit
 ) :
-    ListAdapter<CategoryItem, CategoriesViewHolder>(CategoryItemDiff) {
+    ListAdapter<CategoryUiState, CategoriesViewHolder>(CategoryItemDiff) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoriesViewHolder {
         val binding =
             ItemCategoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -29,7 +26,7 @@ class CategoriesAdapter(
 
     override fun onBindViewHolder(holder: CategoriesViewHolder, position: Int) {
         val categoryItem = getItem(position)
-        holder.bind(categoryIconStore, categoryItem, colorSelected, callback)
+        holder.bind(categoryItem, colorSelected, callback)
     }
 }
 
@@ -37,35 +34,29 @@ class CategoriesViewHolder(
     private var binding: ItemCategoryBinding
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(
-        categoryIconStore: CategoryIconStore,
-        categoryItem: CategoryItem,
+        category: CategoryUiState,
         colorSelected: Int,
         callback: (Int) -> Unit
     ) {
         binding.apply {
-            iconImageView.setVisible(categoryItem.mapImgSrc != "")
-            if (categoryItem.mapImgSrc != "")
-                iconImageView.setImageResource(
-                    getDrawableCategoryIcon(
-                        categoryIconStore,
-                        categoryItem.mapImgSrc
-                    )
-                )
+            iconImageView.setVisible(category.imgSrc != 0)
+            if (category.imgSrc != 0)
+                iconImageView.setImageResource(category.imgSrc)
 
-            descriptionTextView.text = categoryItem.name
+            descriptionTextView.text = category.name
             descriptionTextView.setTextAppearanceCompat(
                 root.context,
                 R.style.size12_color_primary
             )
-            descriptionTextView.setTextColor(getColorText(categoryItem.mapImgSrc))
-            cardMaterialCard.strokeColor = getStrokeColor(categoryItem.selected, colorSelected)
+            descriptionTextView.setTextColor(getColorText(category.imgSrc))
+            cardMaterialCard.strokeColor = getStrokeColor(category.selected, colorSelected)
 
             root.setOnClickListener { callback(adapterPosition) }
         }
     }
 
-    private fun getColorText(imgSrc: String): Int {
-        return if (imgSrc != "")
+    private fun getColorText(imgSrc: Int): Int {
+        return if (imgSrc != 0)
             binding.root.context.themeColor(com.google.android.material.R.attr.colorPrimary)
         else
             binding.root.context.themeColor(com.google.android.material.R.attr.colorSecondary)

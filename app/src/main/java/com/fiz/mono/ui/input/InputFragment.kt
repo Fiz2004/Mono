@@ -83,10 +83,7 @@ class InputFragment : Fragment() {
     private fun init() {
         viewModel.init(args.transaction)
 
-        adapter = CategoriesAdapter(
-            (requireActivity().application as App).categoryIconStore,
-            R.color.blue
-        ) { position ->
+        adapter = CategoriesAdapter(R.color.blue) { position ->
             viewModel.clickRecyclerView(position)
         }
     }
@@ -130,16 +127,16 @@ class InputFragment : Fragment() {
                 viewModel.removeTransaction()
             }
 
-            dataRangeLayout.leftDateRangeImageButton.setOnClickListener {
-                mainViewModel.dateDayMinusOne()
-            }
-
             dataRangeLayout.dateTextView.setOnClickListener {
                 viewModel.clickDate()
             }
 
-            dataRangeLayout.rightDateRangeImageButton.setOnClickListener {
-                mainViewModel.dateDayPlusOne()
+            valueEditText.doOnTextChanged { text, start, before, count ->
+                viewModel.setValue(text.toString())
+            }
+
+            noteEditText.doOnTextChanged { text, start, before, count ->
+                viewModel.setNote(text.toString())
             }
 
             tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -154,46 +151,18 @@ class InputFragment : Fragment() {
                 override fun onTabReselected(tab: TabLayout.Tab?) {}
             })
 
-            valueEditText.doOnTextChanged { text, start, before, count ->
-                viewModel.setValue(text.toString())
+            dataRangeLayout.leftDateRangeImageButton.setOnClickListener {
+                mainViewModel.dateDayMinusOne()
             }
 
-            noteEditText.doOnTextChanged { text, start, before, count ->
-                viewModel.setNote(text.toString())
+            dataRangeLayout.rightDateRangeImageButton.setOnClickListener {
+                mainViewModel.dateDayPlusOne()
             }
         }
     }
 
     private fun subscribe() {
         viewModel.apply {
-            allCategoryExpense.observe(viewLifecycleOwner) {
-                viewModel.inputUiState.value.transaction?.let {
-                    if (viewModel.getSelectedAdapter() == EXPENSE)
-                        viewModel.setSelected(
-                            viewModel.inputUiState.value.selectedAdapter,
-                            it.nameCategory
-                        )
-                }
-
-                val allCategory =
-                    viewModel.getAllCategoryFromSelectedForInput(viewModel.inputUiState.value.selectedAdapter)
-                adapter.submitList(allCategory)
-            }
-
-            allCategoryIncome.observe(viewLifecycleOwner) {
-                viewModel.inputUiState.value.transaction?.let {
-                    if (viewModel.getSelectedAdapter() == INCOME)
-                        viewModel.setSelected(
-                            viewModel.inputUiState.value.selectedAdapter,
-                            it.nameCategory
-                        )
-                }
-
-                val allCategory =
-                    viewModel.getAllCategoryFromSelectedForInput(viewModel.inputUiState.value.selectedAdapter)
-                adapter.submitList(allCategory)
-            }
-
             viewLifecycleOwner.lifecycleScope.launch {
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     viewModel.inputUiState.collect { inputUiState ->
@@ -279,6 +248,32 @@ class InputFragment : Fragment() {
                         viewModel.inputUiState.value.photoBitmap.getOrNull(2)?.let { bitmap ->
                             binding.photo3ImageView.setImageBitmap(bitmap)
                         } ?: binding.photo3ImageView.setImageBitmap(null)
+
+
+                        viewModel.inputUiState.value.transaction?.let {
+                            if (viewModel.getSelectedAdapter() == EXPENSE)
+                                viewModel.setSelected(
+                                    viewModel.inputUiState.value.selectedAdapter,
+                                    it.nameCategory
+                                )
+                        }
+
+                        val allCategoryExpense =
+                            viewModel.getAllCategoryFromSelectedForInput(viewModel.inputUiState.value.selectedAdapter)
+                        adapter.submitList(allCategoryExpense)
+
+                        viewModel.inputUiState.value.transaction?.let {
+                            if (viewModel.getSelectedAdapter() == INCOME)
+                                viewModel.setSelected(
+                                    viewModel.inputUiState.value.selectedAdapter,
+                                    it.nameCategory
+                                )
+                        }
+
+                        val allCategoryIncome =
+                            viewModel.getAllCategoryFromSelectedForInput(viewModel.inputUiState.value.selectedAdapter)
+                        adapter.submitList(allCategoryIncome)
+
                     }
 
                 }

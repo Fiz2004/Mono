@@ -1,119 +1,100 @@
-package com.fiz.mono.data
+package com.fiz.mono.data.data_source
 
 import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.asLiveData
 import com.fiz.mono.R
 import com.fiz.mono.data.database.dao.CategoryDao
+import com.fiz.mono.data.entity.Category
 import com.fiz.mono.ui.category_edit.CategoryEditViewModel.Companion.TYPE_EXPENSE
+import com.fiz.mono.ui.models.CategoryUiState
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
-class CategoryStore(
+class CategoryDataSource(
     private val categoryDao: CategoryDao,
     private val editString: String,
     private val addMoreString: String
 ) {
-    var allCategoryExpense: Flow<List<CategoryItem>> =
-        categoryDao.getAllExpense()
-    var allCategoryIncome: Flow<List<CategoryItem>> =
-        categoryDao.getAllIncome()
+    var allCategoryExpense: Flow<List<CategoryUiState>> =
+        categoryDao.getAllExpense().distinctUntilChanged().map { it.map { it.toCategoryUiState() } }
+    var allCategoryIncome: Flow<List<CategoryUiState>> =
+        categoryDao.getAllIncome().distinctUntilChanged().map { it.map { it.toCategoryUiState() } }
 
-    fun getAllCategoryExpenseForEdit(): LiveData<List<CategoryItem>> {
-        return Transformations.map(allCategoryExpense.asLiveData()) {
-            val result = emptyList<CategoryItem>().toMutableList()
-            result.addAll(it)
-            result.add(CategoryItem("e", addMoreString, ""))
-            result
-        }
+    fun getAllCategoryExpenseForEdit(): Flow<List<CategoryUiState>> {
+        return allCategoryExpense.map { it + CategoryUiState("e", addMoreString, 0) }
     }
 
-    fun getAllCategoryIncomeForEdit(): LiveData<List<CategoryItem>> {
-        return Transformations.map(allCategoryIncome.asLiveData()) {
-            val result = emptyList<CategoryItem>().toMutableList()
-            result.addAll(it)
-            result.add(CategoryItem("i", addMoreString, ""))
-            result
-        }
+    fun getAllCategoryIncomeForEdit(): Flow<List<CategoryUiState>> {
+        return allCategoryExpense.map { it + CategoryUiState("i", addMoreString, 0) }
     }
 
-    fun getAllCategoryExpenseForInput(): LiveData<List<CategoryItem>> {
-        return Transformations.map(allCategoryExpense.asLiveData()) {
-            val result = emptyList<CategoryItem>().toMutableList()
-            result.addAll(it)
-            result.add(CategoryItem("e", editString, ""))
-            result
-        }
+    fun getAllCategoryExpenseForInput(): Flow<List<CategoryUiState>> {
+        return allCategoryExpense.map { it + CategoryUiState("e", editString, 0) }
     }
 
-    fun getAllCategoryIncomeForInput(): LiveData<List<CategoryItem>> {
-        return Transformations.map(allCategoryIncome.asLiveData()) {
-            val result = emptyList<CategoryItem>().toMutableList()
-            result.addAll(it)
-            result.add(CategoryItem("i", editString, ""))
-            result
-        }
+    fun getAllCategoryIncomeForInput(): Flow<List<CategoryUiState>> {
+        return allCategoryIncome.map { it + CategoryUiState("i", editString, 0) }
     }
 
     suspend fun cleanSelected() {
-        allCategoryExpense.first().forEach { it.selected = false }
-        allCategoryIncome.first().forEach { it.selected = false }
+        allCategoryExpense.first().forEach { it.selectedFalse() }
+        allCategoryIncome.first().forEach { it.selectedFalse() }
     }
 
     private suspend fun removeCategoryExpense(position: Int) {
         allCategoryExpense.first()[position].let {
-            categoryDao.delete(it)
+            categoryDao.delete(it.toCategory())
         }
     }
 
     private suspend fun removeCategoryIncome(position: Int) {
         allCategoryIncome.first()[position].let {
-            categoryDao.delete(it)
+            categoryDao.delete(it.toCategory())
         }
     }
 
     suspend fun deleteAll(context: Context) {
         allCategoryExpense.first().map {
-            categoryDao.delete(it)
+            categoryDao.delete(it.toCategory())
         }
         allCategoryIncome.first().map {
-            categoryDao.delete(it)
+            categoryDao.delete(it.toCategory())
         }
 
         val allCategoryExpenseDefault = mutableListOf(
-            CategoryItem("e0", context.getString(R.string.bank), "bank"),
-            CategoryItem("e1", context.getString(R.string.food), "food"),
-            CategoryItem(
+            Category("e0", context.getString(R.string.bank), "bank"),
+            Category("e1", context.getString(R.string.food), "food"),
+            Category(
                 "e2",
                 context.getString(R.string.medican),
                 "medican"
             ),
-            CategoryItem("e3", context.getString(R.string.gym), "gym"),
-            CategoryItem(
+            Category("e3", context.getString(R.string.gym), "gym"),
+            Category(
                 "e4",
                 context.getString(R.string.coffee),
                 "coffee"
             ),
-            CategoryItem(
+            Category(
                 "e5",
                 context.getString(R.string.shopping),
                 "market"
             ),
-            CategoryItem("e6", context.getString(R.string.cats), "cat"),
-            CategoryItem("e7", context.getString(R.string.party), "party"),
-            CategoryItem("e8", context.getString(R.string.gift), "gift"),
-            CategoryItem("e9", context.getString(R.string.gas), "gas"),
+            Category("e6", context.getString(R.string.cats), "cat"),
+            Category("e7", context.getString(R.string.party), "party"),
+            Category("e8", context.getString(R.string.gift), "gift"),
+            Category("e9", context.getString(R.string.gas), "gas"),
         )
         val allCategoryIncomeDefault = mutableListOf(
-            CategoryItem(
+            Category(
                 "i0",
                 context.getString(R.string.freelance),
                 "challenge"
             ),
-            CategoryItem("i1", context.getString(R.string.salary), "money"),
-            CategoryItem("i2", context.getString(R.string.bonus), "coin"),
-            CategoryItem("i3", context.getString(R.string.loan), "user"),
+            Category("i1", context.getString(R.string.salary), "money"),
+            Category("i2", context.getString(R.string.bonus), "coin"),
+            Category("i3", context.getString(R.string.loan), "user"),
         )
         allCategoryExpenseDefault.forEach {
             categoryDao.insert(it)
@@ -135,7 +116,7 @@ class CategoryStore(
         val numberLastItem = allCategoryExpense.first().lastOrNull()?.id?.substring(1)?.toInt()
         val newId = numberLastItem?.let { it + 1 } ?: 0
 
-        val newCategoryItem = CategoryItem("e$newId", name, iconID)
+        val newCategoryItem = Category("e$newId", name, iconID)
 
         categoryDao.insert(newCategoryItem)
     }
@@ -144,28 +125,21 @@ class CategoryStore(
         val numberLastItem = allCategoryIncome.first().lastOrNull()?.id?.substring(1)?.toInt()
         val newId = numberLastItem?.let { it + 1 } ?: 0
 
-        val newCategoryItem = CategoryItem("i$newId", name, iconID)
+        val newCategoryItem = Category("i$newId", name, iconID)
 
         categoryDao.insert(newCategoryItem)
     }
 
     suspend fun selectExpense(position: Int) {
-        allCategoryIncome.first().find { it.selected }?.let {
-            it.selected = false
-        }
+        allCategoryIncome.first().find { it.selected }?.selectedFalse()
 
         val list = allCategoryExpense.first()
 
         if (!list[position].selected) {
-            list.find { it.selected }?.let {
-                it.selected = false
-            }
+            list.find { it.selected }?.selectedFalse()
         }
 
-        list[position].selected =
-            !list[position].selected
-
-        categoryDao.updateAll(list)
+        list[position].invertSelected()
     }
 
     suspend fun isClickAddPositionExpense(position: Int): Boolean {
@@ -177,22 +151,15 @@ class CategoryStore(
     }
 
     suspend fun selectIncome(position: Int) {
-        allCategoryExpense.first().find { it.selected }?.let {
-            it.selected = false
-        }
+        allCategoryExpense.first().find { it.selected }?.selectedFalse()
 
         val list = allCategoryIncome.first()
 
         if (!list[position].selected) {
-            list.find { it.selected }?.let {
-                it.selected = false
-            }
+            list.find { it.selected }?.selectedFalse()
         }
 
-        list[position].selected =
-            !list[position].selected
-
-        categoryDao.updateAll(list)
+        list[position].invertSelected()
     }
 
     suspend fun isSelect(): Boolean {

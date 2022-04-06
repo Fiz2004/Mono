@@ -1,35 +1,45 @@
 package com.fiz.mono.ui.on_boarding
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+
+data class OnBoardingUiState(
+    val pages: Int = 0,
+    val isNextScreen: Boolean = false
+)
 
 class OnBoardingViewModel : ViewModel() {
-    private val _pages = MutableLiveData(0)
-    val pages: LiveData<Int> = _pages
-
-    private val _isNextScreen = MutableLiveData(false)
-    val isNextScreen: LiveData<Boolean> = _isNextScreen
+    private val _onBoardingUiState = MutableStateFlow(OnBoardingUiState())
+    val onBoardingUiState: StateFlow<OnBoardingUiState> = _onBoardingUiState.asStateFlow()
 
     fun clickNextPages() {
-        if (pages.value!! < 3)
-            _pages.value = _pages.value?.plus(1)
+        if (onBoardingUiState.value.pages < 3)
+            _onBoardingUiState.update {
+                it.copy(pages = it.pages + 1)
+            }
 
-        if (pages.value == 3) {
-            _isNextScreen.value = true
+        if (onBoardingUiState.value.pages == 3) {
+            _onBoardingUiState.update {
+                it.copy(isNextScreen = true)
+            }
         }
     }
 
     fun clickSkipButton() {
-        _pages.value = 3
-        _isNextScreen.value = true
+        _onBoardingUiState.update {
+            it.copy(
+                pages = 3,
+                isNextScreen = true
+            )
+        }
     }
 
     fun clickBackPress() {
-        _pages.value = _pages.value?.minus(1)
-    }
-
-    fun isNextScreenRefresh() {
-        _isNextScreen.value = false
+        _onBoardingUiState.update {
+            it.copy(pages = it.pages - 1)
+        }
     }
 }

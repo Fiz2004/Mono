@@ -1,11 +1,11 @@
-package com.fiz.mono.data
+package com.fiz.mono.data.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.*
 
 @Entity
-data class TransactionItem(
+data class Transaction(
     @PrimaryKey
     val id: Int,
     val date: Date,

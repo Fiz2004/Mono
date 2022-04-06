@@ -4,20 +4,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fiz.mono.data.CategoryIcon
-import com.fiz.mono.data.CategoryIconStore
-import com.fiz.mono.data.CategoryStore
+import com.fiz.mono.data.data_source.CategoryDataSource
+import com.fiz.mono.data.data_source.CategoryIconDataSource
 import com.fiz.mono.ui.category_edit.CategoryEditViewModel.Companion.TYPE_EXPENSE
+import com.fiz.mono.ui.models.CategoryIconUiState
 import kotlinx.coroutines.launch
 
 class CategoryAddViewModel(
-    private val categoryStore: CategoryStore,
-    private val categoryIconStore: CategoryIconStore,
+    private val categoryDataSource: CategoryDataSource,
+    private val categoryIconDataSource: CategoryIconDataSource,
 
     ) : ViewModel() {
-    private val _allCategoryIcon: MutableLiveData<MutableList<CategoryIcon>> =
-        MutableLiveData(categoryIconStore.categoryIcons)
-    val allCategoryIcon: LiveData<MutableList<CategoryIcon>> = _allCategoryIcon
+    private val _allCategoryIcon: MutableLiveData<MutableList<CategoryIconUiState>> =
+        MutableLiveData(categoryIconDataSource.categoryIcons)
+    val allCategoryIcon: LiveData<MutableList<CategoryIconUiState>> = _allCategoryIcon
 
     private val nameCategory: MutableLiveData<String> =
         MutableLiveData("")
@@ -29,16 +29,16 @@ class CategoryAddViewModel(
 
     fun init(type: String) {
         this.type = type
-        allCategoryIcon.value?.map { it.selected = false }
+        allCategoryIcon.value?.map { it.selectedFalse() }
     }
 
     fun clickRecyclerView(position: Int) {
-        categoryIconStore.select(position)
+        categoryIconDataSource.select(position)
         _allCategoryIcon.value = allCategoryIcon.value!!
     }
 
     fun getVisibilityAddButton(): Boolean {
-        return categoryIconStore.isSelected()
+        return categoryIconDataSource.isSelected()
     }
 
     fun setCategoryName(text: CharSequence?) {
@@ -47,12 +47,12 @@ class CategoryAddViewModel(
 
     fun clickAddButton() {
         if (nameCategory.value?.isNotBlank() != true) return
-        if (categoryIconStore.isNotSelected()) return
+        if (categoryIconDataSource.isNotSelected()) return
 
         val name = nameCategory.value ?: return
-        val selectedIcon = categoryIconStore.getSelectedIcon()
+        val selectedIcon = categoryIconDataSource.getSelectedIcon()
         viewModelScope.launch {
-            categoryStore.addNewCategory(name, type, selectedIcon)
+            categoryDataSource.addNewCategory(name, type, selectedIcon)
         }
 
         _isReturn.value = true

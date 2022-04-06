@@ -2,18 +2,18 @@ package com.fiz.mono.ui.input
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.fiz.mono.data.CategoryStore
-import com.fiz.mono.data.TransactionStore
+import com.fiz.mono.data.data_source.CategoryDataSource
+import com.fiz.mono.data.data_source.TransactionDataSource
 
 class InputViewModelFactory(
-    private val categoryStore: CategoryStore,
-    private val transactionStore: TransactionStore
+    private val categoryDataSource: CategoryDataSource,
+    private val transactionDataSource: TransactionDataSource
 ) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(InputViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return InputViewModel(categoryStore, transactionStore) as T
+            return InputViewModel(categoryDataSource, transactionDataSource) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

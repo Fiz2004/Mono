@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.fiz.mono.data.CategoryStore
-import com.fiz.mono.data.TransactionItem
-import com.fiz.mono.data.TransactionStore
+import com.fiz.mono.data.data_source.CategoryDataSource
+import com.fiz.mono.data.data_source.TransactionDataSource
+import com.fiz.mono.data.entity.Transaction
 import com.fiz.mono.ui.shared_adapters.InfoDay
 import com.fiz.mono.ui.shared_adapters.TransactionsDataItem
 import java.text.SimpleDateFormat
@@ -14,13 +14,13 @@ import java.util.*
 import kotlin.math.abs
 
 class ReportCategoryViewModel(
-    categoryStore: CategoryStore,
-    transactionStore: TransactionStore
+    categoryDataSource: CategoryDataSource,
+    transactionDataSource: TransactionDataSource
 ) : ViewModel() {
-    var allCategoryExpense = categoryStore.getAllCategoryExpenseForInput()
-    var allCategoryIncome = categoryStore.getAllCategoryIncomeForInput()
+    var allCategoryExpense = categoryDataSource.allCategoryExpense
+    var allCategoryIncome = categoryDataSource.allCategoryIncome
 
-    val allTransactions = transactionStore.allTransactions
+    val allTransactions = transactionDataSource.allTransactions
 
     private val _reportFor = MutableLiveData(ReportCategoryFragment.MONTH)
     val reportFor: LiveData<Int>
@@ -66,7 +66,7 @@ class ReportCategoryViewModel(
     }
 
     fun getValueReportCategory(
-        transactions: List<TransactionItem>,
+        transactions: List<Transaction>,
         currency: String,
         isExpense: Boolean,
         categoryName: String
@@ -97,14 +97,14 @@ class ReportCategoryViewModel(
 }
 
 class ReportCategoryViewModelFactory(
-    private val categoryStore: CategoryStore,
-    private val transactionStore: TransactionStore
+    private val categoryDataSource: CategoryDataSource,
+    private val transactionDataSource: TransactionDataSource
 ) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ReportCategoryViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ReportCategoryViewModel(categoryStore, transactionStore) as T
+            return ReportCategoryViewModel(categoryDataSource, transactionDataSource) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -7,10 +7,10 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.fiz.mono.R
-import com.fiz.mono.data.CategoryItem
-import com.fiz.mono.data.TransactionItem
 import com.fiz.mono.data.database.dao.CategoryDao
 import com.fiz.mono.data.database.dao.TransactionDao
+import com.fiz.mono.data.entity.Category
+import com.fiz.mono.data.entity.Transaction
 import com.fiz.mono.util.TimeUtils.getDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 private const val NAME_DATABASE = "category_item_database"
 
 @Database(
-    entities = [CategoryItem::class, TransactionItem::class],
+    entities = [Category::class, Transaction::class],
     version = 1,
     exportSchema = false
 )
@@ -33,42 +33,42 @@ abstract class AppDatabase : RoomDatabase() {
             super.onCreate(db)
 
             val allCategoryExpenseDefault = mutableListOf(
-                CategoryItem("e0", context.getString(R.string.bank), "bank"),
-                CategoryItem("e1", context.getString(R.string.food), "food"),
-                CategoryItem(
+                Category("e0", context.getString(R.string.bank), "bank"),
+                Category("e1", context.getString(R.string.food), "food"),
+                Category(
                     "e2",
                     context.getString(R.string.medican),
                     "medican"
                 ),
-                CategoryItem("e3", context.getString(R.string.gym), "gym"),
-                CategoryItem(
+                Category("e3", context.getString(R.string.gym), "gym"),
+                Category(
                     "e4",
                     context.getString(R.string.coffee),
                     "coffee"
                 ),
-                CategoryItem(
+                Category(
                     "e5",
                     context.getString(R.string.shopping),
                     "market"
                 ),
-                CategoryItem("e6", context.getString(R.string.cats), "cat"),
-                CategoryItem("e7", context.getString(R.string.party), "party"),
-                CategoryItem("e8", context.getString(R.string.gift), "gift"),
-                CategoryItem("e9", context.getString(R.string.gas), "gas"),
+                Category("e6", context.getString(R.string.cats), "cat"),
+                Category("e7", context.getString(R.string.party), "party"),
+                Category("e8", context.getString(R.string.gift), "gift"),
+                Category("e9", context.getString(R.string.gas), "gas"),
             )
             val allCategoryIncomeDefault = mutableListOf(
-                CategoryItem(
+                Category(
                     "i0",
                     context.getString(R.string.freelance),
                     "challenge"
                 ),
-                CategoryItem("i1", context.getString(R.string.salary), "money"),
-                CategoryItem("i2", context.getString(R.string.bonus), "coin"),
-                CategoryItem("i3", context.getString(R.string.loan), "user"),
+                Category("i1", context.getString(R.string.salary), "money"),
+                Category("i2", context.getString(R.string.bonus), "coin"),
+                Category("i3", context.getString(R.string.loan), "user"),
             )
 
             val allTransactionsDefault = mutableListOf(
-                TransactionItem(
+                Transaction(
                     0,
                     getDate(2022, 1, 24),
                     -5.49,
@@ -76,7 +76,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "Pizza for lazyday",
                     "food"
                 ),
-                TransactionItem(
+                Transaction(
                     1,
                     getDate(2022, 1, 24),
                     50.0,
@@ -84,7 +84,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "",
                     "challenge"
                 ),
-                TransactionItem(
+                Transaction(
                     2,
                     getDate(2022, 1, 24),
                     -13.16,
@@ -92,7 +92,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "New Clothes",
                     "market"
                 ),
-                TransactionItem(
+                Transaction(
                     3,
                     getDate(2022, 1, 24),
                     1000.0,
@@ -100,7 +100,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "Jan",
                     "money"
                 ),
-                TransactionItem(
+                Transaction(
                     4,
                     getDate(2022, 1, 23),
                     -3.10,
@@ -108,7 +108,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "Pizza",
                     "food"
                 ),
-                TransactionItem(
+                Transaction(
                     5,
                     getDate(2022, 1, 23),
                     50.0,
@@ -116,7 +116,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "",
                     "user"
                 ),
-                TransactionItem(
+                Transaction(
                     6,
                     getDate(2022, 1, 20),
                     -17.50,
@@ -124,7 +124,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "Castrang",
                     "cat"
                 ),
-                TransactionItem(
+                Transaction(
                     7,
                     getDate(2022, 1, 18),
                     200.0,
@@ -132,7 +132,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "Project bonus",
                     "coin"
                 ),
-                TransactionItem(
+                Transaction(
                     8,
                     getDate(2022, 1, 5),
                     10.0,
@@ -143,15 +143,9 @@ abstract class AppDatabase : RoomDatabase() {
             )
 
             CoroutineScope(Dispatchers.Default).launch {
-                allCategoryExpenseDefault.forEach {
-                    INSTANCE?.categoryItemDao()?.insert(it)
-                }
-                allCategoryIncomeDefault.forEach {
-                    INSTANCE?.categoryItemDao()?.insert(it)
-                }
-                allTransactionsDefault.forEach {
-                    INSTANCE?.transactionItemDao()?.insert(it)
-                }
+                INSTANCE?.categoryItemDao()?.insertAll(allCategoryExpenseDefault)
+                INSTANCE?.categoryItemDao()?.insertAll(allCategoryIncomeDefault)
+                INSTANCE?.transactionItemDao()?.insertAll(allTransactionsDefault)
             }
         }
     }

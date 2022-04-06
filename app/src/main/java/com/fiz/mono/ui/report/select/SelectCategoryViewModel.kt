@@ -3,20 +3,20 @@ package com.fiz.mono.ui.report.select
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.fiz.mono.data.CategoryItem
-import com.fiz.mono.data.CategoryStore
+import com.fiz.mono.data.data_source.CategoryDataSource
+import com.fiz.mono.ui.models.CategoryUiState
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 data class SelectUiState(
-    val allCategoryExpense: List<CategoryItem> = listOf(),
-    val allCategoryIncome: List<CategoryItem> = listOf(),
+    val allCategoryExpense: List<CategoryUiState> = listOf(),
+    val allCategoryIncome: List<CategoryUiState> = listOf(),
     val isMoveExpense: Boolean = false,
     val isMoveIncome: Boolean = false,
     val position: Int = -1
 )
 
-class SelectCategoryViewModel(private val categoryStore: CategoryStore) : ViewModel() {
+class SelectCategoryViewModel(private val categoryDataSource: CategoryDataSource) : ViewModel() {
     private var _selectUiState = MutableStateFlow(SelectUiState())
     val selectUiState: StateFlow<SelectUiState> = _selectUiState.asStateFlow()
 
@@ -24,8 +24,8 @@ class SelectCategoryViewModel(private val categoryStore: CategoryStore) : ViewMo
         viewModelScope.launch {
             _selectUiState.update {
                 it.copy(
-                    allCategoryExpense = categoryStore.allCategoryExpense.first(),
-                    allCategoryIncome = categoryStore.allCategoryIncome.first(),
+                    allCategoryExpense = categoryDataSource.allCategoryExpense.first(),
+                    allCategoryIncome = categoryDataSource.allCategoryIncome.first(),
                 )
             }
         }
@@ -50,12 +50,12 @@ class SelectCategoryViewModel(private val categoryStore: CategoryStore) : ViewMo
     }
 }
 
-class SelectCategoryViewModelFactory(private val categoryStore: CategoryStore) :
+class SelectCategoryViewModelFactory(private val categoryDataSource: CategoryDataSource) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SelectCategoryViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return SelectCategoryViewModel(categoryStore) as T
+            return SelectCategoryViewModel(categoryDataSource) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -1,23 +1,23 @@
 package com.fiz.mono
 
 import android.app.Application
-import com.fiz.mono.data.CategoryIconStore
-import com.fiz.mono.data.CategoryStore
-import com.fiz.mono.data.TransactionStore
+import com.fiz.mono.data.data_source.CategoryDataSource
+import com.fiz.mono.data.data_source.CategoryIconDataSource
+import com.fiz.mono.data.data_source.TransactionDataSource
 import com.fiz.mono.data.database.AppDatabase
 import com.jakewharton.threetenabp.AndroidThreeTen
 
 class App : Application() {
     val database by lazy { AppDatabase.getDatabase() }
     val categoryStore by lazy {
-        CategoryStore(
+        CategoryDataSource(
             database?.categoryItemDao()!!,
             resources.getString(R.string.edit),
             resources.getString(R.string.add_more)
         )
     }
-    val transactionStore by lazy { TransactionStore(database?.transactionItemDao()!!) }
-    val categoryIconStore by lazy { CategoryIconStore() }
+    val transactionStore by lazy { TransactionDataSource(database?.transactionItemDao()!!) }
+    val categoryIconStore by lazy { CategoryIconDataSource() }
 
     override fun onCreate() {
         super.onCreate()

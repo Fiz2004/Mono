@@ -1,13 +1,14 @@
 package com.fiz.mono.ui.report.monthly
 
 import androidx.lifecycle.ViewModel
-import com.fiz.mono.data.TransactionStore
+import com.fiz.mono.data.data_source.TransactionDataSource
 import com.fiz.mono.ui.shared_adapters.InfoDay
 import com.fiz.mono.ui.shared_adapters.TransactionsDataItem
 import java.util.*
 
-class ReportMonthlyViewModel(private val transactionStore: TransactionStore) : ViewModel() {
-    val allTransactions = transactionStore.allTransactions
+class ReportMonthlyViewModel(private val transactionDataSource: TransactionDataSource) :
+    ViewModel() {
+    val allTransactions = transactionDataSource.allTransactions
 
     var tabSelectedReport: Int = 0
 
@@ -17,7 +18,7 @@ class ReportMonthlyViewModel(private val transactionStore: TransactionStore) : V
 
     fun getCurrentIncome(date: Calendar): Double {
         val allTransactionsForMonth =
-            transactionStore.getAllTransactionsForMonth(date)
+            transactionDataSource.getAllTransactionsForMonth(date)
 
         return allTransactionsForMonth?.filter { it.value > 0 }?.map { it.value }
             ?.fold(0.0) { acc, d -> acc + d } ?: 0.0
@@ -25,7 +26,7 @@ class ReportMonthlyViewModel(private val transactionStore: TransactionStore) : V
 
     fun getCurrentExpense(date: Calendar): Double {
         val allTransactionsForMonth =
-            transactionStore.getAllTransactionsForMonth(date)
+            transactionDataSource.getAllTransactionsForMonth(date)
 
         return allTransactionsForMonth?.filter { it.value < 0 }?.map { it.value }
             ?.fold(0.0) { acc, d -> acc + d } ?: 0.0
@@ -40,7 +41,7 @@ class ReportMonthlyViewModel(private val transactionStore: TransactionStore) : V
         datePrevMonth.add(Calendar.MONTH, -1)
 
         val allTransactionsPrevMonthForMonth =
-            transactionStore.getAllTransactionsForMonth(datePrevMonth)
+            transactionDataSource.getAllTransactionsForMonth(datePrevMonth)
 
         val prevIncome = allTransactionsPrevMonthForMonth?.filter { it.value > 0 }?.map { it.value }
             ?.fold(0.0) { acc, d -> acc + d } ?: 0.0
@@ -53,7 +54,7 @@ class ReportMonthlyViewModel(private val transactionStore: TransactionStore) : V
 
     fun getTransactions(tabSelectedReport: Int, date: Calendar): MutableList<TransactionsDataItem> {
         var groupTransactions =
-            transactionStore.getGroupTransactionsByDays(date, "MMM dd, yyyy")
+            transactionDataSource.getGroupTransactionsByDays(date, "MMM dd, yyyy")
 
         groupTransactions = groupTransactions?.mapValues {
             when (tabSelectedReport) {

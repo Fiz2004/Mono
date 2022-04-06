@@ -4,12 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.fiz.mono.data.CategoryIcon
-import com.fiz.mono.data.CategoryIconItemDiff
 import com.fiz.mono.databinding.ItemIconCategoryBinding
+import com.fiz.mono.ui.models.CategoryIconItemDiff
+import com.fiz.mono.ui.models.CategoryIconUiState
 
 class CategoryIconsAdapter(private val clickCallback: (Int) -> Unit) :
-    ListAdapter<CategoryIcon, CategoryIconsViewHolder>(CategoryIconItemDiff) {
+    ListAdapter<CategoryIconUiState, CategoryIconsViewHolder>(CategoryIconItemDiff) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryIconsViewHolder {
         val binding = ItemIconCategoryBinding.inflate(
             LayoutInflater.from(parent.context),
@@ -28,7 +28,7 @@ class CategoryIconsAdapter(private val clickCallback: (Int) -> Unit) :
 class CategoryIconsViewHolder(
     private var binding: ItemIconCategoryBinding
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(categoryIcon: CategoryIcon, callback: (Int) -> Unit) {
+    fun bind(categoryIcon: CategoryIconUiState, callback: (Int) -> Unit) {
         binding.apply {
             iconImageView.setImageResource(categoryIcon.imgSrc)
             cardMaterialCard.isActivated = categoryIcon.selected

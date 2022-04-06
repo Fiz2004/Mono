@@ -6,6 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.App
 import com.fiz.mono.R
@@ -13,6 +16,7 @@ import com.fiz.mono.databinding.FragmentCategoryEditBinding
 import com.fiz.mono.ui.shared_adapters.CategoriesAdapter
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setVisible
+import kotlinx.coroutines.launch
 
 class CategoryEditFragment : Fragment() {
     private var _binding: FragmentCategoryEditBinding? = null
@@ -52,14 +56,12 @@ class CategoryEditFragment : Fragment() {
     private fun init() {
         // TODO Invent to Remove the transmission categoryIconStore
         expenseAdapter = CategoriesAdapter(
-            (requireActivity().application as App).categoryIconStore,
             R.color.red
         ) { position ->
             viewModel.clickExpenseRecyclerView(position)
         }
 
         incomeAdapter = CategoriesAdapter(
-            (requireActivity().application as App).categoryIconStore,
             R.color.red
         ) { position ->
             viewModel.clickIncomeRecyclerView(position)
@@ -92,12 +94,13 @@ class CategoryEditFragment : Fragment() {
     }
 
     private fun subscribe() {
-        viewModel.allCategoryExpense.observe(viewLifecycleOwner) { categoryItem ->
-            expenseAdapter.submitList(categoryItem.map { it.copy() })
-        }
-
-        viewModel.allCategoryIncome.observe(viewLifecycleOwner) { categoryItem ->
-            incomeAdapter.submitList(categoryItem.map { it.copy() })
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.categoryEditUiState.collect { categoryEditUiState ->
+                    expenseAdapter.submitList(categoryEditUiState.allCategoryExpense.map { it.copy() })
+                    incomeAdapter.submitList(categoryEditUiState.allCategoryIncome.map { it.copy() })
+                }
+            }
         }
 
         viewModel.isSelected.observe(viewLifecycleOwner) {

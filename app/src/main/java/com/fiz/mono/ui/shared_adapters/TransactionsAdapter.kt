@@ -5,9 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fiz.mono.R
-import com.fiz.mono.data.CategoryIconStore
-import com.fiz.mono.data.TransactionItem
-import com.fiz.mono.data.getDrawableCategoryIcon
+import com.fiz.mono.data.data_source.CategoryIconDataSource
+import com.fiz.mono.data.entity.Transaction
 import com.fiz.mono.databinding.ItemTransactionBinding
 import com.fiz.mono.databinding.ItemTransactionDateExpenseIncomeBinding
 import com.fiz.mono.util.currentUtils.getCurrencyFormat
@@ -15,10 +14,9 @@ import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setVisible
 
 class TransactionsAdapter(
-    private val categoryIconStore: CategoryIconStore,
     private val currency: String,
     private val isVisibleIcon: Boolean,
-    private val callback: (TransactionItem) -> Unit = {}
+    private val callback: (Transaction) -> Unit = {}
 ) :
     ListAdapter<TransactionsDataItem, RecyclerView.ViewHolder>(DataItemDiff) {
 
@@ -52,8 +50,7 @@ class TransactionsAdapter(
             is InfoTransactionItemViewHolder -> {
                 val transactionItem = getItem(position) as TransactionsDataItem.InfoTransactionItem
                 holder.bind(
-                    categoryIconStore,
-                    transactionItem.transactionItem,
+                    transactionItem.transaction,
                     isVisibleIcon,
                     currency,
                     callback
@@ -67,41 +64,40 @@ class TransactionsAdapter(
         private var binding: ItemTransactionBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(
-            categoryIconStore: CategoryIconStore,
-            transactionItem: TransactionItem,
+            transaction: Transaction,
             isVisibleIcon: Boolean,
             currency: String,
-            callback: (TransactionItem) -> Unit
+            callback: (Transaction) -> Unit
         ) {
             binding.apply {
                 iconTransactionImageView.setVisible(isVisibleIcon)
                 if (isVisibleIcon) {
-                    transactionItem.mapImgSrc.let {
+                    transaction.mapImgSrc.let {
                         iconTransactionImageView.setImageResource(
-                            getDrawableCategoryIcon(categoryIconStore, it)
+                            CategoryIconDataSource().getDrawableCategoryIcon(it)
                         )
                     }
                 }
 
-                categoryTransactionTextView.text = transactionItem.nameCategory
+                categoryTransactionTextView.text = transaction.nameCategory
 
                 noteTransactionTextView.text =
-                    if (transactionItem.note.isNotBlank())
-                        root.context.getString(R.string.transaction_note, transactionItem.note)
+                    if (transaction.note.isNotBlank())
+                        root.context.getString(R.string.transaction_note, transaction.note)
                     else
                         ""
 
                 valueTextView.setTextColor(
-                    if (transactionItem.value > 0)
+                    if (transaction.value > 0)
                         root.context.getColorCompat(R.color.blue)
                     else
                         root.context.getColorCompat(R.color.red)
                 )
 
                 valueTextView.text =
-                    getCurrencyFormat(currency, transactionItem.value, true)
+                    getCurrencyFormat(currency, transaction.value, true)
 
-                root.setOnClickListener { callback(transactionItem) }
+                root.setOnClickListener { callback(transaction) }
             }
 
         }

@@ -1,88 +1,73 @@
 package com.fiz.mono.ui.calculator
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
-class CalculatorViewModel : ViewModel() {
+data class CalculatorUiState(
+    val number1: String = "",
+    val number2: String = "",
+    val currentOperator: String = "",
+    val lastOperation: String = "",
+    val history: String = ""
+) {
+    val result: String
+        get() = number1 + currentOperator + number2
 
-    private val number1 = MutableLiveData("")
-
-    private val number2 = MutableLiveData("")
-
-    private val currentOperator = MutableLiveData("")
-
-    private val lastOperation = MutableLiveData("")
-
-    private val _history = MutableLiveData("")
-    val history: LiveData<String> = _history
-
-    val result: MediatorLiveData<String> = MediatorLiveData()
-
-    init {
-        result.addSource(number1) {
-            result.value = number1.value + currentOperator.value + number2.value
-        }
-        result.addSource(number2) {
-            result.value = number1.value + currentOperator.value + number2.value
-        }
-        result.addSource(currentOperator) {
-            result.value = number1.value + currentOperator.value + number2.value
-        }
+    fun deleteLastSymbol(): CalculatorUiState {
+        val number1 = if (currentOperator == "")
+            number1.dropLast(1) else number1
+        val number2 = if (currentOperator != "")
+            number2.dropLast(1) else number2
+        return copy(number1 = number1, number2 = number2)
     }
 
-    fun resetData() {
-        number1.value = ""
-        number2.value = ""
-        currentOperator.value = ""
-        lastOperation.value = "="
-        _history.value = ""
+    fun addNumber(symbol: String): CalculatorUiState {
+        val number1 = if (currentOperator == "")
+            if (symbol != "." || !number1.contains("."))
+                number1 + symbol else number1
+        else number1
+
+
+        val number2 = if (currentOperator != "")
+            if (symbol != "." || !number2.contains("."))
+                number2 + symbol else number2
+        else number2
+
+        val currentOperator = if (lastOperation == "=" && currentOperator != "")
+            "" else currentOperator
+
+        return copy(number1 = number1, number2 = number2, currentOperator = currentOperator)
     }
 
-    fun deleteLastSymbol() {
-        if (currentOperator.value == "") {
-            number1.value = number1.value?.substring(0, number1.value!!.length - 1)
-        } else {
-            number2.value = number2.value?.substring(0, number2.value!!.length - 1)
-        }
-    }
-
-    fun numberClick(symbol: String) {
-        if (currentOperator.value == "") {
-            if (symbol != "." || !number1.value!!.contains("."))
-                number1.value += symbol
-        } else {
-            if (symbol != "." || !number2.value!!.contains("."))
-                number2.value += symbol
-        }
-        if (lastOperation.value == "=" && currentOperator.value != "") {
-            currentOperator.value = ""
-        }
-    }
-
-    fun operatorClick(operator: String) {
-        currentOperator.value = operator
+    fun addOperator(operator: String): CalculatorUiState {
+        var current = copy()
+        current = current.copy(currentOperator = operator)
         if (operator == "=") {
             try {
-                performOperation()
+                current = current.performOperation()
             } catch (ex: NumberFormatException) {
-                _history.value = ""
+                current = current.copy(history = "")
             }
-            currentOperator.value = ""
+            current = current.copy(currentOperator = "")
         }
-        lastOperation.value = currentOperator.value
+        current = current.copy(lastOperation = current.currentOperator)
+        return current
     }
 
-    private fun performOperation() {
-        val n1: Double = number1.value?.toDouble() ?: 0.0
-        val n2: Double = number2.value?.toDouble() ?: 0.0
 
-        var resultOperation = when (lastOperation.value) {
+    private fun performOperation(): CalculatorUiState {
+        var current = copy()
+        val n1: Double = number1.toDouble()
+        val n2: Double = number2.toDouble()
+
+        var resultOperation = when (lastOperation) {
             "/" -> if (n2 == 0.0) {
-                number1.value = ""
-                number2.value = ""
-                lastOperation.value = ""
+                current = current.copy(number1 = "")
+                current = current.copy(number2 = "")
+                current = current.copy(lastOperation = "")
                 0.0
             } else {
                 n1 / n2
@@ -97,13 +82,43 @@ class CalculatorViewModel : ViewModel() {
             resultOperation = 100000000.0
         }
 
-        result.value = if (resultOperation % 1.0 == 0.0)
-            String.format("%.0f", resultOperation)
-        else
-            String.format("%.2f", resultOperation)
+        current = current.copy(history = number1 + lastOperation + number2)
+        current = current.copy(
+            number1 = if (resultOperation % 1.0 == 0.0)
+                String.format("%.0f", resultOperation)
+            else
+                String.format("%.2f", resultOperation)
+        )
+        current = current.copy(number2 = "")
+        return current
+    }
+}
 
-        _history.value = number1.value + lastOperation.value + number2.value
-        number1.value = result.value
-        number2.value = ""
+class CalculatorViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow(CalculatorUiState())
+    val uiState: StateFlow<CalculatorUiState> = _uiState.asStateFlow()
+
+    fun resetData() {
+        _uiState.update {
+            CalculatorUiState()
+        }
+    }
+
+    fun deleteClick() {
+        _uiState.update {
+            it.deleteLastSymbol()
+        }
+    }
+
+    fun numberClick(symbol: String) {
+        _uiState.update {
+            it.addNumber(symbol)
+        }
+    }
+
+    fun operatorClick(operator: String) {
+        _uiState.update {
+            it.addOperator(operator)
+        }
     }
 }

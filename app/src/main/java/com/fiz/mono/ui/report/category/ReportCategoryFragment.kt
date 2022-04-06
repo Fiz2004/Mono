@@ -12,14 +12,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
 import com.fiz.mono.App
 import com.fiz.mono.R
-import com.fiz.mono.data.CategoryItem
 import com.fiz.mono.databinding.FragmentReportCategoryBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
 import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.ui.MainViewModel
+import com.fiz.mono.ui.models.CategoryUiState
 import com.fiz.mono.ui.report.category.ReportCategoryUtils.getValuesForVerticalForMonth
 import com.fiz.mono.ui.report.category.ReportCategoryUtils.getValuesForVerticalForWeek
 import com.fiz.mono.ui.report.select.SelectCategoryFragment
@@ -28,6 +31,7 @@ import com.fiz.mono.ui.shared_adapters.TransactionsDataItem
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.themeColor
 import com.google.android.material.button.MaterialButtonToggleGroup
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -57,7 +61,7 @@ class ReportCategoryFragment : Fragment() {
     private lateinit var adapter: TransactionsAdapter
 
     private var isExpense: Boolean = false
-    private var category: CategoryItem? = null
+    private var category: CategoryUiState? = null
 
     lateinit var list: MutableList<TransactionsDataItem>
 
@@ -83,16 +87,23 @@ class ReportCategoryFragment : Fragment() {
     }
 
     private fun subscribe() {
-        viewModel.allCategoryExpense.observe(viewLifecycleOwner) {
-            if (isExpense) {
-                updateUI(it)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.allCategoryExpense.collect {
+                    if (isExpense) {
+                        updateUI(it)
+                    }
+
+                }
+
+                viewModel.allCategoryIncome.collect {
+                    if (!isExpense) {
+                        updateUI(it)
+                    }
+                }
             }
         }
-        viewModel.allCategoryIncome.observe(viewLifecycleOwner) {
-            if (!isExpense) {
-                updateUI(it)
-            }
-        }
+
         viewModel.allTransactions.observe(viewLifecycleOwner) {
             binding.valueReportCategoryTextView.text = viewModel.getValueReportCategory(
                 it,
@@ -107,13 +118,10 @@ class ReportCategoryFragment : Fragment() {
         }
     }
 
-    private fun updateUI(allCategoryTransaction: List<CategoryItem>) {
+    private fun updateUI(allCategoryTransaction: List<CategoryUiState>) {
         category = allCategoryTransaction.find { it.id == args.id }
 
-        val icon =
-            (requireActivity().application as App).categoryIconStore.categoryIcons.find { it.id == category?.mapImgSrc }
-
-        icon?.imgSrc?.let { binding.iconImageView.setImageResource(it) }
+        category?.imgSrc?.let { binding.iconImageView.setImageResource(it) }
 
         binding.iconTextView.text = category?.name
 
@@ -130,7 +138,6 @@ class ReportCategoryFragment : Fragment() {
 
     private fun init() {
         adapter = TransactionsAdapter(
-            (requireActivity().application as App).categoryIconStore,
             mainPreferencesViewModel.currency.value ?: "$",
             false
         )

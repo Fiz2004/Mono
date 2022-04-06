@@ -52,12 +52,10 @@ class SelectCategoryFragment : Fragment() {
 
     private fun init() {
         expenseAdapter = CategoriesAdapter(
-            (requireActivity().application as App).categoryIconStore,
             R.color.red,
             ::adapterExpenseOnClickListener
         )
         incomeAdapter = CategoriesAdapter(
-            (requireActivity().application as App).categoryIconStore,
             R.color.red,
             ::adapterIncomeOnClickListener
         )

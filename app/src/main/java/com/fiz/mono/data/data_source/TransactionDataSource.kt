@@ -1,16 +1,17 @@
-package com.fiz.mono.data
+package com.fiz.mono.data.data_source
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import com.fiz.mono.data.database.dao.TransactionDao
+import com.fiz.mono.data.entity.Transaction
 import com.fiz.mono.ui.calendar.TransactionsDay
 import com.fiz.mono.util.TimeUtils
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TransactionStore(private val transactionDao: TransactionDao) {
-    var allTransactions: LiveData<List<TransactionItem>> = transactionDao.getAll().asLiveData()
+class TransactionDataSource(private val transactionDao: TransactionDao) {
+    var allTransactions: LiveData<List<Transaction>> = transactionDao.getAll().asLiveData()
 
     fun getGroupTransactionsByDays(date: Calendar, pattern: String) =
         getAllTransactionsForMonth(date)?.groupBy {
@@ -61,7 +62,7 @@ class TransactionStore(private val transactionDao: TransactionDao) {
 
     fun getAllTransactionsForMonth(
         date: Calendar
-    ): List<TransactionItem>? {
+    ): List<Transaction>? {
         val currentYear = date.get(Calendar.YEAR)
         val currentMonth = date.get(Calendar.MONTH)
 
@@ -84,7 +85,7 @@ class TransactionStore(private val transactionDao: TransactionDao) {
 
     fun getAllTransactionsForDay(
         date: Calendar
-    ): List<TransactionItem>? {
+    ): List<Transaction>? {
         val currentDay = date.get(Calendar.DATE)
         val dayString = if (currentDay < 10) "0$currentDay" else "$currentDay"
 
@@ -101,7 +102,7 @@ class TransactionStore(private val transactionDao: TransactionDao) {
         return result
     }
 
-    suspend fun insertNewTransaction(newTransaction: TransactionItem) {
+    suspend fun insertNewTransaction(newTransaction: Transaction) {
         transactionDao.insert(newTransaction)
     }
 
@@ -118,12 +119,12 @@ class TransactionStore(private val transactionDao: TransactionDao) {
         }
     }
 
-    suspend fun delete(transaction: TransactionItem) {
+    suspend fun delete(transaction: Transaction) {
         transactionDao.delete(transaction)
     }
 
-    suspend fun updateTransaction(transactionItem: TransactionItem) {
-        transactionDao.update(transactionItem)
+    suspend fun updateTransaction(transaction: Transaction) {
+        transactionDao.update(transaction)
     }
 
     fun getTransactionsForDaysCurrentMonth(date: Calendar): List<TransactionsDay> {
@@ -150,7 +151,7 @@ class TransactionStore(private val transactionDao: TransactionDao) {
         return TransactionsDay.getListEmptyTransactionDay(7 - dayOfWeekLastDay)
     }
 
-    fun getTransactionByID(transaction: Int): TransactionItem? {
+    fun getTransactionByID(transaction: Int): Transaction? {
         return if (transaction != -1)
             allTransactions.value?.find { it.id == transaction }?.copy()
         else

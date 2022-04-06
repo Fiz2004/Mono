@@ -5,20 +5,24 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
-import com.fiz.mono.data.CategoryItem
-import com.fiz.mono.data.CategoryStore
+import com.fiz.mono.data.data_source.CategoryDataSource
+import com.fiz.mono.ui.models.CategoryUiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class CategoryEditViewModel(
-    private val categoryStore: CategoryStore
-) : ViewModel() {
-    private var _allCategoryExpense: MutableLiveData<List<CategoryItem>> =
-        categoryStore.getAllCategoryExpenseForEdit() as MutableLiveData
-    val allCategoryExpense: LiveData<List<CategoryItem>> = _allCategoryExpense
+data class CategoryEditUiState(
+    val allCategoryExpense: List<CategoryUiState> = listOf(),
+    val allCategoryIncome: List<CategoryUiState> = listOf(),
+)
 
-    private var _allCategoryIncome: MutableLiveData<List<CategoryItem>> =
-        categoryStore.getAllCategoryIncomeForEdit() as MutableLiveData
-    val allCategoryIncome: LiveData<List<CategoryItem>> = _allCategoryIncome
+class CategoryEditViewModel(
+    private val categoryDataSource: CategoryDataSource
+) : ViewModel() {
+    private val _categoryEditUiState = MutableStateFlow(CategoryEditUiState())
+    val categoryEditUiState: StateFlow<CategoryEditUiState> = _categoryEditUiState.asStateFlow()
 
     private val _isReturn = MutableLiveData(false)
     val isReturn: LiveData<Boolean> = _isReturn
@@ -31,49 +35,66 @@ class CategoryEditViewModel(
 
     var type: String = TYPE_EXPENSE
 
+    init {
+        viewModelScope.launch {
+            categoryDataSource.getAllCategoryExpenseForEdit().collect { list ->
+                _categoryEditUiState.update {
+                    it.copy(
+                        allCategoryExpense = list
+                    )
+                }
+            }
+        }
+        viewModelScope.launch {
+            categoryDataSource.getAllCategoryIncomeForEdit().collect { list ->
+                _categoryEditUiState.update {
+                    it.copy(
+                        allCategoryIncome = list
+                    )
+                }
+            }
+        }
+    }
+
     fun clickExpenseRecyclerView(position: Int) {
         viewModelScope.launch {
-            if (categoryStore.isClickAddPositionExpense(position)) {
-                categoryStore.cleanSelected()
+            if (categoryDataSource.isClickAddPositionExpense(position)) {
+                categoryDataSource.cleanSelected()
                 isSelect()
                 type = TYPE_EXPENSE
                 _isMoveAdd.value = true
                 return@launch
             }
 
-            categoryStore.selectExpense(position)
+            categoryDataSource.selectExpense(position)
             isSelect()
-            _allCategoryExpense.value = allCategoryExpense.value
-            _allCategoryIncome.value = allCategoryIncome.value
         }
     }
 
     fun clickIncomeRecyclerView(position: Int) {
         viewModelScope.launch {
-            if (categoryStore.isClickAddPositionIncome(position)) {
-                categoryStore.cleanSelected()
+            if (categoryDataSource.isClickAddPositionIncome(position)) {
+                categoryDataSource.cleanSelected()
                 isSelect()
                 type = TYPE_INCOME
                 _isMoveAdd.value = true
                 return@launch
             }
 
-            categoryStore.selectIncome(position)
+            categoryDataSource.selectIncome(position)
             isSelect()
-            _allCategoryExpense.value = allCategoryExpense.value
-            _allCategoryIncome.value = allCategoryIncome.value
         }
     }
 
     fun isSelect() {
         viewModelScope.launch {
-            _isSelected.value = categoryStore.isSelect()
+            _isSelected.value = categoryDataSource.isSelect()
         }
     }
 
     fun removeSelectItem() {
         viewModelScope.launch {
-            categoryStore.remove()
+            categoryDataSource.remove()
         }
     }
 

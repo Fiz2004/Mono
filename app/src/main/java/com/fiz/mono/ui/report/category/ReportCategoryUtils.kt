@@ -1,13 +1,13 @@
 package com.fiz.mono.ui.report.category
 
-import com.fiz.mono.data.TransactionItem
+import com.fiz.mono.data.entity.Transaction
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.abs
 
 object ReportCategoryUtils {
     fun getValuesForVerticalForMonth(
-        transactions: List<TransactionItem>? = emptyList(), categoryName: String?,
+        transactions: List<Transaction>? = emptyList(), categoryName: String?,
         currentDate: Calendar, monthDate: Calendar
     ): List<Double> {
         monthDate.add(Calendar.MONTH, -7)
@@ -52,7 +52,7 @@ object ReportCategoryUtils {
     }
 
     fun getValuesForVerticalForWeek(
-        transactions: List<TransactionItem>? = emptyList(), categoryName: String?,
+        transactions: List<Transaction>? = emptyList(), categoryName: String?,
         currentDate: Calendar, DayDate: Calendar
     ): List<Double> {
         DayDate.add(Calendar.DATE, -9)

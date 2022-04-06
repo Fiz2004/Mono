@@ -1,6 +1,6 @@
 package com.fiz.mono.ui.report.category
 
-import com.fiz.mono.data.TransactionItem
+import com.fiz.mono.data.entity.Transaction
 import com.fiz.mono.ui.report.category.ReportCategoryUtils.getValuesForVerticalForMonth
 import com.fiz.mono.ui.report.category.ReportCategoryUtils.getValuesForVerticalForWeek
 import com.fiz.mono.util.TimeUtils
@@ -13,7 +13,7 @@ class ReportCategoryUtilsTest {
     @Test
     fun getValuesForVerticalForMonth_default() {
         val transactions = listOf(
-            TransactionItem(
+            Transaction(
                 0,
                 TimeUtils.getDate(2022, 1, 24),
                 -5.49,
@@ -21,7 +21,7 @@ class ReportCategoryUtilsTest {
                 "Pizza for lazyday",
                 "food"
             ),
-            TransactionItem(
+            Transaction(
                 1,
                 TimeUtils.getDate(2022, 1, 24),
                 50.0,
@@ -29,7 +29,7 @@ class ReportCategoryUtilsTest {
                 "",
                 "challenge"
             ),
-            TransactionItem(
+            Transaction(
                 2,
                 TimeUtils.getDate(2022, 1, 24),
                 -13.16,
@@ -37,7 +37,7 @@ class ReportCategoryUtilsTest {
                 "New Clothes",
                 "market"
             ),
-            TransactionItem(
+            Transaction(
                 3,
                 TimeUtils.getDate(2022, 1, 24),
                 1000.0,
@@ -45,7 +45,7 @@ class ReportCategoryUtilsTest {
                 "Jan",
                 "money"
             ),
-            TransactionItem(
+            Transaction(
                 4,
                 TimeUtils.getDate(2022, 1, 23),
                 -3.10,
@@ -53,7 +53,7 @@ class ReportCategoryUtilsTest {
                 "Pizza",
                 "food"
             ),
-            TransactionItem(
+            Transaction(
                 5,
                 TimeUtils.getDate(2022, 1, 23),
                 50.0,
@@ -61,7 +61,7 @@ class ReportCategoryUtilsTest {
                 "",
                 "user"
             ),
-            TransactionItem(
+            Transaction(
                 6,
                 TimeUtils.getDate(2022, 1, 20),
                 -17.50,
@@ -69,7 +69,7 @@ class ReportCategoryUtilsTest {
                 "Castrang",
                 "cat"
             ),
-            TransactionItem(
+            Transaction(
                 7,
                 TimeUtils.getDate(2022, 1, 18),
                 200.0,
@@ -77,7 +77,7 @@ class ReportCategoryUtilsTest {
                 "Project bonus",
                 "coin"
             ),
-            TransactionItem(
+            Transaction(
                 8,
                 TimeUtils.getDate(2022, 0, 5),
                 30.0,
@@ -102,7 +102,7 @@ class ReportCategoryUtilsTest {
     @Test
     fun getValuesForVerticalForWeek_default() {
         val transactions = listOf(
-            TransactionItem(
+            Transaction(
                 0,
                 TimeUtils.getDate(2022, 1, 24),
                 -5.49,
@@ -110,7 +110,7 @@ class ReportCategoryUtilsTest {
                 "Pizza for lazyday",
                 "food"
             ),
-            TransactionItem(
+            Transaction(
                 1,
                 TimeUtils.getDate(2022, 1, 24),
                 50.0,
@@ -118,7 +118,7 @@ class ReportCategoryUtilsTest {
                 "",
                 "challenge"
             ),
-            TransactionItem(
+            Transaction(
                 2,
                 TimeUtils.getDate(2022, 1, 24),
                 -13.16,
@@ -126,7 +126,7 @@ class ReportCategoryUtilsTest {
                 "New Clothes",
                 "market"
             ),
-            TransactionItem(
+            Transaction(
                 3,
                 TimeUtils.getDate(2022, 1, 24),
                 1000.0,
@@ -134,7 +134,7 @@ class ReportCategoryUtilsTest {
                 "Jan",
                 "money"
             ),
-            TransactionItem(
+            Transaction(
                 4,
                 TimeUtils.getDate(2022, 1, 23),
                 -3.10,
@@ -142,7 +142,7 @@ class ReportCategoryUtilsTest {
                 "Pizza",
                 "food"
             ),
-            TransactionItem(
+            Transaction(
                 5,
                 TimeUtils.getDate(2022, 1, 23),
                 50.0,
@@ -150,7 +150,7 @@ class ReportCategoryUtilsTest {
                 "",
                 "user"
             ),
-            TransactionItem(
+            Transaction(
                 6,
                 TimeUtils.getDate(2022, 1, 20),
                 -17.50,
@@ -158,7 +158,7 @@ class ReportCategoryUtilsTest {
                 "Castrang",
                 "cat"
             ),
-            TransactionItem(
+            Transaction(
                 7,
                 TimeUtils.getDate(2022, 1, 18),
                 200.0,
@@ -166,7 +166,7 @@ class ReportCategoryUtilsTest {
                 "Project bonus",
                 "coin"
             ),
-            TransactionItem(
+            Transaction(
                 8,
                 TimeUtils.getDate(2022, 0, 5),
                 30.0,

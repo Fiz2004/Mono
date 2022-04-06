@@ -6,7 +6,7 @@ import java.util.*
 class Converters {
     @TypeConverter
     fun fromTimestamp(value: Long): Date {
-        return value.let { Date(it) }
+        return Date(value)
     }
 
     @TypeConverter
@@ -21,7 +21,7 @@ class Converters {
     }
 
     @TypeConverter
-    fun listPhotoToPhoto(list: List<String?>): String? {
+    fun listPhotoToPhoto(list: List<String?>): String {
         var result = ""
         list.forEach { result = "$it;" }
         if (result != "")
