@@ -300,8 +300,10 @@ class InputViewModel(
     }
 
     fun init(transaction: Int) {
-        _inputUiState.update {
-            it.copy(transaction = transactionDataSource.getTransactionByID(transaction))
+        viewModelScope.launch {
+            _inputUiState.update {
+                it.copy(transaction = transactionDataSource.getTransactionByID(transaction))
+            }
         }
     }
 

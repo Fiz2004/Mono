@@ -1,9 +1,6 @@
 package com.fiz.mono.ui.report.category
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import com.fiz.mono.data.data_source.CategoryDataSource
 import com.fiz.mono.data.data_source.TransactionDataSource
 import com.fiz.mono.data.entity.Transaction
@@ -20,7 +17,7 @@ class ReportCategoryViewModel(
     var allCategoryExpense = categoryDataSource.allCategoryExpense
     var allCategoryIncome = categoryDataSource.allCategoryIncome
 
-    val allTransactions = transactionDataSource.allTransactions
+    val allTransactions = transactionDataSource.allTransactions.asLiveData()
 
     private val _reportFor = MutableLiveData(ReportCategoryFragment.MONTH)
     val reportFor: LiveData<Int>

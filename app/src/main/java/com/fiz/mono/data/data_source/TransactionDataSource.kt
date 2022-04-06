@@ -1,19 +1,19 @@
 package com.fiz.mono.data.data_source
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.asLiveData
 import com.fiz.mono.data.database.dao.TransactionDao
 import com.fiz.mono.data.entity.Transaction
 import com.fiz.mono.ui.calendar.TransactionsDay
 import com.fiz.mono.util.TimeUtils
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
 class TransactionDataSource(private val transactionDao: TransactionDao) {
-    var allTransactions: LiveData<List<Transaction>> = transactionDao.getAll().asLiveData()
+    var allTransactions: Flow<List<Transaction>> = transactionDao.getAll()
 
-    fun getGroupTransactionsByDays(date: Calendar, pattern: String) =
+    suspend fun getGroupTransactionsByDays(date: Calendar, pattern: String) =
         getAllTransactionsForMonth(date)?.groupBy {
             SimpleDateFormat(
                 pattern,
@@ -21,7 +21,7 @@ class TransactionDataSource(private val transactionDao: TransactionDao) {
             ).format(it.date.time)
         }
 
-    private fun getTransactionDayForCurrentMonthByDays(
+    private suspend fun getTransactionDayForCurrentMonthByDays(
         date: Calendar
     ): MutableList<TransactionsDay> {
         val currentYear = date.get(Calendar.YEAR)
@@ -59,22 +59,21 @@ class TransactionDataSource(private val transactionDao: TransactionDao) {
         return result
     }
 
-
-    fun getAllTransactionsForMonth(
+    suspend fun getAllTransactionsForMonth(
         date: Calendar
     ): List<Transaction>? {
         val currentYear = date.get(Calendar.YEAR)
         val currentMonth = date.get(Calendar.MONTH)
 
         val allTransactionsForYear =
-            allTransactions.value?.filter {
+            allTransactions.first().filter {
                 SimpleDateFormat(
                     "yyyy",
                     Locale.getDefault()
                 ).format(it.date.time) == currentYear.toString()
             }
         val allTransactionsForMonth =
-            allTransactionsForYear?.filter {
+            allTransactionsForYear.filter {
                 SimpleDateFormat(
                     "M",
                     Locale.getDefault()
@@ -83,7 +82,7 @@ class TransactionDataSource(private val transactionDao: TransactionDao) {
         return allTransactionsForMonth
     }
 
-    fun getAllTransactionsForDay(
+    suspend fun getAllTransactionsForDay(
         date: Calendar
     ): List<Transaction>? {
         val currentDay = date.get(Calendar.DATE)
@@ -107,7 +106,7 @@ class TransactionDataSource(private val transactionDao: TransactionDao) {
     }
 
     suspend fun deleteAll() {
-        allTransactions.value?.map {
+        allTransactions.first().map {
             it.photo.map path@{
                 if (it == null) return@path
                 val fdelete = File(it)
@@ -127,7 +126,7 @@ class TransactionDataSource(private val transactionDao: TransactionDao) {
         transactionDao.update(transaction)
     }
 
-    fun getTransactionsForDaysCurrentMonth(date: Calendar): List<TransactionsDay> {
+    suspend fun getTransactionsForDaysCurrentMonth(date: Calendar): List<TransactionsDay> {
         val result = emptyList<TransactionsDay>().toMutableList()
         result.addAll(getEmptyTransactionDayBeforeCurrentMonth(date))
         val transactionDayForCurrentMonthByDays =
@@ -151,15 +150,15 @@ class TransactionDataSource(private val transactionDao: TransactionDao) {
         return TransactionsDay.getListEmptyTransactionDay(7 - dayOfWeekLastDay)
     }
 
-    fun getTransactionByID(transaction: Int): Transaction? {
+    suspend fun getTransactionByID(transaction: Int): Transaction? {
         return if (transaction != -1)
-            allTransactions.value?.find { it.id == transaction }?.copy()
+            allTransactions.first().find { it.id == transaction }?.copy()
         else
             null
     }
 
-    fun getNewId(): Int {
-        val lastItem = allTransactions.value?.lastOrNull()
+    suspend fun getNewId(): Int {
+        val lastItem = allTransactions.first().lastOrNull()
         val id = lastItem?.id
         return id?.let { it + 1 } ?: 0
     }

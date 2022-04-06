@@ -8,6 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.App
 import com.fiz.mono.R
@@ -18,6 +21,7 @@ import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.util.TimeUtils.getDateMonthYearString
 import com.fiz.mono.util.setVisible
+import kotlinx.coroutines.launch
 import java.util.*
 
 class CalendarFragment : Fragment(), MonthDialog.Choicer {
@@ -120,23 +124,26 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
                 it,
                 resources.getStringArray(R.array.name_month)
             )
-            viewModel.changeData()
+            viewModel.changeData(it)
         }
 
-        viewModel.allTransactions.observe(viewLifecycleOwner) {
-            // Без этого присваивания при выборе декабря приложение крошится
-            binding.calendarRecyclerView.itemAnimator = null
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { uiState ->
+                    binding.calendarRecyclerView.itemAnimator = null
 
-            val listCalendar = viewModel.getListCalendarDataItem(mainViewModel.date.value)
-            calendarAdapter.submitList(listCalendar)
+                    calendarAdapter.submitList(uiState.calendarDataItem)
 
-            val listTransactionsDataItem =
-                viewModel.getListTransactionsDataItem(mainViewModel.date.value)
+                    binding.noTransactionsTextView.setVisible(uiState.transactionsDataItem.isEmpty())
+                    binding.transactionRecyclerView.setVisible(uiState.transactionsDataItem.isNotEmpty())
 
-            binding.noTransactionsTextView.setVisible(listTransactionsDataItem.isEmpty())
-            binding.transactionRecyclerView.setVisible(listTransactionsDataItem.isNotEmpty())
+                    transactionAdapter.submitList(uiState.transactionsDataItem)
 
-            transactionAdapter.submitList(listTransactionsDataItem)
+                    if (uiState.isReturn) {
+                        findNavController().popBackStack()
+                    }
+                }
+            }
         }
     }
 
