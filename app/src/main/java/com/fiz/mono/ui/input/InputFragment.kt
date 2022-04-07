@@ -35,7 +35,7 @@ class InputFragment : Fragment() {
 
     private val viewModel: InputViewModel by activityViewModels {
         InputViewModelFactory(
-            (requireActivity().application as App).categoryStore,
+            (requireActivity().application as App).categoryRepository,
             (requireActivity().application as App).transactionStore
         )
     }

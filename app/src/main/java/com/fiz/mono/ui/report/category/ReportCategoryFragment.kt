@@ -53,7 +53,7 @@ class ReportCategoryFragment : Fragment() {
     }
     private val viewModel: ReportCategoryViewModel by viewModels {
         ReportCategoryViewModelFactory(
-            (requireActivity().application as App).categoryStore,
+            (requireActivity().application as App).categoryRepository,
             (requireActivity().application as App).transactionStore
         )
     }

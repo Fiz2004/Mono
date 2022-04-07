@@ -3,8 +3,8 @@ package com.fiz.mono.ui.report.category
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.fiz.mono.data.data_source.CategoryDataSource
 import com.fiz.mono.data.data_source.TransactionDataSource
+import com.fiz.mono.data.repositories.CategoryRepository
 import com.fiz.mono.ui.models.CategoryUiState
 import com.fiz.mono.ui.models.TransactionUiState
 import com.fiz.mono.ui.shared_adapters.InfoDay
@@ -27,7 +27,7 @@ data class ReportCategoryUiState(
 )
 
 class ReportCategoryViewModel(
-    categoryDataSource: CategoryDataSource,
+    private val categoryRepository: CategoryRepository,
     transactionDataSource: TransactionDataSource
 ) : ViewModel() {
     private var _uiState = MutableStateFlow(ReportCategoryUiState())
@@ -35,7 +35,7 @@ class ReportCategoryViewModel(
 
     init {
         viewModelScope.launch {
-            categoryDataSource.getAllCategoryExpenseForInput().collect { allCategoryExpense ->
+            categoryRepository.getAllCategoryExpenseForInput().collect { allCategoryExpense ->
                 _uiState.update {
                     it.copy(
                         allCategoryExpense = allCategoryExpense
@@ -44,7 +44,7 @@ class ReportCategoryViewModel(
             }
         }
         viewModelScope.launch {
-            categoryDataSource.getAllCategoryIncomeForInput().collect { allCategoryIncome ->
+            categoryRepository.getAllCategoryIncomeForInput().collect { allCategoryIncome ->
                 _uiState.update {
                     it.copy(
                         allCategoryIncome = allCategoryIncome
@@ -142,14 +142,14 @@ class ReportCategoryViewModel(
 }
 
 class ReportCategoryViewModelFactory(
-    private val categoryDataSource: CategoryDataSource,
+    private val categoryRepository: CategoryRepository,
     private val transactionDataSource: TransactionDataSource
 ) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ReportCategoryViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ReportCategoryViewModel(categoryDataSource, transactionDataSource) as T
+            return ReportCategoryViewModel(categoryRepository, transactionDataSource) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

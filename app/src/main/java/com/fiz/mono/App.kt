@@ -12,9 +12,7 @@ class App : Application() {
     val database by lazy { AppDatabase.getDatabase() }
     val categoryStore by lazy {
         CategoryDataSource(
-            database?.categoryItemDao()!!,
-            resources.getString(R.string.edit),
-            resources.getString(R.string.add_more)
+            database?.categoryItemDao()!!
         )
     }
     val categoryRepository by lazy {

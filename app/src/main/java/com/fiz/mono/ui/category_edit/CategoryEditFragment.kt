@@ -24,7 +24,7 @@ class CategoryEditFragment : Fragment() {
 
     private val viewModel: CategoryEditViewModel by viewModels {
         CategoryEditViewModelFactory(
-            (requireActivity().application as App).categoryStore
+            (requireActivity().application as App).categoryRepository
         )
     }
 

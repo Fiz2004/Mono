@@ -3,7 +3,7 @@ package com.fiz.mono.ui.report.select
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.fiz.mono.data.data_source.CategoryDataSource
+import com.fiz.mono.data.repositories.CategoryRepository
 import com.fiz.mono.ui.models.CategoryUiState
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -16,7 +16,7 @@ data class SelectUiState(
     val position: Int = -1
 )
 
-class SelectCategoryViewModel(private val categoryDataSource: CategoryDataSource) : ViewModel() {
+class SelectCategoryViewModel(private val categoryRepository: CategoryRepository) : ViewModel() {
     private var _uiState = MutableStateFlow(SelectUiState())
     val uiState: StateFlow<SelectUiState> = _uiState.asStateFlow()
 
@@ -24,8 +24,8 @@ class SelectCategoryViewModel(private val categoryDataSource: CategoryDataSource
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
-                    allCategoryExpense = categoryDataSource.allCategoryExpense.first(),
-                    allCategoryIncome = categoryDataSource.allCategoryIncome.first(),
+                    allCategoryExpense = categoryRepository.allCategoryExpense.first(),
+                    allCategoryIncome = categoryRepository.allCategoryIncome.first(),
                 )
             }
         }
@@ -66,12 +66,12 @@ class SelectCategoryViewModel(private val categoryDataSource: CategoryDataSource
     }
 }
 
-class SelectCategoryViewModelFactory(private val categoryDataSource: CategoryDataSource) :
+class SelectCategoryViewModelFactory(private val categoryRepository: CategoryRepository) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SelectCategoryViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return SelectCategoryViewModel(categoryDataSource) as T
+            return SelectCategoryViewModel(categoryRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

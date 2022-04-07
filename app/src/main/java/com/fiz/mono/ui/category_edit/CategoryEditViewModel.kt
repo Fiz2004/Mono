@@ -3,19 +3,19 @@ package com.fiz.mono.ui.category_edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
-import com.fiz.mono.data.data_source.CategoryDataSource
+import com.fiz.mono.data.repositories.CategoryRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class CategoryEditViewModel(
-    private val categoryDataSource: CategoryDataSource
+    private val categoryRepository: CategoryRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CategoryEditUiState())
     val uiState: StateFlow<CategoryEditUiState> = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            categoryDataSource.getAllCategoryExpenseForEdit()
+            categoryRepository.getAllCategoryExpenseForEdit()
                 .distinctUntilChanged()
                 .collect { list ->
                     _uiState.update {
@@ -26,7 +26,7 @@ class CategoryEditViewModel(
                 }
         }
         viewModelScope.launch {
-            categoryDataSource.getAllCategoryIncomeForEdit()
+            categoryRepository.getAllCategoryIncomeForEdit()
                 .distinctUntilChanged()
                 .collect { list ->
                     _uiState.update {
@@ -59,13 +59,13 @@ class CategoryEditViewModel(
             uiState.value.allCategoryExpense
                 .find { it.selected }
                 ?.let {
-                    categoryDataSource.removeCategoryExpense(it)
+                    categoryRepository.removeCategoryExpense(it)
                 }
 
             uiState.value.allCategoryIncome
                 .find { it.selected }
                 ?.let {
-                    categoryDataSource.removeCategoryIncome(it)
+                    categoryRepository.removeCategoryIncome(it)
                 }
         }
     }

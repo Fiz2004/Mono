@@ -10,38 +10,12 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 class CategoryDataSource(
-    private val categoryDao: CategoryDao,
-    private val editString: String,
-    private val addMoreString: String
+    private val categoryDao: CategoryDao
 ) {
     var allCategoryExpense: Flow<List<CategoryUiState>> =
         categoryDao.getAllExpense().distinctUntilChanged().map { it.map { it.toCategoryUiState() } }
     var allCategoryIncome: Flow<List<CategoryUiState>> =
         categoryDao.getAllIncome().distinctUntilChanged().map { it.map { it.toCategoryUiState() } }
-
-    fun getAllCategoryExpenseForEdit(): Flow<List<CategoryUiState>> {
-        return allCategoryExpense.map { it + CategoryUiState("e", addMoreString, 0) }
-    }
-
-    fun getAllCategoryIncomeForEdit(): Flow<List<CategoryUiState>> {
-        return allCategoryIncome.map { it + CategoryUiState("i", addMoreString, 0) }
-    }
-
-    fun getAllCategoryExpenseForInput(): Flow<List<CategoryUiState>> {
-        return allCategoryExpense.map { it + CategoryUiState("e", editString, 0) }
-    }
-
-    fun getAllCategoryIncomeForInput(): Flow<List<CategoryUiState>> {
-        return allCategoryIncome.map { it + CategoryUiState("i", editString, 0) }
-    }
-
-    suspend fun removeCategoryExpense(categoryUiState: CategoryUiState) {
-        categoryDao.delete(categoryUiState.toCategory())
-    }
-
-    suspend fun removeCategoryIncome(categoryUiState: CategoryUiState) {
-        categoryDao.delete(categoryUiState.toCategory())
-    }
 
     suspend fun deleteAll(context: Context) {
         categoryDao.deleteAll()
@@ -85,22 +59,8 @@ class CategoryDataSource(
         categoryDao.insertAll(allCategoryIncomeDefault)
     }
 
-    suspend fun insertNewCategoryExpense(newId: Int, name: String, iconID: String) {
-        val newCategoryItem = CategoryEntity("e$newId", name, iconID)
-        categoryDao.insert(newCategoryItem)
-    }
-
-    suspend fun insertNewCategoryIncome(newId: Int, name: String, iconID: String) {
-        val newCategoryItem = CategoryEntity("i$newId", name, iconID)
-        categoryDao.insert(newCategoryItem)
-    }
-
     suspend fun delete(categoryUiState: CategoryUiState) {
         categoryDao.delete(categoryUiState.toCategory())
-    }
-
-    suspend fun insertAll(categories: MutableList<CategoryEntity>) {
-        categoryDao.insertAll(categories)
     }
 
     suspend fun insert(newCategoryItem: CategoryEntity) {

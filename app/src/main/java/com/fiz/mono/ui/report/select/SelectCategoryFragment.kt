@@ -22,7 +22,7 @@ class SelectCategoryFragment : Fragment() {
 
     private val viewModel: SelectCategoryViewModel by viewModels {
         SelectCategoryViewModelFactory(
-            (requireActivity().application as App).categoryStore
+            (requireActivity().application as App).categoryRepository
         )
     }
 

@@ -13,9 +13,9 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.R
-import com.fiz.mono.data.data_source.CategoryDataSource
 import com.fiz.mono.data.data_source.TransactionDataSource
 import com.fiz.mono.data.entity.TransactionEntity
+import com.fiz.mono.data.repositories.CategoryRepository
 import com.fiz.mono.ui.models.CategoryUiState
 import com.fiz.mono.ui.models.TransactionUiState
 import com.fiz.mono.util.BitmapUtils.getBitmapsFrom
@@ -49,7 +49,7 @@ data class InputUiState(
 }
 
 class InputViewModel(
-    private val categoryDataSource: CategoryDataSource,
+    private val categoryRepository: CategoryRepository,
     private val transactionDataSource: TransactionDataSource
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(InputUiState())
@@ -61,7 +61,7 @@ class InputViewModel(
 
     init {
         viewModelScope.launch {
-            categoryDataSource.getAllCategoryExpenseForInput().collect { allCategoryExpense ->
+            categoryRepository.getAllCategoryExpenseForInput().collect { allCategoryExpense ->
                 _uiState.update {
                     it.copy(
                         allCategoryExpense = allCategoryExpense
@@ -70,7 +70,7 @@ class InputViewModel(
             }
         }
         viewModelScope.launch {
-            categoryDataSource.getAllCategoryIncomeForInput().collect { allCategoryIncome ->
+            categoryRepository.getAllCategoryIncomeForInput().collect { allCategoryIncome ->
                 _uiState.update {
                     it.copy(
                         allCategoryIncome = allCategoryIncome
