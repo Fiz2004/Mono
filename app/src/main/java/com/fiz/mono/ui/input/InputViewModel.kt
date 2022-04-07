@@ -19,7 +19,10 @@ import com.fiz.mono.data.entity.Transaction
 import com.fiz.mono.ui.models.CategoryUiState
 import com.fiz.mono.ui.models.TransactionUiState
 import com.fiz.mono.util.BitmapUtils.getBitmapsFrom
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
@@ -33,21 +36,24 @@ data class InputUiState(
     val isMoveCalendar: Boolean = false,
     val allCategoryExpense: List<CategoryUiState> = listOf(),
     val allCategoryIncome: List<CategoryUiState> = listOf(),
+    val allTransactions: List<TransactionUiState> = listOf(),
     val note: String = "",
     val value: String = "",
     val selectedAdapter: Int = InputFragment.EXPENSE,
     val transaction: TransactionUiState? = null,
     val photoPaths: MutableList<String?> = mutableListOf(),
-    // Проверить будет ли работать как MediatorLiveData и автоматически собирать изменения
-    val photoBitmap: List<Bitmap?> = getBitmapsFrom(photoPaths = photoPaths)
-)
+    val isPhotoPathsChange: Boolean = false
+) {
+    val photoBitmap: List<Bitmap?>
+        get() = getBitmapsFrom(photoPaths = photoPaths)
+}
 
 class InputViewModel(
     private val categoryDataSource: CategoryDataSource,
     private val transactionDataSource: TransactionDataSource
 ) : ViewModel() {
-    private val _inputUiState = MutableStateFlow(InputUiState())
-    val inputUiState: StateFlow<InputUiState> = _inputUiState.asStateFlow()
+    private val _uiState = MutableStateFlow(InputUiState())
+    val uiState: StateFlow<InputUiState> = _uiState.asStateFlow()
 
     lateinit var currentPhotoPath: String
 
@@ -55,109 +61,92 @@ class InputViewModel(
 
     init {
         viewModelScope.launch {
-            categoryDataSource.getAllCategoryExpenseForInput().collect { list ->
-                _inputUiState.update {
+            categoryDataSource.getAllCategoryExpenseForInput().collect { allCategoryExpense ->
+                _uiState.update {
                     it.copy(
-                        allCategoryExpense = list
+                        allCategoryExpense = allCategoryExpense
                     )
                 }
             }
         }
         viewModelScope.launch {
-            categoryDataSource.getAllCategoryIncomeForInput().collect { list ->
-                _inputUiState.update {
+            categoryDataSource.getAllCategoryIncomeForInput().collect { allCategoryIncome ->
+                _uiState.update {
                     it.copy(
-                        allCategoryIncome = list
+                        allCategoryIncome = allCategoryIncome
+                    )
+                }
+            }
+        }
+        viewModelScope.launch {
+            transactionDataSource.allTransactions.collect { allTransactions ->
+                _uiState.update {
+                    it.copy(
+                        allTransactions = allTransactions
                     )
                 }
             }
         }
     }
 
-    private fun isClickEditPosition(position: Int, selectedAdapter: Int?): Boolean {
-        return if (selectedAdapter == InputFragment.EXPENSE)
-            position == inputUiState.value.allCategoryExpense.size - 1
+    private fun isClickEditPosition(position: Int): Boolean {
+        return if (uiState.value.selectedAdapter == InputFragment.EXPENSE)
+            position == uiState.value.allCategoryExpense.size - 1
         else
-            position == inputUiState.value.allCategoryIncome.size - 1
+            position == uiState.value.allCategoryIncome.size - 1
     }
 
-    fun getAllCategoryFromSelectedForInput(selectedAdapter: Int?): List<CategoryUiState> {
+    private fun getAllCategoryFromSelectedForInput(selectedAdapter: Int?): List<CategoryUiState> {
         return if (selectedAdapter == InputFragment.EXPENSE)
-            inputUiState.value.allCategoryExpense.map { it.copy() }
+            uiState.value.allCategoryExpense.map { it.copy() }
         else
-            inputUiState.value.allCategoryIncome.map { it.copy() }
+            uiState.value.allCategoryIncome.map { it.copy() }
     }
 
-    fun setSelected(selectedAdapter: Int?, nameCategory: String) {
+    fun setSelected(nameCategory: String) {
         viewModelScope.launch {
             val position =
-                getAllCategoryFromSelectedForInput(selectedAdapter).indexOfFirst { it.name == nameCategory }
-            if (selectedAdapter
-                == InputFragment.EXPENSE
-            ) {
-                categoryDataSource.allCategoryIncome.first().find { it.selected }
-                    ?.copy(selected = false)
-                val list = categoryDataSource.allCategoryExpense.first()
-                if (!list[position].selected) {
-                    list.find { it.selected }?.copy(selected = false)
-                }
-                val t = list[position]
-                t.copy(selected = !t.selected)
+                getAllCategoryFromSelectedForInput(uiState.value.selectedAdapter)
+                    .indexOfFirst { it.name == nameCategory }
+
+            if (uiState.value.selectedAdapter == InputFragment.EXPENSE) {
+                selectExpense(position)
             } else {
-                categoryDataSource.allCategoryExpense.first().find { it.selected }
-                    ?.copy(selected = false)
-                val list = categoryDataSource.allCategoryIncome.first()
-                if (!list[position].selected) {
-                    list.find { it.selected }?.copy(selected = false)
-                }
-                val t = list[position]
-                t.copy(selected = !t.selected)
+                selectIncome(position)
             }
         }
     }
 
     fun removeTransaction() {
         viewModelScope.launch {
-            inputUiState.value.transaction?.let { transactionDataSource.delete(it.toTransaction()) }
-            _inputUiState.update {
+            uiState.value.transaction?.let { transactionDataSource.delete(it.toTransaction()) }
+            _uiState.update {
                 it.copy(isReturn = true)
             }
         }
     }
 
-    private fun clickUpdate(transaction: Transaction) {
-        viewModelScope.launch {
-            transactionDataSource.updateTransaction(transaction)
-        }
-    }
-
-    private fun clickSubmit(
-        transaction: Transaction
-    ) {
-        viewModelScope.launch {
-            transactionDataSource.insertNewTransaction(transaction)
-        }
-    }
-
     fun setSelectedAdapter(adapter: Int) {
-        _inputUiState.update {
-            it.copy(selectedAdapter = adapter)
+        _uiState.update {
+            it.copy(
+                allCategoryExpense = it.allCategoryExpense.map { it.copy(selected = false) },
+                allCategoryIncome = it.allCategoryIncome.map { it.copy(selected = false) },
+                selectedAdapter = adapter
+            )
         }
-        inputUiState.value.allCategoryExpense.forEach { it.copy(selected = false) }
-        inputUiState.value.allCategoryIncome.forEach { it.copy(selected = false) }
     }
 
     fun getTypeFromSelectedAdapter(context: Context): String {
-        return when (inputUiState.value.selectedAdapter) {
+        return when (uiState.value.selectedAdapter) {
             InputFragment.EXPENSE -> context.getString(R.string.expense)
             else -> context.getString(R.string.income)
         }
     }
 
     private suspend fun getTransactionItemForUpdate(selectedCategory: CategoryUiState): Transaction? {
-        val state = inputUiState.value
+        val state = uiState.value
         val valueTransaction = state.value.toDouble() *
-                if (inputUiState.value.selectedAdapter == InputFragment.EXPENSE)
+                if (uiState.value.selectedAdapter == InputFragment.EXPENSE)
                     -1
                 else
                     1
@@ -179,9 +168,9 @@ class InputViewModel(
         newId: Int,
         date: Calendar
     ): Transaction {
-        val state = inputUiState.value
+        val state = uiState.value
         val valueTransaction = state.value.toDouble() *
-                if (inputUiState.value.selectedAdapter == InputFragment.EXPENSE)
+                if (uiState.value.selectedAdapter == InputFragment.EXPENSE)
                     -1
                 else
                     1
@@ -200,23 +189,13 @@ class InputViewModel(
     }
 
     fun setValue(text: String) {
-        _inputUiState.update {
+        _uiState.update {
             it.copy(value = text)
         }
     }
 
-    private fun clickSubmit() {
-        _inputUiState.update {
-            it.copy(
-                value = "",
-                note = "",
-                photoPaths = emptyList<String>().toMutableList()
-            )
-        }
-    }
-
     fun getSelectedAdapter(): Int {
-        return inputUiState.value.selectedAdapter
+        return uiState.value.selectedAdapter
     }
 
     fun dispatchTakePictureIntent(context: Context): Intent? {
@@ -256,7 +235,7 @@ class InputViewModel(
     }
 
     private fun setPhotoPath(list: MutableList<String?>) {
-        _inputUiState.update {
+        _uiState.update {
             it.copy(
                 photoPaths = if (list.get(0) == "") emptyList<String?>().toMutableList() else list
             )
@@ -264,33 +243,41 @@ class InputViewModel(
     }
 
     fun addPhotoPath() {
-        _inputUiState.update {
-            it.photoPaths.add(currentPhotoPath)
-            it.copy()
+        _uiState.update {
+            val photoPaths = it.photoPaths
+            photoPaths.add(currentPhotoPath)
+            it.copy(
+                photoPaths = photoPaths,
+                isPhotoPathsChange = true
+            )
         }
     }
 
     fun removePhotoPath(number: Int) {
-        inputUiState.value.photoPaths[number - 1]?.let {
+        uiState.value.photoPaths[number - 1]?.let {
             val fDelete: File = File(it)
             if (fDelete.exists()) {
                 fDelete.delete()
             }
         }
-        _inputUiState.update {
-            it.photoPaths.removeAt(number - 1)
-            it.copy()
+        _uiState.update {
+            val photoPaths = it.photoPaths
+            photoPaths.removeAt(number - 1)
+            it.copy(
+                photoPaths = photoPaths,
+                isPhotoPathsChange = true
+            )
         }
     }
 
     fun setNote(text: String) {
-        _inputUiState.update {
+        _uiState.update {
             it.copy(note = text)
         }
     }
 
     fun checkCameraHardware(context: Context): Boolean {
-        if (inputUiState.value.photoPaths.size == InputFragment.MAX_PHOTO)
+        if (uiState.value.photoPaths.size == InputFragment.MAX_PHOTO)
             return false
         if (cashCheckCameraHardware == null)
             cashCheckCameraHardware =
@@ -313,34 +300,43 @@ class InputViewModel(
 
     fun init(transaction: Int) {
         viewModelScope.launch {
-            _inputUiState.update {
+            _uiState.update {
                 it.copy(transaction = transactionDataSource.getTransactionByID(transaction))
             }
         }
     }
 
     fun isSubmitButtonEnabled(): Boolean {
-        return inputUiState.value.value.isNotBlank() && getAllCategoryFromSelectedForInput(
-            inputUiState.value.selectedAdapter
+        return uiState.value.value.isNotBlank() && getAllCategoryFromSelectedForInput(
+            uiState.value.selectedAdapter
         ).firstOrNull { it.selected } != null
     }
 
     fun isReturnRefresh() {
-        _inputUiState.update {
+        _uiState.update {
             it.copy(isReturn = false)
         }
     }
 
     fun clickBackButton() {
-        _inputUiState.update {
+        _uiState.update {
             it.copy(isReturn = true)
         }
     }
 
     fun clickRecyclerView(position: Int) {
         viewModelScope.launch {
-            if (checkClickEditPosition(position)) return@launch
-            if (inputUiState.value.selectedAdapter == InputFragment.EXPENSE) {
+            if (isClickEditPosition(position)) {
+                _uiState.update {
+                    it.copy(
+                        allCategoryExpense = it.allCategoryExpense.map { it.copy(selected = false) },
+                        allCategoryIncome = it.allCategoryIncome.map { it.copy(selected = false) },
+                        isMoveEdit = true
+                    )
+                }
+                return@launch
+            }
+            if (uiState.value.selectedAdapter == InputFragment.EXPENSE) {
                 selectExpense(position)
             } else {
                 selectIncome(position)
@@ -348,62 +344,64 @@ class InputViewModel(
         }
     }
 
-    fun selectExpense(position: Int) {
-        inputUiState.value.allCategoryIncome.find { it.selected }?.let {
-            it.copy(selected = false)
-        }
-
-        val list = inputUiState.value.allCategoryExpense.map { it.copy() }
-
-        if (!list[position].selected) {
-            list.find { it.selected }?.let {
-                it.copy(selected = false)
+    private fun selectExpense(position: Int) {
+        _uiState.update {
+            val allCategoryIncome = it.allCategoryIncome.map {
+                var selected = it.selected
+                if (it.selected)
+                    selected = false
+                it.copy(selected = selected)
             }
-        }
 
-        val t = list[position]
-        t.copy(selected = !t.selected)
+            val allCategoryExpense = it.allCategoryExpense.mapIndexed { index, categoryUiState ->
+                var selected = categoryUiState.selected
+                if (index != position && categoryUiState.selected)
+                    selected = false
+                if (index == position)
+                    selected = !selected
+                categoryUiState.copy(
+                    selected =
+                    selected
+                )
+            }
 
-        _inputUiState.update {
-            it.copy(allCategoryExpense = list)
+            it.copy(
+                allCategoryExpense = allCategoryExpense,
+                allCategoryIncome = allCategoryIncome
+            )
         }
     }
 
-    fun selectIncome(position: Int) {
-        inputUiState.value.allCategoryExpense.find { it.selected }?.let {
-            it.copy(selected = false)
-        }
-
-        val list = inputUiState.value.allCategoryIncome.map { it.copy() }
-
-        if (!list[position].selected) {
-            list.find { it.selected }?.let {
-                it.copy(selected = false)
+    private fun selectIncome(position: Int) {
+        _uiState.update {
+            val allCategoryExpense = it.allCategoryExpense.map {
+                var selected = it.selected
+                if (it.selected)
+                    selected = false
+                it.copy(selected = selected)
             }
-        }
 
-        val t = list[position]
-        t.copy(selected = !t.selected)
-
-        _inputUiState.update {
-            it.copy(allCategoryIncome = list)
-        }
-    }
-
-    private suspend fun checkClickEditPosition(position: Int): Boolean {
-        if (isClickEditPosition(position, inputUiState.value.selectedAdapter)) {
-            categoryDataSource.allCategoryExpense.first().forEach { it.copy(selected = false) }
-            categoryDataSource.allCategoryIncome.first().forEach { it.copy(selected = false) }
-            _inputUiState.update {
-                it.copy(isMoveEdit = true)
+            val allCategoryIncome = it.allCategoryIncome.mapIndexed { index, categoryUiState ->
+                var selected = categoryUiState.selected
+                if (index != position && categoryUiState.selected)
+                    selected = false
+                if (index == position)
+                    selected = !selected
+                categoryUiState.copy(
+                    selected =
+                    selected
+                )
             }
-            return true
+
+            it.copy(
+                allCategoryExpense = allCategoryExpense,
+                allCategoryIncome = allCategoryIncome
+            )
         }
-        return false
     }
 
     fun isMoveEditRefresh() {
-        _inputUiState.update {
+        _uiState.update {
             it.copy(isMoveEdit = false)
         }
     }
@@ -411,40 +409,51 @@ class InputViewModel(
     fun clickSubmitButton(date: Calendar) {
         viewModelScope.launch {
             val selectedCategoryItem =
-                getAllCategoryFromSelectedForInput(inputUiState.value.selectedAdapter).first { it.selected }
-            if (inputUiState.value.transaction != null) {
+                getAllCategoryFromSelectedForInput(uiState.value.selectedAdapter)
+                    .first { it.selected }
+
+            if (uiState.value.transaction != null) {
                 val transaction =
                     getTransactionItemForUpdate(selectedCategoryItem) ?: return@launch
-                clickUpdate(
-                    transaction
-                )
-                _inputUiState.update {
+
+                transactionDataSource.updateTransaction(transaction)
+
+                _uiState.update {
                     it.copy(isReturn = true)
                 }
             } else {
-                val newId = transactionDataSource.getNewId()
+                val lastItem = uiState.value.allTransactions.lastOrNull()
+                val id = lastItem?.id
+                val newId = id?.let { it + 1 } ?: 0
                 val transaction =
                     getTransactionItemForNew(
                         selectedCategoryItem,
                         newId,
                         date
                     )
-                clickSubmit(transaction)
-                categoryDataSource.allCategoryExpense.first().forEach { it.copy(selected = false) }
-                categoryDataSource.allCategoryIncome.first().forEach { it.copy(selected = false) }
-                clickSubmit()
+                transactionDataSource.insertNewTransaction(transaction)
+
+                _uiState.update {
+                    it.copy(
+                        allCategoryExpense = it.allCategoryExpense.map { it.copy(selected = false) },
+                        allCategoryIncome = it.allCategoryIncome.map { it.copy(selected = false) },
+                        value = "",
+                        note = "",
+                        photoPaths = emptyList<String>().toMutableList()
+                    )
+                }
             }
         }
     }
 
     fun isMoveCalendarRefresh() {
-        _inputUiState.update {
+        _uiState.update {
             it.copy(isMoveCalendar = false)
         }
     }
 
     fun clickDate() {
-        _inputUiState.update {
+        _uiState.update {
             it.copy(isMoveCalendar = true)
         }
     }
@@ -453,13 +462,19 @@ class InputViewModel(
     override fun onCleared() {
         super.onCleared()
         Log.d("AAA", "123")
-        inputUiState.value.photoPaths.forEach {
+        uiState.value.photoPaths.forEach {
             it?.let {
                 val fDelete: File = File(it)
                 if (fDelete.exists()) {
                     fDelete.delete()
                 }
             }
+        }
+    }
+
+    fun onPhotoPathsChange() {
+        _uiState.update {
+            it.copy(isPhotoPathsChange = false)
         }
     }
 

@@ -8,18 +8,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentReportMonthlyBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
 import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.ui.MainViewModel
-import com.fiz.mono.ui.models.TransactionUiState
 import com.fiz.mono.ui.report.ReportFragment
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.util.TimeUtils
-import com.fiz.mono.util.currentUtils
 import com.google.android.material.button.MaterialButtonToggleGroup
+import kotlinx.coroutines.launch
 import java.util.*
 
 class ReportMonthlyFragment : Fragment() {
@@ -60,21 +62,54 @@ class ReportMonthlyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        init()
+        bind()
+        bindListener()
+        subscribe()
+
+    }
+
+    private fun init() {
         adapter = TransactionsAdapter(
             mainPreferencesViewModel.currency.value ?: "$",
             true
         )
 
+        viewModel.init(mainPreferencesViewModel.currency.value ?: "$")
+    }
+
+    private fun bind() {
+        binding.apply {
+            transactionsRecyclerView.adapter = adapter
+        }
+    }
+
+    private fun bindListener() {
         binding.apply {
 
             dataRangeLayout.leftDateRangeImageButton.setOnClickListener(::leftDateRangeOnClickListener)
             dataRangeLayout.rightDateRangeImageButton.setOnClickListener(::rightDateRangeOnClickListener)
             dataRangeLayout.dateTextView.setOnClickListener(::dateOnClickListener)
             allExpenseIncomeToggleButton.addOnButtonCheckedListener(::allExpenseIncomeOnButtonCheckedListener)
-            transactionsRecyclerView.adapter = adapter
         }
+    }
 
-        viewModel.allTransactions.observe(viewLifecycleOwner, ::allTransactionsObserve)
+    private fun subscribe() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { uiState ->
+
+                    binding.valueReportTextView.text = uiState.currentBalance
+                    binding.incomeValueReportTextView.text = uiState.currentIncome
+                    binding.expenseValueReportTextView.text = uiState.currentExpense
+                    binding.expenseIncomeValueReportTextView.text = uiState.currentExpenseIncome
+                    binding.previousBalanceValueReportTextView.text = uiState.currentPreviousBalance
+
+                    adapter.submitList(uiState.transactionsForAdapter)
+
+                }
+            }
+        }
 
         mainViewModel.date.observe(viewLifecycleOwner, ::dateObserve)
     }
@@ -88,12 +123,12 @@ class ReportMonthlyFragment : Fragment() {
 
     private fun rightDateRangeOnClickListener(view: View) {
         mainViewModel.dateMonthPlusOne()
-        allTransactionsObserve(listOf())
+        viewModel.setDate(mainViewModel.date.value!!)
     }
 
     private fun leftDateRangeOnClickListener(view: View) {
         mainViewModel.dateMonthMinusOne()
-        allTransactionsObserve(listOf())
+        viewModel.setDate(mainViewModel.date.value!!)
     }
 
     private fun allExpenseIncomeOnButtonCheckedListener(
@@ -104,70 +139,20 @@ class ReportMonthlyFragment : Fragment() {
         when (checkedId) {
             R.id.toggle1 -> {
                 if (isChecked)
-                    viewModel.tabSelectedReport = 0
+                    viewModel.setTabSelectedReport(0)
             }
             R.id.toggle2 -> {
                 if (isChecked)
-                    viewModel.tabSelectedReport = 1
+                    viewModel.setTabSelectedReport(1)
             }
             R.id.toggle3 -> {
                 if (isChecked)
-                    viewModel.tabSelectedReport = 2
+                    viewModel.setTabSelectedReport(2)
             }
-        }
-        if (isChecked) {
-            adapter.submitList(
-                viewModel.getTransactions(
-                    viewModel.tabSelectedReport,
-                    mainViewModel.date.value!!
-                )
-            )
         }
     }
 
     private fun dateOnClickListener(view: View) {
         (requireParentFragment().parentFragment as ReportFragment).clickData()
-    }
-
-    private fun allTransactionsObserve(allTransactions: List<TransactionUiState>) {
-        val currency = mainPreferencesViewModel.currency.value ?: "$"
-        binding.valueReportTextView.text =
-            currentUtils.getCurrencyFormat(currency, viewModel.getCurrentBalance(), false)
-
-        binding.incomeValueReportTextView.text =
-            currentUtils.getCurrencyFormat(
-                currency,
-                viewModel.getCurrentIncome(mainViewModel.date.value!!),
-                false
-            )
-        binding.expenseValueReportTextView.text =
-            currentUtils.getCurrencyFormat(
-                currency,
-                viewModel.getCurrentExpense(mainViewModel.date.value!!),
-                false
-            )
-
-        binding.expenseIncomeValueReportTextView.text =
-            currentUtils.getCurrencyFormat(
-                currency,
-                viewModel.getCurrentIncome(mainViewModel.date.value!!) + viewModel.getCurrentExpense(
-                    mainViewModel.date.value!!
-                ),
-                true
-            )
-
-        binding.previousBalanceValueReportTextView.text =
-            currentUtils.getCurrencyFormat(
-                currency,
-                viewModel.getPreviousBalanceValue(mainViewModel.date.value!!),
-                false
-            )
-
-        adapter.submitList(
-            viewModel.getTransactions(
-                viewModel.tabSelectedReport,
-                mainViewModel.date.value!!
-            )
-        )
     }
 }

@@ -162,121 +162,109 @@ class InputFragment : Fragment() {
     }
 
     private fun subscribe() {
-        viewModel.apply {
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.inputUiState.collect { inputUiState ->
-                        binding.ExpenseIncomeTextView.text =
-                            viewModel.getTypeFromSelectedAdapter(requireContext())
-                        binding.submitButton.isEnabled = viewModel.isSubmitButtonEnabled()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { uiState ->
+                    binding.ExpenseIncomeTextView.text =
+                        viewModel.getTypeFromSelectedAdapter(requireContext())
+                    binding.submitButton.isEnabled = viewModel.isSubmitButtonEnabled()
 
-                        if (inputUiState.isReturn) {
-                            findNavController().popBackStack()
-                            viewModel.isReturnRefresh()
-                        }
+                    if (uiState.isPhotoPathsChange)
+                        viewModel.onPhotoPathsChange()
 
-                        if (inputUiState.isMoveEdit) {
-                            val action =
-                                InputFragmentDirections
-                                    .actionToCategoryFragment()
-                            findNavController().navigate(action)
-                            viewModel.isMoveEditRefresh()
-                        }
-
-                        if (inputUiState.isMoveCalendar) {
-                            val action =
-                                InputFragmentDirections
-                                    .actionToCalendarFragment()
-                            findNavController().navigate(action)
-                            viewModel.isMoveCalendarRefresh()
-                        }
-
-                        if (binding.noteEditText.text.toString() != inputUiState.note)
-                            binding.noteEditText.setText(inputUiState.note)
-
-                        if (binding.valueEditText.text.toString() != inputUiState.value)
-                            binding.valueEditText.setText(inputUiState.value)
-
-                        val isInput = inputUiState.transaction == null
-                        val isEdit = !isInput
-
-                        binding.submitButton.text =
-                            if (isInput) getString(R.string.submit) else getString(R.string.update)
-
-                        binding.dataRangeLayout.root.setVisible(isInput)
-                        binding.tabLayout.setVisible(isInput)
-                        binding.titleTextView.setVisible(isEdit)
-                        binding.backButton.setVisible(isEdit)
-                        binding.removeButton.setVisible(isEdit)
-
-                        val expenseIncomeTextViewLayoutParams =
-                            binding.ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams
-                        expenseIncomeTextViewLayoutParams.topToBottom =
-                            if (isInput) R.id.dataRangeLayout else R.id.titleTextView
-
-                        if (isInput) {
-                            val numberTab = if (viewModel.getSelectedAdapter() == EXPENSE) 0 else 1
-                            binding.tabLayout.getTabAt(numberTab)?.select()
-                        } else {
-                            viewModel.setViewModelTransaction(viewModel.inputUiState.value.transaction!!)
-                        }
-
-                        val countPhoto = viewModel.inputUiState.value.photoPaths.size
-
-                        binding.noteCameraEditText.isEnabled = isCanAddPhoto()
-
-                        binding.photo1Card.setVisible(countPhoto > 0)
-                        binding.photo2Card.setVisible(countPhoto > 0)
-                        binding.photo3Card.setVisible(countPhoto > 0)
-
-                        binding.photo1ImageView.setVisible(countPhoto > 0)
-                        binding.photo2ImageView.setVisible(countPhoto > 1)
-                        binding.photo3ImageView.setVisible(countPhoto > 2)
-
-                        binding.deletePhoto1ImageView.setVisible(countPhoto > 0)
-                        binding.deletePhoto2ImageView.setVisible(countPhoto > 1)
-                        binding.deletePhoto3ImageView.setVisible(countPhoto > 2)
-
-                        viewModel.inputUiState.value.photoBitmap.getOrNull(0)?.let { bitmap ->
-                            binding.photo1ImageView.setImageBitmap(bitmap)
-                        } ?: binding.photo1ImageView.setImageBitmap(null)
-
-                        viewModel.inputUiState.value.photoBitmap.getOrNull(1)?.let { bitmap ->
-                            binding.photo2ImageView.setImageBitmap(bitmap)
-                        } ?: binding.photo2ImageView.setImageBitmap(null)
-
-                        viewModel.inputUiState.value.photoBitmap.getOrNull(2)?.let { bitmap ->
-                            binding.photo3ImageView.setImageBitmap(bitmap)
-                        } ?: binding.photo3ImageView.setImageBitmap(null)
-
-
-                        viewModel.inputUiState.value.transaction?.let {
-                            if (viewModel.getSelectedAdapter() == EXPENSE)
-                                viewModel.setSelected(
-                                    viewModel.inputUiState.value.selectedAdapter,
-                                    it.nameCategory
-                                )
-                        }
-
-                        val allCategoryExpense =
-                            viewModel.getAllCategoryFromSelectedForInput(viewModel.inputUiState.value.selectedAdapter)
-                        adapter.submitList(allCategoryExpense)
-
-                        viewModel.inputUiState.value.transaction?.let {
-                            if (viewModel.getSelectedAdapter() == INCOME)
-                                viewModel.setSelected(
-                                    viewModel.inputUiState.value.selectedAdapter,
-                                    it.nameCategory
-                                )
-                        }
-
-                        val allCategoryIncome =
-                            viewModel.getAllCategoryFromSelectedForInput(viewModel.inputUiState.value.selectedAdapter)
-                        adapter.submitList(allCategoryIncome)
-
+                    if (uiState.isReturn) {
+                        findNavController().popBackStack()
+                        viewModel.isReturnRefresh()
                     }
 
+                    if (uiState.isMoveEdit) {
+                        val action =
+                            InputFragmentDirections
+                                .actionToCategoryFragment()
+                        findNavController().navigate(action)
+                        viewModel.isMoveEditRefresh()
+                    }
+
+                    if (uiState.isMoveCalendar) {
+                        val action =
+                            InputFragmentDirections
+                                .actionToCalendarFragment()
+                        findNavController().navigate(action)
+                        viewModel.isMoveCalendarRefresh()
+                    }
+
+                    if (binding.noteEditText.text.toString() != uiState.note)
+                        binding.noteEditText.setText(uiState.note)
+
+                    if (binding.valueEditText.text.toString() != uiState.value)
+                        binding.valueEditText.setText(uiState.value)
+
+                    val isInput = uiState.transaction == null
+                    val isEdit = !isInput
+
+                    binding.submitButton.text =
+                        if (isInput) getString(R.string.submit) else getString(R.string.update)
+
+                    binding.dataRangeLayout.root.setVisible(isInput)
+                    binding.tabLayout.setVisible(isInput)
+                    binding.titleTextView.setVisible(isEdit)
+                    binding.backButton.setVisible(isEdit)
+                    binding.removeButton.setVisible(isEdit)
+
+                    val expenseIncomeTextViewLayoutParams =
+                        binding.ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams
+                    expenseIncomeTextViewLayoutParams.topToBottom =
+                        if (isInput) R.id.dataRangeLayout else R.id.titleTextView
+
+                    if (isInput) {
+                        val numberTab = if (viewModel.getSelectedAdapter() == EXPENSE) 0 else 1
+                        binding.tabLayout.getTabAt(numberTab)?.select()
+                    } else {
+                        viewModel.setViewModelTransaction(viewModel.uiState.value.transaction!!)
+                    }
+
+                    val countPhoto = viewModel.uiState.value.photoPaths.size
+
+                    binding.noteCameraEditText.isEnabled = isCanAddPhoto()
+
+                    binding.photo1Card.setVisible(countPhoto > 0)
+                    binding.photo2Card.setVisible(countPhoto > 0)
+                    binding.photo3Card.setVisible(countPhoto > 0)
+
+                    binding.photo1ImageView.setVisible(countPhoto > 0)
+                    binding.photo2ImageView.setVisible(countPhoto > 1)
+                    binding.photo3ImageView.setVisible(countPhoto > 2)
+
+                    binding.deletePhoto1ImageView.setVisible(countPhoto > 0)
+                    binding.deletePhoto2ImageView.setVisible(countPhoto > 1)
+                    binding.deletePhoto3ImageView.setVisible(countPhoto > 2)
+
+                    viewModel.uiState.value.photoBitmap.getOrNull(0)?.let { bitmap ->
+                        binding.photo1ImageView.setImageBitmap(bitmap)
+                    } ?: binding.photo1ImageView.setImageBitmap(null)
+
+                    viewModel.uiState.value.photoBitmap.getOrNull(1)?.let { bitmap ->
+                        binding.photo2ImageView.setImageBitmap(bitmap)
+                    } ?: binding.photo2ImageView.setImageBitmap(null)
+
+                    viewModel.uiState.value.photoBitmap.getOrNull(2)?.let { bitmap ->
+                        binding.photo3ImageView.setImageBitmap(bitmap)
+                    } ?: binding.photo3ImageView.setImageBitmap(null)
+
+
+                    viewModel.uiState.value.transaction?.let {
+                        viewModel.setSelected(it.nameCategory)
+                    }
+
+                    adapter.submitList(
+                        if (uiState.selectedAdapter == EXPENSE)
+                            uiState.allCategoryExpense
+                        else
+                            uiState.allCategoryIncome
+                    )
+
                 }
+
             }
         }
 

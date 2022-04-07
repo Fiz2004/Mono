@@ -45,9 +45,4 @@ class TransactionDataSource(private val transactionDao: TransactionDao) {
             null
     }
 
-    suspend fun getNewId(): Int {
-        val lastItem = allTransactions.first().lastOrNull()
-        val id = lastItem?.id
-        return id?.let { it + 1 } ?: 0
-    }
 }
