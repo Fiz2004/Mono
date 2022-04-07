@@ -17,12 +17,12 @@ data class SelectUiState(
 )
 
 class SelectCategoryViewModel(private val categoryDataSource: CategoryDataSource) : ViewModel() {
-    private var _selectUiState = MutableStateFlow(SelectUiState())
-    val selectUiState: StateFlow<SelectUiState> = _selectUiState.asStateFlow()
+    private var _uiState = MutableStateFlow(SelectUiState())
+    val uiState: StateFlow<SelectUiState> = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            _selectUiState.update {
+            _uiState.update {
                 it.copy(
                     allCategoryExpense = categoryDataSource.allCategoryExpense.first(),
                     allCategoryIncome = categoryDataSource.allCategoryIncome.first(),
@@ -32,7 +32,7 @@ class SelectCategoryViewModel(private val categoryDataSource: CategoryDataSource
     }
 
     fun clickExpenseRecyclerView(position: Int) {
-        _selectUiState.update {
+        _uiState.update {
             it.copy(
                 isMoveExpense = true,
                 position = position
@@ -41,10 +41,26 @@ class SelectCategoryViewModel(private val categoryDataSource: CategoryDataSource
     }
 
     fun clickIncomeRecyclerView(position: Int) {
-        _selectUiState.update {
+        _uiState.update {
             it.copy(
                 isMoveIncome = true,
                 position = position
+            )
+        }
+    }
+
+    fun onMoveExpense() {
+        _uiState.update {
+            it.copy(
+                isMoveExpense = false
+            )
+        }
+    }
+
+    fun onMoveIncome() {
+        _uiState.update {
+            it.copy(
+                isMoveIncome = false
             )
         }
     }

@@ -1,27 +1,67 @@
 package com.fiz.mono.ui.report.category
 
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.fiz.mono.data.data_source.CategoryDataSource
 import com.fiz.mono.data.data_source.TransactionDataSource
+import com.fiz.mono.ui.models.CategoryUiState
 import com.fiz.mono.ui.models.TransactionUiState
 import com.fiz.mono.ui.shared_adapters.InfoDay
 import com.fiz.mono.ui.shared_adapters.TransactionsDataItem
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.abs
+
+data class ReportCategoryUiState(
+    val allCategoryExpense: List<CategoryUiState> = listOf(),
+    val allCategoryIncome: List<CategoryUiState> = listOf(),
+    val allTransactions: List<TransactionUiState> = listOf(),
+    val reportFor: Int = ReportCategoryFragment.MONTH,
+    val isCanGraph: Boolean = false
+)
 
 class ReportCategoryViewModel(
     categoryDataSource: CategoryDataSource,
     transactionDataSource: TransactionDataSource
 ) : ViewModel() {
-    var allCategoryExpense = categoryDataSource.allCategoryExpense
-    var allCategoryIncome = categoryDataSource.allCategoryIncome
+    private var _uiState = MutableStateFlow(ReportCategoryUiState())
+    val uiState: StateFlow<ReportCategoryUiState> = _uiState.asStateFlow()
 
-    val allTransactions = transactionDataSource.allTransactions.asLiveData()
-
-    private val _reportFor = MutableLiveData(ReportCategoryFragment.MONTH)
-    val reportFor: LiveData<Int>
-        get() = _reportFor
+    init {
+        viewModelScope.launch {
+            categoryDataSource.getAllCategoryExpenseForInput().collect { allCategoryExpense ->
+                _uiState.update {
+                    it.copy(
+                        allCategoryExpense = allCategoryExpense
+                    )
+                }
+            }
+        }
+        viewModelScope.launch {
+            categoryDataSource.getAllCategoryIncomeForInput().collect { allCategoryIncome ->
+                _uiState.update {
+                    it.copy(
+                        allCategoryIncome = allCategoryIncome
+                    )
+                }
+            }
+        }
+        viewModelScope.launch {
+            transactionDataSource.allTransactions.collect { allTransactions ->
+                _uiState.update {
+                    it.copy(
+                        allTransactions = allTransactions
+                    )
+                }
+            }
+        }
+    }
 
     fun getTransactions(
         tabSelectedReport: Int,
@@ -29,36 +69,34 @@ class ReportCategoryViewModel(
         nameCategory: String
     ): MutableList<TransactionsDataItem> {
         var groupTransactions =
-            allTransactions.value?.sortedByDescending { it.date.time }?.groupBy {
+            uiState.value.allTransactions.sortedByDescending { it.date.time }.groupBy {
                 SimpleDateFormat(
                     "MMM dd, yyyy",
                     Locale.getDefault()
                 ).format(it.date.time)
             }
 
-        groupTransactions = groupTransactions?.mapValues {
+        groupTransactions = groupTransactions.mapValues {
             it.value.filter { it.nameCategory == nameCategory }
-        }?.filterValues { it.isNotEmpty() }
+        }.filterValues { it.isNotEmpty() }
 
         val items = mutableListOf<TransactionsDataItem>()
-        if (groupTransactions != null) {
-            for (transactionsForDay in groupTransactions) {
-                val expense =
-                    transactionsForDay.value.filter { it.value < 0 }.map { it.value }
-                        .fold(0.0) { acc, d -> acc + d }
-                val income =
-                    transactionsForDay.value.filter { it.value > 0 }.map { it.value }
-                        .fold(0.0) { acc, d -> acc + d }
-                items += TransactionsDataItem.InfoDayHeaderItem(
-                    InfoDay(
-                        transactionsForDay.key,
-                        expense,
+        for (transactionsForDay in groupTransactions) {
+            val expense =
+                transactionsForDay.value.filter { it.value < 0 }.map { it.value }
+                    .fold(0.0) { acc, d -> acc + d }
+            val income =
+                transactionsForDay.value.filter { it.value > 0 }.map { it.value }
+                    .fold(0.0) { acc, d -> acc + d }
+            items += TransactionsDataItem.InfoDayHeaderItem(
+                InfoDay(
+                    transactionsForDay.key,
+                    expense,
                         income
                     )
                 )
                 items += transactionsForDay.value.map { TransactionsDataItem.InfoTransactionItem(it) }
             }
-        }
         return items
     }
 
@@ -82,13 +120,23 @@ class ReportCategoryViewModel(
     }
 
     fun clickMonthToggleButton() {
-        if (_reportFor.value == ReportCategoryFragment.MONTH) return
-        _reportFor.value = ReportCategoryFragment.MONTH
+        if (uiState.value.reportFor == ReportCategoryFragment.MONTH) return
+        _uiState.update {
+            it.copy(reportFor = ReportCategoryFragment.MONTH)
+        }
     }
 
     fun clickWeekToggleButton() {
-        if (_reportFor.value == ReportCategoryFragment.WEEK) return
-        _reportFor.value = ReportCategoryFragment.WEEK
+        if (uiState.value.reportFor == ReportCategoryFragment.WEEK) return
+        _uiState.update {
+            it.copy(reportFor = ReportCategoryFragment.WEEK)
+        }
+    }
+
+    fun onGraphImageViewLayoutChange() {
+        _uiState.update {
+            it.copy(isCanGraph = true)
+        }
     }
 
 }

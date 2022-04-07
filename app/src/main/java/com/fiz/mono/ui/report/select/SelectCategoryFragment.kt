@@ -71,29 +71,31 @@ class SelectCategoryFragment : Fragment() {
     private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.selectUiState.collect { selectUiState ->
-                    if (selectUiState.isMoveExpense) {
+                viewModel.uiState.collect { uiState ->
+                    if (uiState.isMoveExpense) {
                         val action =
                             SelectCategoryFragmentDirections
                                 .actionSelectCategoryFragmentToReportCategoryFragment(
-                                    selectUiState.allCategoryExpense[selectUiState.position].id,
+                                    uiState.allCategoryExpense[uiState.position].id,
                                     TYPE_EXPENSE
                                 )
                         view?.findNavController()?.navigate(action)
+                        viewModel.onMoveExpense()
                     }
 
-                    if (selectUiState.isMoveIncome) {
+                    if (uiState.isMoveIncome) {
                         val action =
                             SelectCategoryFragmentDirections
                                 .actionSelectCategoryFragmentToReportCategoryFragment(
-                                    selectUiState.allCategoryIncome[selectUiState.position].id,
+                                    uiState.allCategoryIncome[uiState.position].id,
                                     TYPE_INCOME
                                 )
                         view?.findNavController()?.navigate(action)
+                        viewModel.onMoveIncome()
                     }
 
-                    expenseAdapter.submitList(selectUiState.allCategoryExpense)
-                    incomeAdapter.submitList(selectUiState.allCategoryIncome)
+                    expenseAdapter.submitList(uiState.allCategoryExpense)
+                    incomeAdapter.submitList(uiState.allCategoryIncome)
                 }
             }
         }

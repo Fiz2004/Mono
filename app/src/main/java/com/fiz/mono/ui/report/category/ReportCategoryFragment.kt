@@ -89,51 +89,51 @@ class ReportCategoryFragment : Fragment() {
     private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.allCategoryExpense.collect {
+                viewModel.uiState.collect { uiState ->
                     if (isExpense) {
-                        updateUI(it)
+                        category = uiState.allCategoryExpense.find { it.id == args.id }
+                        category?.let {
+                            binding.iconImageView.setImageResource(it.imgSrc)
+                            binding.iconTextView.text = it.name
+                            list = viewModel.getTransactions(
+                                MONTH,
+                                mainViewModel.date.value!!,
+                                it.name
+                            )
+                            adapter.submitList(
+                                list
+                            )
+                        }
                     }
 
-                }
-
-                viewModel.allCategoryIncome.collect {
                     if (!isExpense) {
-                        updateUI(it)
+                        category = uiState.allCategoryIncome.find { it.id == args.id }
+                        category?.let {
+                            binding.iconImageView.setImageResource(it.imgSrc)
+                            binding.iconTextView.text = it.name
+                            list = viewModel.getTransactions(
+                                MONTH,
+                                mainViewModel.date.value!!,
+                                it.name
+                            )
+                            adapter.submitList(
+                                list
+                            )
+                        }
                     }
+
+                    binding.valueReportCategoryTextView.text = viewModel.getValueReportCategory(
+                        uiState.allTransactions,
+                        mainPreferencesViewModel.currency.value!!,
+                        isExpense,
+                        category?.name ?: ""
+                    )
+
+                    if (uiState.isCanGraph)
+                        drawGraph(uiState.reportFor)
                 }
             }
         }
-
-        viewModel.allTransactions.observe(viewLifecycleOwner) {
-            binding.valueReportCategoryTextView.text = viewModel.getValueReportCategory(
-                it,
-                mainPreferencesViewModel.currency.value!!,
-                isExpense,
-                category?.name ?: ""
-            )
-        }
-
-        viewModel.reportFor.observe(viewLifecycleOwner) {
-            drawGraph(it)
-        }
-    }
-
-    private fun updateUI(allCategoryTransaction: List<CategoryUiState>) {
-        category = allCategoryTransaction.find { it.id == args.id }
-
-        category?.imgSrc?.let { binding.iconImageView.setImageResource(it) }
-
-        binding.iconTextView.text = category?.name
-
-        list = viewModel.getTransactions(
-            MONTH,
-            mainViewModel.date.value!!,
-            category?.name!!
-        )
-        adapter.submitList(
-            list
-        )
-
     }
 
     private fun init() {
@@ -167,7 +167,7 @@ class ReportCategoryFragment : Fragment() {
         binding.transactionsRecyclerView.adapter = adapter
 
         binding.graphImageView.addOnLayoutChangeListener { view, i, i2, i3, i4, i5, i6, i7, i8 ->
-            drawGraph(viewModel.reportFor.value ?: MONTH)
+            viewModel.onGraphImageViewLayoutChange()
         }
     }
 
@@ -232,7 +232,7 @@ class ReportCategoryFragment : Fragment() {
 
         val valuesByMonth =
             getValuesForVerticalForMonth(
-                viewModel.allTransactions.value, category?.name,
+                viewModel.uiState.value.allTransactions, category?.name,
                 Calendar.getInstance(), Calendar.getInstance()
             ).map {
                 usefulHeight - usefulHeight * it
@@ -293,7 +293,7 @@ class ReportCategoryFragment : Fragment() {
 
         val valuesByWeek =
             getValuesForVerticalForWeek(
-                viewModel.allTransactions.value, category?.name,
+                viewModel.uiState.value.allTransactions, category?.name,
                 Calendar.getInstance(), Calendar.getInstance()
             ).map {
                 usefulHeight - usefulHeight * it
