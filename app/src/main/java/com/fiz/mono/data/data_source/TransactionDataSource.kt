@@ -1,7 +1,7 @@
 package com.fiz.mono.data.data_source
 
 import com.fiz.mono.data.database.dao.TransactionDao
-import com.fiz.mono.data.entity.Transaction
+import com.fiz.mono.data.entity.TransactionEntity
 import com.fiz.mono.ui.models.TransactionUiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -13,7 +13,7 @@ class TransactionDataSource(private val transactionDao: TransactionDao) {
         transactionDao.getAll().map { it.map { it.toTransactionUiState() } }
 
 
-    suspend fun insertNewTransaction(newTransaction: Transaction) {
+    suspend fun insertNewTransaction(newTransaction: TransactionEntity) {
         transactionDao.insert(newTransaction)
     }
 
@@ -30,11 +30,11 @@ class TransactionDataSource(private val transactionDao: TransactionDao) {
         }
     }
 
-    suspend fun delete(transaction: Transaction) {
+    suspend fun delete(transaction: TransactionEntity) {
         transactionDao.delete(transaction)
     }
 
-    suspend fun updateTransaction(transaction: Transaction) {
+    suspend fun updateTransaction(transaction: TransactionEntity) {
         transactionDao.update(transaction)
     }
 

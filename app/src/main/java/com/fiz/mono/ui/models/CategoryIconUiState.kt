@@ -2,7 +2,7 @@ package com.fiz.mono.ui.models
 
 import androidx.annotation.DrawableRes
 import androidx.recyclerview.widget.DiffUtil
-import com.fiz.mono.data.entity.CategoryIcon
+import com.fiz.mono.data.entity.CategoryIconEntity
 
 data class CategoryIconUiState(
     val id: String,
@@ -10,8 +10,8 @@ data class CategoryIconUiState(
     val imgSrc: Int,
     val selected: Boolean = false
 ) {
-    fun toCategoryIcon(): CategoryIcon {
-        return CategoryIcon(
+    fun toCategoryIcon(): CategoryIconEntity {
+        return CategoryIconEntity(
             id = this.id,
             imgSrc = this.imgSrc
         )

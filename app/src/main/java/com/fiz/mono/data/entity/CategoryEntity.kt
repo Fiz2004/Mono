@@ -6,7 +6,7 @@ import com.fiz.mono.data.data_source.CategoryIconUiStateDataSource
 import com.fiz.mono.ui.models.CategoryUiState
 
 @Entity
-data class Category(
+data class CategoryEntity(
     @PrimaryKey
     val id: String,
     val name: String,

@@ -7,7 +7,7 @@ import com.fiz.mono.ui.models.TransactionUiState
 import java.util.*
 
 @Entity
-data class Transaction(
+data class TransactionEntity(
     @PrimaryKey
     val id: Int,
     val date: Date,
@@ -15,7 +15,7 @@ data class Transaction(
     val nameCategory: String,
     val note: String,
     val mapImgSrc: String,
-    val photo: List<String?> = mutableListOf()
+    val photoPaths: List<String?> = mutableListOf()
 ) {
     suspend fun toTransactionUiState(): TransactionUiState {
         return TransactionUiState(
@@ -25,7 +25,7 @@ data class Transaction(
             nameCategory = this.nameCategory,
             note = this.note,
             imgSrc = CategoryIconUiStateDataSource().getDrawableCategoryIcon(this.mapImgSrc),
-            photo = this.photo
+            photo = this.photoPaths
         )
     }
 }

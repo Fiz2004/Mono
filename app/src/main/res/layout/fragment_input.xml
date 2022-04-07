@@ -17,6 +17,8 @@
         android:textSize="16sp"
         app:layout_constraintTop_toTopOf="parent"
         app:tabIndicatorColor="@color/blue"
+        app:tabIndicatorFullWidth="true"
+        app:tabIndicatorHeight="1dp"
         app:tabSelectedTextColor="@color/blue"
         app:tabTextAppearance="@android:style/TextAppearance"
         app:tabTextColor="?attr/colorSecondaryVariant">
@@ -118,6 +120,7 @@
                 android:background="@drawable/edit_image_bg"
                 android:hint="0.00"
                 android:inputType="numberDecimal"
+                android:layout_marginTop="8dp"
                 android:padding="0dp"
                 android:paddingStart="60dp"
                 android:textColor="?attr/colorPrimary"
@@ -136,7 +139,7 @@
                 android:textSize="32sp"
                 app:layout_constraintBottom_toBottomOf="@+id/valueEditText"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ExpenseIncomeTextView"
+                app:layout_constraintTop_toTopOf="@+id/valueEditText"
                 tools:text="$" />
 
             <TextView
@@ -158,9 +161,8 @@
                 android:background="@drawable/edit_image_bg"
                 android:minHeight="48dp"
                 android:paddingStart="16dp"
-                android:paddingTop="12dp"
+                android:layout_marginTop="8dp"
                 android:paddingEnd="16dp"
-                android:paddingBottom="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/noteTextView">
@@ -169,7 +171,8 @@
                     android:id="@+id/noteEditText"
                     style="@style/EditText"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_marginTop="12dp"
                     android:background="?attr/colorMain"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -179,7 +182,6 @@
                     android:id="@+id/noteCameraEditText"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:background="@android:color/transparent"
                     app:layout_constraintBottom_toBottomOf="@+id/noteEditText"
@@ -291,18 +293,30 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <TextView
+                android:id="@+id/categoryTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/category"
+                android:textAppearance="@style/size14_color_secondary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/noteLayout" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/categoryRecyclerView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="8dp"
                 android:clipToPadding="false"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/noteLayout"
+                app:layout_constraintTop_toBottomOf="@+id/categoryTextView"
                 app:layout_constraintVertical_bias="0.0"
                 app:spanCount="@integer/count_columns"
                 tools:itemCount="16"

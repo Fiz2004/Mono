@@ -3,7 +3,7 @@ package com.fiz.mono.data.data_source
 import android.content.Context
 import com.fiz.mono.R
 import com.fiz.mono.data.database.dao.CategoryDao
-import com.fiz.mono.data.entity.Category
+import com.fiz.mono.data.entity.CategoryEntity
 import com.fiz.mono.ui.models.CategoryUiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -53,38 +53,38 @@ class CategoryDataSource(
         }
 
         val allCategoryExpenseDefault = mutableListOf(
-            Category("e0", context.getString(R.string.bank), "bank"),
-            Category("e1", context.getString(R.string.food), "food"),
-            Category(
+            CategoryEntity("e0", context.getString(R.string.bank), "bank"),
+            CategoryEntity("e1", context.getString(R.string.food), "food"),
+            CategoryEntity(
                 "e2",
                 context.getString(R.string.medican),
                 "medican"
             ),
-            Category("e3", context.getString(R.string.gym), "gym"),
-            Category(
+            CategoryEntity("e3", context.getString(R.string.gym), "gym"),
+            CategoryEntity(
                 "e4",
                 context.getString(R.string.coffee),
                 "coffee"
             ),
-            Category(
+            CategoryEntity(
                 "e5",
                 context.getString(R.string.shopping),
                 "market"
             ),
-            Category("e6", context.getString(R.string.cats), "cat"),
-            Category("e7", context.getString(R.string.party), "party"),
-            Category("e8", context.getString(R.string.gift), "gift"),
-            Category("e9", context.getString(R.string.gas), "gas"),
+            CategoryEntity("e6", context.getString(R.string.cats), "cat"),
+            CategoryEntity("e7", context.getString(R.string.party), "party"),
+            CategoryEntity("e8", context.getString(R.string.gift), "gift"),
+            CategoryEntity("e9", context.getString(R.string.gas), "gas"),
         )
         val allCategoryIncomeDefault = mutableListOf(
-            Category(
+            CategoryEntity(
                 "i0",
                 context.getString(R.string.freelance),
                 "challenge"
             ),
-            Category("i1", context.getString(R.string.salary), "money"),
-            Category("i2", context.getString(R.string.bonus), "coin"),
-            Category("i3", context.getString(R.string.loan), "user"),
+            CategoryEntity("i1", context.getString(R.string.salary), "money"),
+            CategoryEntity("i2", context.getString(R.string.bonus), "coin"),
+            CategoryEntity("i3", context.getString(R.string.loan), "user"),
         )
         allCategoryExpenseDefault.forEach {
             categoryDao.insert(it)
@@ -95,13 +95,13 @@ class CategoryDataSource(
     }
 
     suspend fun insertNewCategoryExpense(newId: Int, name: String, iconID: String) {
-        val newCategoryItem = Category("e$newId", name, iconID)
+        val newCategoryItem = CategoryEntity("e$newId", name, iconID)
 
         categoryDao.insert(newCategoryItem)
     }
 
     suspend fun insertNewCategoryIncome(newId: Int, name: String, iconID: String) {
-        val newCategoryItem = Category("i$newId", name, iconID)
+        val newCategoryItem = CategoryEntity("i$newId", name, iconID)
 
         categoryDao.insert(newCategoryItem)
     }

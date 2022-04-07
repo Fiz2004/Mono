@@ -2,7 +2,7 @@ package com.fiz.mono.ui.models
 
 import androidx.recyclerview.widget.DiffUtil
 import com.fiz.mono.data.data_source.CategoryIconUiStateDataSource
-import com.fiz.mono.data.entity.Category
+import com.fiz.mono.data.entity.CategoryEntity
 
 data class CategoryUiState(
     val id: String,
@@ -10,8 +10,8 @@ data class CategoryUiState(
     val imgSrc: Int,
     val selected: Boolean = false
 ) {
-    suspend fun toCategory(): Category {
-        return Category(
+    suspend fun toCategory(): CategoryEntity {
+        return CategoryEntity(
             id = this.id,
             name = this.name,
             mapImgSrc = CategoryIconUiStateDataSource().getIDCategoryIcon(this.imgSrc),

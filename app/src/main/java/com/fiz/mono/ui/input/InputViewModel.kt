@@ -15,7 +15,7 @@ import androidx.lifecycle.viewModelScope
 import com.fiz.mono.R
 import com.fiz.mono.data.data_source.CategoryDataSource
 import com.fiz.mono.data.data_source.TransactionDataSource
-import com.fiz.mono.data.entity.Transaction
+import com.fiz.mono.data.entity.TransactionEntity
 import com.fiz.mono.ui.models.CategoryUiState
 import com.fiz.mono.ui.models.TransactionUiState
 import com.fiz.mono.util.BitmapUtils.getBitmapsFrom
@@ -143,7 +143,7 @@ class InputViewModel(
         }
     }
 
-    private suspend fun getTransactionItemForUpdate(selectedCategory: CategoryUiState): Transaction? {
+    private suspend fun getTransactionItemForUpdate(selectedCategory: CategoryUiState): TransactionEntity? {
         val state = uiState.value
         val valueTransaction = state.value.toDouble() *
                 if (uiState.value.selectedAdapter == InputFragment.EXPENSE)
@@ -151,7 +151,7 @@ class InputViewModel(
                 else
                     1
         return state.transaction?.let {
-            Transaction(
+            TransactionEntity(
                 it.id,
                 it.date,
                 valueTransaction,
@@ -167,7 +167,7 @@ class InputViewModel(
         selectedCategory: CategoryUiState,
         newId: Int,
         date: Calendar
-    ): Transaction {
+    ): TransactionEntity {
         val state = uiState.value
         val valueTransaction = state.value.toDouble() *
                 if (uiState.value.selectedAdapter == InputFragment.EXPENSE)
@@ -176,7 +176,7 @@ class InputViewModel(
                     1
 
 
-        return Transaction(
+        return TransactionEntity(
             newId,
             date.time,
             valueTransaction,
