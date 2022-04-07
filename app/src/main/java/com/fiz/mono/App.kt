@@ -5,6 +5,7 @@ import com.fiz.mono.data.data_source.CategoryDataSource
 import com.fiz.mono.data.data_source.CategoryIconUiStateDataSource
 import com.fiz.mono.data.data_source.TransactionDataSource
 import com.fiz.mono.data.database.AppDatabase
+import com.fiz.mono.data.repositories.CategoryRepository
 import com.jakewharton.threetenabp.AndroidThreeTen
 
 class App : Application() {
@@ -12,6 +13,13 @@ class App : Application() {
     val categoryStore by lazy {
         CategoryDataSource(
             database?.categoryItemDao()!!,
+            resources.getString(R.string.edit),
+            resources.getString(R.string.add_more)
+        )
+    }
+    val categoryRepository by lazy {
+        CategoryRepository(
+            categoryStore,
             resources.getString(R.string.edit),
             resources.getString(R.string.add_more)
         )

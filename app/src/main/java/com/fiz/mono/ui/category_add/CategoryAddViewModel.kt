@@ -2,15 +2,15 @@ package com.fiz.mono.ui.category_add
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fiz.mono.data.data_source.CategoryDataSource
 import com.fiz.mono.data.data_source.CategoryIconUiStateDataSource
+import com.fiz.mono.data.repositories.CategoryRepository
 import com.fiz.mono.ui.category_edit.CategoryEditViewModel.Companion.TYPE_EXPENSE
 import com.fiz.mono.ui.models.CategoryUiState
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class CategoryAddViewModel(
-    private val categoryDataSource: CategoryDataSource,
+    private val categoryRepository: CategoryRepository,
     private val categoryIconUiStateDataSource: CategoryIconUiStateDataSource,
 ) : ViewModel() {
 
@@ -31,14 +31,14 @@ class CategoryAddViewModel(
             }
         }
         viewModelScope.launch {
-            categoryDataSource.allCategoryExpense
+            categoryRepository.allCategoryExpense
                 .distinctUntilChanged()
                 .collect { allCategoryExpense ->
                     this@CategoryAddViewModel.allCategoryExpense = allCategoryExpense
                 }
         }
         viewModelScope.launch {
-            categoryDataSource.allCategoryIncome
+            categoryRepository.allCategoryIncome
                 .distinctUntilChanged()
                 .collect { allCategoryIncome ->
                     this@CategoryAddViewModel.allCategoryIncome = allCategoryIncome
@@ -71,11 +71,11 @@ class CategoryAddViewModel(
             if (uiState.value.type == TYPE_EXPENSE) {
                 val numberLastItem = allCategoryExpense.lastOrNull()?.id?.substring(1)?.toInt()
                 val newId = numberLastItem?.let { it + 1 } ?: 0
-                categoryDataSource.insertNewCategoryExpense(newId, name, selectedIcon)
+                categoryRepository.insertNewCategoryExpense(newId, name, selectedIcon)
             } else {
                 val numberLastItem = allCategoryIncome.lastOrNull()?.id?.substring(1)?.toInt()
                 val newId = numberLastItem?.let { it + 1 } ?: 0
-                categoryDataSource.insertNewCategoryIncome(newId, name, selectedIcon)
+                categoryRepository.insertNewCategoryIncome(newId, name, selectedIcon)
             }
         }
 

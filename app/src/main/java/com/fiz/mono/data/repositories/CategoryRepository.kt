@@ -1,50 +1,67 @@
-package com.fiz.mono.data.data_source
+package com.fiz.mono.data.repositories
 
 import android.content.Context
 import com.fiz.mono.R
-import com.fiz.mono.data.database.dao.CategoryDao
+import com.fiz.mono.data.data_source.CategoryDataSource
 import com.fiz.mono.data.entity.CategoryEntity
 import com.fiz.mono.ui.models.CategoryUiState
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
-class CategoryDataSource(
-    private val categoryDao: CategoryDao,
+class CategoryRepository(
+    private val categoryDataSource: CategoryDataSource,
     private val editString: String,
     private val addMoreString: String
 ) {
     var allCategoryExpense: Flow<List<CategoryUiState>> =
-        categoryDao.getAllExpense().distinctUntilChanged().map { it.map { it.toCategoryUiState() } }
+        categoryDataSource.allCategoryExpense
     var allCategoryIncome: Flow<List<CategoryUiState>> =
-        categoryDao.getAllIncome().distinctUntilChanged().map { it.map { it.toCategoryUiState() } }
+        categoryDataSource.allCategoryIncome
 
     fun getAllCategoryExpenseForEdit(): Flow<List<CategoryUiState>> {
-        return allCategoryExpense.map { it + CategoryUiState("e", addMoreString, 0) }
+        return categoryDataSource.allCategoryExpense.map {
+            it + CategoryUiState(
+                "e",
+                addMoreString,
+                0
+            )
+        }
     }
 
     fun getAllCategoryIncomeForEdit(): Flow<List<CategoryUiState>> {
-        return allCategoryIncome.map { it + CategoryUiState("i", addMoreString, 0) }
+        return categoryDataSource.allCategoryIncome.map {
+            it + CategoryUiState(
+                "i",
+                addMoreString,
+                0
+            )
+        }
     }
 
     fun getAllCategoryExpenseForInput(): Flow<List<CategoryUiState>> {
-        return allCategoryExpense.map { it + CategoryUiState("e", editString, 0) }
+        return categoryDataSource.allCategoryExpense.map {
+            it + CategoryUiState(
+                "e",
+                editString,
+                0
+            )
+        }
     }
 
     fun getAllCategoryIncomeForInput(): Flow<List<CategoryUiState>> {
-        return allCategoryIncome.map { it + CategoryUiState("i", editString, 0) }
+        return categoryDataSource.allCategoryIncome.map { it + CategoryUiState("i", editString, 0) }
     }
 
     suspend fun removeCategoryExpense(categoryUiState: CategoryUiState) {
-        categoryDao.delete(categoryUiState.toCategory())
+        categoryDataSource.delete(categoryUiState)
     }
 
     suspend fun removeCategoryIncome(categoryUiState: CategoryUiState) {
-        categoryDao.delete(categoryUiState.toCategory())
+        categoryDataSource.delete(categoryUiState)
     }
 
     suspend fun deleteAll(context: Context) {
-        categoryDao.deleteAll()
+        categoryDataSource.deleteAll(context)
 
         val allCategoryExpenseDefault = mutableListOf(
             CategoryEntity("e0", context.getString(R.string.bank), "bank"),
@@ -81,30 +98,17 @@ class CategoryDataSource(
             CategoryEntity("i3", context.getString(R.string.loan), "user"),
         )
 
-        categoryDao.insertAll(allCategoryExpenseDefault)
-        categoryDao.insertAll(allCategoryIncomeDefault)
+        categoryDataSource.insertAll(allCategoryExpenseDefault)
+        categoryDataSource.insertAll(allCategoryIncomeDefault)
     }
 
     suspend fun insertNewCategoryExpense(newId: Int, name: String, iconID: String) {
         val newCategoryItem = CategoryEntity("e$newId", name, iconID)
-        categoryDao.insert(newCategoryItem)
+        categoryDataSource.insert(newCategoryItem)
     }
 
     suspend fun insertNewCategoryIncome(newId: Int, name: String, iconID: String) {
         val newCategoryItem = CategoryEntity("i$newId", name, iconID)
-        categoryDao.insert(newCategoryItem)
+        categoryDataSource.insert(newCategoryItem)
     }
-
-    suspend fun delete(categoryUiState: CategoryUiState) {
-        categoryDao.delete(categoryUiState.toCategory())
-    }
-
-    suspend fun insertAll(categories: MutableList<CategoryEntity>) {
-        categoryDao.insertAll(categories)
-    }
-
-    suspend fun insert(newCategoryItem: CategoryEntity) {
-        categoryDao.insert(newCategoryItem)
-    }
-
 }
