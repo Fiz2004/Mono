@@ -17,6 +17,7 @@ import com.fiz.mono.data.data_source.CategoryDataSource
 import com.fiz.mono.data.data_source.TransactionDataSource
 import com.fiz.mono.data.entity.Transaction
 import com.fiz.mono.ui.models.CategoryUiState
+import com.fiz.mono.ui.models.TransactionUiState
 import com.fiz.mono.util.BitmapUtils.getBitmapsFrom
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,7 +39,7 @@ data class InputUiState(
     val note: String = "",
     val value: String = "",
     val selectedAdapter: Int = InputFragment.EXPENSE,
-    val transaction: Transaction? = null,
+    val transaction: TransactionUiState? = null,
     val photoPaths: MutableList<String?> = mutableListOf(),
     // Проверить будет ли работать как MediatorLiveData и автоматически собирать изменения
     val photoBitmap: List<Bitmap?> = getBitmapsFrom(photoPaths = photoPaths)
@@ -106,7 +107,7 @@ class InputViewModel(
 
     fun removeTransaction() {
         viewModelScope.launch {
-            inputUiState.value.transaction?.let { transactionDataSource.delete(it) }
+            inputUiState.value.transaction?.let { transactionDataSource.delete(it.toTransaction()) }
             _inputUiState.update {
                 it.copy(isReturn = true)
             }
@@ -142,7 +143,7 @@ class InputViewModel(
         }
     }
 
-    private fun getTransactionItemForUpdate(selectedCategory: CategoryUiState): Transaction? {
+    private suspend fun getTransactionItemForUpdate(selectedCategory: CategoryUiState): Transaction? {
         val state = inputUiState.value
         val valueTransaction = state.value.toDouble() *
                 if (inputUiState.value.selectedAdapter == InputFragment.EXPENSE)
@@ -162,7 +163,7 @@ class InputViewModel(
         }
     }
 
-    private fun getTransactionItemForNew(
+    private suspend fun getTransactionItemForNew(
         selectedCategory: CategoryUiState,
         newId: Int,
         date: Calendar
@@ -286,7 +287,7 @@ class InputViewModel(
         return cashCheckCameraHardware ?: false
     }
 
-    fun setViewModelTransaction(transaction: Transaction) {
+    fun setViewModelTransaction(transaction: TransactionUiState) {
         if (transaction.value > 0)
             setSelectedAdapter(InputFragment.INCOME)
         else

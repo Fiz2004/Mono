@@ -10,11 +10,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.fiz.mono.App
 import com.fiz.mono.R
-import com.fiz.mono.data.entity.Transaction
 import com.fiz.mono.databinding.FragmentReportMonthlyBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
 import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.ui.MainViewModel
+import com.fiz.mono.ui.models.TransactionUiState
 import com.fiz.mono.ui.report.ReportFragment
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.util.TimeUtils
@@ -129,7 +129,7 @@ class ReportMonthlyFragment : Fragment() {
         (requireParentFragment().parentFragment as ReportFragment).clickData()
     }
 
-    private fun allTransactionsObserve(allTransactions: List<Transaction>) {
+    private fun allTransactionsObserve(allTransactions: List<TransactionUiState>) {
         val currency = mainPreferencesViewModel.currency.value ?: "$"
         binding.valueReportTextView.text =
             currentUtils.getCurrencyFormat(currency, viewModel.getCurrentBalance(), false)

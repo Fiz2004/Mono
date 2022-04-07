@@ -130,18 +130,19 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { uiState ->
-                    binding.calendarRecyclerView.itemAnimator = null
 
-                    calendarAdapter.submitList(uiState.calendarDataItem)
-
-                    binding.noTransactionsTextView.setVisible(uiState.transactionsDataItem.isEmpty())
-                    binding.transactionRecyclerView.setVisible(uiState.transactionsDataItem.isNotEmpty())
-
-                    transactionAdapter.submitList(uiState.transactionsDataItem)
+                    if (uiState.isDateChange) {
+                        calendarAdapter.submitList(uiState.calendarDataItem)
+                        transactionAdapter.submitList(uiState.transactionsDataItem)
+                        binding.noTransactionsTextView.setVisible(uiState.transactionsDataItem.isEmpty())
+                        binding.transactionRecyclerView.setVisible(uiState.transactionsDataItem.isNotEmpty())
+                        viewModel.onChangeDate()
+                    }
 
                     if (uiState.isReturn) {
                         findNavController().popBackStack()
                     }
+
                 }
             }
         }

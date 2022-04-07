@@ -5,10 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fiz.mono.R
-import com.fiz.mono.data.data_source.CategoryIconDataSource
-import com.fiz.mono.data.entity.Transaction
 import com.fiz.mono.databinding.ItemTransactionBinding
 import com.fiz.mono.databinding.ItemTransactionDateExpenseIncomeBinding
+import com.fiz.mono.ui.models.TransactionUiState
 import com.fiz.mono.util.currentUtils.getCurrencyFormat
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setVisible
@@ -16,7 +15,7 @@ import com.fiz.mono.util.setVisible
 class TransactionsAdapter(
     private val currency: String,
     private val isVisibleIcon: Boolean,
-    private val callback: (Transaction) -> Unit = {}
+    private val callback: (TransactionUiState) -> Unit = {}
 ) :
     ListAdapter<TransactionsDataItem, RecyclerView.ViewHolder>(DataItemDiff) {
 
@@ -64,17 +63,17 @@ class TransactionsAdapter(
         private var binding: ItemTransactionBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(
-            transaction: Transaction,
+            transaction: TransactionUiState,
             isVisibleIcon: Boolean,
             currency: String,
-            callback: (Transaction) -> Unit
+            callback: (TransactionUiState) -> Unit
         ) {
             binding.apply {
                 iconTransactionImageView.setVisible(isVisibleIcon)
                 if (isVisibleIcon) {
-                    transaction.mapImgSrc.let {
+                    transaction.imgSrc.let {
                         iconTransactionImageView.setImageResource(
-                            CategoryIconDataSource().getDrawableCategoryIcon(it)
+                            it
                         )
                     }
                 }

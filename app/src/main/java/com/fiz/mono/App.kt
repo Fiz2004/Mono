@@ -2,7 +2,7 @@ package com.fiz.mono
 
 import android.app.Application
 import com.fiz.mono.data.data_source.CategoryDataSource
-import com.fiz.mono.data.data_source.CategoryIconDataSource
+import com.fiz.mono.data.data_source.CategoryIconUiStateDataSource
 import com.fiz.mono.data.data_source.TransactionDataSource
 import com.fiz.mono.data.database.AppDatabase
 import com.jakewharton.threetenabp.AndroidThreeTen
@@ -17,7 +17,7 @@ class App : Application() {
         )
     }
     val transactionStore by lazy { TransactionDataSource(database?.transactionItemDao()!!) }
-    val categoryIconStore by lazy { CategoryIconDataSource() }
+    val categoryIconStore by lazy { CategoryIconUiStateDataSource() }
 
     override fun onCreate() {
         super.onCreate()

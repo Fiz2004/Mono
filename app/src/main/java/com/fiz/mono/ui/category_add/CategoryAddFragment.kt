@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.fiz.mono.App
@@ -14,6 +17,7 @@ import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentCategoryAddBinding
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setVisible
+import kotlinx.coroutines.launch
 
 class CategoryAddFragment : Fragment() {
     private var _binding: FragmentCategoryAddBinding? = null
@@ -89,14 +93,18 @@ class CategoryAddFragment : Fragment() {
     }
 
     private fun subscribe() {
-        viewModel.allCategoryIcon.observe(viewLifecycleOwner) {
-            adapter.submitList(it.map { categoryIcon -> categoryIcon.copy() })
-            binding.navigationBarLayout.actionButton.setVisible(viewModel.getVisibilityAddButton())
-        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { uiState ->
 
-        viewModel.isReturn.observe(viewLifecycleOwner) {
-            if (it)
-                findNavController().popBackStack()
+                    adapter.submitList(uiState.allCategoryIcons)
+                    binding.navigationBarLayout.actionButton.setVisible(viewModel.getVisibilityAddButton())
+
+                    if (uiState.isReturn)
+                        findNavController().popBackStack()
+
+                }
+            }
         }
     }
 }

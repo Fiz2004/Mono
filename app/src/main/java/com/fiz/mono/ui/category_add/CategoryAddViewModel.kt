@@ -1,65 +1,117 @@
 package com.fiz.mono.ui.category_add
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.data.data_source.CategoryDataSource
-import com.fiz.mono.data.data_source.CategoryIconDataSource
+import com.fiz.mono.data.data_source.CategoryIconUiStateDataSource
 import com.fiz.mono.ui.category_edit.CategoryEditViewModel.Companion.TYPE_EXPENSE
 import com.fiz.mono.ui.models.CategoryIconUiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class CategoryAddViewModel(
-    private val categoryDataSource: CategoryDataSource,
-    private val categoryIconDataSource: CategoryIconDataSource,
-
-    ) : ViewModel() {
-    private val _allCategoryIcon: MutableLiveData<MutableList<CategoryIconUiState>> =
-        MutableLiveData(categoryIconDataSource.categoryIcons)
-    val allCategoryIcon: LiveData<MutableList<CategoryIconUiState>> = _allCategoryIcon
-
-    private val nameCategory: MutableLiveData<String> =
-        MutableLiveData("")
-
-    private val _isReturn = MutableLiveData(false)
-    val isReturn: LiveData<Boolean> = _isReturn
-
-    var type: String = TYPE_EXPENSE
-
-    fun init(type: String) {
-        this.type = type
-        allCategoryIcon.value?.map { it.selectedFalse() }
+data class CategoryAddUiState(
+    val allCategoryIcons: List<CategoryIconUiState> = listOf(),
+    val nameCategory: String = "",
+    val isReturn: Boolean = false,
+    val type: String = TYPE_EXPENSE
+) {
+    fun init(type: String): CategoryAddUiState {
+        val allCategoryIcons = allCategoryIcons.map {
+            it.copy(selected = false)
+        }
+        return copy(
+            type = type,
+            allCategoryIcons = allCategoryIcons
+        )
     }
 
-    fun clickRecyclerView(position: Int) {
-        categoryIconDataSource.select(position)
-        _allCategoryIcon.value = allCategoryIcon.value!!
+    fun clickRecyclerView(position: Int): CategoryAddUiState {
+        val allCategoryIcons = allCategoryIcons.mapIndexed { index, categoryIconUiState ->
+            var selected = categoryIconUiState.selected
+            if (index != position && categoryIconUiState.selected)
+                selected = false
+            if (index == position)
+                selected = !selected
+            categoryIconUiState.copy(
+                selected =
+                selected
+            )
+        }
+        return copy(
+            allCategoryIcons = allCategoryIcons
+        )
     }
 
     fun getVisibilityAddButton(): Boolean {
-        return categoryIconDataSource.isSelected()
+        return allCategoryIcons.any { it.selected } && nameCategory.isNotBlank()
+    }
+
+    fun setCategoryName(text: CharSequence?): CategoryAddUiState {
+        return copy(nameCategory = text.toString())
+    }
+}
+
+class CategoryAddViewModel(
+    private val categoryDataSource: CategoryDataSource,
+    private val categoryIconUiStateDataSource: CategoryIconUiStateDataSource,
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(CategoryAddUiState())
+    val uiState: StateFlow<CategoryAddUiState> = _uiState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            categoryIconUiStateDataSource.allCategoryIcons.collect { allCategoryIcons ->
+                _uiState.update {
+                    it.copy(
+                        allCategoryIcons = allCategoryIcons,
+                    )
+                }
+            }
+        }
+    }
+
+    fun init(type: String) {
+        _uiState.update {
+            it.init(type)
+        }
+    }
+
+    fun clickRecyclerView(position: Int) {
+        _uiState.update {
+            it.clickRecyclerView(position)
+        }
+    }
+
+    fun getVisibilityAddButton(): Boolean {
+        return uiState.value.getVisibilityAddButton()
     }
 
     fun setCategoryName(text: CharSequence?) {
-        nameCategory.value = text.toString()
+        _uiState.update {
+            it.setCategoryName(text)
+        }
     }
 
     fun clickAddButton() {
-        if (nameCategory.value?.isNotBlank() != true) return
-        if (categoryIconDataSource.isNotSelected()) return
-
-        val name = nameCategory.value ?: return
-        val selectedIcon = categoryIconDataSource.getSelectedIcon()
+        val name = uiState.value.nameCategory
+        val selectedIcon = uiState.value.allCategoryIcons.first { it.selected }.id
         viewModelScope.launch {
-            categoryDataSource.addNewCategory(name, type, selectedIcon)
+            categoryDataSource.addNewCategory(name, uiState.value.type, selectedIcon)
         }
 
-        _isReturn.value = true
+        _uiState.update {
+            it.copy(isReturn = true)
+        }
     }
 
     fun clickBackButton() {
-        _isReturn.value = true
+        _uiState.update {
+            it.copy(isReturn = true)
+        }
     }
 }
 

@@ -3,22 +3,12 @@ package com.fiz.mono.ui.calendar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.data.data_source.TransactionDataSource
-import com.fiz.mono.data.entity.Transaction
-import com.fiz.mono.ui.shared_adapters.TransactionsDataItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.*
-
-data class CalendarUiState(
-    val date: Calendar = Calendar.getInstance(),
-    val allTransactions: List<Transaction> = listOf(),
-    val isReturn: Boolean = false,
-    val calendarDataItem: List<CalendarDataItem> = listOf(),
-    val transactionsDataItem: List<TransactionsDataItem> = listOf(),
-)
 
 class CalendarViewModel(private val transactionDataSource: TransactionDataSource) : ViewModel() {
     private val _uiState = MutableStateFlow(CalendarUiState())
@@ -30,38 +20,8 @@ class CalendarViewModel(private val transactionDataSource: TransactionDataSource
                 _uiState.update {
                     it.copy(
                         allTransactions = allTransactions,
-                        calendarDataItem = CalendarDataItem.getListCalendarDataItem(
-                            transactionDataSource.getTransactionsForDaysCurrentMonth(
-                                uiState.value.date
-                            )
-                        ),
-                        transactionsDataItem = TransactionsDataItem.getListTransactionsDataItem(
-                            transactionDataSource.getAllTransactionsForDay(
-                                uiState.value.date
-                            )
-                        )
-
                     )
                 }
-            }
-        }
-    }
-
-    private fun getListCalendarDataItem() {
-        viewModelScope.launch {
-            val transactionsForDaysCurrentMonth =
-                transactionDataSource.getTransactionsForDaysCurrentMonth(uiState.value.date)
-            _uiState.update {
-                it.copy(calendarDataItem = CalendarDataItem.getListCalendarDataItem(transactionsForDaysCurrentMonth))
-            }
-        }
-    }
-
-    private fun getListTransactionsDataItem() {
-        viewModelScope.launch {
-            val allTransactionsForDay = transactionDataSource.getAllTransactionsForDay(uiState.value.date)
-            _uiState.update {
-                it.copy(transactionsDataItem = TransactionsDataItem.getListTransactionsDataItem(allTransactionsForDay))
             }
         }
     }
@@ -74,9 +34,13 @@ class CalendarViewModel(private val transactionDataSource: TransactionDataSource
 
     fun changeData(date: Calendar) {
         _uiState.update {
-            it.copy(date = date)
+            it.copy(date = date, isDateChange = true)
         }
-//        getListCalendarDataItem()
-//        getListTransactionsDataItem()
+    }
+
+    fun onChangeDate() {
+        _uiState.update {
+            it.copy(isDateChange = false)
+        }
     }
 }

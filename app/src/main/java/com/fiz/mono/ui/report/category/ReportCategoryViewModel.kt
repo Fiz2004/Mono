@@ -3,7 +3,7 @@ package com.fiz.mono.ui.report.category
 import androidx.lifecycle.*
 import com.fiz.mono.data.data_source.CategoryDataSource
 import com.fiz.mono.data.data_source.TransactionDataSource
-import com.fiz.mono.data.entity.Transaction
+import com.fiz.mono.ui.models.TransactionUiState
 import com.fiz.mono.ui.shared_adapters.InfoDay
 import com.fiz.mono.ui.shared_adapters.TransactionsDataItem
 import java.text.SimpleDateFormat
@@ -63,7 +63,7 @@ class ReportCategoryViewModel(
     }
 
     fun getValueReportCategory(
-        transactions: List<Transaction>,
+        transactions: List<TransactionUiState>,
         currency: String,
         isExpense: Boolean,
         categoryName: String
