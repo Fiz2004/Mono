@@ -17,6 +17,9 @@ class MainPreferencesViewModel(
     private var _pin = MutableLiveData("")
     val pin: LiveData<String> = _pin
 
+    private var _themeLight = MutableLiveData(true)
+    val themeLight: LiveData<Boolean> = _themeLight
+
     private var _isConfirmPIN = MutableLiveData(false)
     val isConfirmPIN: LiveData<Boolean> = _isConfirmPIN
 
@@ -24,6 +27,7 @@ class MainPreferencesViewModel(
         _firstTime.value = sharedPreferences.getBoolean("firstTime", true)
         setCurrency(sharedPreferences.getString("currency", "$") ?: "$")
         _pin.value = sharedPreferences.getString("PIN", "") ?: ""
+        _themeLight.value = sharedPreferences.getBoolean("themeLight", true)
         if (pin.value?.isBlank() == true)
             _isConfirmPIN.value = true
     }
@@ -43,10 +47,6 @@ class MainPreferencesViewModel(
             .apply()
     }
 
-    fun isPin(): Boolean {
-        return _pin.value?.isNotBlank() ?: false
-    }
-
     fun deletePin() {
         _pin.value = ""
         sharedPreferences
@@ -61,7 +61,14 @@ class MainPreferencesViewModel(
             .edit()
             .putString("PIN", pin)
             .apply()
+    }
 
+    fun setThemeLight(themeLight: Boolean) {
+        _themeLight.value = themeLight
+        sharedPreferences
+            .edit()
+            .putBoolean("themeLight", themeLight)
+            .apply()
     }
 
     fun confirmPin() {

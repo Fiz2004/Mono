@@ -6,12 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentSettingsBinding
+import com.fiz.mono.ui.MainPreferencesViewModel
+import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
 import com.fiz.mono.util.setVisible
 import kotlinx.coroutines.CoroutineScope
@@ -22,6 +26,15 @@ import kotlinx.coroutines.withContext
 class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
+
+    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels {
+        MainPreferencesViewModelFactory(
+            requireActivity().getSharedPreferences(
+                getString(R.string.preferences),
+                AppCompatActivity.MODE_PRIVATE
+            )
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,13 +52,13 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        bind()
+        bindListener()
+        updateUI()
+    }
+
+    private fun bindListener() {
         binding.apply {
-            navigationBarLayout.backButton.setVisible(false)
-            navigationBarLayout.actionButton.setVisible(false)
-            navigationBarLayout.choiceImageButton.setVisible(false)
-            navigationBarLayout.titleTextView.text = getString(R.string.settings)
-
-
             modeSwitch.setOnCheckedChangeListener(::modeOnClickListener)
 
             categoryCircleRightImageView.setOnClickListener(::categoryOnClickListener)
@@ -67,7 +80,15 @@ class SettingsFragment : Fragment() {
             deleteIconImageView.setOnClickListener(::deleteOnClickListener)
             deleteTextView.setOnClickListener(::deleteOnClickListener)
         }
-        updateUI()
+    }
+
+    private fun bind() {
+        binding.apply {
+            navigationBarLayout.backButton.setVisible(false)
+            navigationBarLayout.actionButton.setVisible(false)
+            navigationBarLayout.choiceImageButton.setVisible(false)
+            navigationBarLayout.titleTextView.text = getString(R.string.settings)
+        }
     }
 
 
@@ -111,8 +132,10 @@ class SettingsFragment : Fragment() {
 
     private fun modeOnClickListener(buttonView: CompoundButton, isChecked: Boolean) {
         if (isChecked) {
+            mainPreferencesViewModel.setThemeLight(false)
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         } else {
+            mainPreferencesViewModel.setThemeLight(true)
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }
