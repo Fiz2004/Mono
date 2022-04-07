@@ -14,7 +14,6 @@ import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentOnBoardingBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
 import com.fiz.mono.ui.MainPreferencesViewModelFactory
-import com.fiz.mono.ui.pin_password.PINPasswordFragment
 import com.fiz.mono.util.setVisible
 
 class OnBoardingFragment : Fragment() {
@@ -99,10 +98,7 @@ class OnBoardingFragment : Fragment() {
         viewModel.isNextScreen.observe(viewLifecycleOwner) {
             if (it) {
                 mainPreferencesViewModel.changeFirstTime()
-                val action =
-                    OnBoardingFragmentDirections
-                        .actionToPINPasswordFragment(PINPasswordFragment.START)
-                findNavController().navigate(action)
+                findNavController().popBackStack()
                 viewModel.isNextScreenRefresh()
             }
         }
