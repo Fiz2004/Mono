@@ -1,118 +1,98 @@
 package com.fiz.mono.ui.category_edit
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
 import com.fiz.mono.data.data_source.CategoryDataSource
-import com.fiz.mono.ui.models.CategoryUiState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-
-data class CategoryEditUiState(
-    val allCategoryExpense: List<CategoryUiState> = listOf(),
-    val allCategoryIncome: List<CategoryUiState> = listOf(),
-)
 
 class CategoryEditViewModel(
     private val categoryDataSource: CategoryDataSource
 ) : ViewModel() {
-    private val _categoryEditUiState = MutableStateFlow(CategoryEditUiState())
-    val categoryEditUiState: StateFlow<CategoryEditUiState> = _categoryEditUiState.asStateFlow()
-
-    private val _isReturn = MutableLiveData(false)
-    val isReturn: LiveData<Boolean> = _isReturn
-
-    private val _isMoveAdd = MutableLiveData(false)
-    val isMoveAdd: LiveData<Boolean> = _isMoveAdd
-
-    private val _isSelected = MutableLiveData(false)
-    val isSelected: LiveData<Boolean> = _isSelected
-
-    var type: String = TYPE_EXPENSE
+    private val _uiState = MutableStateFlow(CategoryEditUiState())
+    val uiState: StateFlow<CategoryEditUiState> = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            categoryDataSource.getAllCategoryExpenseForEdit().collect { list ->
-                _categoryEditUiState.update {
-                    it.copy(
-                        allCategoryExpense = list
-                    )
+            categoryDataSource.getAllCategoryExpenseForEdit()
+                .distinctUntilChanged()
+                .collect { list ->
+                    _uiState.update {
+                        it.copy(
+                            allCategoryExpense = list
+                        )
+                    }
                 }
-            }
         }
         viewModelScope.launch {
-            categoryDataSource.getAllCategoryIncomeForEdit().collect { list ->
-                _categoryEditUiState.update {
-                    it.copy(
-                        allCategoryIncome = list
-                    )
+            categoryDataSource.getAllCategoryIncomeForEdit()
+                .distinctUntilChanged()
+                .collect { list ->
+                    _uiState.update {
+                        it.copy(
+                            allCategoryIncome = list
+                        )
+                    }
                 }
-            }
         }
     }
 
     fun clickExpenseRecyclerView(position: Int) {
         viewModelScope.launch {
-            if (categoryDataSource.isClickAddPositionExpense(position)) {
-                categoryDataSource.cleanSelected()
-                isSelect()
-                type = TYPE_EXPENSE
-                _isMoveAdd.value = true
-                return@launch
+            _uiState.update {
+                it.clickExpenseRecyclerView(position)
             }
-
-            categoryDataSource.selectExpense(position)
-            isSelect()
         }
     }
 
     fun clickIncomeRecyclerView(position: Int) {
         viewModelScope.launch {
-            if (categoryDataSource.isClickAddPositionIncome(position)) {
-                categoryDataSource.cleanSelected()
-                isSelect()
-                type = TYPE_INCOME
-                _isMoveAdd.value = true
-                return@launch
+            _uiState.update {
+                it.clickIncomeRecyclerView(position)
             }
-
-            categoryDataSource.selectIncome(position)
-            isSelect()
-        }
-    }
-
-    fun isSelect() {
-        viewModelScope.launch {
-            _isSelected.value = categoryDataSource.isSelect()
         }
     }
 
     fun removeSelectItem() {
         viewModelScope.launch {
-            categoryDataSource.remove()
+            uiState.value.allCategoryExpense
+                .find { it.selected }
+                ?.let {
+                    categoryDataSource.removeCategoryExpense(it)
+                }
+
+            uiState.value.allCategoryIncome
+                .find { it.selected }
+                ?.let {
+                    categoryDataSource.removeCategoryIncome(it)
+                }
         }
     }
 
     fun clickBackButton() {
-        _isReturn.value = true
-    }
-
-    fun moveAdd() {
-        _isMoveAdd.value = false
+        _uiState.update {
+            it.copy(
+                isReturn = true
+            )
+        }
     }
 
     fun getActionForMoveAdd(): NavDirections {
-        return if (type == TYPE_EXPENSE)
+        return if (uiState.value.type == TYPE_EXPENSE)
             CategoryEditFragmentDirections
                 .actionCategoryFragmentToCategoryAddFragment(TYPE_EXPENSE)
         else
             CategoryEditFragmentDirections
                 .actionCategoryFragmentToCategoryAddFragment(TYPE_INCOME)
+    }
+
+    fun moveAdd() {
+        _uiState.update {
+            it.copy(
+                isMoveAdd = false
+            )
+        }
     }
 
     companion object {

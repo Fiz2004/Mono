@@ -97,8 +97,9 @@ class CategoryAddFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { uiState ->
 
+                    binding.navigationBarLayout.actionButton.setVisible(uiState.isVisibilityAddButton)
+
                     adapter.submitList(uiState.allCategoryIcons)
-                    binding.navigationBarLayout.actionButton.setVisible(viewModel.getVisibilityAddButton())
 
                     if (uiState.isReturn)
                         findNavController().popBackStack()

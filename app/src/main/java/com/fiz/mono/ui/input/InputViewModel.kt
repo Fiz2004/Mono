@@ -19,10 +19,7 @@ import com.fiz.mono.data.entity.Transaction
 import com.fiz.mono.ui.models.CategoryUiState
 import com.fiz.mono.ui.models.TransactionUiState
 import com.fiz.mono.util.BitmapUtils.getBitmapsFrom
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
@@ -98,9 +95,23 @@ class InputViewModel(
             if (selectedAdapter
                 == InputFragment.EXPENSE
             ) {
-                categoryDataSource.selectExpense(position)
+                categoryDataSource.allCategoryIncome.first().find { it.selected }
+                    ?.copy(selected = false)
+                val list = categoryDataSource.allCategoryExpense.first()
+                if (!list[position].selected) {
+                    list.find { it.selected }?.copy(selected = false)
+                }
+                val t = list[position]
+                t.copy(selected = !t.selected)
             } else {
-                categoryDataSource.selectIncome(position)
+                categoryDataSource.allCategoryExpense.first().find { it.selected }
+                    ?.copy(selected = false)
+                val list = categoryDataSource.allCategoryIncome.first()
+                if (!list[position].selected) {
+                    list.find { it.selected }?.copy(selected = false)
+                }
+                val t = list[position]
+                t.copy(selected = !t.selected)
             }
         }
     }
@@ -132,8 +143,8 @@ class InputViewModel(
         _inputUiState.update {
             it.copy(selectedAdapter = adapter)
         }
-        inputUiState.value.allCategoryExpense.forEach { it.selectedFalse() }
-        inputUiState.value.allCategoryIncome.forEach { it.selectedFalse() }
+        inputUiState.value.allCategoryExpense.forEach { it.copy(selected = false) }
+        inputUiState.value.allCategoryIncome.forEach { it.copy(selected = false) }
     }
 
     fun getTypeFromSelectedAdapter(context: Context): String {
@@ -339,18 +350,19 @@ class InputViewModel(
 
     fun selectExpense(position: Int) {
         inputUiState.value.allCategoryIncome.find { it.selected }?.let {
-            it.selectedFalse()
+            it.copy(selected = false)
         }
 
         val list = inputUiState.value.allCategoryExpense.map { it.copy() }
 
         if (!list[position].selected) {
             list.find { it.selected }?.let {
-                it.selectedFalse()
+                it.copy(selected = false)
             }
         }
 
-        list[position].invertSelected()
+        val t = list[position]
+        t.copy(selected = !t.selected)
 
         _inputUiState.update {
             it.copy(allCategoryExpense = list)
@@ -359,18 +371,19 @@ class InputViewModel(
 
     fun selectIncome(position: Int) {
         inputUiState.value.allCategoryExpense.find { it.selected }?.let {
-            it.selectedFalse()
+            it.copy(selected = false)
         }
 
         val list = inputUiState.value.allCategoryIncome.map { it.copy() }
 
         if (!list[position].selected) {
             list.find { it.selected }?.let {
-                it.selectedFalse()
+                it.copy(selected = false)
             }
         }
 
-        list[position].invertSelected()
+        val t = list[position]
+        t.copy(selected = !t.selected)
 
         _inputUiState.update {
             it.copy(allCategoryIncome = list)
@@ -379,7 +392,8 @@ class InputViewModel(
 
     private suspend fun checkClickEditPosition(position: Int): Boolean {
         if (isClickEditPosition(position, inputUiState.value.selectedAdapter)) {
-            categoryDataSource.cleanSelected()
+            categoryDataSource.allCategoryExpense.first().forEach { it.copy(selected = false) }
+            categoryDataSource.allCategoryIncome.first().forEach { it.copy(selected = false) }
             _inputUiState.update {
                 it.copy(isMoveEdit = true)
             }
@@ -416,7 +430,8 @@ class InputViewModel(
                         date
                     )
                 clickSubmit(transaction)
-                categoryDataSource.cleanSelected()
+                categoryDataSource.allCategoryExpense.first().forEach { it.copy(selected = false) }
+                categoryDataSource.allCategoryIncome.first().forEach { it.copy(selected = false) }
                 clickSubmit()
             }
         }

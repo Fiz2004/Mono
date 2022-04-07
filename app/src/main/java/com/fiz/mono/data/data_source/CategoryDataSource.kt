@@ -4,7 +4,6 @@ import android.content.Context
 import com.fiz.mono.R
 import com.fiz.mono.data.database.dao.CategoryDao
 import com.fiz.mono.data.entity.Category
-import com.fiz.mono.ui.category_edit.CategoryEditViewModel.Companion.TYPE_EXPENSE
 import com.fiz.mono.ui.models.CategoryUiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -26,7 +25,7 @@ class CategoryDataSource(
     }
 
     fun getAllCategoryIncomeForEdit(): Flow<List<CategoryUiState>> {
-        return allCategoryExpense.map { it + CategoryUiState("i", addMoreString, 0) }
+        return allCategoryIncome.map { it + CategoryUiState("i", addMoreString, 0) }
     }
 
     fun getAllCategoryExpenseForInput(): Flow<List<CategoryUiState>> {
@@ -37,21 +36,12 @@ class CategoryDataSource(
         return allCategoryIncome.map { it + CategoryUiState("i", editString, 0) }
     }
 
-    suspend fun cleanSelected() {
-        allCategoryExpense.first().forEach { it.selectedFalse() }
-        allCategoryIncome.first().forEach { it.selectedFalse() }
+    suspend fun removeCategoryExpense(categoryUiState: CategoryUiState) {
+        categoryDao.delete(categoryUiState.toCategory())
     }
 
-    private suspend fun removeCategoryExpense(position: Int) {
-        allCategoryExpense.first()[position].let {
-            categoryDao.delete(it.toCategory())
-        }
-    }
-
-    private suspend fun removeCategoryIncome(position: Int) {
-        allCategoryIncome.first()[position].let {
-            categoryDao.delete(it.toCategory())
-        }
+    suspend fun removeCategoryIncome(categoryUiState: CategoryUiState) {
+        categoryDao.delete(categoryUiState.toCategory())
     }
 
     suspend fun deleteAll(context: Context) {
@@ -104,81 +94,16 @@ class CategoryDataSource(
         }
     }
 
-    suspend fun addNewCategory(name: String, type: String, selectedIcon: String) {
-        if (type == TYPE_EXPENSE) {
-            insertNewCategoryExpense(name, selectedIcon)
-        } else {
-            insertNewCategoryIncome(name, selectedIcon)
-        }
-    }
-
-    private suspend fun insertNewCategoryExpense(name: String, iconID: String) {
-        val numberLastItem = allCategoryExpense.first().lastOrNull()?.id?.substring(1)?.toInt()
-        val newId = numberLastItem?.let { it + 1 } ?: 0
-
+    suspend fun insertNewCategoryExpense(newId: Int, name: String, iconID: String) {
         val newCategoryItem = Category("e$newId", name, iconID)
 
         categoryDao.insert(newCategoryItem)
     }
 
-    private suspend fun insertNewCategoryIncome(name: String, iconID: String) {
-        val numberLastItem = allCategoryIncome.first().lastOrNull()?.id?.substring(1)?.toInt()
-        val newId = numberLastItem?.let { it + 1 } ?: 0
-
+    suspend fun insertNewCategoryIncome(newId: Int, name: String, iconID: String) {
         val newCategoryItem = Category("i$newId", name, iconID)
 
         categoryDao.insert(newCategoryItem)
     }
 
-    suspend fun selectExpense(position: Int) {
-        allCategoryIncome.first().find { it.selected }?.selectedFalse()
-
-        val list = allCategoryExpense.first()
-
-        if (!list[position].selected) {
-            list.find { it.selected }?.selectedFalse()
-        }
-
-        list[position].invertSelected()
-    }
-
-    suspend fun isClickAddPositionExpense(position: Int): Boolean {
-        return position == allCategoryExpense.first().size
-    }
-
-    suspend fun isClickAddPositionIncome(position: Int): Boolean {
-        return position == allCategoryIncome.first().size
-    }
-
-    suspend fun selectIncome(position: Int) {
-        allCategoryExpense.first().find { it.selected }?.selectedFalse()
-
-        val list = allCategoryIncome.first()
-
-        if (!list[position].selected) {
-            list.find { it.selected }?.selectedFalse()
-        }
-
-        list[position].invertSelected()
-    }
-
-    suspend fun isSelect(): Boolean {
-        return allCategoryExpense.first()
-            .any { it.selected } || allCategoryIncome.first().any { it.selected }
-
-    }
-
-    suspend fun remove() {
-        allCategoryExpense.collect {
-            it.indexOfFirst { it.selected }.let {
-                if (it == -1) return@let
-                removeCategoryExpense(it)
-            }
-        }
-
-        allCategoryIncome.first().indexOfFirst { it.selected }.let {
-            if (it == -1) return@let
-            removeCategoryIncome(it)
-        }
-    }
 }

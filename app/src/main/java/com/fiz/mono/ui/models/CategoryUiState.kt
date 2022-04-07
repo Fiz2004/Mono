@@ -18,13 +18,6 @@ data class CategoryUiState(
         )
     }
 
-    fun selectedFalse(): CategoryUiState {
-        return copy(selected = false)
-    }
-
-    fun invertSelected(): CategoryUiState {
-        return copy(selected = !this.selected)
-    }
 }
 
 object CategoryItemDiff : DiffUtil.ItemCallback<CategoryUiState>() {

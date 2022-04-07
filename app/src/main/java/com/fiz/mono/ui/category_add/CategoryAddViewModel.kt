@@ -5,54 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.fiz.mono.data.data_source.CategoryDataSource
 import com.fiz.mono.data.data_source.CategoryIconUiStateDataSource
 import com.fiz.mono.ui.category_edit.CategoryEditViewModel.Companion.TYPE_EXPENSE
-import com.fiz.mono.ui.models.CategoryIconUiState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import com.fiz.mono.ui.models.CategoryUiState
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-
-data class CategoryAddUiState(
-    val allCategoryIcons: List<CategoryIconUiState> = listOf(),
-    val nameCategory: String = "",
-    val isReturn: Boolean = false,
-    val type: String = TYPE_EXPENSE
-) {
-    fun init(type: String): CategoryAddUiState {
-        val allCategoryIcons = allCategoryIcons.map {
-            it.copy(selected = false)
-        }
-        return copy(
-            type = type,
-            allCategoryIcons = allCategoryIcons
-        )
-    }
-
-    fun clickRecyclerView(position: Int): CategoryAddUiState {
-        val allCategoryIcons = allCategoryIcons.mapIndexed { index, categoryIconUiState ->
-            var selected = categoryIconUiState.selected
-            if (index != position && categoryIconUiState.selected)
-                selected = false
-            if (index == position)
-                selected = !selected
-            categoryIconUiState.copy(
-                selected =
-                selected
-            )
-        }
-        return copy(
-            allCategoryIcons = allCategoryIcons
-        )
-    }
-
-    fun getVisibilityAddButton(): Boolean {
-        return allCategoryIcons.any { it.selected } && nameCategory.isNotBlank()
-    }
-
-    fun setCategoryName(text: CharSequence?): CategoryAddUiState {
-        return copy(nameCategory = text.toString())
-    }
-}
 
 class CategoryAddViewModel(
     private val categoryDataSource: CategoryDataSource,
@@ -61,6 +16,9 @@ class CategoryAddViewModel(
 
     private val _uiState = MutableStateFlow(CategoryAddUiState())
     val uiState: StateFlow<CategoryAddUiState> = _uiState.asStateFlow()
+
+    private var allCategoryExpense: List<CategoryUiState> = listOf()
+    private var allCategoryIncome: List<CategoryUiState> = listOf()
 
     init {
         viewModelScope.launch {
@@ -71,6 +29,20 @@ class CategoryAddViewModel(
                     )
                 }
             }
+        }
+        viewModelScope.launch {
+            categoryDataSource.allCategoryExpense
+                .distinctUntilChanged()
+                .collect { allCategoryExpense ->
+                    this@CategoryAddViewModel.allCategoryExpense = allCategoryExpense
+                }
+        }
+        viewModelScope.launch {
+            categoryDataSource.allCategoryIncome
+                .distinctUntilChanged()
+                .collect { allCategoryIncome ->
+                    this@CategoryAddViewModel.allCategoryIncome = allCategoryIncome
+                }
         }
     }
 
@@ -86,10 +58,6 @@ class CategoryAddViewModel(
         }
     }
 
-    fun getVisibilityAddButton(): Boolean {
-        return uiState.value.getVisibilityAddButton()
-    }
-
     fun setCategoryName(text: CharSequence?) {
         _uiState.update {
             it.setCategoryName(text)
@@ -100,7 +68,15 @@ class CategoryAddViewModel(
         val name = uiState.value.nameCategory
         val selectedIcon = uiState.value.allCategoryIcons.first { it.selected }.id
         viewModelScope.launch {
-            categoryDataSource.addNewCategory(name, uiState.value.type, selectedIcon)
+            if (uiState.value.type == TYPE_EXPENSE) {
+                val numberLastItem = allCategoryExpense.lastOrNull()?.id?.substring(1)?.toInt()
+                val newId = numberLastItem?.let { it + 1 } ?: 0
+                categoryDataSource.insertNewCategoryExpense(newId, name, selectedIcon)
+            } else {
+                val numberLastItem = allCategoryIncome.lastOrNull()?.id?.substring(1)?.toInt()
+                val newId = numberLastItem?.let { it + 1 } ?: 0
+                categoryDataSource.insertNewCategoryIncome(newId, name, selectedIcon)
+            }
         }
 
         _uiState.update {

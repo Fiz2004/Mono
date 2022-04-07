@@ -54,7 +54,6 @@ class CategoryEditFragment : Fragment() {
     }
 
     private fun init() {
-        // TODO Invent to Remove the transmission categoryIconStore
         expenseAdapter = CategoriesAdapter(
             R.color.red
         ) { position ->
@@ -96,29 +95,25 @@ class CategoryEditFragment : Fragment() {
     private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.categoryEditUiState.collect { categoryEditUiState ->
-                    expenseAdapter.submitList(categoryEditUiState.allCategoryExpense.map { it.copy() })
-                    incomeAdapter.submitList(categoryEditUiState.allCategoryIncome.map { it.copy() })
+                viewModel.uiState.collect { uiState ->
+
+                    binding.navigationBarLayout.actionButton.setVisible(uiState.isSelected)
+
+                    expenseAdapter.submitList(uiState.allCategoryExpense)
+                    incomeAdapter.submitList(uiState.allCategoryIncome)
+
+                    if (uiState.isMoveAdd) {
+                        val action = viewModel.getActionForMoveAdd()
+                        findNavController().navigate(action)
+                        viewModel.moveAdd()
+                    }
+
+                    if (uiState.isReturn) {
+                        findNavController().popBackStack()
+                    }
+
                 }
             }
-        }
-
-        viewModel.isSelected.observe(viewLifecycleOwner) {
-            binding.navigationBarLayout.actionButton.setVisible(it)
-        }
-
-        // TODO Invent to Remove moveAdd()
-        viewModel.isMoveAdd.observe(viewLifecycleOwner) {
-            if (it) {
-                val action = viewModel.getActionForMoveAdd()
-                findNavController().navigate(action)
-                viewModel.moveAdd()
-            }
-        }
-
-        viewModel.isReturn.observe(viewLifecycleOwner) {
-            if (it)
-                findNavController().popBackStack()
         }
     }
 }
