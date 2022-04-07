@@ -106,7 +106,8 @@ class ReportMonthlyFragment : Fragment() {
                     binding.previousBalanceValueReportTextView.text = uiState.currentPreviousBalance
 
                     adapter.submitList(uiState.transactionsForAdapter)
-
+                    if (uiState.isDateChange)
+                        viewModel.onDataChange()
                 }
             }
         }
@@ -119,16 +120,15 @@ class ReportMonthlyFragment : Fragment() {
             date,
             resources.getStringArray(R.array.name_month)
         )
+        viewModel.setDate(date)
     }
 
     private fun rightDateRangeOnClickListener(view: View) {
         mainViewModel.dateMonthPlusOne()
-        viewModel.setDate(mainViewModel.date.value!!)
     }
 
     private fun leftDateRangeOnClickListener(view: View) {
         mainViewModel.dateMonthMinusOne()
-        viewModel.setDate(mainViewModel.date.value!!)
     }
 
     private fun allExpenseIncomeOnButtonCheckedListener(

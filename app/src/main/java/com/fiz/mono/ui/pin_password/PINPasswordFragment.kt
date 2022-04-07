@@ -91,7 +91,7 @@ class PINPasswordFragment : Fragment() {
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             if (viewModel.statePIN.value != State_Pin.LOGIN) {
-                activity?.onBackPressed()
+                findNavController().popBackStack()
             }
         }
 

@@ -199,4 +199,12 @@ class ReportMonthlyViewModel(private val transactionDataSource: TransactionDataS
             it.copy(currency = currency)
         }
     }
+
+    fun onDataChange() {
+        _uiState.update {
+            it.copy(
+                isDateChange = false
+            )
+        }
+    }
 }
