@@ -127,13 +127,14 @@ class InputViewModel(
     }
 
     fun setSelectedAdapter(adapter: Int) {
-        _uiState.update {
-            it.copy(
-                allCategoryExpense = it.allCategoryExpense.map { it.copy(selected = false) },
-                allCategoryIncome = it.allCategoryIncome.map { it.copy(selected = false) },
-                selectedAdapter = adapter
-            )
-        }
+        if (uiState.value.selectedAdapter != adapter)
+            _uiState.update {
+                it.copy(
+                    allCategoryExpense = it.allCategoryExpense.map { it.copy(selected = false) },
+                    allCategoryIncome = it.allCategoryIncome.map { it.copy(selected = false) },
+                    selectedAdapter = adapter
+                )
+            }
     }
 
     fun getTypeFromSelectedAdapter(context: Context): String {

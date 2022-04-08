@@ -13,9 +13,6 @@ data class CategoryAddUiState(
         get() = allCategoryIcons.any { it.selected } && nameCategory.isNotBlank()
 
     fun init(type: String): CategoryAddUiState {
-        val allCategoryIcons = allCategoryIcons.map {
-            it.copy(selected = false)
-        }
         return copy(
             type = type,
             allCategoryIcons = allCategoryIcons
