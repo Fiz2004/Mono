@@ -98,12 +98,12 @@ class ReportMonthlyFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { uiState ->
-
                     binding.valueReportTextView.text = uiState.currentBalance
                     binding.incomeValueReportTextView.text = uiState.currentIncome
                     binding.expenseValueReportTextView.text = uiState.currentExpense
                     binding.expenseIncomeValueReportTextView.text = uiState.currentExpenseIncome
-                    binding.previousBalanceValueReportTextView.text = uiState.currentPreviousBalance
+                    binding.previousBalanceValueReportTextView.text =
+                        uiState.currentPreviousBalance
 
                     adapter.submitList(uiState.transactionsForAdapter)
                     if (uiState.isDateChange)

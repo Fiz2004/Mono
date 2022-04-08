@@ -103,4 +103,5 @@
     <string name="notification_title">Mono Напоминает</string>
     <string name="add_more">Добавить еще</string>
     <string name="remove_reminder">Удалить напоминание</string>
+    <string name="this_week">На этой неделе</string>
 </resources>

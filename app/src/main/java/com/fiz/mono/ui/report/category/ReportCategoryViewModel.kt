@@ -1,30 +1,17 @@
 package com.fiz.mono.ui.report.category
 
+import android.graphics.Canvas
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.data.data_source.TransactionDataSource
 import com.fiz.mono.data.repositories.CategoryRepository
-import com.fiz.mono.ui.models.CategoryUiState
-import com.fiz.mono.ui.models.TransactionUiState
-import com.fiz.mono.ui.shared_adapters.InfoDay
-import com.fiz.mono.ui.shared_adapters.TransactionsDataItem
+import com.fiz.mono.ui.report.select.SelectCategoryFragment
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.math.abs
-
-data class ReportCategoryUiState(
-    val allCategoryExpense: List<CategoryUiState> = listOf(),
-    val allCategoryIncome: List<CategoryUiState> = listOf(),
-    val allTransactions: List<TransactionUiState> = listOf(),
-    val reportFor: Int = ReportCategoryFragment.MONTH,
-    val isCanGraph: Boolean = false
-)
 
 class ReportCategoryViewModel(
     private val categoryRepository: CategoryRepository,
@@ -63,73 +50,17 @@ class ReportCategoryViewModel(
         }
     }
 
-    fun getTransactions(
-        tabSelectedReport: Int,
-        date: Calendar,
-        nameCategory: String
-    ): MutableList<TransactionsDataItem> {
-        var groupTransactions =
-            uiState.value.allTransactions.sortedByDescending { it.date.time }.groupBy {
-                SimpleDateFormat(
-                    "MMM dd, yyyy",
-                    Locale.getDefault()
-                ).format(it.date.time)
-            }
-
-        groupTransactions = groupTransactions.mapValues {
-            it.value.filter { it.nameCategory == nameCategory }
-        }.filterValues { it.isNotEmpty() }
-
-        val items = mutableListOf<TransactionsDataItem>()
-        for (transactionsForDay in groupTransactions) {
-            val expense =
-                transactionsForDay.value.filter { it.value < 0 }.map { it.value }
-                    .fold(0.0) { acc, d -> acc + d }
-            val income =
-                transactionsForDay.value.filter { it.value > 0 }.map { it.value }
-                    .fold(0.0) { acc, d -> acc + d }
-            items += TransactionsDataItem.InfoDayHeaderItem(
-                InfoDay(
-                    transactionsForDay.key,
-                    expense,
-                        income
-                    )
-                )
-                items += transactionsForDay.value.map { TransactionsDataItem.InfoTransactionItem(it) }
-            }
-        return items
-    }
-
-    fun getValueReportCategory(
-        transactions: List<TransactionUiState>,
-        currency: String,
-        isExpense: Boolean,
-        categoryName: String
-    ): String {
-        return if (!isExpense) {
-            "+"
-        } else {
-            ""
-        } +
-                currency +
-                abs(transactions
-                    .filter { it.nameCategory == categoryName }
-                    .map { it.value }
-                    .fold(0.0) { acc, d -> acc + d })
-                    .toString()
-    }
-
     fun clickMonthToggleButton() {
-        if (uiState.value.reportFor == ReportCategoryFragment.MONTH) return
+        if (uiState.value.reportFor == ReportCategoryUiState.MONTH) return
         _uiState.update {
-            it.copy(reportFor = ReportCategoryFragment.MONTH)
+            it.copy(reportFor = ReportCategoryUiState.MONTH)
         }
     }
 
     fun clickWeekToggleButton() {
-        if (uiState.value.reportFor == ReportCategoryFragment.WEEK) return
+        if (uiState.value.reportFor == ReportCategoryUiState.WEEK) return
         _uiState.update {
-            it.copy(reportFor = ReportCategoryFragment.WEEK)
+            it.copy(reportFor = ReportCategoryUiState.WEEK)
         }
     }
 
@@ -139,6 +70,50 @@ class ReportCategoryViewModel(
         }
     }
 
+    fun init(type: String, id: String) {
+        _uiState.update {
+            it.copy(
+                isExpense = type == SelectCategoryFragment.TYPE_EXPENSE,
+                id = id
+            )
+        }
+    }
+
+    fun drawGraph(
+        canvas: Canvas,
+        width: Int,
+        height: Int,
+        color: Int,
+        density: Float,
+        textSize: Float,
+        colorText: Int,
+        colorForShader1: Int,
+        colorForShader2: Int
+    ) {
+        if (uiState.value.reportFor == ReportCategoryUiState.MONTH) {
+            uiState.value.drawLineMonth(
+                canvas,
+                width,
+                height,
+                color,
+                density,
+                colorForShader1,
+                colorForShader2
+            )
+            uiState.value.drawTextMonth(canvas, width, height, textSize, colorText)
+        } else {
+            uiState.value.drawLineWeek(
+                canvas,
+                width,
+                height,
+                color,
+                density,
+                colorForShader1,
+                colorForShader2
+            )
+            uiState.value.drawTextWeek(canvas, width, height, textSize, colorText)
+        }
+    }
 }
 
 class ReportCategoryViewModelFactory(

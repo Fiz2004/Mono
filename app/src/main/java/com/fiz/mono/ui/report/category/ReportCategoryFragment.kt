@@ -2,7 +2,8 @@ package com.fiz.mono.ui.report.category
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -22,18 +23,11 @@ import com.fiz.mono.databinding.FragmentReportCategoryBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
 import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.ui.MainViewModel
-import com.fiz.mono.ui.models.CategoryUiState
-import com.fiz.mono.ui.report.category.ReportCategoryUtils.getValuesForVerticalForMonth
-import com.fiz.mono.ui.report.category.ReportCategoryUtils.getValuesForVerticalForWeek
-import com.fiz.mono.ui.report.select.SelectCategoryFragment
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
-import com.fiz.mono.ui.shared_adapters.TransactionsDataItem
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.themeColor
 import com.google.android.material.button.MaterialButtonToggleGroup
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
 
 class ReportCategoryFragment : Fragment() {
     private val args: ReportCategoryFragmentArgs by navArgs()
@@ -60,11 +54,6 @@ class ReportCategoryFragment : Fragment() {
 
     private lateinit var adapter: TransactionsAdapter
 
-    private var isExpense: Boolean = false
-    private var category: CategoryUiState? = null
-
-    lateinit var list: MutableList<TransactionsDataItem>
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -86,70 +75,45 @@ class ReportCategoryFragment : Fragment() {
         subscribe()
     }
 
-    private fun subscribe() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collect { uiState ->
-                    if (isExpense) {
-                        category = uiState.allCategoryExpense.find { it.id == args.id }
-                        category?.let {
-                            binding.iconImageView.setImageResource(it.imgSrc)
-                            binding.iconTextView.text = it.name
-                            list = viewModel.getTransactions(
-                                MONTH,
-                                mainViewModel.date.value!!,
-                                it.name
-                            )
-                            adapter.submitList(
-                                list
-                            )
-                        }
-                    }
-
-                    if (!isExpense) {
-                        category = uiState.allCategoryIncome.find { it.id == args.id }
-                        category?.let {
-                            binding.iconImageView.setImageResource(it.imgSrc)
-                            binding.iconTextView.text = it.name
-                            list = viewModel.getTransactions(
-                                MONTH,
-                                mainViewModel.date.value!!,
-                                it.name
-                            )
-                            adapter.submitList(
-                                list
-                            )
-                        }
-                    }
-
-                    binding.valueReportCategoryTextView.text = viewModel.getValueReportCategory(
-                        uiState.allTransactions,
-                        mainPreferencesViewModel.currency.value!!,
-                        isExpense,
-                        category?.name ?: ""
-                    )
-
-                    if (uiState.isCanGraph)
-                        drawGraph(uiState.reportFor)
-                }
-            }
-        }
-    }
-
     private fun init() {
         adapter = TransactionsAdapter(
             mainPreferencesViewModel.currency.value ?: "$",
             false
         )
 
-        isExpense = args.type == SelectCategoryFragment.TYPE_EXPENSE
+        viewModel.init(args.type, args.id)
+    }
+
+    private fun subscribe() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { uiState ->
+                    uiState.category?.let {
+                        binding.iconImageView.setImageResource(it.imgSrc)
+                        binding.iconTextView.text = it.name
+                        binding.thisTextView.text = getString(
+                            if (uiState.reportFor == ReportCategoryUiState.MONTH) R.string.this_month else
+                                R.string.this_week
+                        )
+                        binding.valueReportCategoryTextView.text = uiState.getValueReportCategory(
+                            mainPreferencesViewModel.currency.value!!
+                        )
+                        adapter.submitList(uiState.getTransactions())
+
+                        if (uiState.isCanGraph)
+                            drawGraph(uiState.reportFor)
+                    }
+                }
+            }
+        }
     }
 
     private fun bind() {
-        val color = if (isExpense)
+        val color = if (viewModel.uiState.value.isExpense)
             R.color.expense
         else
             R.color.income
+
         binding.iconImageView.imageTintList = ColorStateList.valueOf(
             requireContext().getColorCompat(color)
         )
@@ -171,6 +135,56 @@ class ReportCategoryFragment : Fragment() {
         }
     }
 
+    private fun drawGraph(period: Int) {
+        if (binding.graphImageView.width == 0 || binding.graphImageView.height == 0) return
+        val width = binding.graphImageView.width
+        val height = binding.graphImageView.height
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val color = requireContext().getColorCompat(
+            if (viewModel.uiState.value.isExpense)
+                R.color.expense
+            else
+                R.color.income
+        )
+        val density = resources.displayMetrics.density
+        val textSize = spToPx(16f, requireContext())
+        val colorText =
+            requireContext().themeColor(com.google.android.material.R.attr.colorSecondary)
+        val colorForShader1 = requireContext().getColorCompat(
+            if (viewModel.uiState.value.isExpense)
+                R.color.expense_gradient_0
+            else
+                R.color.income_gradient_0
+        )
+        val colorForShader2 = requireContext().getColorCompat(
+            if (viewModel.uiState.value.isExpense)
+                R.color.expense_gradient_1
+            else
+                R.color.income_gradient_1
+        )
+        viewModel.drawGraph(
+            canvas,
+            width,
+            height,
+            color,
+            density,
+            textSize,
+            colorText,
+            colorForShader1,
+            colorForShader2
+        )
+        binding.graphImageView.setImageBitmap(bitmap)
+    }
+
+    private fun spToPx(sp: Float, context: Context): Float {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_SP,
+            sp,
+            context.resources.displayMetrics
+        )
+    }
+
     private fun monthWeekOnButtonCheckedListener(
         toggleButton: MaterialButtonToggleGroup,
         checkedId: Int,
@@ -186,240 +200,5 @@ class ReportCategoryFragment : Fragment() {
                     viewModel.clickWeekToggleButton()
             }
         }
-    }
-
-    private fun drawGraph(period: Int) {
-        if (binding.graphImageView.width == 0 || binding.graphImageView.height == 0) return
-        val width = binding.graphImageView.width
-        val height = binding.graphImageView.height
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        if (period == MONTH) {
-            drawLineMonth(canvas)
-            drawTextMonth(canvas)
-        } else {
-            drawLineWeek(canvas)
-            drawTextWeek(canvas)
-        }
-        binding.graphImageView.setImageBitmap(bitmap)
-    }
-
-    private fun drawLineMonth(canvas: Canvas) {
-        val width = binding.graphImageView.width
-        val height = binding.graphImageView.height
-        val usefulHeight = height * 0.65f
-
-        val paintFill = Paint(Paint.ANTI_ALIAS_FLAG)
-        paintFill.style = Paint.Style.FILL
-        paintFill.shader = getShader(usefulHeight)
-        paintFill.color = requireContext().getColorCompat(
-            if (isExpense)
-                R.color.expense
-            else
-                R.color.income
-        )
-        paintFill.strokeWidth = 0f * resources.displayMetrics.density
-
-        val paintStroke = Paint(Paint.ANTI_ALIAS_FLAG)
-        paintStroke.style = Paint.Style.STROKE
-        paintStroke.color = requireContext().getColorCompat(
-            if (isExpense)
-                R.color.expense
-            else
-                R.color.income
-        )
-        paintStroke.strokeWidth = 2f * resources.displayMetrics.density
-
-        val valuesByMonth =
-            getValuesForVerticalForMonth(
-                viewModel.uiState.value.allTransactions, category?.name,
-                Calendar.getInstance(), Calendar.getInstance()
-            ).map {
-                usefulHeight - usefulHeight * it
-            }
-
-        val stepWidth = width / 5f
-
-        val pathFill = Path()
-        val pathStroke = Path()
-        pathFill.moveTo(0f, valuesByMonth[0].toFloat())
-        pathStroke.moveTo(0f, valuesByMonth[0].toFloat())
-
-        var cX = 0f
-        for (n in 1..5) {
-            cX += if (n == 1)
-                stepWidth / 2f
-            else
-                stepWidth
-
-            val stepHeight = valuesByMonth[n] - valuesByMonth[n - 1]
-            pathFill.quadTo(
-                cX - stepWidth / 2,
-                (valuesByMonth[n] - (stepHeight / 2f)).toFloat(),
-                cX,
-                valuesByMonth[n].toFloat()
-            )
-            pathStroke.quadTo(
-                cX - stepWidth / 2,
-                (valuesByMonth[n] - (stepHeight / 2f)).toFloat(),
-                cX,
-                valuesByMonth[n].toFloat()
-            )
-        }
-        pathStroke.lineTo(width.toFloat(), valuesByMonth[valuesByMonth.size - 1].toFloat())
-        pathFill.lineTo(width.toFloat(), valuesByMonth[valuesByMonth.size - 1].toFloat())
-        pathFill.lineTo(width.toFloat(), usefulHeight.toFloat())
-        pathFill.lineTo(0f, usefulHeight.toFloat())
-        pathFill.close()
-        canvas.drawPath(pathFill, paintFill)
-        canvas.drawPath(pathStroke, paintStroke)
-    }
-
-    private fun drawLineWeek(canvas: Canvas) {
-        val width = binding.graphImageView.width
-        val height = binding.graphImageView.height
-        val usefulHeight = height * 0.65f
-
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-        paint.style = Paint.Style.FILL_AND_STROKE
-        paint.shader = getShader(usefulHeight)
-        paint.color = requireContext().getColorCompat(
-            if (isExpense)
-                R.color.expense
-            else
-                R.color.income
-        )
-        paint.strokeWidth = 0f
-
-        val valuesByWeek =
-            getValuesForVerticalForWeek(
-                viewModel.uiState.value.allTransactions, category?.name,
-                Calendar.getInstance(), Calendar.getInstance()
-            ).map {
-                usefulHeight - usefulHeight * it
-            }
-
-        val stepWidth = width / 7f
-
-        val path = Path()
-        path.moveTo(0f, valuesByWeek[0].toFloat())
-
-        var cX = 0f
-        for (n in 1..7) {
-            cX += if (n == 1)
-                stepWidth / 2f
-            else
-                stepWidth
-
-            val stepHeight = valuesByWeek[n] - valuesByWeek[n - 1]
-
-            path.quadTo(
-                cX - stepWidth / 2,
-                (valuesByWeek[n] - (stepHeight / 2f)).toFloat(),
-                cX,
-                valuesByWeek[n].toFloat()
-            )
-        }
-        path.lineTo(width.toFloat(), valuesByWeek[valuesByWeek.size - 1].toFloat())
-        path.lineTo(width.toFloat(), usefulHeight.toFloat())
-        path.lineTo(0f, usefulHeight.toFloat())
-        path.close()
-        canvas.drawPath(path, paint)
-    }
-
-    private fun drawTextMonth(
-        canvas: Canvas
-    ) {
-        val width = binding.graphImageView.width
-        val height = binding.graphImageView.height
-
-        val paintFont = Paint(Paint.ANTI_ALIAS_FLAG)
-        paintFont.textSize = spToPx(16f, requireContext())
-        paintFont.color =
-            requireContext().themeColor(com.google.android.material.R.attr.colorSecondary)
-        paintFont.textAlign = Paint.Align.CENTER
-
-        var currentX = 0f
-        val monthDate = Calendar.getInstance()
-        monthDate.add(Calendar.MONTH, -6)
-        val stepWidth = width / 5f
-
-        for (n in 0 until 5) {
-            currentX += if (n == 0)
-                stepWidth / 2f
-            else
-                stepWidth
-
-            monthDate.add(Calendar.MONTH, 1)
-            val nameMonth = SimpleDateFormat(
-                "LLL",
-                Locale.getDefault()
-            ).format(monthDate.time)
-
-            canvas.drawText("$nameMonth", currentX, height - paintFont.textSize, paintFont)
-        }
-    }
-
-    private fun drawTextWeek(
-        canvas: Canvas
-    ) {
-        val width = binding.graphImageView.width
-        val height = binding.graphImageView.height
-
-        val paintFont = Paint(Paint.ANTI_ALIAS_FLAG)
-        paintFont.textSize = spToPx(16f, requireContext())
-        paintFont.color =
-            requireContext().themeColor(com.google.android.material.R.attr.colorSecondary)
-        paintFont.textAlign = Paint.Align.CENTER
-
-        var currentX = 0f
-        val dayDate = Calendar.getInstance()
-        dayDate.add(Calendar.DATE, -8)
-        val stepWidth = width / 7f
-
-        for (n in 0 until 7) {
-            currentX += if (n == 0)
-                stepWidth / 2f
-            else
-                stepWidth
-
-            dayDate.add(Calendar.DATE, 1)
-            val nameMonth = SimpleDateFormat(
-                "EE",
-                Locale.getDefault()
-            ).format(dayDate.time)
-
-            canvas.drawText("$nameMonth", currentX, height - paintFont.textSize, paintFont)
-        }
-    }
-
-    private fun spToPx(sp: Float, context: Context): Float {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_SP,
-            sp,
-            context.resources.displayMetrics
-        )
-    }
-
-    private fun getShader(usefulHeight: Float) = LinearGradient(
-        0f, 0f, 0f, usefulHeight.toFloat(),
-        requireContext().getColorCompat(
-            if (isExpense)
-                R.color.expense_gradient_0
-            else
-                R.color.income_gradient_0
-        ),
-        requireContext().getColorCompat(
-            if (isExpense)
-                R.color.expense_gradient_1
-            else
-                R.color.income_gradient_1
-        ),
-        Shader.TileMode.REPEAT
-    )
-
-    companion object {
-        const val MONTH = 0
-        const val WEEK = 1
     }
 }

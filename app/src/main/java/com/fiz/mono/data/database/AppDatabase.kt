@@ -143,9 +143,26 @@ abstract class AppDatabase : RoomDatabase() {
             )
 
             CoroutineScope(Dispatchers.Default).launch {
+//                val allTransactionsDefault = emptyList<TransactionEntity>().toMutableList()
+//                for (n in 0..1000) {
+//
+//                    val icon = allCategoryExpenseDefault.shuffled().first()
+//                    allTransactionsDefault.add(
+//                        TransactionEntity(
+//                            n,
+//                            getDate(2022, (0..11).random(), (1..28).random()),
+//                            (-100..100).random().toDouble(),
+//                            icon.name,
+//                            "Pizza for lazyday",
+//                            icon.mapImgSrc
+//                        )
+//                    )
+//                }
+
                 INSTANCE?.categoryItemDao()?.insertAll(allCategoryExpenseDefault)
                 INSTANCE?.categoryItemDao()?.insertAll(allCategoryIncomeDefault)
                 INSTANCE?.transactionItemDao()?.insertAll(allTransactionsDefault)
+
             }
         }
     }
