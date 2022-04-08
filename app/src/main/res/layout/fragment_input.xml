@@ -35,7 +35,7 @@
     </com.google.android.material.tabs.TabLayout>
 
 
-    <androidx.core.widget.NestedScrollView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="18dp"
@@ -46,7 +46,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/parent_layout"
             android:layout_width="match_parent"
-            android:layout_height="0dp">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/titleTextView"
@@ -319,14 +319,14 @@
                 app:layout_constraintTop_toBottomOf="@+id/categoryTextView"
                 app:layout_constraintVertical_bias="0.0"
                 app:spanCount="@integer/count_columns"
-                tools:itemCount="16"
+                tools:itemCount="160"
                 tools:listitem="@layout/item_category" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    </androidx.core.widget.NestedScrollView>
+    </ScrollView>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/submitButton"
