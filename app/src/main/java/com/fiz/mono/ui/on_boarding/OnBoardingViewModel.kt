@@ -8,37 +8,47 @@ import kotlinx.coroutines.flow.update
 
 data class OnBoardingUiState(
     val pages: Int = 0,
+)
+
+data class OnBoardingNavigationState(
     val isNextScreen: Boolean = false
 )
 
 class OnBoardingViewModel : ViewModel() {
-    private val _onBoardingUiState = MutableStateFlow(OnBoardingUiState())
-    val onBoardingUiState: StateFlow<OnBoardingUiState> = _onBoardingUiState.asStateFlow()
+    private val _uiState = MutableStateFlow(OnBoardingUiState())
+    val uiState: StateFlow<OnBoardingUiState> = _uiState.asStateFlow()
+
+    private val _navigationUiState = MutableStateFlow(OnBoardingNavigationState())
+    val navigationUiState: StateFlow<OnBoardingNavigationState> = _navigationUiState.asStateFlow()
 
     fun clickNextPages() {
-        if (onBoardingUiState.value.pages < 3)
-            _onBoardingUiState.update {
+        if (uiState.value.pages < 3)
+            _uiState.update {
                 it.copy(pages = it.pages + 1)
             }
 
-        if (onBoardingUiState.value.pages == 3) {
-            _onBoardingUiState.update {
+        if (uiState.value.pages == 3) {
+            _navigationUiState.update {
                 it.copy(isNextScreen = true)
             }
         }
     }
 
     fun clickSkipButton() {
-        _onBoardingUiState.update {
+        _uiState.update {
             it.copy(
                 pages = 3,
+            )
+        }
+        _navigationUiState.update {
+            it.copy(
                 isNextScreen = true
             )
         }
     }
 
     fun clickBackPress() {
-        _onBoardingUiState.update {
+        _uiState.update {
             it.copy(pages = it.pages - 1)
         }
     }

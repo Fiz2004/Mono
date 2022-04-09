@@ -1,17 +1,17 @@
 package com.fiz.mono.data.database
 
 import androidx.room.TypeConverter
-import java.util.*
+import org.threeten.bp.LocalDate
 
 class Converters {
     @TypeConverter
-    fun fromTimestamp(value: Long): Date {
-        return Date(value)
+    fun fromTimestamp(value: String): LocalDate {
+        return LocalDate.parse(value)
     }
 
     @TypeConverter
-    fun dateToTimestamp(date: Date): Long {
-        return date.time
+    fun dateToTimestamp(date: LocalDate): String {
+        return date.toString()
     }
 
     @TypeConverter

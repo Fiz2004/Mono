@@ -3,28 +3,30 @@ package com.fiz.mono.ui.report.monthly
 import com.fiz.mono.ui.models.TransactionUiState
 import com.fiz.mono.ui.shared_adapters.InfoDay
 import com.fiz.mono.ui.shared_adapters.TransactionsDataItem
-import com.fiz.mono.util.currentUtils
-import java.text.SimpleDateFormat
-import java.util.*
+import com.fiz.mono.util.CurrentUtils
+import org.threeten.bp.LocalDate
+import org.threeten.bp.format.DateTimeFormatter
 
 data class ReportMonthlyUiState(
-    val date: Calendar = Calendar.getInstance(),
+    val date: LocalDate = LocalDate.now(),
     val currency: String = "$",
     val isDateChange: Boolean = false,
     val allTransactions: List<TransactionUiState> = listOf(),
     var tabSelectedReport: Int = 0
 ) {
 
+    private val dateFormatMonthDayYear = DateTimeFormatter.ofPattern("MMM dd, yyyy")
+
     val currentBalance: String
         get() =
-            currentUtils.getCurrencyFormat(
+            CurrentUtils.getCurrencyFormat(
                 currency,
                 allTransactions.map { it.value }.fold(0.0) { acc, d -> acc + d },
                 false
             )
 
     val currentIncome: String
-        get() = currentUtils.getCurrencyFormat(
+        get() = CurrentUtils.getCurrencyFormat(
             currency,
             getAllTransactionsForMonth(date)
                 .filter { it.value > 0 }
@@ -34,7 +36,7 @@ data class ReportMonthlyUiState(
         )
 
     val currentExpense: String
-        get() = currentUtils.getCurrencyFormat(
+        get() = CurrentUtils.getCurrencyFormat(
             currency,
             getAllTransactionsForMonth(date)
                 .filter { it.value < 0 }
@@ -45,7 +47,7 @@ data class ReportMonthlyUiState(
 
     val currentExpenseIncome: String
         get() =
-            currentUtils.getCurrencyFormat(
+            CurrentUtils.getCurrencyFormat(
                 currency,
                 getAllTransactionsForMonth(date)
                     .filter { it.value > 0 }
@@ -61,14 +63,8 @@ data class ReportMonthlyUiState(
 
     val currentPreviousBalance: String
         get() {
-            val datePrevMonth = Calendar.getInstance()
-            val currentYear = date.get(Calendar.YEAR)
-            val currentMonth = date.get(Calendar.MONTH)
-            val currentDay = date.get(Calendar.DATE)
-            datePrevMonth.set(currentYear, currentMonth, currentDay)
-            datePrevMonth.add(Calendar.MONTH, -1)
             val allTransactionsPrevMonthForMonth =
-                getAllTransactionsForMonth(datePrevMonth)
+                getAllTransactionsForMonth(LocalDate.now().minusMonths(1))
             val prevIncome =
                 allTransactionsPrevMonthForMonth
                     .filter { it.value > 0 }
@@ -79,7 +75,7 @@ data class ReportMonthlyUiState(
                     .filter { it.value < 0 }
                     .map { it.value }
                     .fold(0.0) { acc, d -> acc + d }
-            return currentUtils.getCurrencyFormat(
+            return CurrentUtils.getCurrencyFormat(
                 currency,
                 prevIncome + prevExpense,
                 false
@@ -121,35 +117,16 @@ data class ReportMonthlyUiState(
             return items
         }
 
-    private fun getGroupTransactionsByDays(date: Calendar) =
+    private fun getGroupTransactionsByDays(date: LocalDate) =
         getAllTransactionsForMonth(date).groupBy {
-            SimpleDateFormat(
-                "MMM dd, yyyy",
-                Locale.getDefault()
-            ).format(it.date.time)
+            dateFormatMonthDayYear.format(it.localDate)
         }
 
 
     private fun getAllTransactionsForMonth(
-        date: Calendar
+        date: LocalDate
     ): List<TransactionUiState> {
-        val currentYear = date.get(Calendar.YEAR)
-        val currentMonth = date.get(Calendar.MONTH)
-
-        val allTransactionsForYear =
-            allTransactions.filter {
-                SimpleDateFormat(
-                    "yyyy",
-                    Locale.getDefault()
-                ).format(it.date.time) == currentYear.toString()
-            }
-        val allTransactionsForMonth =
-            allTransactionsForYear.filter {
-                SimpleDateFormat(
-                    "M",
-                    Locale.getDefault()
-                ).format(it.date.time) == (currentMonth + 1).toString()
-            }
-        return allTransactionsForMonth
+        return allTransactions.filter { it.localDate.year == date.year }
+            .filter { it.localDate.month == date.month }
     }
 }

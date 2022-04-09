@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.threeten.bp.LocalDate
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -154,7 +155,7 @@ class InputViewModel(
         return state.transaction?.let {
             TransactionEntity(
                 it.id,
-                it.date,
+                it.localDate,
                 valueTransaction,
                 selectedCategory.name,
                 state.note,
@@ -167,7 +168,7 @@ class InputViewModel(
     private suspend fun getTransactionItemForNew(
         selectedCategory: CategoryUiState,
         newId: Int,
-        date: Calendar
+        date: LocalDate
     ): TransactionEntity {
         val state = uiState.value
         val valueTransaction = state.value.toDouble() *
@@ -179,7 +180,7 @@ class InputViewModel(
 
         return TransactionEntity(
             newId,
-            date.time,
+            date,
             valueTransaction,
             selectedCategory.name,
             state.note,
@@ -407,7 +408,7 @@ class InputViewModel(
         }
     }
 
-    fun clickSubmitButton(date: Calendar) {
+    fun clickSubmitButton(date: LocalDate) {
         viewModelScope.launch {
             val selectedCategoryItem =
                 getAllCategoryFromSelectedForInput(uiState.value.selectedAdapter)

@@ -22,7 +22,7 @@ import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.util.TimeUtils
 import com.google.android.material.button.MaterialButtonToggleGroup
 import kotlinx.coroutines.launch
-import java.util.*
+import org.threeten.bp.LocalDate
 
 class ReportMonthlyFragment : Fragment() {
     private var _binding: FragmentReportMonthlyBinding? = null
@@ -115,7 +115,7 @@ class ReportMonthlyFragment : Fragment() {
         mainViewModel.date.observe(viewLifecycleOwner, ::dateObserve)
     }
 
-    private fun dateObserve(date: Calendar) {
+    private fun dateObserve(date: LocalDate) {
         binding.dataRangeLayout.dateTextView.text = TimeUtils.getDateMonthYearString(
             date,
             resources.getStringArray(R.array.name_month)

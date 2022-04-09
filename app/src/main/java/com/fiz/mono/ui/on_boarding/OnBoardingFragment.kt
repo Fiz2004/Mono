@@ -37,7 +37,7 @@ class OnBoardingFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (viewModel.onBoardingUiState.value.pages != 0)
+            if (viewModel.uiState.value.pages != 0)
                 viewModel.clickBackPress()
             else
                 activity?.onBackPressed()
@@ -77,36 +77,44 @@ class OnBoardingFragment : Fragment() {
     private fun subscribe() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.onBoardingUiState.collect { onBoardingUiState ->
+                launch {
+                    viewModel.uiState.collect { uiState ->
 
-                    binding.apply {
-                        if (onBoardingUiState.pages < 3) {
-                            pageNumberOnBoardingTextView.text =
-                                getString(R.string.pageNumber, onBoardingUiState.pages + 1, 3)
-                            skipOnBoardingButton.setVisible(onBoardingUiState.pages != 2)
-                            headerOnBoardingTextView.text =
-                                resources.getStringArray(R.array.header)[onBoardingUiState.pages]
-                            descriptionOnBoardingTextView.text =
-                                resources.getStringArray(R.array.description)[onBoardingUiState.pages]
-                            continueOnBoardingButton.text =
-                                resources.getStringArray(R.array.getStarted)[onBoardingUiState.pages]
+                        binding.apply {
+                            if (uiState.pages < 3) {
+                                pageNumberOnBoardingTextView.text =
+                                    getString(R.string.pageNumber, uiState.pages + 1, 3)
+                                skipOnBoardingButton.setVisible(uiState.pages != 2)
+                                headerOnBoardingTextView.text =
+                                    resources.getStringArray(R.array.header)[uiState.pages]
+                                descriptionOnBoardingTextView.text =
+                                    resources.getStringArray(R.array.description)[uiState.pages]
+                                continueOnBoardingButton.text =
+                                    resources.getStringArray(R.array.getStarted)[uiState.pages]
 
-                            imageOnBoardingImageView
-                                .setImageResource(
-                                    when (onBoardingUiState.pages) {
-                                        0 -> R.drawable.illustration1
-                                        1 -> R.drawable.illustration2
-                                        else -> R.drawable.illustration3
-                                    }
-                                )
+                                imageOnBoardingImageView
+                                    .setImageResource(
+                                        when (uiState.pages) {
+                                            0 -> R.drawable.illustration1
+                                            1 -> R.drawable.illustration2
+                                            else -> R.drawable.illustration3
+                                        }
+                                    )
+                            }
                         }
 
-                        if (onBoardingUiState.isNextScreen) {
+                    }
+                }
+
+                launch {
+                    viewModel.navigationUiState.collect { navigationUiState ->
+
+                        if (navigationUiState.isNextScreen) {
                             mainPreferencesViewModel.changeFirstTime()
                             findNavController().popBackStack()
                         }
-                    }
 
+                    }
                 }
             }
         }

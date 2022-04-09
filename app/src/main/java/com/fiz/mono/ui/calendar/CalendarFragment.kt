@@ -22,7 +22,6 @@ import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.util.TimeUtils.getDateMonthYearString
 import com.fiz.mono.util.setVisible
 import kotlinx.coroutines.launch
-import java.util.*
 
 class CalendarFragment : Fragment(), MonthDialog.Choicer {
     private var _binding: FragmentCalendarBinding? = null
@@ -109,7 +108,7 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
                 monthDialog.choicer = this@CalendarFragment
 
                 val args = Bundle()
-                val currentMonth = mainViewModel.date.value?.get(Calendar.MONTH) ?: 0
+                val currentMonth = mainViewModel.date.value?.monthValue ?: 0
                 args.putInt("currentMonth", currentMonth)
                 monthDialog.arguments = args
 

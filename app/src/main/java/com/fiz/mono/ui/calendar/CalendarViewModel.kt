@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.*
+import org.threeten.bp.LocalDate
 
 class CalendarViewModel(private val transactionDataSource: TransactionDataSource) : ViewModel() {
     private val _uiState = MutableStateFlow(CalendarUiState())
@@ -32,7 +32,7 @@ class CalendarViewModel(private val transactionDataSource: TransactionDataSource
         }
     }
 
-    fun changeData(date: Calendar) {
+    fun changeData(date: LocalDate) {
         _uiState.update {
             it.copy(date = date, isDateChange = true)
         }

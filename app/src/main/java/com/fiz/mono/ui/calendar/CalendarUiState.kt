@@ -3,11 +3,12 @@ package com.fiz.mono.ui.calendar
 import com.fiz.mono.ui.models.TransactionUiState
 import com.fiz.mono.ui.shared_adapters.TransactionsDataItem
 import com.fiz.mono.util.TimeUtils
+import org.threeten.bp.LocalDate
 import java.text.SimpleDateFormat
 import java.util.*
 
 data class CalendarUiState(
-    val date: Calendar = Calendar.getInstance(),
+    val date: LocalDate = LocalDate.now(),
     val isDateChange: Boolean = true,
     val allTransactions: List<TransactionUiState> = listOf(),
     val isReturn: Boolean = false,
@@ -21,7 +22,22 @@ data class CalendarUiState(
             getAllTransactionsForDay(date)
         )
 
-    private fun getTransactionsForDaysCurrentMonth(date: Calendar): List<TransactionsDay> {
+    private val dateFormatYear = SimpleDateFormat(
+        "yyyy",
+        Locale.getDefault()
+    )
+
+    private val dateFormatMonth = SimpleDateFormat(
+        "M",
+        Locale.getDefault()
+    )
+
+    private val dateFormatDay = SimpleDateFormat(
+        "dd",
+        Locale.getDefault()
+    )
+
+    private fun getTransactionsForDaysCurrentMonth(date: LocalDate): List<TransactionsDay> {
         val result = emptyList<TransactionsDay>().toMutableList()
         result.addAll(getEmptyTransactionDayBeforeCurrentMonth(date))
         val transactionDayForCurrentMonthByDays =
@@ -32,34 +48,30 @@ data class CalendarUiState(
     }
 
     private fun getEmptyTransactionDayBeforeCurrentMonth(
-        date: Calendar
+        date: LocalDate
     ): MutableList<TransactionsDay> {
         val numberFirstDayOfWeek = TimeUtils.getNumberFirstDayOfWeek(date)
         return TransactionsDay.getListEmptyTransactionDay(numberFirstDayOfWeek - 1)
     }
 
     private fun getEmptyTransactionDayAfterCurrentMonth(
-        date: Calendar
+        date: LocalDate
     ): MutableList<TransactionsDay> {
         val dayOfWeekLastDay = TimeUtils.getNumberLastDayOfWeek(date)
         return TransactionsDay.getListEmptyTransactionDay(7 - dayOfWeekLastDay)
     }
 
     private fun getTransactionDayForCurrentMonthByDays(
-        date: Calendar
+        date: LocalDate
     ): MutableList<TransactionsDay> {
-        val currentYear = date.get(Calendar.YEAR)
-        val currentMonth = date.get(Calendar.MONTH)
-        val currentDay = date.get(Calendar.DATE)
-        val dayOfMonth = date.getActualMaximum(Calendar.DAY_OF_MONTH)
+        val dayOfMonth = date.month.maxLength()
         val groupTransactions = getGroupTransactionsByDays(date)
 
         val today = Calendar.getInstance()
         val todayYear = today.get(Calendar.YEAR)
         val todayMonth = today.get(Calendar.MONTH)
         val todayDay = today.get(Calendar.DATE)
-        val isToday = currentYear == todayYear && currentMonth == todayMonth
-
+        val isToday = date.year == todayYear && date.monthValue == todayMonth
 
         val result = emptyList<TransactionsDay>().toMutableList()
         for (day in 1..dayOfMonth) {
@@ -75,7 +87,7 @@ data class CalendarUiState(
                     day,
                     expense,
                     income,
-                    day == currentDay,
+                    day == date.dayOfMonth,
                     isToday && day == todayDay
                 )
             )
@@ -83,59 +95,28 @@ data class CalendarUiState(
         return result
     }
 
-    private fun getGroupTransactionsByDays(date: Calendar) =
+    private fun getGroupTransactionsByDays(date: LocalDate) =
         getAllTransactionsForMonth(date).groupBy {
-            SimpleDateFormat(
-                "dd",
-                Locale.getDefault()
-            ).format(it.date.time)
+            dateFormatDay.format(it.localDate)
         }
 
     private fun getAllTransactionsForMonth(
-        date: Calendar
+        date: LocalDate
     ): List<TransactionUiState> {
-        val currentYear = date.get(Calendar.YEAR)
-        val currentMonth = date.get(Calendar.MONTH)
-
-        val allTransactionsForYear =
-            allTransactions.filter {
-                SimpleDateFormat(
-                    "yyyy",
-                    Locale.getDefault()
-                ).format(it.date.time) == currentYear.toString()
-            }
-        val allTransactionsForMonth =
-            allTransactionsForYear.filter {
-                SimpleDateFormat(
-                    "M",
-                    Locale.getDefault()
-                ).format(it.date.time) == (currentMonth + 1).toString()
-            }
-        return allTransactionsForMonth
+        return allTransactions.filter { it.localDate.year == date.year }
+            .filter { it.localDate.month == date.month }
     }
 
     private fun getAllTransactionsForDay(
-        date: Calendar
+        date: LocalDate
     ): List<TransactionUiState> {
-        val currentDay = date.get(Calendar.DATE)
-        val dayString = if (currentDay < 10) "0$currentDay" else "$currentDay"
-
         val allTransactionsForMonth =
             getAllTransactionsForMonth(date)
 
         val result = allTransactionsForMonth.filter {
-            SimpleDateFormat(
-                "dd",
-                Locale.getDefault()
-            ).format(it.date.time) == dayString
+            it.localDate.dayOfMonth == date.dayOfMonth
         }
 
         return result
-    }
-
-    fun getNewId(): Int {
-        val lastItem = allTransactions.value?.lastOrNull()
-        val id = lastItem?.id
-        return id?.let { it + 1 } ?: 0
     }
 }

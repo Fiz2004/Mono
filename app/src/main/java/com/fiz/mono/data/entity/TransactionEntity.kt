@@ -4,13 +4,13 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.fiz.mono.data.data_source.CategoryIconUiStateDataSource
 import com.fiz.mono.ui.models.TransactionUiState
-import java.util.*
+import org.threeten.bp.LocalDate
 
 @Entity
 data class TransactionEntity(
     @PrimaryKey
     val id: Int,
-    val date: Date,
+    val localDate: LocalDate,
     var value: Double,
     val nameCategory: String,
     val note: String,
@@ -20,7 +20,7 @@ data class TransactionEntity(
     suspend fun toTransactionUiState(): TransactionUiState {
         return TransactionUiState(
             id = this.id,
-            date = this.date,
+            localDate = this.localDate,
             value = this.value,
             nameCategory = this.nameCategory,
             note = this.note,

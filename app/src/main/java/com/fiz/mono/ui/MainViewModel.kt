@@ -3,46 +3,40 @@ package com.fiz.mono.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import java.text.SimpleDateFormat
-import java.util.*
+import org.threeten.bp.LocalDate
+import org.threeten.bp.format.DateTimeFormatter
 
 class MainViewModel : ViewModel() {
-    private var _date = MutableLiveData(Calendar.getInstance())
-    val date: LiveData<Calendar> = _date
+    private var _date = MutableLiveData(LocalDate.now())
+    val date: LiveData<LocalDate> = _date
 
     fun getFormatDate(pattern: String): String {
-        return SimpleDateFormat(pattern, Locale.getDefault()).format(date.value?.time ?: "")
+        return DateTimeFormatter.ofPattern(pattern).format(date.value)
     }
 
     fun setMonth(month: Int) {
-        _date.value?.set(Calendar.MONTH, month)
-        _date.value = date.value
+        _date.value = date.value?.withMonth(month)
     }
 
     fun setDate(day: Int) {
         if (day == 0) return
 
-        _date.value?.set(Calendar.DATE, day)
-        _date.value = date.value
+        _date.value = date.value?.withDayOfMonth(day)
     }
 
     fun dateDayPlusOne() {
-        _date.value?.add(Calendar.DAY_OF_YEAR, 1)
-        _date.value = date.value
+        _date.value = date.value?.plusDays(1)
     }
 
     fun dateDayMinusOne() {
-        _date.value?.add(Calendar.DAY_OF_YEAR, -1)
-        _date.value = date.value
+        _date.value = date.value?.minusDays(1)
     }
 
     fun dateMonthPlusOne() {
-        _date.value?.add(Calendar.MONTH, 1)
-        _date.value = date.value
+        _date.value = date.value?.plusMonths(1)
     }
 
     fun dateMonthMinusOne() {
-        _date.value?.add(Calendar.MONTH, -1)
-        _date.value = date.value
+        _date.value = date.value?.minusMonths(1)
     }
 }

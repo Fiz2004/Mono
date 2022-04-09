@@ -70,7 +70,7 @@ abstract class AppDatabase : RoomDatabase() {
             val allTransactionsDefault = mutableListOf(
                 TransactionEntity(
                     0,
-                    getDate(2022, 1, 24),
+                    getDate(2022, 2, 24),
                     -5.49,
                     context.getString(R.string.food),
                     "Pizza for lazyday",
@@ -78,7 +78,7 @@ abstract class AppDatabase : RoomDatabase() {
                 ),
                 TransactionEntity(
                     1,
-                    getDate(2022, 1, 24),
+                    getDate(2022, 2, 24),
                     50.0,
                     context.getString(R.string.freelance),
                     "",
@@ -86,7 +86,7 @@ abstract class AppDatabase : RoomDatabase() {
                 ),
                 TransactionEntity(
                     2,
-                    getDate(2022, 1, 24),
+                    getDate(2022, 2, 24),
                     -13.16,
                     context.getString(R.string.shopping),
                     "New Clothes",
@@ -94,7 +94,7 @@ abstract class AppDatabase : RoomDatabase() {
                 ),
                 TransactionEntity(
                     3,
-                    getDate(2022, 1, 24),
+                    getDate(2022, 2, 24),
                     1000.0,
                     context.getString(R.string.salary),
                     "Jan",
@@ -102,7 +102,7 @@ abstract class AppDatabase : RoomDatabase() {
                 ),
                 TransactionEntity(
                     4,
-                    getDate(2022, 1, 23),
+                    getDate(2022, 2, 23),
                     -3.10,
                     context.getString(R.string.food),
                     "Pizza",
@@ -110,7 +110,7 @@ abstract class AppDatabase : RoomDatabase() {
                 ),
                 TransactionEntity(
                     5,
-                    getDate(2022, 1, 23),
+                    getDate(2022, 2, 23),
                     50.0,
                     context.getString(R.string.loan),
                     "",
@@ -118,7 +118,7 @@ abstract class AppDatabase : RoomDatabase() {
                 ),
                 TransactionEntity(
                     6,
-                    getDate(2022, 1, 20),
+                    getDate(2022, 2, 20),
                     -17.50,
                     context.getString(R.string.food),
                     "Castrang",
@@ -126,7 +126,7 @@ abstract class AppDatabase : RoomDatabase() {
                 ),
                 TransactionEntity(
                     7,
-                    getDate(2022, 1, 18),
+                    getDate(2022, 2, 18),
                     200.0,
                     context.getString(R.string.bonus),
                     "Project bonus",
@@ -134,7 +134,7 @@ abstract class AppDatabase : RoomDatabase() {
                 ),
                 TransactionEntity(
                     8,
-                    getDate(2022, 1, 5),
+                    getDate(2022, 2, 5),
                     10.0,
                     context.getString(R.string.bonus),
                     "Project bonus",
@@ -150,7 +150,7 @@ abstract class AppDatabase : RoomDatabase() {
 //                    allTransactionsDefault.add(
 //                        TransactionEntity(
 //                            n,
-//                            getDate(2022, (0..11).random(), (1..28).random()),
+//                            getDate(2022, (1..12).random(), (1..28).random()),
 //                            (-100..100).random().toDouble(),
 //                            icon.name,
 //                            "Pizza for lazyday",

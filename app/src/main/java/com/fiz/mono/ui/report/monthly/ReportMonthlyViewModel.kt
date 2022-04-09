@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.*
+import org.threeten.bp.LocalDate
 
 class ReportMonthlyViewModel(private val transactionDataSource: TransactionDataSource) :
     ViewModel() {
@@ -33,7 +33,7 @@ class ReportMonthlyViewModel(private val transactionDataSource: TransactionDataS
         }
     }
 
-    fun setDate(date: Calendar) {
+    fun setDate(date: LocalDate) {
         _uiState.update {
             it.copy(
                 date = date,

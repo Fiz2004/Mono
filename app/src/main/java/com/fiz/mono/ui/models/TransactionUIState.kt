@@ -2,11 +2,11 @@ package com.fiz.mono.ui.models
 
 import com.fiz.mono.data.data_source.CategoryIconUiStateDataSource
 import com.fiz.mono.data.entity.TransactionEntity
-import java.util.*
+import org.threeten.bp.LocalDate
 
 data class TransactionUiState(
     val id: Int,
-    val date: Date,
+    val localDate: LocalDate,
     var value: Double,
     val nameCategory: String,
     val note: String,
@@ -16,7 +16,7 @@ data class TransactionUiState(
     suspend fun toTransaction(): TransactionEntity {
         return TransactionEntity(
             id = this.id,
-            date = this.date,
+            localDate = this.localDate,
             value = this.value,
             nameCategory = this.nameCategory,
             note = this.note,

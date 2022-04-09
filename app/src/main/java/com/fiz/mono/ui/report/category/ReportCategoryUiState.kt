@@ -5,8 +5,9 @@ import com.fiz.mono.ui.models.CategoryUiState
 import com.fiz.mono.ui.models.TransactionUiState
 import com.fiz.mono.ui.shared_adapters.InfoDay
 import com.fiz.mono.ui.shared_adapters.TransactionsDataItem
-import java.text.SimpleDateFormat
-import java.util.*
+import org.threeten.bp.LocalDate
+import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.temporal.ChronoField
 import kotlin.math.abs
 
 data class ReportCategoryUiState(
@@ -25,13 +26,16 @@ data class ReportCategoryUiState(
             allCategoryIncome.find { it.id == id }
         }
 
+    private val dateFormatMonthDayYear = DateTimeFormatter.ofPattern("MMM dd, yyyy")
+    private val dateFormatMonthMMM = DateTimeFormatter.ofPattern("MMM")
+    private val dateFormatDay = DateTimeFormatter.ofPattern("dd")
+    private val dateFormatTextMonth = DateTimeFormatter.ofPattern("LLL")
+    private val dateFormatTextWeek = DateTimeFormatter.ofPattern("EE")
+
     fun getTransactions(): List<TransactionsDataItem> {
         var groupTransactions =
-            allTransactions.sortedByDescending { it.date.time }.groupBy {
-                SimpleDateFormat(
-                    "MMM dd, yyyy",
-                    Locale.getDefault()
-                ).format(it.date.time)
+            allTransactions.sortedByDescending { it.localDate }.groupBy {
+                dateFormatMonthDayYear.format(it.localDate)
             }
 
         groupTransactions = groupTransactions.mapValues {
@@ -62,9 +66,9 @@ data class ReportCategoryUiState(
         currency: String
     ): String {
         val a = if (reportFor == MONTH)
-            getAllTransactionsForMonth(Calendar.getInstance())
+            getAllTransactionsForMonth(LocalDate.now())
         else
-            getAllTransactionsForWeek(Calendar.getInstance())
+            getAllTransactionsForWeek(LocalDate.now())
 
         return if (!isExpense) {
             "+"
@@ -79,57 +83,18 @@ data class ReportCategoryUiState(
     }
 
     private fun getAllTransactionsForMonth(
-        date: Calendar
+        date: LocalDate
     ): List<TransactionUiState> {
-        val currentYear = date.get(Calendar.YEAR)
-        val currentMonth = date.get(Calendar.MONTH)
-
-        val allTransactionsForYear =
-            allTransactions.filter {
-                SimpleDateFormat(
-                    "yyyy",
-                    Locale.getDefault()
-                ).format(it.date.time) == currentYear.toString()
-            }
-        val allTransactionsForMonth =
-            allTransactionsForYear.filter {
-                SimpleDateFormat(
-                    "M",
-                    Locale.getDefault()
-                ).format(it.date.time) == (currentMonth + 1).toString()
-            }
-        return allTransactionsForMonth
+        return allTransactions.filter { it.localDate.year == date.year }
+            .filter { it.localDate.month == date.month }
     }
 
     private fun getAllTransactionsForWeek(
-        date: Calendar
+        date: LocalDate
     ): List<TransactionUiState> {
-        val currentYear = date.get(Calendar.YEAR)
-        val currentMonth = date.get(Calendar.MONTH)
-        val currentWeek = date.get(Calendar.WEEK_OF_YEAR)
-
-        val allTransactionsForYear =
-            allTransactions.filter {
-                SimpleDateFormat(
-                    "yyyy",
-                    Locale.getDefault()
-                ).format(it.date.time) == currentYear.toString()
-            }
-        val allTransactionsForMonth =
-            allTransactionsForYear.filter {
-                SimpleDateFormat(
-                    "M",
-                    Locale.getDefault()
-                ).format(it.date.time) == (currentMonth + 1).toString()
-            }
-        val allTransactionsForWeek =
-            allTransactionsForMonth.filter {
-                SimpleDateFormat(
-                    "w",
-                    Locale.getDefault()
-                ).format(it.date.time) == (currentWeek).toString()
-            }
-        return allTransactionsForWeek
+        return allTransactions.filter { it.localDate.year == date.year }
+            .filter { it.localDate.month == date.month }
+            .filter { it.localDate.get(ChronoField.ALIGNED_WEEK_OF_MONTH) == date.get(ChronoField.ALIGNED_WEEK_OF_MONTH) }
     }
 
     fun drawLineMonth(
@@ -155,9 +120,8 @@ data class ReportCategoryUiState(
         paintStroke.strokeWidth = 2f * density
 
         val valuesByMonth =
-            ReportCategoryUtils.getValuesForVerticalForMonth(
-                allTransactions, category?.name,
-                Calendar.getInstance(), Calendar.getInstance()
+            getValuesForVerticalForMonth(
+                allTransactions, category?.name
             ).map {
                 usefulHeight - usefulHeight * it
             }
@@ -222,9 +186,8 @@ data class ReportCategoryUiState(
         paintStroke.strokeWidth = 2f * density
 
         val valuesByWeek =
-            ReportCategoryUtils.getValuesForVerticalForWeek(
-                allTransactions, category?.name,
-                Calendar.getInstance(), Calendar.getInstance()
+            getValuesForVerticalForWeek(
+                allTransactions, category?.name
             ).map {
                 usefulHeight - usefulHeight * it
             }
@@ -278,8 +241,8 @@ data class ReportCategoryUiState(
         paintFont.textAlign = Paint.Align.CENTER
 
         var currentX = 0f
-        val monthDate = Calendar.getInstance()
-        monthDate.add(Calendar.MONTH, -6)
+        var monthDate = LocalDate.now()
+        monthDate = monthDate.minusMonths(6)
         val stepWidth = width / 5f
 
         for (n in 0 until 5) {
@@ -288,11 +251,8 @@ data class ReportCategoryUiState(
             else
                 stepWidth
 
-            monthDate.add(Calendar.MONTH, 1)
-            val nameMonth = SimpleDateFormat(
-                "LLL",
-                Locale.getDefault()
-            ).format(monthDate.time)
+            monthDate = monthDate.plusMonths(1)
+            val nameMonth = dateFormatTextMonth.format(monthDate)
 
             canvas.drawText("$nameMonth", currentX, height - paintFont.textSize, paintFont)
         }
@@ -309,8 +269,8 @@ data class ReportCategoryUiState(
         paintFont.textAlign = Paint.Align.CENTER
 
         var currentX = 0f
-        val dayDate = Calendar.getInstance()
-        dayDate.add(Calendar.DATE, -8)
+        var dayDate = LocalDate.now()
+        dayDate = dayDate.minusDays(8)
         val stepWidth = width / 7f
 
         for (n in 0 until 7) {
@@ -319,16 +279,12 @@ data class ReportCategoryUiState(
             else
                 stepWidth
 
-            dayDate.add(Calendar.DATE, 1)
-            val nameMonth = SimpleDateFormat(
-                "EE",
-                Locale.getDefault()
-            ).format(dayDate.time)
+            dayDate = dayDate.plusDays(1)
+            val nameMonth = dateFormatTextWeek.format(dayDate)
 
             canvas.drawText("$nameMonth", currentX, height - paintFont.textSize, paintFont)
         }
     }
-
 
     private fun getShader(usefulHeight: Float, colorForShader1: Int, colorForShader2: Int) =
         LinearGradient(
@@ -338,6 +294,69 @@ data class ReportCategoryUiState(
             Shader.TileMode.REPEAT
         )
 
+    private fun getValuesForVerticalForMonth(
+        transactions: List<TransactionUiState>? = emptyList(), categoryName: String?
+    ): List<Double> {
+        val transactionsBy = transactions
+            ?.filter { it.nameCategory == categoryName }
+            ?.filter { it.localDate.isAfter(LocalDate.now().minusMonths(7)) }
+            ?.sortedBy { it.localDate }
+            ?.groupBy {
+                dateFormatMonthMMM.format(it.localDate)
+            }
+
+        val transactionsByMonth = emptyMap<String, Double>().toMutableMap()
+        for (n in 0..6) {
+            val nameMonth = dateFormatMonthMMM.format(LocalDate.now().plusMonths(-6 + n.toLong()))
+            transactionsByMonth[nameMonth] = transactionsBy
+                ?.filterKeys { it == nameMonth }
+                ?.values
+                ?.firstOrNull()
+                ?.fold(0.0) { acc, d -> acc + d.value }
+                ?: 0.0
+        }
+
+        val max: Double = abs(transactionsByMonth
+            .values
+            .maxByOrNull { abs(it) } ?: 0.0
+        )
+        return transactionsByMonth
+            .values
+            .map { if (max == 0.0) 0.0 else (abs(it) / max) }
+            .toList()
+    }
+
+    private fun getValuesForVerticalForWeek(
+        transactions: List<TransactionUiState>? = emptyList(), categoryName: String?
+    ): List<Double> {
+        val transactionsBy = transactions
+            ?.filter { it.nameCategory == categoryName }
+            ?.filter { it.localDate.isAfter(LocalDate.now().minusDays(9)) }
+            ?.sortedBy { it.localDate }
+            ?.groupBy {
+                dateFormatDay.format(it.localDate)
+            }
+
+        val transactionsByMonth = emptyMap<String, Double>().toMutableMap()
+        for (n in 0..8) {
+            val nameDay = dateFormatDay.format(LocalDate.now().plusDays(-8 + n.toLong()))
+            transactionsByMonth[nameDay] = transactionsBy
+                ?.filterKeys { it == nameDay }
+                ?.values
+                ?.firstOrNull()
+                ?.fold(0.0) { acc, d -> acc + d.value }
+                ?: 0.0
+        }
+
+        val max: Double = abs(transactionsByMonth
+            .values
+            .maxByOrNull { abs(it) } ?: 0.0
+        )
+        return transactionsByMonth
+            .values
+            .map { if (max == 0.0) 0.0 else (abs(it) / max) }
+            .toList()
+    }
 
     companion object {
         const val MONTH = 0

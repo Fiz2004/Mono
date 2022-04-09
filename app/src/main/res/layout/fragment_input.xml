@@ -163,6 +163,7 @@
                 android:paddingStart="16dp"
                 android:layout_marginTop="8dp"
                 android:paddingEnd="16dp"
+                android:paddingBottom="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/noteTextView">
@@ -198,8 +199,8 @@
                     android:layout_height="0dp"
                     android:layout_marginTop="12dp"
                     android:layout_marginEnd="2dp"
-                    android:background="?attr/colorMain"
                     android:visibility="gone"
+                    android:background="?attr/colorMain"
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintHorizontal_weight="1"
                     app:layout_constraintStart_toStartOf="parent"
@@ -209,7 +210,6 @@
                         android:id="@+id/photo1ImageView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:visibility="gone"
                         tools:src="@tools:sample/avatars" />
 
                     <ImageView
@@ -217,7 +217,6 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_gravity="end|top"
-                        android:visibility="gone"
                         app:srcCompat="@drawable/delete"
                         tools:src="@drawable/delete" />
 
@@ -231,8 +230,8 @@
                     android:layout_marginStart="2dp"
                     android:layout_marginTop="12dp"
                     android:layout_marginEnd="2dp"
-                    android:background="?attr/colorMain"
                     android:visibility="gone"
+                    android:background="?attr/colorMain"
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintHorizontal_weight="1"
                     app:layout_constraintStart_toEndOf="@+id/photo1Card"
@@ -243,7 +242,6 @@
                         android:id="@+id/photo2ImageView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:visibility="gone"
                         tools:src="@tools:sample/avatars" />
 
                     <ImageView
@@ -251,7 +249,6 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_gravity="end|top"
-                        android:visibility="gone"
                         app:srcCompat="@drawable/delete"
                         tools:src="@drawable/delete" />
 
@@ -264,8 +261,8 @@
                     android:layout_height="0dp"
                     android:layout_marginStart="2dp"
                     android:layout_marginTop="12dp"
-                    android:background="?attr/colorMain"
                     android:visibility="gone"
+                    android:background="?attr/colorMain"
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_weight="1"
@@ -277,7 +274,6 @@
                         android:id="@+id/photo3ImageView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:visibility="gone"
                         tools:src="@tools:sample/avatars" />
 
                     <ImageView
@@ -285,7 +281,6 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:layout_gravity="end|top"
-                        android:visibility="gone"
                         app:srcCompat="@drawable/delete"
                         tools:src="@drawable/delete" />
 

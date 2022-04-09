@@ -2,7 +2,7 @@ package com.fiz.mono.util
 
 import kotlin.math.abs
 
-object currentUtils {
+object CurrentUtils {
     fun getCurrencyFormat(currency: String, value: Double, isPrefixPlus: Boolean): String {
         val prefixPlus = if (isPrefixPlus && value != 0.0) "+" else ""
         return if (value < 0)

@@ -8,7 +8,7 @@ import com.fiz.mono.R
 import com.fiz.mono.databinding.ItemTransactionBinding
 import com.fiz.mono.databinding.ItemTransactionDateExpenseIncomeBinding
 import com.fiz.mono.ui.models.TransactionUiState
-import com.fiz.mono.util.currentUtils.getCurrencyFormat
+import com.fiz.mono.util.CurrentUtils.getCurrencyFormat
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setVisible
 
