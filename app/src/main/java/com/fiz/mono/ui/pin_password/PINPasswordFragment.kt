@@ -90,7 +90,7 @@ class PINPasswordFragment : Fragment() {
     private fun bindListener() {
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (viewModel.statePIN.value != State_Pin.LOGIN) {
+            if (viewModel.statePIN.value != StatePin.LOGIN) {
                 findNavController().popBackStack()
             }
         }
@@ -155,39 +155,39 @@ class PINPasswordFragment : Fragment() {
 
     private fun subscribe() {
         viewModel.statePIN.observe(viewLifecycleOwner) { state_Pin ->
-            binding.navigationBarLayout.actionButton.setVisible(state_Pin == State_Pin.REMOVE)
+            binding.navigationBarLayout.actionButton.setVisible(state_Pin == StatePin.REMOVE)
             binding.navigationBarLayout.backButton.setVisible(state_Pin.isNotLogin())
 
             // change background on red for Remove
-            binding.nextPINPasswordButton.isCheckable = state_Pin == State_Pin.REMOVE
+            binding.nextPINPasswordButton.isCheckable = state_Pin == StatePin.REMOVE
 
             // change background on Error
             numbersEditText.forEach { editText -> editText.isSelected = state_Pin.isError() }
 
-            binding.nextPINPasswordButton.isEnabled = state_Pin == State_Pin.REMOVE
+            binding.nextPINPasswordButton.isEnabled = state_Pin == StatePin.REMOVE
 
             binding.warningTextView.setVisible(state_Pin.isError())
             numbersEditText.forEach { editText ->
-                editText.isEnabled = state_Pin != State_Pin.REMOVE
+                editText.isEnabled = state_Pin != StatePin.REMOVE
             }
 
 
             when (state_Pin) {
-                State_Pin.LOGIN, State_Pin.CREATE -> {
+                StatePin.LOGIN, StatePin.CREATE -> {
                     binding.decsriptionTextView.text = getString(R.string.enter_PIN)
                     binding.nextPINPasswordButton.text = getString(R.string.next)
                     numbersEditText.forEach { it.setText("") }
                     numbersEditText[0].requestFocus()
                     context?.showKeyboard(numbersEditText[0])
                 }
-                State_Pin.EDIT, State_Pin.REMOVE_CONFIRM -> {
+                StatePin.EDIT, StatePin.REMOVE_CONFIRM -> {
                     binding.decsriptionTextView.text = getString(R.string.confirm_PIN)
                     binding.nextPINPasswordButton.text = getString(R.string.set_pin_password)
                     numbersEditText.forEach { it.setText("") }
                     numbersEditText[0].requestFocus()
                     context?.showKeyboard(numbersEditText[0])
                 }
-                State_Pin.REMOVE -> {
+                StatePin.REMOVE -> {
                     binding.decsriptionTextView.text = getString(R.string.delete_PIN)
                     binding.nextPINPasswordButton.text = getString(R.string.remove_PIN)
                     val pin = mainPreferencesViewModel.pin.value ?: ""
@@ -195,19 +195,19 @@ class PINPasswordFragment : Fragment() {
                         editText.setText(pin[index].toString())
                     }
                 }
-                State_Pin.REMOVE_CONFIRM_FINISH -> {
+                StatePin.REMOVE_CONFIRM_FINISH -> {
                     mainPreferencesViewModel.deletePin()
                     Toast.makeText(requireContext(), "PIN deleted", Toast.LENGTH_SHORT).show()
 
                     findNavController().popBackStack()
                 }
-                State_Pin.LOGIN_FINISH -> {
+                StatePin.LOGIN_FINISH -> {
                     mainPreferencesViewModel.setPin(viewModel.getPIN())
                     mainPreferencesViewModel.confirmPin()
 
                     findNavController().popBackStack()
                 }
-                State_Pin.EDIT_FINISH, State_Pin.CREATE_FINISH -> {
+                StatePin.EDIT_FINISH, StatePin.CREATE_FINISH -> {
                     mainPreferencesViewModel.setPin(viewModel.getPIN())
                     mainPreferencesViewModel.confirmPin()
 
@@ -222,7 +222,7 @@ class PINPasswordFragment : Fragment() {
         }
 
         viewModel.pin.observe(viewLifecycleOwner) {
-            if (viewModel.statePIN.value == State_Pin.REMOVE) return@observe
+            if (viewModel.statePIN.value == StatePin.REMOVE) return@observe
             binding.nextPINPasswordButton.isEnabled = viewModel.isNextPINPasswordButtonEnabled()
         }
     }

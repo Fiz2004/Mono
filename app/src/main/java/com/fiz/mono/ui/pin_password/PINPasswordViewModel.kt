@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 
 class PINPasswordViewModel : ViewModel() {
 
-    private var _statePIN = MutableLiveData(State_Pin.LOGIN_FINISH)
-    val statePIN: LiveData<State_Pin> = _statePIN
+    private var _statePIN = MutableLiveData(StatePin.LOGIN_FINISH)
+    val statePIN: LiveData<StatePin> = _statePIN
 
     private val _isReturn = MutableLiveData(false)
     val isReturn: LiveData<Boolean> = _isReturn
@@ -19,68 +19,68 @@ class PINPasswordViewModel : ViewModel() {
     fun initState(fromCome: String, pin: String) {
         _statePIN.value = if (fromCome == PINPasswordFragment.START) {
             if (pin.isBlank())
-                State_Pin.LOGIN_FINISH
+                StatePin.LOGIN_FINISH
             else
-                State_Pin.LOGIN
+                StatePin.LOGIN
         } else {
             if (pin.isBlank())
-                State_Pin.CREATE
+                StatePin.CREATE
             else
-                State_Pin.REMOVE
+                StatePin.REMOVE
         }
     }
 
     fun clickEditButton() {
-        _statePIN.value = State_Pin.EDIT
+        _statePIN.value = StatePin.EDIT
     }
 
     fun exitError() {
-        if (statePIN.value == State_Pin.REMOVE_CONFIRM_ERROR) {
-            _statePIN.value = State_Pin.REMOVE_CONFIRM
+        if (statePIN.value == StatePin.REMOVE_CONFIRM_ERROR) {
+            _statePIN.value = StatePin.REMOVE_CONFIRM
         }
-        if (statePIN.value == State_Pin.EDIT_ERROR) {
-            _statePIN.value = State_Pin.EDIT
+        if (statePIN.value == StatePin.EDIT_ERROR) {
+            _statePIN.value = StatePin.EDIT
         }
-        if (statePIN.value == State_Pin.LOGIN_ERROR) {
-            _statePIN.value = State_Pin.LOGIN
+        if (statePIN.value == StatePin.LOGIN_ERROR) {
+            _statePIN.value = StatePin.LOGIN
         }
     }
 
     fun updateState(oldPin: String) {
-        if (statePIN.value == State_Pin.CREATE) {
+        if (statePIN.value == StatePin.CREATE) {
             _statePIN.value =
-                State_Pin.CREATE_FINISH
+                StatePin.CREATE_FINISH
             return
         }
 
-        if (statePIN.value == State_Pin.REMOVE) {
-            _statePIN.value = State_Pin.REMOVE_CONFIRM
+        if (statePIN.value == StatePin.REMOVE) {
+            _statePIN.value = StatePin.REMOVE_CONFIRM
             return
         }
 
-        if (statePIN.value == State_Pin.REMOVE_CONFIRM) {
-            _statePIN.value =
-                if (oldPin == getPIN())
-                    State_Pin.REMOVE_CONFIRM_FINISH
-                else
-                    State_Pin.REMOVE_CONFIRM_ERROR
-            return
-        }
-
-        if (statePIN.value == State_Pin.EDIT) {
+        if (statePIN.value == StatePin.REMOVE_CONFIRM) {
             _statePIN.value =
                 if (oldPin == getPIN())
-                    State_Pin.CREATE
+                    StatePin.REMOVE_CONFIRM_FINISH
                 else
-                    State_Pin.EDIT_ERROR
+                    StatePin.REMOVE_CONFIRM_ERROR
             return
         }
 
-        if (statePIN.value == State_Pin.LOGIN) {
+        if (statePIN.value == StatePin.EDIT) {
+            _statePIN.value =
+                if (oldPin == getPIN())
+                    StatePin.CREATE
+                else
+                    StatePin.EDIT_ERROR
+            return
+        }
+
+        if (statePIN.value == StatePin.LOGIN) {
             if (oldPin == getPIN()) {
-                _statePIN.value = State_Pin.LOGIN_FINISH
+                _statePIN.value = StatePin.LOGIN_FINISH
             } else {
-                _statePIN.value = State_Pin.LOGIN_ERROR
+                _statePIN.value = StatePin.LOGIN_ERROR
             }
             return
         }

@@ -22,7 +22,6 @@ import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentReportCategoryBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
 import com.fiz.mono.ui.MainPreferencesViewModelFactory
-import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.themeColor
@@ -34,8 +33,6 @@ class ReportCategoryFragment : Fragment() {
 
     private var _binding: FragmentReportCategoryBinding? = null
     private val binding get() = _binding!!
-
-    private val mainViewModel: MainViewModel by activityViewModels()
 
     private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels {
         MainPreferencesViewModelFactory(

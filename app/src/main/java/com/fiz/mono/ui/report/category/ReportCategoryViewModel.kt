@@ -90,26 +90,37 @@ class ReportCategoryViewModel(
         colorForShader1: Int,
         colorForShader2: Int
     ) {
+        val usefulHeight = height * 0.65f
         if (uiState.value.reportFor == ReportCategoryUiState.MONTH) {
-            uiState.value.drawLineMonth(
+            val valuesByMonth =
+                uiState.value.getValuesForVerticalForMonth()
+                    .map { usefulHeight - usefulHeight * it }
+            uiState.value.drawLine(
                 canvas,
                 width,
-                height,
                 color,
                 density,
                 colorForShader1,
-                colorForShader2
+                colorForShader2,
+                valuesByMonth,
+                5f,
+                usefulHeight
             )
             uiState.value.drawTextMonth(canvas, width, height, textSize, colorText)
         } else {
-            uiState.value.drawLineWeek(
+            val valuesByWeek =
+                uiState.value.getValuesForVerticalForWeek()
+                    .map { usefulHeight - usefulHeight * it }
+            uiState.value.drawLine(
                 canvas,
                 width,
-                height,
                 color,
                 density,
                 colorForShader1,
-                colorForShader2
+                colorForShader2,
+                valuesByWeek,
+                7f,
+                usefulHeight
             )
             uiState.value.drawTextWeek(canvas, width, height, textSize, colorText)
         }

@@ -11,7 +11,7 @@ class ActivityContract : ActivityResultContract<Intent, Int?>() {
         return input
     }
 
-    override fun parseResult(resultCode: Int, intent: Intent?): Int? = when {
+    override fun parseResult(resultCode: Int, intent: Intent?): Int = when {
         resultCode != AppCompatActivity.RESULT_OK -> 0
         else -> 1
     }

@@ -12,15 +12,15 @@ import com.fiz.mono.util.CurrentUtils.getCurrencyFormat
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setVisible
 
+private const val ITEM_VIEW_TYPE_HEADER = 0
+private const val ITEM_VIEW_TYPE_ITEM = 1
+
 class TransactionsAdapter(
     private val currency: String,
     private val isVisibleIcon: Boolean,
     private val callback: (TransactionUiState) -> Unit = {}
 ) :
     ListAdapter<TransactionsDataItem, RecyclerView.ViewHolder>(DataItemDiff) {
-
-    private val ITEM_VIEW_TYPE_HEADER = 0
-    private val ITEM_VIEW_TYPE_ITEM = 1
 
     override fun onCreateViewHolder(
         parent: ViewGroup,

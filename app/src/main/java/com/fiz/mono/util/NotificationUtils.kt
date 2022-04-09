@@ -9,7 +9,7 @@ import androidx.core.app.NotificationCompat
 import com.fiz.mono.R
 import com.fiz.mono.ui.MainActivity
 
-private val NOTIFICATION_ID = 0
+private const val NOTIFICATION_ID = 0
 
 fun NotificationManager.sendNotification(messageBody: String, applicationContext: Context) {
     val contentIntent = Intent(applicationContext, MainActivity::class.java)

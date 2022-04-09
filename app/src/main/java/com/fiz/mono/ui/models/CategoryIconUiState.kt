@@ -2,22 +2,13 @@ package com.fiz.mono.ui.models
 
 import androidx.annotation.DrawableRes
 import androidx.recyclerview.widget.DiffUtil
-import com.fiz.mono.data.entity.CategoryIconEntity
 
 data class CategoryIconUiState(
     val id: String,
     @DrawableRes
     val imgSrc: Int,
     val selected: Boolean = false
-) {
-    fun toCategoryIcon(): CategoryIconEntity {
-        return CategoryIconEntity(
-            id = this.id,
-            imgSrc = this.imgSrc
-        )
-    }
-
-}
+)
 
 object CategoryIconItemDiff : DiffUtil.ItemCallback<CategoryIconUiState>() {
     override fun areItemsTheSame(

@@ -8,7 +8,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 object BitmapUtils {
-    fun setPic(targetW: Int, targetH: Int, path: String): Bitmap? {
+    private fun setPic(targetW: Int, targetH: Int, path: String): Bitmap? {
         val bmOptions = BitmapFactory.Options().apply {
             inJustDecodeBounds = true
         }

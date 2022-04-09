@@ -22,16 +22,6 @@ data class CalendarUiState(
             getAllTransactionsForDay(date)
         )
 
-    private val dateFormatYear = SimpleDateFormat(
-        "yyyy",
-        Locale.getDefault()
-    )
-
-    private val dateFormatMonth = SimpleDateFormat(
-        "M",
-        Locale.getDefault()
-    )
-
     private val dateFormatDay = SimpleDateFormat(
         "dd",
         Locale.getDefault()

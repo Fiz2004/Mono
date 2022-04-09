@@ -56,7 +56,7 @@ class InputViewModel(
     private val _uiState = MutableStateFlow(InputUiState())
     val uiState: StateFlow<InputUiState> = _uiState.asStateFlow()
 
-    lateinit var currentPhotoPath: String
+    private lateinit var currentPhotoPath: String
 
     private var cashCheckCameraHardware: Boolean? = null
 
@@ -239,7 +239,7 @@ class InputViewModel(
     private fun setPhotoPath(list: MutableList<String?>) {
         _uiState.update {
             it.copy(
-                photoPaths = if (list.get(0) == "") emptyList<String?>().toMutableList() else list
+                photoPaths = if (list[0] == "") emptyList<String?>().toMutableList() else list
             )
         }
     }
@@ -257,7 +257,7 @@ class InputViewModel(
 
     fun removePhotoPath(number: Int) {
         uiState.value.photoPaths[number - 1]?.let {
-            val fDelete: File = File(it)
+            val fDelete = File(it)
             if (fDelete.exists()) {
                 fDelete.delete()
             }
@@ -466,7 +466,7 @@ class InputViewModel(
         Log.d("AAA", "123")
         uiState.value.photoPaths.forEach {
             it?.let {
-                val fDelete: File = File(it)
+                val fDelete = File(it)
                 if (fDelete.exists()) {
                     fDelete.delete()
                 }

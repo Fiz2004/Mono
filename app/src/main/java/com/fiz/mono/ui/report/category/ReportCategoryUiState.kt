@@ -97,17 +97,17 @@ data class ReportCategoryUiState(
             .filter { it.localDate.get(ChronoField.ALIGNED_WEEK_OF_MONTH) == date.get(ChronoField.ALIGNED_WEEK_OF_MONTH) }
     }
 
-    fun drawLineMonth(
+    fun drawLine(
         canvas: Canvas,
         width: Int,
-        height: Int,
         color: Int,
         density: Float,
         colorForShader1: Int,
-        colorForShader2: Int
+        colorForShader2: Int,
+        valuesForVertical: List<Double>,
+        step: Float,
+        usefulHeight: Float
     ) {
-        val usefulHeight = height * 0.65f
-
         val paintFill = Paint(Paint.ANTI_ALIAS_FLAG)
         paintFill.style = Paint.Style.FILL
         paintFill.shader = getShader(usefulHeight, colorForShader1, colorForShader2)
@@ -119,112 +119,38 @@ data class ReportCategoryUiState(
         paintStroke.color = color
         paintStroke.strokeWidth = 2f * density
 
-        val valuesByMonth =
-            getValuesForVerticalForMonth(
-                allTransactions, category?.name
-            ).map {
-                usefulHeight - usefulHeight * it
-            }
-
-        val stepWidth = width / 5f
+        val stepWidth = width / step
 
         val pathFill = Path()
         val pathStroke = Path()
-        pathFill.moveTo(0f, valuesByMonth[0].toFloat())
-        pathStroke.moveTo(0f, valuesByMonth[0].toFloat())
+        pathFill.moveTo(0f, valuesForVertical[0].toFloat())
+        pathStroke.moveTo(0f, valuesForVertical[0].toFloat())
 
         var cX = 0f
-        for (n in 1..5) {
+        for (n in 1..step.toInt()) {
             cX += if (n == 1)
                 stepWidth / 2f
             else
                 stepWidth
 
-            val stepHeight = valuesByMonth[n] - valuesByMonth[n - 1]
+            val stepHeight = valuesForVertical[n] - valuesForVertical[n - 1]
             pathFill.quadTo(
                 cX - stepWidth / 2,
-                (valuesByMonth[n] - (stepHeight / 2f)).toFloat(),
+                (valuesForVertical[n] - (stepHeight / 2f)).toFloat(),
                 cX,
-                valuesByMonth[n].toFloat()
+                valuesForVertical[n].toFloat()
             )
             pathStroke.quadTo(
                 cX - stepWidth / 2,
-                (valuesByMonth[n] - (stepHeight / 2f)).toFloat(),
+                (valuesForVertical[n] - (stepHeight / 2f)).toFloat(),
                 cX,
-                valuesByMonth[n].toFloat()
+                valuesForVertical[n].toFloat()
             )
         }
-        pathStroke.lineTo(width.toFloat(), valuesByMonth[valuesByMonth.size - 1].toFloat())
-        pathFill.lineTo(width.toFloat(), valuesByMonth[valuesByMonth.size - 1].toFloat())
-        pathFill.lineTo(width.toFloat(), usefulHeight.toFloat())
-        pathFill.lineTo(0f, usefulHeight.toFloat())
-        pathFill.close()
-        canvas.drawPath(pathFill, paintFill)
-        canvas.drawPath(pathStroke, paintStroke)
-    }
-
-    fun drawLineWeek(
-        canvas: Canvas,
-        width: Int,
-        height: Int,
-        color: Int,
-        density: Float,
-        colorForShader1: Int,
-        colorForShader2: Int
-    ) {
-        val usefulHeight = height * 0.65f
-
-        val paintFill = Paint(Paint.ANTI_ALIAS_FLAG)
-        paintFill.style = Paint.Style.FILL
-        paintFill.shader = getShader(usefulHeight, colorForShader1, colorForShader2)
-        paintFill.color = color
-        paintFill.strokeWidth = 0f
-
-        val paintStroke = Paint(Paint.ANTI_ALIAS_FLAG)
-        paintStroke.style = Paint.Style.STROKE
-        paintStroke.color = color
-        paintStroke.strokeWidth = 2f * density
-
-        val valuesByWeek =
-            getValuesForVerticalForWeek(
-                allTransactions, category?.name
-            ).map {
-                usefulHeight - usefulHeight * it
-            }
-
-        val stepWidth = width / 7f
-
-        val pathFill = Path()
-        val pathStroke = Path()
-        pathFill.moveTo(0f, valuesByWeek[0].toFloat())
-        pathStroke.moveTo(0f, valuesByWeek[0].toFloat())
-
-        var cX = 0f
-        for (n in 1..7) {
-            cX += if (n == 1)
-                stepWidth / 2f
-            else
-                stepWidth
-
-            val stepHeight = valuesByWeek[n] - valuesByWeek[n - 1]
-
-            pathFill.quadTo(
-                cX - stepWidth / 2,
-                (valuesByWeek[n] - (stepHeight / 2f)).toFloat(),
-                cX,
-                valuesByWeek[n].toFloat()
-            )
-            pathStroke.quadTo(
-                cX - stepWidth / 2,
-                (valuesByWeek[n] - (stepHeight / 2f)).toFloat(),
-                cX,
-                valuesByWeek[n].toFloat()
-            )
-        }
-        pathStroke.lineTo(width.toFloat(), valuesByWeek[valuesByWeek.size - 1].toFloat())
-        pathFill.lineTo(width.toFloat(), valuesByWeek[valuesByWeek.size - 1].toFloat())
-        pathFill.lineTo(width.toFloat(), usefulHeight.toFloat())
-        pathFill.lineTo(0f, usefulHeight.toFloat())
+        pathStroke.lineTo(width.toFloat(), valuesForVertical.last().toFloat())
+        pathFill.lineTo(width.toFloat(), valuesForVertical.last().toFloat())
+        pathFill.lineTo(width.toFloat(), usefulHeight)
+        pathFill.lineTo(0f, usefulHeight)
         pathFill.close()
         canvas.drawPath(pathFill, paintFill)
         canvas.drawPath(pathStroke, paintStroke)
@@ -254,7 +180,7 @@ data class ReportCategoryUiState(
             monthDate = monthDate.plusMonths(1)
             val nameMonth = dateFormatTextMonth.format(monthDate)
 
-            canvas.drawText("$nameMonth", currentX, height - paintFont.textSize, paintFont)
+            canvas.drawText(nameMonth, currentX, height - paintFont.textSize, paintFont)
         }
     }
 
@@ -282,7 +208,7 @@ data class ReportCategoryUiState(
             dayDate = dayDate.plusDays(1)
             val nameMonth = dateFormatTextWeek.format(dayDate)
 
-            canvas.drawText("$nameMonth", currentX, height - paintFont.textSize, paintFont)
+            canvas.drawText(nameMonth, currentX, height - paintFont.textSize, paintFont)
         }
     }
 
@@ -294,14 +220,14 @@ data class ReportCategoryUiState(
             Shader.TileMode.REPEAT
         )
 
-    private fun getValuesForVerticalForMonth(
-        transactions: List<TransactionUiState>? = emptyList(), categoryName: String?
-    ): List<Double> {
-        val transactionsBy = transactions
-            ?.filter { it.nameCategory == categoryName }
-            ?.filter { it.localDate.isAfter(LocalDate.now().minusMonths(7)) }
-            ?.sortedBy { it.localDate }
-            ?.groupBy {
+    fun getValuesForVerticalForMonth(): List<Double> {
+        val transactionsBy = allTransactions
+            .filter {
+                it.nameCategory == category?.name &&
+                        it.localDate.isAfter(LocalDate.now().minusMonths(7))
+            }
+            .sortedBy { it.localDate }
+            .groupBy {
                 dateFormatMonthMMM.format(it.localDate)
             }
 
@@ -309,9 +235,9 @@ data class ReportCategoryUiState(
         for (n in 0..6) {
             val nameMonth = dateFormatMonthMMM.format(LocalDate.now().plusMonths(-6 + n.toLong()))
             transactionsByMonth[nameMonth] = transactionsBy
-                ?.filterKeys { it == nameMonth }
-                ?.values
-                ?.firstOrNull()
+                .filterKeys { it == nameMonth }
+                .values
+                .firstOrNull()
                 ?.fold(0.0) { acc, d -> acc + d.value }
                 ?: 0.0
         }
@@ -326,14 +252,14 @@ data class ReportCategoryUiState(
             .toList()
     }
 
-    private fun getValuesForVerticalForWeek(
-        transactions: List<TransactionUiState>? = emptyList(), categoryName: String?
-    ): List<Double> {
-        val transactionsBy = transactions
-            ?.filter { it.nameCategory == categoryName }
-            ?.filter { it.localDate.isAfter(LocalDate.now().minusDays(9)) }
-            ?.sortedBy { it.localDate }
-            ?.groupBy {
+    fun getValuesForVerticalForWeek(): List<Double> {
+        val transactionsBy = allTransactions
+            .filter {
+                it.nameCategory == category?.name &&
+                        it.localDate.isAfter(LocalDate.now().minusDays(9))
+            }
+            .sortedBy { it.localDate }
+            .groupBy {
                 dateFormatDay.format(it.localDate)
             }
 
@@ -341,9 +267,9 @@ data class ReportCategoryUiState(
         for (n in 0..8) {
             val nameDay = dateFormatDay.format(LocalDate.now().plusDays(-8 + n.toLong()))
             transactionsByMonth[nameDay] = transactionsBy
-                ?.filterKeys { it == nameDay }
-                ?.values
-                ?.firstOrNull()
+                .filterKeys { it == nameDay }
+                .values
+                .firstOrNull()
                 ?.fold(0.0) { acc, d -> acc + d.value }
                 ?: 0.0
         }

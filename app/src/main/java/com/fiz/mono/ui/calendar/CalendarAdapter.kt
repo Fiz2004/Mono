@@ -8,11 +8,11 @@ import com.fiz.mono.databinding.ItemCalendarBinding
 import com.fiz.mono.databinding.ItemCalendarDayWeekBinding
 import com.fiz.mono.util.setVisible
 
+private const val ITEM_VIEW_TYPE_DAY_WEEK = 0
+private const val ITEM_VIEW_TYPE_DAY = 1
+
 class CalendarAdapter(private val callback: (TransactionsDay) -> Unit) :
     ListAdapter<CalendarDataItem, RecyclerView.ViewHolder>(DataItemDiff) {
-
-    private val ITEM_VIEW_TYPE_DAY_WEEK = 0
-    private val ITEM_VIEW_TYPE_DAY = 1
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
