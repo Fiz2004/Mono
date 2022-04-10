@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -14,42 +13,32 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentInputBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
-import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
 import com.fiz.mono.ui.shared_adapters.CategoriesAdapter
 import com.fiz.mono.util.ActivityContract
 import com.fiz.mono.util.setVisible
 import com.google.android.material.tabs.TabLayout
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.WithFragmentBindings
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
+@WithFragmentBindings
 class InputFragment : Fragment() {
     private val args: InputFragmentArgs by navArgs()
 
     private var _binding: FragmentInputBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: InputViewModel by activityViewModels {
-        InputViewModelFactory(
-            (requireActivity().application as App).categoryRepository,
-            (requireActivity().application as App).transactionStore
-        )
-    }
+    private val viewModel: InputViewModel by activityViewModels()
 
     private val mainViewModel: MainViewModel by activityViewModels()
 
-    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels {
-        MainPreferencesViewModelFactory(
-            requireActivity().getSharedPreferences(
-                getString(R.string.preferences),
-                AppCompatActivity.MODE_PRIVATE
-            )
-        )
-    }
+    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels()
 
     private val cameraActivityLauncher = registerForActivityResult(ActivityContract()) {
         if (it == 1)

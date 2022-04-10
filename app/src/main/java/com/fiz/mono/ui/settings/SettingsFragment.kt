@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -15,7 +14,6 @@ import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentSettingsBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
-import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
 import com.fiz.mono.util.setVisible
 import kotlinx.coroutines.CoroutineScope
@@ -27,15 +25,7 @@ class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
 
-    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels {
-        MainPreferencesViewModelFactory(
-            requireActivity().getSharedPreferences(
-                getString(R.string.preferences),
-                AppCompatActivity.MODE_PRIVATE
-            )
-        )
-    }
-
+    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

@@ -7,7 +7,9 @@ import com.fiz.mono.data.data_source.TransactionDataSource
 import com.fiz.mono.data.database.AppDatabase
 import com.fiz.mono.data.repositories.CategoryRepository
 import com.jakewharton.threetenabp.AndroidThreeTen
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class App : Application() {
     val database by lazy { AppDatabase.getDatabase() }
     val categoryStore by lazy {

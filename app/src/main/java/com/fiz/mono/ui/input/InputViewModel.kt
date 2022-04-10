@@ -19,6 +19,7 @@ import com.fiz.mono.data.repositories.CategoryRepository
 import com.fiz.mono.ui.models.CategoryUiState
 import com.fiz.mono.ui.models.TransactionUiState
 import com.fiz.mono.util.BitmapUtils.getBitmapsFrom
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,6 +30,7 @@ import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 import kotlin.math.abs
 
 data class InputUiState(
@@ -49,7 +51,8 @@ data class InputUiState(
         get() = getBitmapsFrom(photoPaths = photoPaths)
 }
 
-class InputViewModel(
+@HiltViewModel
+class InputViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val transactionDataSource: TransactionDataSource
 ) : ViewModel() {

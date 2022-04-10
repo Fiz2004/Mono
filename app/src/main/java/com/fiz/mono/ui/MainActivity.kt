@@ -10,20 +10,15 @@ import androidx.navigation.ui.setupWithNavController
 import com.fiz.mono.R
 import com.fiz.mono.databinding.ActivityMainBinding
 import com.fiz.mono.util.setVisible
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var navController: NavController
 
-    private val mainPreferencesViewModel: MainPreferencesViewModel by viewModels {
-        MainPreferencesViewModelFactory(
-            getSharedPreferences(
-                getString(R.string.preferences),
-                MODE_PRIVATE
-            )
-        )
-    }
+    private val mainPreferencesViewModel: MainPreferencesViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

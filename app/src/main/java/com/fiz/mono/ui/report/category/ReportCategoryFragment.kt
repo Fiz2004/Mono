@@ -9,7 +9,6 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -21,7 +20,6 @@ import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentReportCategoryBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
-import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.themeColor
@@ -34,14 +32,7 @@ class ReportCategoryFragment : Fragment() {
     private var _binding: FragmentReportCategoryBinding? = null
     private val binding get() = _binding!!
 
-    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels {
-        MainPreferencesViewModelFactory(
-            requireActivity().getSharedPreferences(
-                getString(R.string.preferences),
-                AppCompatActivity.MODE_PRIVATE
-            )
-        )
-    }
+    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels()
     private val viewModel: ReportCategoryViewModel by viewModels {
         ReportCategoryViewModelFactory(
             (requireActivity().application as App).categoryRepository,

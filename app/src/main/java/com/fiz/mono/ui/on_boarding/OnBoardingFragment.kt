@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -16,7 +15,6 @@ import androidx.navigation.fragment.findNavController
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentOnBoardingBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
-import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.util.setVisible
 import kotlinx.coroutines.launch
 
@@ -24,14 +22,8 @@ class OnBoardingFragment : Fragment() {
     private var _binding: FragmentOnBoardingBinding? = null
     private val binding get() = _binding!!
 
-    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels {
-        MainPreferencesViewModelFactory(
-            requireActivity().getSharedPreferences(
-                getString(R.string.preferences),
-                AppCompatActivity.MODE_PRIVATE
-            )
-        )
-    }
+    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels()
+
     private val viewModel: OnBoardingViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {

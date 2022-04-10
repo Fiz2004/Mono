@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -16,7 +15,6 @@ import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentCalendarBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
-import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.util.TimeUtils.getDateMonthYearString
@@ -35,14 +33,7 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
 
     private val mainViewModel: MainViewModel by activityViewModels()
 
-    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels {
-        MainPreferencesViewModelFactory(
-            requireActivity().getSharedPreferences(
-                getString(R.string.preferences),
-                AppCompatActivity.MODE_PRIVATE
-            )
-        )
-    }
+    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels()
 
     private lateinit var calendarAdapter: CalendarAdapter
     private lateinit var transactionAdapter: TransactionsAdapter

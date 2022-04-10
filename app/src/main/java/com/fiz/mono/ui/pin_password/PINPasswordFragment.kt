@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.addCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -19,7 +18,6 @@ import androidx.navigation.fragment.navArgs
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentPINPasswordBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
-import com.fiz.mono.ui.MainPreferencesViewModelFactory
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setVisible
 import com.fiz.mono.util.showKeyboard
@@ -32,14 +30,7 @@ class PINPasswordFragment : Fragment() {
 
     private lateinit var numbersEditText: List<EditText>
 
-    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels {
-        MainPreferencesViewModelFactory(
-            requireActivity().getSharedPreferences(
-                getString(R.string.preferences),
-                AppCompatActivity.MODE_PRIVATE
-            )
-        )
-    }
+    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels()
 
     private val viewModel: PINPasswordViewModel by viewModels()
 

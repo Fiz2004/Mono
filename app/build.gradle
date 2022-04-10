@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'androidx.navigation.safeargs.kotlin'
+    id("dagger.hilt.android.plugin")
 }
 
 apply plugin:'kotlin-kapt'
@@ -65,14 +66,19 @@ dependencies {
     implementation 'androidx.room:room-ktx:2.4.2'
     implementation 'androidx.room:room-runtime:2.4.2'
     kapt 'androidx.room:room-compiler:2.4.2'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1-native-mt'
 
     // Preference
     implementation 'androidx.preference:preference-ktx:1.2.0'
 
     // Kotlin components
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1-native-mt"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1-native-mt"
+
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.38.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.38.1")
+
 
     // Date
     implementation 'com.jakewharton.threetenabp:threetenabp:1.4.0'
@@ -91,4 +97,8 @@ dependencies {
     androidTestImplementation "androidx.arch.core:core-testing:2.1.0"
 
 
+}
+
+kapt {
+    correctErrorTypes = true
 }
