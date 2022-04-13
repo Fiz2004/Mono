@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import com.fiz.mono.R
 import com.fiz.mono.data.data_source.CategoryDataSource
+import com.fiz.mono.data.data_source.CategoryIconUiStateDataSource
 import com.fiz.mono.data.data_source.TransactionDataSource
 import com.fiz.mono.data.database.AppDatabase
 import com.fiz.mono.data.repositories.CategoryRepository
@@ -53,6 +54,12 @@ class DataModule {
     @Singleton
     fun provideTransactionDataSource(database: AppDatabase?): TransactionDataSource {
         return TransactionDataSource(database?.transactionItemDao()!!)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCategoryIconUiStateDataSource(): CategoryIconUiStateDataSource {
+        return CategoryIconUiStateDataSource()
     }
 
     @Provides

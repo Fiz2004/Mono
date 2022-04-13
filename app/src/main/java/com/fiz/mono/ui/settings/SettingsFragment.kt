@@ -10,22 +10,35 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
-import com.fiz.mono.App
 import com.fiz.mono.R
+import com.fiz.mono.data.data_source.CategoryDataSource
+import com.fiz.mono.data.data_source.TransactionDataSource
 import com.fiz.mono.databinding.FragmentSettingsBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
 import com.fiz.mono.util.setVisible
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.WithFragmentBindings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
+@AndroidEntryPoint
+@WithFragmentBindings
 class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
 
     private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels()
+
+    @Inject
+    lateinit var categoryDataSource: CategoryDataSource
+
+    @Inject
+    lateinit var transactionDataSource: TransactionDataSource
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -84,8 +97,8 @@ class SettingsFragment : Fragment() {
 
     private fun deleteOnClickListener(view: View) {
         CoroutineScope(Dispatchers.Default).launch {
-            (requireActivity().application as App).categoryStore.deleteAll(requireContext())
-            (requireActivity().application as App).transactionStore.deleteAll()
+            categoryDataSource.deleteAll(requireContext())
+            transactionDataSource.deleteAll()
             withContext(Dispatchers.Main) {
                 Toast.makeText(requireContext(), R.string.delete_all_data, Toast.LENGTH_LONG).show()
             }

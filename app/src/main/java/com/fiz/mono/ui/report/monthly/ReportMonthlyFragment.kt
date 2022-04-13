@@ -10,7 +10,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentReportMonthlyBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
@@ -19,9 +18,13 @@ import com.fiz.mono.ui.report.ReportFragment
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.util.TimeUtils
 import com.google.android.material.button.MaterialButtonToggleGroup
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.WithFragmentBindings
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 
+@AndroidEntryPoint
+@WithFragmentBindings
 class ReportMonthlyFragment : Fragment() {
     private var _binding: FragmentReportMonthlyBinding? = null
     private val binding get() = _binding!!
@@ -29,11 +32,7 @@ class ReportMonthlyFragment : Fragment() {
     private val mainViewModel: MainViewModel by activityViewModels()
 
     private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels()
-    private val viewModel: ReportMonthlyViewModel by viewModels {
-        ReportMonhlyViewModelFactory(
-            (requireActivity().application as App).transactionStore
-        )
-    }
+    private val viewModel: ReportMonthlyViewModel by viewModels()
 
     private lateinit var adapter: TransactionsAdapter
 

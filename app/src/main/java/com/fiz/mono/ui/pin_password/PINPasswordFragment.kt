@@ -21,7 +21,11 @@ import com.fiz.mono.ui.MainPreferencesViewModel
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setVisible
 import com.fiz.mono.util.showKeyboard
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.WithFragmentBindings
 
+@AndroidEntryPoint
+@WithFragmentBindings
 class PINPasswordFragment : Fragment() {
     private val args: PINPasswordFragmentArgs by navArgs()
 

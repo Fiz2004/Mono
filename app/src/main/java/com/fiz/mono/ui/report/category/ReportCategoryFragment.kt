@@ -16,7 +16,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
-import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentReportCategoryBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
@@ -24,8 +23,12 @@ import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.themeColor
 import com.google.android.material.button.MaterialButtonToggleGroup
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.WithFragmentBindings
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
+@WithFragmentBindings
 class ReportCategoryFragment : Fragment() {
     private val args: ReportCategoryFragmentArgs by navArgs()
 
@@ -33,12 +36,7 @@ class ReportCategoryFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels()
-    private val viewModel: ReportCategoryViewModel by viewModels {
-        ReportCategoryViewModelFactory(
-            (requireActivity().application as App).categoryRepository,
-            (requireActivity().application as App).transactionStore
-        )
-    }
+    private val viewModel: ReportCategoryViewModel by viewModels()
 
     private lateinit var adapter: TransactionsAdapter
 

@@ -3,8 +3,11 @@ package com.fiz.mono.ui.report
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class ReportViewModel : ViewModel() {
+@HiltViewModel
+class ReportViewModel @Inject constructor() : ViewModel() {
     private var _categorySelectedReport = MutableLiveData(ReportFragment.MONTHLY)
     val categorySelectedReport: LiveData<Int>
         get() = _categorySelectedReport

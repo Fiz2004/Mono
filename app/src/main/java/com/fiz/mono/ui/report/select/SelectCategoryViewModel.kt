@@ -1,12 +1,14 @@
 package com.fiz.mono.ui.report.select
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.data.repositories.CategoryRepository
 import com.fiz.mono.ui.models.CategoryUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class SelectUiState(
     val allCategoryExpense: List<CategoryUiState> = listOf(),
@@ -16,12 +18,14 @@ data class SelectUiState(
     val position: Int = -1
 )
 
-class SelectCategoryViewModel(private val categoryRepository: CategoryRepository) : ViewModel() {
+@HiltViewModel
+class SelectCategoryViewModel @Inject constructor(private val categoryRepository: CategoryRepository) :
+    ViewModel() {
     private var _uiState = MutableStateFlow(SelectUiState())
     val uiState: StateFlow<SelectUiState> = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             _uiState.update {
                 it.copy(
                     allCategoryExpense = categoryRepository.allCategoryExpense.first(),
@@ -63,16 +67,5 @@ class SelectCategoryViewModel(private val categoryRepository: CategoryRepository
                 isMoveIncome = false
             )
         }
-    }
-}
-
-class SelectCategoryViewModelFactory(private val categoryRepository: CategoryRepository) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(SelectCategoryViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return SelectCategoryViewModel(categoryRepository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

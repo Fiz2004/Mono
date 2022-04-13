@@ -16,8 +16,12 @@ import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentOnBoardingBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
 import com.fiz.mono.util.setVisible
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.WithFragmentBindings
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
+@WithFragmentBindings
 class OnBoardingFragment : Fragment() {
     private var _binding: FragmentOnBoardingBinding? = null
     private val binding get() = _binding!!

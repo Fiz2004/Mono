@@ -12,23 +12,21 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentCategoryAddBinding
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setVisible
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.WithFragmentBindings
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
+@WithFragmentBindings
 class CategoryAddFragment : Fragment() {
     private var _binding: FragmentCategoryAddBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: CategoryAddViewModel by viewModels {
-        CategoryAddViewModelFactory(
-            (requireActivity().application as App).categoryRepository,
-            (requireActivity().application as App).categoryIconStore,
-        )
-    }
+    private val viewModel: CategoryAddViewModel by viewModels()
 
     private lateinit var adapter: CategoryIconsAdapter
 

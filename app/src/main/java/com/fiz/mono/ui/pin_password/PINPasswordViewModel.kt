@@ -3,8 +3,11 @@ package com.fiz.mono.ui.pin_password
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class PINPasswordViewModel : ViewModel() {
+@HiltViewModel
+class PINPasswordViewModel @Inject constructor() : ViewModel() {
 
     private var _statePIN = MutableLiveData(StatePin.LOGIN_FINISH)
     val statePIN: LiveData<StatePin> = _statePIN

@@ -6,10 +6,14 @@ import com.fiz.mono.data.data_source.CategoryIconUiStateDataSource
 import com.fiz.mono.data.repositories.CategoryRepository
 import com.fiz.mono.ui.category_edit.CategoryEditViewModel.Companion.TYPE_EXPENSE
 import com.fiz.mono.ui.models.CategoryUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CategoryAddViewModel(
+@HiltViewModel
+class CategoryAddViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val categoryIconUiStateDataSource: CategoryIconUiStateDataSource,
 ) : ViewModel() {
@@ -21,7 +25,7 @@ class CategoryAddViewModel(
     private var allCategoryIncome: List<CategoryUiState> = listOf()
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             categoryIconUiStateDataSource.allCategoryIcons.collect { allCategoryIcons ->
                 _uiState.update {
                     it.copy(
@@ -30,14 +34,14 @@ class CategoryAddViewModel(
                 }
             }
         }
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             categoryRepository.allCategoryExpense
                 .distinctUntilChanged()
                 .collect { allCategoryExpense ->
                     this@CategoryAddViewModel.allCategoryExpense = allCategoryExpense
                 }
         }
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             categoryRepository.allCategoryIncome
                 .distinctUntilChanged()
                 .collect { allCategoryIncome ->

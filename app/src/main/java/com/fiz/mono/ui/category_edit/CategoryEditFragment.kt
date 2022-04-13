@@ -10,23 +10,22 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentCategoryEditBinding
 import com.fiz.mono.ui.shared_adapters.CategoriesAdapter
 import com.fiz.mono.util.getColorCompat
 import com.fiz.mono.util.setVisible
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.WithFragmentBindings
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
+@WithFragmentBindings
 class CategoryEditFragment : Fragment() {
     private var _binding: FragmentCategoryEditBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: CategoryEditViewModel by viewModels {
-        CategoryEditViewModelFactory(
-            (requireActivity().application as App).categoryRepository
-        )
-    }
+    private val viewModel: CategoryEditViewModel by viewModels()
 
     private lateinit var expenseAdapter: CategoriesAdapter
     private lateinit var incomeAdapter: CategoriesAdapter

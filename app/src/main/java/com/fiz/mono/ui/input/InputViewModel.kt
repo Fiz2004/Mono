@@ -3,7 +3,6 @@ package com.fiz.mono.ui.input
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
@@ -18,8 +17,8 @@ import com.fiz.mono.data.entity.TransactionEntity
 import com.fiz.mono.data.repositories.CategoryRepository
 import com.fiz.mono.ui.models.CategoryUiState
 import com.fiz.mono.ui.models.TransactionUiState
-import com.fiz.mono.util.BitmapUtils.getBitmapsFrom
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,24 +31,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
-
-data class InputUiState(
-    val isReturn: Boolean = false,
-    val isMoveEdit: Boolean = false,
-    val isMoveCalendar: Boolean = false,
-    val allCategoryExpense: List<CategoryUiState> = listOf(),
-    val allCategoryIncome: List<CategoryUiState> = listOf(),
-    val allTransactions: List<TransactionUiState> = listOf(),
-    val note: String = "",
-    val value: String = "",
-    val selectedAdapter: Int = InputFragment.EXPENSE,
-    val transaction: TransactionUiState? = null,
-    val photoPaths: MutableList<String?> = mutableListOf(),
-    val isPhotoPathsChange: Boolean = false
-) {
-    val photoBitmap: List<Bitmap?>
-        get() = getBitmapsFrom(photoPaths = photoPaths)
-}
 
 @HiltViewModel
 class InputViewModel @Inject constructor(
@@ -64,7 +45,7 @@ class InputViewModel @Inject constructor(
     private var cashCheckCameraHardware: Boolean? = null
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             categoryRepository.getAllCategoryExpenseForInput().collect { allCategoryExpense ->
                 _uiState.update {
                     it.copy(
@@ -73,7 +54,7 @@ class InputViewModel @Inject constructor(
                 }
             }
         }
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             categoryRepository.getAllCategoryIncomeForInput().collect { allCategoryIncome ->
                 _uiState.update {
                     it.copy(
@@ -82,7 +63,7 @@ class InputViewModel @Inject constructor(
                 }
             }
         }
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             transactionDataSource.allTransactions.collect { allTransactions ->
                 _uiState.update {
                     it.copy(
@@ -108,7 +89,7 @@ class InputViewModel @Inject constructor(
     }
 
     fun setSelected(nameCategory: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             val position =
                 getAllCategoryFromSelectedForInput(uiState.value.selectedAdapter)
                     .indexOfFirst { it.name == nameCategory }
@@ -122,7 +103,7 @@ class InputViewModel @Inject constructor(
     }
 
     fun removeTransaction() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             uiState.value.transaction?.let { transactionDataSource.delete(it.toTransaction()) }
             _uiState.update {
                 it.copy(isReturn = true)
@@ -304,7 +285,7 @@ class InputViewModel @Inject constructor(
     }
 
     fun init(transaction: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             _uiState.update {
                 it.copy(transaction = transactionDataSource.getTransactionByID(transaction))
             }
@@ -330,7 +311,7 @@ class InputViewModel @Inject constructor(
     }
 
     fun clickRecyclerView(position: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             if (isClickEditPosition(position)) {
                 _uiState.update {
                     it.copy(
@@ -412,7 +393,7 @@ class InputViewModel @Inject constructor(
     }
 
     fun clickSubmitButton(date: LocalDate) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             val selectedCategoryItem =
                 getAllCategoryFromSelectedForInput(uiState.value.selectedAdapter)
                     .first { it.selected }

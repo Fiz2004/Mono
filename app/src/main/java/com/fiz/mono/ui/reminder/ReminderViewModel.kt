@@ -19,9 +19,12 @@ import androidx.lifecycle.ViewModel
 import com.fiz.mono.R
 import com.fiz.mono.receiver.AlarmReceiver
 import com.fiz.mono.util.cancelNotifications
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
+import javax.inject.Inject
 
-class ReminderViewModel : ViewModel() {
+@HiltViewModel
+class ReminderViewModel @Inject constructor() : ViewModel() {
 
     private val _hours = MutableLiveData(0)
     val hours: LiveData<Int> = _hours

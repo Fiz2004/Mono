@@ -13,7 +13,11 @@ import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentReportBinding
 import com.fiz.mono.ui.report.monthly.ReportMonthlyFragmentDirections
 import com.fiz.mono.util.setVisible
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.WithFragmentBindings
 
+@AndroidEntryPoint
+@WithFragmentBindings
 class ReportFragment : Fragment(), ReportDialog.Choicer {
     private var _binding: FragmentReportBinding? = null
     private val binding get() = _binding!!

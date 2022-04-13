@@ -3,20 +3,24 @@ package com.fiz.mono.ui.report.monthly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.data.data_source.TransactionDataSource
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
+import javax.inject.Inject
 
-class ReportMonthlyViewModel(private val transactionDataSource: TransactionDataSource) :
+@HiltViewModel
+class ReportMonthlyViewModel @Inject constructor(private val transactionDataSource: TransactionDataSource) :
     ViewModel() {
     private val _uiState = MutableStateFlow(ReportMonthlyUiState())
     val uiState: StateFlow<ReportMonthlyUiState> = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             transactionDataSource.allTransactions.collect { allTransactions ->
                 _uiState.update {
                     it.copy(

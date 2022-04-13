@@ -13,9 +13,13 @@ import androidx.navigation.fragment.findNavController
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentReminderBinding
 import com.fiz.mono.util.setVisible
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.WithFragmentBindings
 
 const val REQUEST_CODE_REMINDER = 0
 
+@AndroidEntryPoint
+@WithFragmentBindings
 class ReminderFragment : Fragment() {
 
     private var _binding: FragmentReminderBinding? = null

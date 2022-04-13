@@ -4,17 +4,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
 import com.fiz.mono.data.repositories.CategoryRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CategoryEditViewModel(
+@HiltViewModel
+class CategoryEditViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CategoryEditUiState())
     val uiState: StateFlow<CategoryEditUiState> = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             categoryRepository.getAllCategoryExpenseForEdit()
                 .distinctUntilChanged()
                 .collect { list ->
@@ -25,7 +29,7 @@ class CategoryEditViewModel(
                     }
                 }
         }
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             categoryRepository.getAllCategoryIncomeForEdit()
                 .distinctUntilChanged()
                 .collect { list ->
@@ -39,7 +43,7 @@ class CategoryEditViewModel(
     }
 
     fun clickExpenseRecyclerView(position: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             _uiState.update {
                 it.clickExpenseRecyclerView(position)
             }
@@ -47,7 +51,7 @@ class CategoryEditViewModel(
     }
 
     fun clickIncomeRecyclerView(position: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             _uiState.update {
                 it.clickIncomeRecyclerView(position)
             }
@@ -55,7 +59,7 @@ class CategoryEditViewModel(
     }
 
     fun removeSelectItem() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             uiState.value.allCategoryExpense
                 .find { it.selected }
                 ?.let {

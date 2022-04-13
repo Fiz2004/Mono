@@ -11,7 +11,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import com.fiz.mono.App
 import com.fiz.mono.R
 import com.fiz.mono.databinding.FragmentCalendarBinding
 import com.fiz.mono.ui.MainPreferencesViewModel
@@ -19,17 +18,17 @@ import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.util.TimeUtils.getDateMonthYearString
 import com.fiz.mono.util.setVisible
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.WithFragmentBindings
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
+@WithFragmentBindings
 class CalendarFragment : Fragment(), MonthDialog.Choicer {
     private var _binding: FragmentCalendarBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: CalendarViewModel by viewModels {
-        CalendarViewModelFactory(
-            (requireActivity().application as App).transactionStore
-        )
-    }
+    private val viewModel: CalendarViewModel by viewModels()
 
     private val mainViewModel: MainViewModel by activityViewModels()
 
