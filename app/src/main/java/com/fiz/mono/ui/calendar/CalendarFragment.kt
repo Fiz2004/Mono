@@ -118,13 +118,16 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { uiState ->
 
-                    if (uiState.isDateChange) {
+                    if (uiState.isDateChange || uiState.isAllTransactionsLoaded) {
                         binding.calendarRecyclerView.itemAnimator = null
                         calendarAdapter.submitList(uiState.calendarDataItem)
                         transactionAdapter.submitList(uiState.transactionsDataItem)
                         binding.noTransactionsTextView.setVisible(uiState.transactionsDataItem.isEmpty())
                         binding.transactionRecyclerView.setVisible(uiState.transactionsDataItem.isNotEmpty())
-                        viewModel.onChangeDate()
+                        if (uiState.isDateChange)
+                            viewModel.onChangeDate()
+                        if (uiState.isAllTransactionsLoaded)
+                            viewModel.onAllTransactionsLoaded()
                     }
 
                     if (uiState.isReturn) {

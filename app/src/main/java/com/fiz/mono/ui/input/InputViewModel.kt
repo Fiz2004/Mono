@@ -21,7 +21,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
+import org.threeten.bp.ZoneOffset
 import org.threeten.bp.format.DateTimeFormatter
 import java.io.File
 import java.io.IOException
@@ -190,7 +192,7 @@ class InputViewModel @Inject constructor(
     @Throws(IOException::class)
     fun createImageFile(context: Context): File {
         val timeStamp: String =
-            DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss").format(LocalDate.now())
+            DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss").withZone(ZoneOffset.UTC).format(Instant.now())
         val storageDir: File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
         return File.createTempFile(
             "JPEG_${timeStamp}_",
@@ -422,12 +424,14 @@ class InputViewModel @Inject constructor(
     // TODO не вызывается, причина не понятна
     override fun onCleared() {
         super.onCleared()
-        Log.d("AAA", "123")
-        uiState.value.photoPaths.forEach {
-            it?.let {
-                val fDelete = File(it)
-                if (fDelete.exists()) {
-                    fDelete.delete()
+        if (uiState.value.isInput) {
+            Log.d("AAA", "123")
+            uiState.value.photoPaths.forEach {
+                it?.let {
+                    val fDelete = File(it)
+                    if (fDelete.exists()) {
+                        fDelete.delete()
+                    }
                 }
             }
         }

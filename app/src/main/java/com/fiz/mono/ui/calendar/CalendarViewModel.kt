@@ -6,8 +6,6 @@ import com.fiz.mono.data.data_source.TransactionDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
@@ -16,15 +14,16 @@ import javax.inject.Inject
 @HiltViewModel
 class CalendarViewModel @Inject constructor(private val transactionDataSource: TransactionDataSource) :
     ViewModel() {
-    private val _uiState = MutableStateFlow(CalendarUiState())
-    val uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
+    var uiState = MutableStateFlow(CalendarUiState())
+        private set
 
     init {
         viewModelScope.launch(Dispatchers.Default) {
             transactionDataSource.allTransactions.collect { allTransactions ->
-                _uiState.update {
+                uiState.update {
                     it.copy(
                         allTransactions = allTransactions,
+                        isAllTransactionsLoaded = true
                     )
                 }
             }
@@ -32,20 +31,26 @@ class CalendarViewModel @Inject constructor(private val transactionDataSource: T
     }
 
     fun clickBackButton() {
-        _uiState.update {
+        uiState.update {
             it.copy(isReturn = true)
         }
     }
 
     fun changeData(date: LocalDate) {
-        _uiState.update {
+        uiState.update {
             it.copy(date = date, isDateChange = true)
         }
     }
 
     fun onChangeDate() {
-        _uiState.update {
+        uiState.update {
             it.copy(isDateChange = false)
+        }
+    }
+
+    fun onAllTransactionsLoaded() {
+        uiState.update {
+            it.copy(isAllTransactionsLoaded = false)
         }
     }
 }
