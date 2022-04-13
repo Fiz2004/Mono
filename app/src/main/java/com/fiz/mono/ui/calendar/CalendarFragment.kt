@@ -19,11 +19,9 @@ import com.fiz.mono.ui.shared_adapters.TransactionsAdapter
 import com.fiz.mono.util.TimeUtils.getDateMonthYearString
 import com.fiz.mono.util.setVisible
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.WithFragmentBindings
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-@WithFragmentBindings
 class CalendarFragment : Fragment(), MonthDialog.Choicer {
     private var _binding: FragmentCalendarBinding? = null
     private val binding get() = _binding!!
@@ -98,7 +96,7 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
                 monthDialog.choicer = this@CalendarFragment
 
                 val args = Bundle()
-                val currentMonth = mainViewModel.date.value?.monthValue ?: 0
+                val currentMonth = mainViewModel.date.value?.monthValue ?: 1
                 args.putInt("currentMonth", currentMonth)
                 monthDialog.arguments = args
 
@@ -121,6 +119,7 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
                 viewModel.uiState.collect { uiState ->
 
                     if (uiState.isDateChange) {
+                        binding.calendarRecyclerView.itemAnimator = null
                         calendarAdapter.submitList(uiState.calendarDataItem)
                         transactionAdapter.submitList(uiState.transactionsDataItem)
                         binding.noTransactionsTextView.setVisible(uiState.transactionsDataItem.isEmpty())

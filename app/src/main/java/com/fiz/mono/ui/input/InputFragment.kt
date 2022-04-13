@@ -5,9 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.widget.doOnTextChanged
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -34,7 +35,7 @@ class InputFragment : Fragment() {
     private var _binding: FragmentInputBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: InputViewModel by activityViewModels()
+    private val viewModel: InputViewModel by viewModels()
 
     private val mainViewModel: MainViewModel by activityViewModels()
 
@@ -120,12 +121,14 @@ class InputFragment : Fragment() {
                 viewModel.clickDate()
             }
 
-            valueEditText.doOnTextChanged { text, start, before, count ->
-                viewModel.setValue(text.toString())
+            valueEditText.doAfterTextChanged {
+                if (valueEditText.text.toString() != viewModel.uiState.value.value)
+                    viewModel.setValue(it.toString())
             }
 
-            noteEditText.doOnTextChanged { text, start, before, count ->
-                viewModel.setNote(text.toString())
+            noteEditText.doAfterTextChanged {
+                if (noteEditText.text.toString() != viewModel.uiState.value.note)
+                    viewModel.setNote(it.toString())
             }
 
             tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -155,32 +158,9 @@ class InputFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { uiState ->
                     binding.ExpenseIncomeTextView.text =
-                        viewModel.getTypeFromSelectedAdapter(requireContext())
-                    binding.submitButton.isEnabled = viewModel.isSubmitButtonEnabled()
+                        getString(uiState.getTextExpenseIncomeTextView)
 
-                    if (uiState.isPhotoPathsChange)
-                        viewModel.onPhotoPathsChange()
-
-                    if (uiState.isReturn) {
-                        findNavController().popBackStack()
-                        viewModel.isReturnRefresh()
-                    }
-
-                    if (uiState.isMoveEdit) {
-                        val action =
-                            InputFragmentDirections
-                                .actionToCategoryFragment()
-                        findNavController().navigate(action)
-                        viewModel.isMoveEditRefresh()
-                    }
-
-                    if (uiState.isMoveCalendar) {
-                        val action =
-                            InputFragmentDirections
-                                .actionToCalendarFragment()
-                        findNavController().navigate(action)
-                        viewModel.isMoveCalendarRefresh()
-                    }
+                    binding.submitButton.isEnabled = uiState.isSubmitButtonEnabled()
 
                     if (binding.noteEditText.text.toString() != uiState.note)
                         binding.noteEditText.setText(uiState.note)
@@ -188,31 +168,25 @@ class InputFragment : Fragment() {
                     if (binding.valueEditText.text.toString() != uiState.value)
                         binding.valueEditText.setText(uiState.value)
 
-                    val isInput = uiState.transaction == null
-                    val isEdit = !isInput
+                    binding.submitButton.text = getString(uiState.getTextSubmitButton)
 
-                    binding.submitButton.text =
-                        if (isInput) getString(R.string.submit) else getString(R.string.update)
-
-                    binding.dataRangeLayout.root.setVisible(isInput)
-                    binding.tabLayout.setVisible(isInput)
-                    binding.titleTextView.setVisible(isEdit)
-                    binding.backButton.setVisible(isEdit)
-                    binding.removeButton.setVisible(isEdit)
+                    binding.dataRangeLayout.root.setVisible(uiState.isInput)
+                    binding.tabLayout.setVisible(uiState.isInput)
+                    binding.titleTextView.setVisible(uiState.isEdit)
+                    binding.backButton.setVisible(uiState.isEdit)
+                    binding.removeButton.setVisible(uiState.isEdit)
 
                     val expenseIncomeTextViewLayoutParams =
                         binding.ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams
                     expenseIncomeTextViewLayoutParams.topToBottom =
-                        if (isInput) R.id.dataRangeLayout else R.id.titleTextView
+                        if (uiState.isInput) R.id.dataRangeLayout else R.id.titleTextView
 
-                    if (isInput) {
+                    if (uiState.isInput) {
                         val numberTab = if (viewModel.getSelectedAdapter() == EXPENSE) 0 else 1
                         binding.tabLayout.getTabAt(numberTab)?.select()
-                    } else {
-                        viewModel.setViewModelTransaction(viewModel.uiState.value.transaction!!)
                     }
 
-                    val countPhoto = viewModel.uiState.value.photoPaths.size
+                    val countPhoto = uiState.photoPaths.size
 
                     binding.noteCameraEditText.isEnabled = isCanAddPhoto()
 
@@ -228,32 +202,58 @@ class InputFragment : Fragment() {
                     binding.deletePhoto2ImageView.setVisible(countPhoto > 1)
                     binding.deletePhoto3ImageView.setVisible(countPhoto > 2)
 
-                    viewModel.uiState.value.photoBitmap.getOrNull(0)?.let { bitmap ->
+                    uiState.photoBitmap.getOrNull(0)?.let { bitmap ->
                         binding.photo1ImageView.setImageBitmap(bitmap)
                     } ?: binding.photo1ImageView.setImageBitmap(null)
 
-                    viewModel.uiState.value.photoBitmap.getOrNull(1)?.let { bitmap ->
+                    uiState.photoBitmap.getOrNull(1)?.let { bitmap ->
                         binding.photo2ImageView.setImageBitmap(bitmap)
                     } ?: binding.photo2ImageView.setImageBitmap(null)
 
-                    viewModel.uiState.value.photoBitmap.getOrNull(2)?.let { bitmap ->
+                    uiState.photoBitmap.getOrNull(2)?.let { bitmap ->
                         binding.photo3ImageView.setImageBitmap(bitmap)
                     } ?: binding.photo3ImageView.setImageBitmap(null)
 
+                    adapter.submitList(uiState.currentCategory)
 
-                    viewModel.uiState.value.transaction?.let {
-                        viewModel.setSelected(it.nameCategory)
+                    if (uiState.isAllTransactionsLoaded) {
+                        uiState.transaction?.let {
+                            viewModel.setViewModelTransaction(it)
+                            viewModel.setSelected(it.nameCategory)
+                        }
+                        viewModel.onTrasactionLoaded()
                     }
 
-                    adapter.submitList(
-                        if (uiState.selectedAdapter == EXPENSE)
-                            uiState.allCategoryExpense
-                        else
-                            uiState.allCategoryIncome
-                    )
-
+                    if (uiState.isPhotoPathsChange)
+                        viewModel.onPhotoPathsChange()
                 }
+            }
+        }
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.navigationUiState.collect { navigationUiState ->
+                    if (navigationUiState.isReturn) {
+                        findNavController().popBackStack()
+                        viewModel.isReturnRefresh()
+                    }
+
+                    if (navigationUiState.isMoveEdit) {
+                        val action =
+                            InputFragmentDirections
+                                .actionToCategoryFragment()
+                        findNavController().navigate(action)
+                        viewModel.isMoveEditRefresh()
+                    }
+
+                    if (navigationUiState.isMoveCalendar) {
+                        val action =
+                            InputFragmentDirections
+                                .actionToCalendarFragment()
+                        findNavController().navigate(action)
+                        viewModel.isMoveCalendarRefresh()
+                    }
+                }
             }
         }
 

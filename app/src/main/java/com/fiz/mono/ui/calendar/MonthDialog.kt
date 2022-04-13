@@ -28,7 +28,7 @@ class MonthDialog : DialogFragment() {
     var choicer: Choicer? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        month = arguments?.getInt("currentMonth") ?: 0
+        month = arguments?.getInt("currentMonth") ?: 1
         val dialog = super.onCreateDialog(savedInstanceState)
 
         dialog.window?.attributes?.gravity = Gravity.TOP.or(Gravity.END)
@@ -65,7 +65,7 @@ class MonthDialog : DialogFragment() {
             bindingMonthsTextView.add(decemberTextView)
 
             for (monthTextView in bindingMonthsTextView)
-                if (bindingMonthsTextView.indexOf(monthTextView) == (month))
+                if (bindingMonthsTextView.indexOf(monthTextView) == (month - 1))
                     monthTextView.setTextColor(requireContext().getColorCompat(R.color.blue))
                 else
                     monthTextView.setTextColor(requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary))
@@ -73,7 +73,7 @@ class MonthDialog : DialogFragment() {
 
             bindingMonthsTextView.forEachIndexed { index, textView ->
                 textView.text = resources.getStringArray(R.array.name_month)[index]
-                textView.setOnClickListener { monthsOnClickListener(index) }
+                textView.setOnClickListener { monthsOnClickListener(index + 1) }
             }
         }
     }

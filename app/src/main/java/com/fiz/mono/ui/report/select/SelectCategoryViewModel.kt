@@ -6,7 +6,8 @@ import com.fiz.mono.data.repositories.CategoryRepository
 import com.fiz.mono.ui.models.CategoryUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,22 +22,32 @@ data class SelectUiState(
 @HiltViewModel
 class SelectCategoryViewModel @Inject constructor(private val categoryRepository: CategoryRepository) :
     ViewModel() {
-    private var _uiState = MutableStateFlow(SelectUiState())
-    val uiState: StateFlow<SelectUiState> = _uiState.asStateFlow()
+    var uiState = MutableStateFlow(SelectUiState())
+        private set
 
     init {
         viewModelScope.launch(Dispatchers.Default) {
-            _uiState.update {
-                it.copy(
-                    allCategoryExpense = categoryRepository.allCategoryExpense.first(),
-                    allCategoryIncome = categoryRepository.allCategoryIncome.first(),
-                )
+            categoryRepository.getAllCategoryExpenseForInput().collect { allCategoryExpense ->
+                uiState.update {
+                    it.copy(
+                        allCategoryExpense = allCategoryExpense
+                    )
+                }
+            }
+        }
+        viewModelScope.launch(Dispatchers.Default) {
+            categoryRepository.getAllCategoryIncomeForInput().collect { allCategoryIncome ->
+                uiState.update {
+                    it.copy(
+                        allCategoryIncome = allCategoryIncome
+                    )
+                }
             }
         }
     }
 
     fun clickExpenseRecyclerView(position: Int) {
-        _uiState.update {
+        uiState.update {
             it.copy(
                 isMoveExpense = true,
                 position = position
@@ -45,7 +56,7 @@ class SelectCategoryViewModel @Inject constructor(private val categoryRepository
     }
 
     fun clickIncomeRecyclerView(position: Int) {
-        _uiState.update {
+        uiState.update {
             it.copy(
                 isMoveIncome = true,
                 position = position
@@ -54,7 +65,7 @@ class SelectCategoryViewModel @Inject constructor(private val categoryRepository
     }
 
     fun onMoveExpense() {
-        _uiState.update {
+        uiState.update {
             it.copy(
                 isMoveExpense = false
             )
@@ -62,7 +73,7 @@ class SelectCategoryViewModel @Inject constructor(private val categoryRepository
     }
 
     fun onMoveIncome() {
-        _uiState.update {
+        uiState.update {
             it.copy(
                 isMoveIncome = false
             )

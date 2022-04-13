@@ -4,7 +4,7 @@ import com.fiz.mono.ui.models.TransactionUiState
 import com.fiz.mono.ui.shared_adapters.TransactionsDataItem
 import com.fiz.mono.util.TimeUtils
 import org.threeten.bp.LocalDate
-import java.text.SimpleDateFormat
+import org.threeten.bp.format.DateTimeFormatter
 import java.util.*
 
 data class CalendarUiState(
@@ -22,10 +22,7 @@ data class CalendarUiState(
             getAllTransactionsForDay(date)
         )
 
-    private val dateFormatDay = SimpleDateFormat(
-        "dd",
-        Locale.getDefault()
-    )
+    private val dateFormatDay = DateTimeFormatter.ofPattern("dd")
 
     private fun getTransactionsForDaysCurrentMonth(date: LocalDate): List<TransactionsDay> {
         val result = emptyList<TransactionsDay>().toMutableList()
@@ -54,7 +51,7 @@ data class CalendarUiState(
     private fun getTransactionDayForCurrentMonthByDays(
         date: LocalDate
     ): MutableList<TransactionsDay> {
-        val dayOfMonth = date.month.maxLength()
+        val dayOfMonth = date.lengthOfMonth()
         val groupTransactions = getGroupTransactionsByDays(date)
 
         val today = Calendar.getInstance()

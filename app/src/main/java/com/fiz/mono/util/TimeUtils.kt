@@ -9,26 +9,15 @@ object TimeUtils {
     ): Int {
 
         val dateLastDayOfWeek = date.withDayOfMonth(date.lengthOfMonth())
-
-        val numberLastDayOfWeekInLocaleUS = dateLastDayOfWeek.dayOfWeek.value
-
-        return getNumberDayOfWeek(numberLastDayOfWeekInLocaleUS)
+        return dateLastDayOfWeek.dayOfWeek.value
     }
 
     fun getNumberFirstDayOfWeek(
         date: LocalDate
     ): Int {
         val dateFirstDayOfWeek = date.withDayOfMonth(1)
-
-        val numberFirstDayOfWeekInLocaleUS = dateFirstDayOfWeek.dayOfWeek.value
-        return getNumberDayOfWeek(numberFirstDayOfWeekInLocaleUS)
+        return dateFirstDayOfWeek.dayOfWeek.value
     }
-
-    private fun getNumberDayOfWeek(numberDayOfWeekInLocaleUS: Int): Int =
-        if ((numberDayOfWeekInLocaleUS - 1) == 0)
-            7
-        else
-            numberDayOfWeekInLocaleUS - 1
 
     fun getDate(year: Int, month: Int, day: Int): LocalDate {
         return LocalDate.of(year, month, day)
