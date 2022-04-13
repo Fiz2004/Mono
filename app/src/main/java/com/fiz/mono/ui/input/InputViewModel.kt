@@ -39,8 +39,6 @@ class InputViewModel @Inject constructor(
     var navigationUiState = MutableStateFlow(InputNavigationState())
         private set
 
-    private lateinit var currentPhotoPath: String
-
     private var cashCheckCameraHardware: Boolean? = null
 
     init {
@@ -199,7 +197,11 @@ class InputViewModel @Inject constructor(
             ".jpg",
             storageDir
         ).apply {
-            currentPhotoPath = absolutePath
+            uiState.update {
+                it.copy(
+                    currentPhotoPath = absolutePath
+                )
+            }
         }
     }
 
@@ -213,8 +215,8 @@ class InputViewModel @Inject constructor(
 
     fun addPhotoPath() {
         uiState.update {
-            val photoPaths = it.photoPaths
-            photoPaths.add(currentPhotoPath)
+            val photoPaths = it.photoPaths.toMutableList()
+            photoPaths.add(it.currentPhotoPath)
             it.copy(
                 photoPaths = photoPaths,
                 isPhotoPathsChange = true
@@ -230,7 +232,7 @@ class InputViewModel @Inject constructor(
             }
         }
         uiState.update {
-            val photoPaths = it.photoPaths
+            val photoPaths = it.photoPaths.toMutableList()
             photoPaths.removeAt(number - 1)
             it.copy(
                 photoPaths = photoPaths,

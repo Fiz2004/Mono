@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -42,7 +43,7 @@ class InputFragment : Fragment() {
     private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels()
 
     private val cameraActivityLauncher = registerForActivityResult(ActivityContract()) {
-        if (it == 1)
+        if (it == AppCompatActivity.RESULT_OK)
             viewModel.addPhotoPath()
     }
 
@@ -106,7 +107,9 @@ class InputFragment : Fragment() {
             }
 
             submitButton.setOnClickListener {
-                viewModel.clickSubmitButton(mainViewModel.date.value!!)
+                mainViewModel.date.value?.let {
+                    viewModel.clickSubmitButton(it)
+                }
             }
 
             backButton.setOnClickListener {
@@ -122,13 +125,11 @@ class InputFragment : Fragment() {
             }
 
             valueEditText.doAfterTextChanged {
-                if (valueEditText.text.toString() != viewModel.uiState.value.value)
-                    viewModel.setValue(it.toString())
+                viewModel.setValue(it.toString())
             }
 
             noteEditText.doAfterTextChanged {
-                if (noteEditText.text.toString() != viewModel.uiState.value.note)
-                    viewModel.setNote(it.toString())
+                viewModel.setNote(it.toString())
             }
 
             tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {

@@ -16,7 +16,8 @@ data class InputUiState(
     val selectedAdapter: Int = InputFragment.EXPENSE,
     val transactionId: Int? = null,
 
-    val photoPaths: MutableList<String?> = mutableListOf(),
+    val currentPhotoPath: String = "",
+    val photoPaths: List<String?> = listOf(),
     val isPhotoPathsChange: Boolean = false
 ) {
     val getTextExpenseIncomeTextView: Int
