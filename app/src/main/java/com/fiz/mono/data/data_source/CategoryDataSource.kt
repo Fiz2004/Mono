@@ -5,17 +5,30 @@ import com.fiz.mono.R
 import com.fiz.mono.data.database.dao.CategoryDao
 import com.fiz.mono.data.entity.CategoryEntity
 import com.fiz.mono.ui.models.CategoryUiState
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 
 class CategoryDataSource(
     private val categoryDao: CategoryDao
 ) {
+    val scope = CoroutineScope(Dispatchers.Default)
+
     var allCategoryExpense: Flow<List<CategoryUiState>> =
         categoryDao.getAllExpense().distinctUntilChanged().map { it.map { it.toCategoryUiState() } }
+            .stateIn(
+                scope = scope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = listOf()
+            )
+
     var allCategoryIncome: Flow<List<CategoryUiState>> =
         categoryDao.getAllIncome().distinctUntilChanged().map { it.map { it.toCategoryUiState() } }
+            .stateIn(
+                scope = scope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = listOf()
+            )
 
     suspend fun deleteAll(context: Context) {
         categoryDao.deleteAll()

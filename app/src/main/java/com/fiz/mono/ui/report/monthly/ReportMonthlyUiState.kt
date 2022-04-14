@@ -61,10 +61,10 @@ data class ReportMonthlyUiState(
                 true
             )
 
-    val currentPreviousBalance: String
+    val previousBalance: String
         get() {
             val allTransactionsPrevMonthForMonth =
-                getAllTransactionsForMonth(LocalDate.now().minusMonths(1))
+                getAllTransactionsForMonth(date.minusMonths(1))
             val prevIncome =
                 allTransactionsPrevMonthForMonth
                     .filter { it.value > 0 }

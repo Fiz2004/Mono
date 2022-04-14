@@ -93,7 +93,7 @@ class ReportMonthlyFragment : Fragment() {
                     binding.expenseValueReportTextView.text = uiState.currentExpense
                     binding.expenseIncomeValueReportTextView.text = uiState.currentExpenseIncome
                     binding.previousBalanceValueReportTextView.text =
-                        uiState.currentPreviousBalance
+                        uiState.previousBalance
 
                     adapter.submitList(uiState.transactionsForAdapter)
                     if (uiState.isDateChange)

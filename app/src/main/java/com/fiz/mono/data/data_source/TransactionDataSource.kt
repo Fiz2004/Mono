@@ -6,14 +6,22 @@ import com.fiz.mono.ui.models.TransactionUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.File
 
 class TransactionDataSource(private val transactionDao: TransactionDao) {
+    val scope = CoroutineScope(Dispatchers.Default)
+
     var allTransactions: Flow<List<TransactionUiState>> =
-        transactionDao.getAll().map { it.map { it.toTransactionUiState() } }
+        transactionDao.getAll().map { it.map { it.toTransactionUiState() } }.stateIn(
+            scope = scope,
+            started = WhileSubscribed(5000),
+            initialValue = listOf()
+        )
 
 
     suspend fun insertNewTransaction(newTransaction: TransactionEntity) {
