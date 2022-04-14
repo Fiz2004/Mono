@@ -16,9 +16,11 @@ import com.fiz.mono.data.entity.TransactionEntity
 import com.fiz.mono.data.repositories.CategoryRepository
 import com.fiz.mono.ui.models.CategoryUiState
 import com.fiz.mono.ui.models.TransactionUiState
+import com.fiz.mono.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.threeten.bp.Instant
@@ -35,6 +37,9 @@ class InputViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val transactionDataSource: TransactionDataSource
 ) : ViewModel() {
+    var uiStatusState = MutableStateFlow(InputStatusUiState())
+        private set
+
     var uiState = MutableStateFlow(InputUiState())
         private set
 
@@ -45,13 +50,20 @@ class InputViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.Default) {
-            categoryRepository.getAllCategoryExpenseForInput().collect { allCategoryExpense ->
-                uiState.update {
-                    it.copy(
-                        allCategoryExpense = allCategoryExpense
-                    )
+            categoryRepository.getAllCategoryExpenseForInput()
+                .flowOn(Dispatchers.Default)
+                .collect { allCategoryExpense ->
+                    uiStatusState.update {
+                        it.copy(
+                            statusAllCategoryExpense = Resource.success()
+                        )
+                    }
+                    uiState.update {
+                        it.copy(
+                            allCategoryExpense = allCategoryExpense
+                        )
+                    }
                 }
-            }
         }
         viewModelScope.launch(Dispatchers.Default) {
             categoryRepository.getAllCategoryIncomeForInput().collect { allCategoryIncome ->

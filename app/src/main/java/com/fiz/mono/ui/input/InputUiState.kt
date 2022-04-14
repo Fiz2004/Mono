@@ -5,6 +5,11 @@ import com.fiz.mono.R
 import com.fiz.mono.ui.models.CategoryUiState
 import com.fiz.mono.ui.models.TransactionUiState
 import com.fiz.mono.util.BitmapUtils
+import com.fiz.mono.util.Resource
+
+data class InputStatusUiState(
+    val statusAllCategoryExpense: Resource<List<CategoryUiState>> = Resource.loading(),
+)
 
 data class InputUiState(
     val allCategoryExpense: List<CategoryUiState> = listOf(),
@@ -48,9 +53,9 @@ data class InputUiState(
             allCategoryIncome
 
     fun isClickEditPosition(position: Int): Boolean {
-        return if (selectedAdapter == InputFragment.EXPENSE)
+        return if (selectedAdapter == InputFragment.EXPENSE) {
             position == allCategoryExpense.size - 1
-        else
+        } else
             position == allCategoryIncome.size - 1
     }
 

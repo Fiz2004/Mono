@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.doAfterTextChanged
@@ -22,6 +23,7 @@ import com.fiz.mono.ui.MainViewModel
 import com.fiz.mono.ui.pin_password.PINPasswordFragment
 import com.fiz.mono.ui.shared_adapters.CategoriesAdapter
 import com.fiz.mono.util.ActivityContract
+import com.fiz.mono.util.Status
 import com.fiz.mono.util.setVisible
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
@@ -155,6 +157,31 @@ class InputFragment : Fragment() {
     }
 
     private fun subscribe() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiStatusState.collect { uiStatusState ->
+
+                    when (uiStatusState.statusAllCategoryExpense.status) {
+                        Status.LOADING -> {
+                            binding.circularProgressIndicator.setVisible(true)
+                        }
+                        Status.ERROR -> {
+                            binding.circularProgressIndicator.setVisible(false)
+                            Toast.makeText(
+                                this@InputFragment.requireContext(),
+                                "Error loading CategoryExpense",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        Status.SUCCESS -> {
+                            binding.circularProgressIndicator.setVisible(false)
+                        }
+                    }
+                }
+            }
+        }
+
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { uiState ->
