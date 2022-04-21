@@ -1,7 +1,7 @@
 package com.fiz.mono.data.repositories
 
 import com.fiz.mono.data.data_source.CategoryDataSource
-import com.fiz.mono.data.entity.CategoryEntity
+import com.fiz.mono.database.entity.CategoryEntity
 import com.fiz.mono.ui.models.CategoryUiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

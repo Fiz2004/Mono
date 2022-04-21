@@ -12,8 +12,8 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.data.data_source.TransactionDataSource
-import com.fiz.mono.data.entity.TransactionEntity
 import com.fiz.mono.data.repositories.CategoryRepository
+import com.fiz.mono.database.entity.TransactionEntity
 import com.fiz.mono.ui.models.CategoryUiState
 import com.fiz.mono.ui.models.TransactionUiState
 import com.fiz.mono.util.Resource
@@ -106,7 +106,7 @@ class InputViewModel @Inject constructor(
 
     fun removeTransaction() {
         viewModelScope.launch(Dispatchers.Default) {
-            uiState.value.transaction?.let { transactionDataSource.delete(it.toTransaction()) }
+            uiState.value.transaction?.let { transactionDataSource.delete(it.toTransactionEntity()) }
             navigationUiState.update {
                 it.copy(isReturn = true)
             }
@@ -138,7 +138,7 @@ class InputViewModel @Inject constructor(
                 valueTransaction,
                 selectedCategory.name,
                 state.note,
-                selectedCategory.toCategory().mapImgSrc,
+                selectedCategory.toCategoryEntity().mapImgSrc,
                 state.photoPaths
             )
         }
@@ -163,7 +163,7 @@ class InputViewModel @Inject constructor(
             valueTransaction,
             selectedCategory.name,
             state.note,
-            selectedCategory.toCategory().mapImgSrc,
+            selectedCategory.toCategoryEntity().mapImgSrc,
             state.photoPaths
         )
 

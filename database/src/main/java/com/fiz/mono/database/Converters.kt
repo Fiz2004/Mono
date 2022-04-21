@@ -1,4 +1,4 @@
-package com.fiz.mono.data.database
+package com.fiz.mono.database
 
 import androidx.room.TypeConverter
 import org.threeten.bp.LocalDate

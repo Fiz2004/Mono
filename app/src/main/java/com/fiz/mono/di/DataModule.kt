@@ -10,12 +10,9 @@ import com.fiz.mono.R
 import com.fiz.mono.data.data_source.CategoryDataSource
 import com.fiz.mono.data.data_source.CategoryIconUiStateDataSource
 import com.fiz.mono.data.data_source.TransactionDataSource
-import com.fiz.mono.data.database.AppDatabase
-import com.fiz.mono.data.database.dao.CategoryDao
-import com.fiz.mono.data.database.dao.TransactionDao
-import com.fiz.mono.data.entity.CategoryEntity
-import com.fiz.mono.data.entity.TransactionEntity
 import com.fiz.mono.data.repositories.CategoryRepository
+import com.fiz.mono.database.entity.CategoryEntity
+import com.fiz.mono.database.entity.TransactionEntity
 import com.fiz.mono.util.TimeUtils
 import dagger.Module
 import dagger.Provides
@@ -34,7 +31,7 @@ private const val NAME_DATABASE = "category_item_database"
 @InstallIn(SingletonComponent::class)
 class DataModule {
 
-    lateinit var database: AppDatabase
+    lateinit var database: com.fiz.mono.database.AppDatabase
 
     @Provides
     @Singleton
@@ -60,7 +57,7 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideCategoryDataSource(database: AppDatabase?): CategoryDataSource {
+    fun provideCategoryDataSource(database: com.fiz.mono.database.AppDatabase?): CategoryDataSource {
         return CategoryDataSource(
             database?.categoryItemDao()!!
         )
@@ -68,7 +65,7 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideTransactionDataSource(database: AppDatabase?): TransactionDataSource {
+    fun provideTransactionDataSource(database: com.fiz.mono.database.AppDatabase?): TransactionDataSource {
         return TransactionDataSource(database?.transactionItemDao()!!)
     }
 
@@ -82,12 +79,12 @@ class DataModule {
     @Singleton
     fun provideRoomDatabase(
         @ApplicationContext context: Context,
-        categoryDaoProvider: Provider<CategoryDao>,
-        transactionDaoProvider: Provider<TransactionDao>
-    ): AppDatabase {
+        categoryDaoProvider: Provider<com.fiz.mono.database.dao.CategoryDao>,
+        transactionDaoProvider: Provider<com.fiz.mono.database.dao.TransactionDao>
+    ): com.fiz.mono.database.AppDatabase {
         return Room.databaseBuilder(
             context.applicationContext,
-            AppDatabase::class.java,
+            com.fiz.mono.database.AppDatabase::class.java,
             NAME_DATABASE
         )
             .fallbackToDestructiveMigration()
@@ -97,8 +94,8 @@ class DataModule {
 
     private fun dataBaseCallback(
         context: Context,
-        categoryDaoProvider: Provider<CategoryDao>,
-        transactionDaoProvider: Provider<TransactionDao>
+        categoryDaoProvider: Provider<com.fiz.mono.database.dao.CategoryDao>,
+        transactionDaoProvider: Provider<com.fiz.mono.database.dao.TransactionDao>
     ) = object : RoomDatabase.Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
@@ -224,10 +221,12 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideCategoryDao(database: AppDatabase): CategoryDao = database.categoryItemDao()
+    fun provideCategoryDao(database: com.fiz.mono.database.AppDatabase): com.fiz.mono.database.dao.CategoryDao =
+        database.categoryItemDao()
 
     @Provides
     @Singleton
-    fun provideTransactionDao(database: AppDatabase): TransactionDao = database.transactionItemDao()
+    fun provideTransactionDao(database: com.fiz.mono.database.AppDatabase): com.fiz.mono.database.dao.TransactionDao =
+        database.transactionItemDao()
 
 }

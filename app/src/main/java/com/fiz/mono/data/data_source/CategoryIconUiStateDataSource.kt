@@ -1,7 +1,7 @@
 package com.fiz.mono.data.data_source
 
 import com.fiz.mono.R
-import com.fiz.mono.data.entity.CategoryIconEntity
+import com.fiz.mono.database.entity.CategoryIconEntity
 import com.fiz.mono.ui.models.CategoryIconUiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -11,63 +11,343 @@ class CategoryIconUiStateDataSource {
     var allCategoryIcons: Flow<List<CategoryIconUiState>> = flow {
         emit(
             listOf(
-                CategoryIconEntity("user", R.drawable.user).toCategoryIconUiState(),
-                CategoryIconEntity("plane", R.drawable.plane).toCategoryIconUiState(),
-                CategoryIconEntity("chair", R.drawable.chair).toCategoryIconUiState(),
-                CategoryIconEntity("baby", R.drawable.baby).toCategoryIconUiState(),
-                CategoryIconEntity("bank", R.drawable.bank).toCategoryIconUiState(),
-                CategoryIconEntity("gym", R.drawable.gym).toCategoryIconUiState(),
-                CategoryIconEntity("cycles", R.drawable.cycles).toCategoryIconUiState(),
-                CategoryIconEntity("bird", R.drawable.bird).toCategoryIconUiState(),
-                CategoryIconEntity("boat", R.drawable.boat).toCategoryIconUiState(),
-                CategoryIconEntity("books", R.drawable.books).toCategoryIconUiState(),
-                CategoryIconEntity("brain", R.drawable.brain).toCategoryIconUiState(),
-                CategoryIconEntity("building", R.drawable.building).toCategoryIconUiState(),
-                CategoryIconEntity("birthday", R.drawable.birthday).toCategoryIconUiState(),
-                CategoryIconEntity("camera", R.drawable.camera).toCategoryIconUiState(),
-                CategoryIconEntity("car", R.drawable.car).toCategoryIconUiState(),
-                CategoryIconEntity("cat", R.drawable.cat).toCategoryIconUiState(),
-                CategoryIconEntity("study", R.drawable.study).toCategoryIconUiState(),
-                CategoryIconEntity("coffee", R.drawable.coffee).toCategoryIconUiState(),
-                CategoryIconEntity("coin", R.drawable.coin).toCategoryIconUiState(),
-                CategoryIconEntity("pie", R.drawable.pie).toCategoryIconUiState(),
-                CategoryIconEntity("cook", R.drawable.cook).toCategoryIconUiState(),
-                CategoryIconEntity("coin", R.drawable.coin).toCategoryIconUiState(),
-                CategoryIconEntity("dog", R.drawable.dog).toCategoryIconUiState(),
-                CategoryIconEntity("facemask", R.drawable.facemask).toCategoryIconUiState(),
-                CategoryIconEntity("medican", R.drawable.medican).toCategoryIconUiState(),
-                CategoryIconEntity("flower", R.drawable.flower).toCategoryIconUiState(),
-                CategoryIconEntity("dinner", R.drawable.dinner).toCategoryIconUiState(),
-                CategoryIconEntity("gas", R.drawable.gas).toCategoryIconUiState(),
-                CategoryIconEntity("gift", R.drawable.gift).toCategoryIconUiState(),
-                CategoryIconEntity("bag", R.drawable.bag).toCategoryIconUiState(),
-                CategoryIconEntity("challenge", R.drawable.challenge).toCategoryIconUiState(),
-                CategoryIconEntity("music", R.drawable.music).toCategoryIconUiState(),
-                CategoryIconEntity("house", R.drawable.house).toCategoryIconUiState(),
-                CategoryIconEntity("map", R.drawable.map).toCategoryIconUiState(),
-                CategoryIconEntity("glass", R.drawable.glass).toCategoryIconUiState(),
-                CategoryIconEntity("money", R.drawable.money).toCategoryIconUiState(),
-                CategoryIconEntity("package1", R.drawable.package1).toCategoryIconUiState(),
-                CategoryIconEntity("run", R.drawable.run).toCategoryIconUiState(),
-                CategoryIconEntity("pill", R.drawable.pill).toCategoryIconUiState(),
-                CategoryIconEntity("food", R.drawable.food).toCategoryIconUiState(),
-                CategoryIconEntity("fun", R.drawable.`fun`).toCategoryIconUiState(),
-                CategoryIconEntity("receipt", R.drawable.receipt).toCategoryIconUiState(),
-                CategoryIconEntity("lawer", R.drawable.lawer).toCategoryIconUiState(),
-                CategoryIconEntity("market", R.drawable.market).toCategoryIconUiState(),
-                CategoryIconEntity("shower", R.drawable.shower).toCategoryIconUiState(),
-                CategoryIconEntity("football", R.drawable.football).toCategoryIconUiState(),
-                CategoryIconEntity("store", R.drawable.store).toCategoryIconUiState(),
-                CategoryIconEntity("study", R.drawable.study).toCategoryIconUiState(),
-                CategoryIconEntity("tennis_ball", R.drawable.tennis_ball).toCategoryIconUiState(),
-                CategoryIconEntity("wc", R.drawable.wc).toCategoryIconUiState(),
-                CategoryIconEntity("train", R.drawable.train).toCategoryIconUiState(),
-                CategoryIconEntity("cup", R.drawable.cup).toCategoryIconUiState(),
-                CategoryIconEntity("clothes", R.drawable.clothes).toCategoryIconUiState(),
-                CategoryIconEntity("wallet", R.drawable.wallet).toCategoryIconUiState(),
-                CategoryIconEntity("sea", R.drawable.sea).toCategoryIconUiState(),
-                CategoryIconEntity("party", R.drawable.party).toCategoryIconUiState(),
-                CategoryIconEntity("fix", R.drawable.fix).toCategoryIconUiState()
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "user",
+                        R.drawable.user
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "plane",
+                        R.drawable.plane
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "chair",
+                        R.drawable.chair
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "baby",
+                        R.drawable.baby
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "bank",
+                        R.drawable.bank
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "gym",
+                        R.drawable.gym
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "cycles",
+                        R.drawable.cycles
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "bird",
+                        R.drawable.bird
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "boat",
+                        R.drawable.boat
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "books",
+                        R.drawable.books
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "brain",
+                        R.drawable.brain
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "building",
+                        R.drawable.building
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "birthday",
+                        R.drawable.birthday
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "camera",
+                        R.drawable.camera
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "car",
+                        R.drawable.car
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "cat",
+                        R.drawable.cat
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "study",
+                        R.drawable.study
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "coffee",
+                        R.drawable.coffee
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "coin",
+                        R.drawable.coin
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "pie",
+                        R.drawable.pie
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "cook",
+                        R.drawable.cook
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "coin",
+                        R.drawable.coin
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "dog",
+                        R.drawable.dog
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "facemask",
+                        R.drawable.facemask
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "medican",
+                        R.drawable.medican
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "flower",
+                        R.drawable.flower
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "dinner",
+                        R.drawable.dinner
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "gas",
+                        R.drawable.gas
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "gift",
+                        R.drawable.gift
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "bag",
+                        R.drawable.bag
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "challenge",
+                        R.drawable.challenge
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "music",
+                        R.drawable.music
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "house",
+                        R.drawable.house
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "map",
+                        R.drawable.map
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "glass",
+                        R.drawable.glass
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "money",
+                        R.drawable.money
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "package1",
+                        R.drawable.package1
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "run",
+                        R.drawable.run
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "pill",
+                        R.drawable.pill
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "food",
+                        R.drawable.food
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "fun",
+                        R.drawable.`fun`
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "receipt",
+                        R.drawable.receipt
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "lawer",
+                        R.drawable.lawer
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "market",
+                        R.drawable.market
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "shower",
+                        R.drawable.shower
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "football",
+                        R.drawable.football
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "store",
+                        R.drawable.store
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "study",
+                        R.drawable.study
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "tennis_ball",
+                        R.drawable.tennis_ball
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(CategoryIconEntity("wc", R.drawable.wc)),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "train",
+                        R.drawable.train
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "cup",
+                        R.drawable.cup
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "clothes",
+                        R.drawable.clothes
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "wallet",
+                        R.drawable.wallet
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "sea",
+                        R.drawable.sea
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "party",
+                        R.drawable.party
+                    )
+                ),
+                CategoryIconUiState.fromCategoryIconEntity(
+                    CategoryIconEntity(
+                        "fix",
+                        R.drawable.fix
+                    )
+                )
             )
         )
     }

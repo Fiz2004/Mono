@@ -1,7 +1,7 @@
-package com.fiz.mono.data.database.dao
+package com.fiz.mono.database.dao
 
 import androidx.room.*
-import com.fiz.mono.data.entity.CategoryEntity
+import com.fiz.mono.database.entity.CategoryEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

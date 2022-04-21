@@ -2,8 +2,8 @@ package com.fiz.mono.data.data_source
 
 import android.content.Context
 import com.fiz.mono.R
-import com.fiz.mono.data.database.dao.CategoryDao
-import com.fiz.mono.data.entity.CategoryEntity
+import com.fiz.mono.database.dao.CategoryDao
+import com.fiz.mono.database.entity.CategoryEntity
 import com.fiz.mono.ui.models.CategoryUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +15,8 @@ class CategoryDataSource(
     val scope = CoroutineScope(Dispatchers.Default)
 
     var allCategoryExpense: Flow<List<CategoryUiState>> =
-        categoryDao.getAllExpense().distinctUntilChanged().map { it.map { it.toCategoryUiState() } }
+        categoryDao.getAllExpense().distinctUntilChanged()
+            .map { it.map { CategoryUiState.fromCategoryEntity(it) } }
             .stateIn(
                 scope = scope,
                 started = SharingStarted.WhileSubscribed(5000),
@@ -23,7 +24,8 @@ class CategoryDataSource(
             )
 
     var allCategoryIncome: Flow<List<CategoryUiState>> =
-        categoryDao.getAllIncome().distinctUntilChanged().map { it.map { it.toCategoryUiState() } }
+        categoryDao.getAllIncome().distinctUntilChanged()
+            .map { it.map { CategoryUiState.fromCategoryEntity(it) } }
             .stateIn(
                 scope = scope,
                 started = SharingStarted.WhileSubscribed(5000),
@@ -73,7 +75,7 @@ class CategoryDataSource(
     }
 
     suspend fun delete(categoryUiState: CategoryUiState) {
-        categoryDao.delete(categoryUiState.toCategory())
+        categoryDao.delete(categoryUiState.toCategoryEntity())
     }
 
     suspend fun insert(newCategoryItem: CategoryEntity) {

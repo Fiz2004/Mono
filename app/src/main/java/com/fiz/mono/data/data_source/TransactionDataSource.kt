@@ -1,7 +1,6 @@
 package com.fiz.mono.data.data_source
 
-import com.fiz.mono.data.database.dao.TransactionDao
-import com.fiz.mono.data.entity.TransactionEntity
+import com.fiz.mono.database.entity.TransactionEntity
 import com.fiz.mono.ui.models.TransactionUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,15 +12,16 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.File
 
-class TransactionDataSource(private val transactionDao: TransactionDao) {
+class TransactionDataSource(private val transactionDao: com.fiz.mono.database.dao.TransactionDao) {
     val scope = CoroutineScope(Dispatchers.Default)
 
     var allTransactions: Flow<List<TransactionUiState>> =
-        transactionDao.getAll().map { it.map { it.toTransactionUiState() } }.stateIn(
-            scope = scope,
-            started = WhileSubscribed(5000),
-            initialValue = listOf()
-        )
+        transactionDao.getAll().map { it.map { TransactionUiState.fromTransactionEntity(it) } }
+            .stateIn(
+                scope = scope,
+                started = WhileSubscribed(5000),
+                initialValue = listOf()
+            )
 
 
     suspend fun insertNewTransaction(newTransaction: TransactionEntity) {
