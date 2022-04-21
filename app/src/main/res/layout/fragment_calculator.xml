@@ -7,7 +7,7 @@
     android:paddingStart="@dimen/fragmentPaddingStart"
     android:paddingEnd="@dimen/fragmentPaddingEnd"
     android:paddingBottom="24dp"
-    tools:context=".ui.calculator.CalculatorFragment">
+    tools:context=".feature_calculator.ui.CalculatorFragment">
 
     <include
         android:id="@+id/navigationBarLayout"

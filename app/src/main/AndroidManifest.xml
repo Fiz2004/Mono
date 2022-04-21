@@ -19,7 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Mono">
         <activity
-            android:name=".ui.MainActivity"
+            android:name="com.fiz.mono.core.ui.MainActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true">
             <intent-filter>

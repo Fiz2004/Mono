@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:paddingStart="@dimen/fragmentPaddingStart"
     android:paddingEnd="@dimen/fragmentPaddingEnd"
-    tools:context=".ui.input.InputFragment">
+    tools:context=".core.ui.input.InputFragment">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
@@ -324,6 +324,7 @@
                 android:layout_height="wrap_content"
                 android:indeterminate="true"
                 android:visibility="visible"
+                app:indicatorColor="@color/blue"
                 app:hideAnimationBehavior="inward"
                 app:indicatorDirectionCircular="clockwise"
                 app:layout_constraintBottom_toBottomOf="parent"

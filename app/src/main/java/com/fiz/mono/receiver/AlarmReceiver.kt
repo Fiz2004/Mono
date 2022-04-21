@@ -11,8 +11,8 @@ import android.os.Build
 import androidx.core.app.AlarmManagerCompat
 import androidx.core.content.ContextCompat
 import com.fiz.mono.R
-import com.fiz.mono.ui.reminder.REQUEST_CODE_REMINDER
-import com.fiz.mono.util.sendNotification
+import com.fiz.mono.core.ui.reminder.REQUEST_CODE_REMINDER
+import com.fiz.mono.core.util.sendNotification
 
 
 class AlarmReceiver : BroadcastReceiver() {
@@ -31,21 +31,16 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val notifyIntent = Intent((context as Application), AlarmReceiver::class.java)
 
-        val notifyPendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            PendingIntent.getBroadcast(
-                context,
-                REQUEST_CODE_REMINDER,
-                notifyIntent,
+        val notifyPendingIntent = PendingIntent.getBroadcast(
+            context,
+            REQUEST_CODE_REMINDER,
+            notifyIntent,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                 PendingIntent.FLAG_IMMUTABLE
-            )
-        } else {
-            PendingIntent.getBroadcast(
-                context,
-                REQUEST_CODE_REMINDER,
-                notifyIntent,
+            else
                 PendingIntent.FLAG_UPDATE_CURRENT
-            )
-        }
+        )
+
 
         AlarmManagerCompat.setExactAndAllowWhileIdle(
             context.getSystemService(Context.ALARM_SERVICE) as AlarmManager,

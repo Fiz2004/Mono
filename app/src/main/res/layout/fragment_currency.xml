@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:paddingStart="@dimen/fragmentPaddingStart"
     android:paddingEnd="@dimen/fragmentPaddingEnd"
-    tools:context=".ui.currency.CurrencyFragment">
+    tools:context=".core.ui.currency.CurrencyFragment">
 
     <include
         android:id="@+id/navigationBarLayout"

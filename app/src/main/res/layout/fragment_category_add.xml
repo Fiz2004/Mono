@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:paddingStart="@dimen/fragmentPaddingStart"
     android:paddingEnd="@dimen/fragmentPaddingEnd"
-    tools:context=".ui.category_add.CategoryAddFragment">
+    tools:context=".feature_category_add.ui.CategoryAddFragment">
 
     <include
         android:id="@+id/navigationBarLayout"

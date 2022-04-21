@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:paddingStart="@dimen/fragmentPaddingStart"
     android:paddingEnd="@dimen/fragmentPaddingEnd"
-    tools:context=".ui.reminder.ReminderFragment">
+    tools:context=".core.ui.reminder.ReminderFragment">
 
     <include
         android:id="@+id/navigationBarLayout"
