@@ -15,3 +15,7 @@ dependencyResolutionManagement {
 rootProject.name = "Mono"
 include ':app'
 include ':database'
+include ':common-ui-resources'
+include ':feature-calculator'
+include ':base'
+include ':feature-reminder'

@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.fiz.mono.R
+import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.domain.models.Transaction
 import com.fiz.mono.core.util.CurrentUtils.getCurrencyFormat
 import com.fiz.mono.core.util.getColorCompat

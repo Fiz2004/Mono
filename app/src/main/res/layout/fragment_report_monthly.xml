@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".core.ui.report.monthly.ReportMonthlyFragment">
+    tools:context=".feature_report.ui.monthly.ReportMonthlyFragment">
 
     <include
         android:id="@+id/dataRangeLayout"

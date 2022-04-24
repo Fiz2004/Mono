@@ -8,31 +8,24 @@ import android.widget.RadioButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.fiz.mono.R
-import com.fiz.mono.core.ui.MainPreferencesViewModel
+import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.databinding.FragmentCurrencyBinding
 
 class CurrencyFragment : Fragment() {
-    private var _binding: FragmentCurrencyBinding? = null
-    private val binding get() = _binding!!
-
-    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels()
+    private val mainPreferencesViewModel: com.fiz.mono.core.ui.MainPreferencesViewModel by activityViewModels()
 
     private var currencyRadioButton =
         mutableMapOf<String, com.google.android.material.radiobutton.MaterialRadioButton>()
+
+    private lateinit var binding: FragmentCurrencyBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCurrencyBinding.inflate(inflater, container, false)
+        binding = FragmentCurrencyBinding.inflate(inflater, container, false)
         return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

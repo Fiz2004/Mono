@@ -6,15 +6,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.fiz.mono.R
-import com.fiz.mono.core.data.data_source.*
+import com.fiz.mono.common.ui.resources.R
+import com.fiz.mono.core.data.data_source.CategoryIconsLocalDataSource
+import com.fiz.mono.core.data.data_source.CategoryLocalDataSource
+import com.fiz.mono.core.data.data_source.TransactionLocalDataSource
 import com.fiz.mono.core.data.repositories.CategoryRepositoryImpl
+import com.fiz.mono.core.data.repositories.TransactionRepositoryImpl
 import com.fiz.mono.core.domain.repositories.CategoryRepository
-import com.fiz.mono.core.util.TimeUtils
+import com.fiz.mono.core.domain.repositories.TransactionRepository
 import com.fiz.mono.database.AppDatabase
 import com.fiz.mono.database.dao.CategoryDao
 import com.fiz.mono.database.dao.TransactionDao
-import com.fiz.mono.database.entity.TransactionEntity
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,25 +49,34 @@ class AppModule {
     @Singleton
     fun provideCategoryRepository(
         @ApplicationContext context: Context,
-        categoryStore: CategoryDataSource
+        categoryLocalStore: CategoryLocalDataSource
     ): CategoryRepository {
         return CategoryRepositoryImpl(
-            categoryStore,
+            categoryLocalStore,
             context.getString(R.string.edit),
-            context.getString(R.string.add_more)
         )
     }
 
     @Provides
     @Singleton
-    fun provideTransactionDataSource(database: AppDatabase?): TransactionDataSource {
-        return TransactionDataSource(database?.transactionItemDao()!!)
+    fun provideTransactionDataSource(database: AppDatabase?): TransactionLocalDataSource {
+        return TransactionLocalDataSource(database?.transactionItemDao()!!)
     }
 
     @Provides
     @Singleton
-    fun provideCategoryIconUiStateDataSource(): CategoryIconUiStateDataSource {
-        return CategoryIconUiStateDataSource()
+    fun provideTransactionRepository(
+        transactionLocalDataSource: TransactionLocalDataSource
+    ): TransactionRepository {
+        return TransactionRepositoryImpl(
+            transactionLocalDataSource
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideCategoryIconUiStateDataSource(): CategoryIconsLocalDataSource {
+        return CategoryIconsLocalDataSource()
     }
 
     @Provides
@@ -93,89 +104,14 @@ class AppModule {
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
 
-            val allCategoryExpenseDefault = getAllCategoryExpenseDefault(context)
-            val allCategoryIncomeDefault = getAllCategoryIncomeDefault(context)
-
-            val allTransactionsDefault = mutableListOf(
-                TransactionEntity(
-                    0,
-                    TimeUtils.getDate(2022, 2, 24),
-                    -5.49,
-                    context.getString(R.string.food),
-                    "Pizza for lazyday",
-                    "food"
-                ),
-                TransactionEntity(
-                    1,
-                    TimeUtils.getDate(2022, 2, 24),
-                    50.0,
-                    context.getString(R.string.freelance),
-                    "",
-                    "challenge"
-                ),
-                TransactionEntity(
-                    2,
-                    TimeUtils.getDate(2022, 2, 24),
-                    -13.16,
-                    context.getString(R.string.shopping),
-                    "New Clothes",
-                    "market"
-                ),
-                TransactionEntity(
-                    3,
-                    TimeUtils.getDate(2022, 2, 24),
-                    1000.0,
-                    context.getString(R.string.salary),
-                    "Jan",
-                    "money"
-                ),
-                TransactionEntity(
-                    4,
-                    TimeUtils.getDate(2022, 2, 23),
-                    -3.10,
-                    context.getString(R.string.food),
-                    "Pizza",
-                    "food"
-                ),
-                TransactionEntity(
-                    5,
-                    TimeUtils.getDate(2022, 2, 23),
-                    50.0,
-                    context.getString(R.string.loan),
-                    "",
-                    "user"
-                ),
-                TransactionEntity(
-                    6,
-                    TimeUtils.getDate(2022, 2, 20),
-                    -17.50,
-                    context.getString(R.string.food),
-                    "Castrang",
-                    "cat"
-                ),
-                TransactionEntity(
-                    7,
-                    TimeUtils.getDate(2022, 2, 18),
-                    200.0,
-                    context.getString(R.string.bonus),
-                    "Project bonus",
-                    "coin"
-                ),
-                TransactionEntity(
-                    8,
-                    TimeUtils.getDate(2022, 2, 5),
-                    10.0,
-                    context.getString(R.string.bonus),
-                    "Project bonus",
-                    "coin"
-                )
-            )
+            val allCategoryExpenseDefault = AppDatabase.getAllCategoryExpenseDefault(context)
+            val allCategoryIncomeDefault = AppDatabase.getAllCategoryIncomeDefault(context)
+            val allTransactionsDefault = AppDatabase.getTransactionsDefault(context)
 
             CoroutineScope(Dispatchers.Default).launch {
                 categoryDaoProvider.get().insertAll(allCategoryExpenseDefault)
                 categoryDaoProvider.get().insertAll(allCategoryIncomeDefault)
                 transactionDaoProvider.get().insertAll(allTransactionsDefault)
-
             }
         }
     }
@@ -190,4 +126,7 @@ class AppModule {
     fun provideTransactionDao(database: AppDatabase): TransactionDao =
         database.transactionItemDao()
 
+    @Singleton
+    @Provides
+    fun provideDefaultDispatcher() = Dispatchers.Default
 }

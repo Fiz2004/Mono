@@ -7,11 +7,11 @@ apply plugin:'kotlin-kapt'
 
 
 android {
-    compileSdk 32
+    compileSdk buildConfig.compileSdk
 
     defaultConfig {
-        minSdk 22
-        targetSdk 32
+        minSdk buildConfig.minSdk
+        targetSdk buildConfig.targetSdk
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -32,11 +32,15 @@ android {
 }
 
 dependencies {
+
+    implementation project(':common-ui-resources')
+
     // Room
     implementation 'androidx.room:room-common:2.4.2'
     implementation 'androidx.room:room-ktx:2.4.2'
     implementation 'androidx.room:room-runtime:2.4.2'
     kapt 'androidx.room:room-compiler:2.4.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1-native-mt'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1-native-mt'
 
 
@@ -63,15 +67,6 @@ dependencies {
 
     // Preference
     implementation 'androidx.preference:preference-ktx:1.2.0'
-
-    // Kotlin components
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1-native-mt"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1-native-mt"
-
-    // Hilt
-    implementation("com.google.dagger:hilt-android:2.41")
-    kapt("com.google.dagger:hilt-android-compiler:2.41")
-
 
     // Date
     implementation 'com.jakewharton.threetenabp:threetenabp:1.4.0'

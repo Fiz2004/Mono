@@ -10,15 +10,14 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
-import com.fiz.mono.R
-import com.fiz.mono.core.data.data_source.CategoryDataSource
-import com.fiz.mono.core.data.data_source.TransactionDataSource
+import com.fiz.mono.common.ui.resources.R
+import com.fiz.mono.core.data.data_source.CategoryLocalDataSource
+import com.fiz.mono.core.data.data_source.TransactionLocalDataSource
 import com.fiz.mono.core.ui.MainPreferencesViewModel
-import com.fiz.mono.core.ui.pin_password.PINPasswordFragment
 import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.databinding.FragmentSettingsBinding
+import com.fiz.mono.feature_pin_password.ui.PINPasswordFragment
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.WithFragmentBindings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,30 +25,23 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
-@WithFragmentBindings
 class SettingsFragment : Fragment() {
-    private var _binding: FragmentSettingsBinding? = null
-    private val binding get() = _binding!!
-
     private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels()
 
-    @Inject
-    lateinit var categoryDataSource: CategoryDataSource
+    private lateinit var binding: FragmentSettingsBinding
 
     @Inject
-    lateinit var transactionDataSource: TransactionDataSource
+    lateinit var categoryLocalDataSource: CategoryLocalDataSource
+
+    @Inject
+    lateinit var transactionLocalDataSource: TransactionLocalDataSource
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
+        binding = FragmentSettingsBinding.inflate(inflater, container, false)
         return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -97,8 +89,8 @@ class SettingsFragment : Fragment() {
 
     private fun deleteOnClickListener(view: View) {
         CoroutineScope(Dispatchers.Default).launch {
-            categoryDataSource.deleteAll(requireContext())
-            transactionDataSource.deleteAll()
+            categoryLocalDataSource.deleteAll(requireContext())
+            transactionLocalDataSource.deleteAll()
             withContext(Dispatchers.Main) {
                 Toast.makeText(requireContext(), R.string.delete_all_data, Toast.LENGTH_LONG).show()
             }

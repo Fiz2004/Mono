@@ -1,23 +1,24 @@
 package com.fiz.mono.feature_category_add.domain.use_case
 
-import com.fiz.mono.core.domain.models.CategoryIcon
 import javax.inject.Inject
 
 class SelectOneItemCategoryIconUseCase @Inject constructor() {
-    operator fun invoke(
-        baseList: List<CategoryIcon>,
+    operator fun <T : Selected<T>> invoke(
+        baseList: List<T>,
         position: Int
-    ): List<CategoryIcon> {
-        return baseList.mapIndexed { index, CategoryIcon ->
-            var selected = CategoryIcon.selected
-            if (index != position && CategoryIcon.selected)
+    ): List<T> {
+        return baseList.mapIndexed { index, T ->
+            var selected = T.selected
+            if (index != position && T.selected)
                 selected = false
             if (index == position)
                 selected = !selected
-            CategoryIcon.copy(
-                selected =
-                selected
-            )
+            T.copy(selected = selected)
         }
     }
+}
+
+interface Selected<T> {
+    val selected: Boolean
+    fun copy(selected: Boolean): T
 }

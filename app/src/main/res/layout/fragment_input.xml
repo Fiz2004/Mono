@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:paddingStart="@dimen/fragmentPaddingStart"
     android:paddingEnd="@dimen/fragmentPaddingEnd"
-    tools:context=".core.ui.input.InputFragment">
+    tools:context=".feature_input.ui.InputFragment">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"

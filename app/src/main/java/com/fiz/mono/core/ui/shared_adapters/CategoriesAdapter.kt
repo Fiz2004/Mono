@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.fiz.mono.R
+import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.domain.models.Category
 import com.fiz.mono.core.domain.models.CategoryItemDiff
 import com.fiz.mono.core.util.getColorCompat

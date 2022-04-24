@@ -19,12 +19,12 @@
 
     <fragment
         android:id="@+id/onBoardingFragment"
-        android:name="com.fiz.mono.core.ui.on_boarding.OnBoardingFragment"
+        android:name="com.fiz.mono.feature_on_boarding.ui.OnBoardingFragment"
         android:label="fragment_on_boarding"
         tools:layout="@layout/fragment_on_boarding" />
     <fragment
         android:id="@+id/PINPasswordFragment"
-        android:name="com.fiz.mono.core.ui.pin_password.PINPasswordFragment"
+        android:name="com.fiz.mono.feature_pin_password.ui.PINPasswordFragment"
         android:label="fragment_p_i_n_password"
         tools:layout="@layout/fragment_p_i_n_password">
         <action
@@ -37,7 +37,7 @@
     </fragment>
     <fragment
         android:id="@+id/inputFragment"
-        android:name="com.fiz.mono.core.ui.input.InputFragment"
+        android:name="com.fiz.mono.feature_input.ui.InputFragment"
         android:label="fragment_input"
         tools:layout="@layout/fragment_input">
         <action
@@ -54,17 +54,17 @@
     </fragment>
     <fragment
         android:id="@+id/calculatorFragment"
-        android:name="com.fiz.mono.feature_calculator.ui.CalculatorFragment"
+        android:name="com.fiz.mono.calculator.ui.CalculatorFragment"
         android:label="fragment_calculator"
         tools:layout="@layout/fragment_calculator" />
     <fragment
         android:id="@+id/reminderFragment"
-        android:name="com.fiz.mono.core.ui.reminder.ReminderFragment"
+        android:name="com.fiz.mono.reminder.ui.ReminderFragment"
         android:label="fragment_reminder"
         tools:layout="@layout/fragment_reminder" />
     <fragment
         android:id="@+id/reportFragment"
-        android:name="com.fiz.mono.core.ui.report.ReportFragment"
+        android:name="com.fiz.mono.feature_report.ui.ReportFragment"
         android:label="fragment_report"
         tools:layout="@layout/fragment_report" />
     <fragment
@@ -86,7 +86,7 @@
         tools:layout="@layout/fragment_currency" />
     <fragment
         android:id="@+id/calendarFragment"
-        android:name="com.fiz.mono.core.ui.calendar.CalendarFragment"
+        android:name="com.fiz.mono.feature_calendar.ui.CalendarFragment"
         android:label="CalendarFragment">
         <action
             android:id="@+id/action_calendarFragment_to_inputFragment"
@@ -97,7 +97,7 @@
         app:startDestination="@id/categoryEditFragment">
         <fragment
             android:id="@+id/categoryEditFragment"
-            android:name="com.fiz.mono.core.ui.category_edit.CategoryEditFragment"
+            android:name="com.fiz.mono.feature_category_edit.ui.CategoryEditFragment"
             android:label="fragment_category"
             tools:layout="@layout/fragment_category_edit">
             <action

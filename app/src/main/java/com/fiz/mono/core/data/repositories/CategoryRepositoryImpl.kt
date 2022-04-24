@@ -1,55 +1,32 @@
 package com.fiz.mono.core.data.repositories
 
-import com.fiz.mono.core.data.data_source.CategoryDataSource
+import com.fiz.mono.core.data.data_source.CategoryLocalDataSource
 import com.fiz.mono.core.data.mapper.toCategory
 import com.fiz.mono.core.domain.models.Category
 import com.fiz.mono.core.domain.repositories.CategoryRepository
 import com.fiz.mono.core.util.Resource
 import com.fiz.mono.database.entity.CategoryEntity
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.withContext
 
 class CategoryRepositoryImpl(
-    private val categoryDataSource: CategoryDataSource,
+    private val categoryLocalDataSource: CategoryLocalDataSource,
     private val editString: String,
-    private val addMoreString: String
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : CategoryRepository {
-    val scope = CoroutineScope(Dispatchers.Default)
-
     override var allCategoryExpense: Flow<List<Category>> =
-        categoryDataSource.allCategoryExpense.map { it.map { it.toCategory() } }.stateIn(
-            scope = scope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = listOf()
-        )
+        categoryLocalDataSource.allCategoryExpense
+            .map {
+                it.map { it.toCategory() }
+            }.flowOn(defaultDispatcher)
 
     override var allCategoryIncome: Flow<List<Category>> =
-        categoryDataSource.allCategoryIncome.map { it.map { it.toCategory() } }.stateIn(
-            scope = scope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = listOf()
-        )
-
-    override fun getAllCategoryExpenseForEdit(): Flow<List<Category>> {
-        return allCategoryExpense.map {
-            it + Category(
-                "e",
-                addMoreString,
-                0
-            )
-        }
-    }
-
-    override fun getAllCategoryIncomeForEdit(): Flow<List<Category>> {
-        return allCategoryIncome.map {
-            it + Category(
-                "i",
-                addMoreString,
-                0
-            )
-        }
-    }
+        categoryLocalDataSource.allCategoryIncome
+            .map {
+                it.map { it.toCategory() }
+            }.flowOn(defaultDispatcher)
 
     override fun getAllCategoryExpenseForInput(): Flow<Resource<List<Category>>> {
         return flow {
@@ -62,34 +39,35 @@ class CategoryRepositoryImpl(
             }
         }.catch {
             emit(Resource.Error(it.message.toString()))
-        }.flowOn(Dispatchers.Default)
+        }.flowOn(defaultDispatcher)
     }
 
     override fun getAllCategoryIncomeForInput(): Flow<List<Category>> {
-        return allCategoryIncome.map { it + Category("i", editString, 0) }
+        return allCategoryIncome
+            .map { it + Category("i", editString, 0) }
+            .flowOn(defaultDispatcher)
     }
 
-    override suspend fun removeCategoryExpense(category: Category) {
-        categoryDataSource.delete(category)
-    }
+    override suspend fun removeCategory(category: Category) =
+        withContext(defaultDispatcher) {
+            categoryLocalDataSource.delete(category)
+        }
 
-    override suspend fun removeCategoryIncome(category: Category) {
-        categoryDataSource.delete(category)
-    }
+    override suspend fun insertNewCategoryExpense(name: String, iconID: String) =
+        withContext(defaultDispatcher) {
+            val result: List<Category> = allCategoryExpense.first()
+            val numberLastItem = result.lastOrNull()?.id?.substring(1)?.toInt()
+            val newId = numberLastItem?.let { it + 1 } ?: 0
+            val newCategoryItem = CategoryEntity("e$newId", name, iconID)
+            categoryLocalDataSource.insert(newCategoryItem)
+        }
 
-    override suspend fun insertNewCategoryExpense(name: String, iconID: String) {
-        val result: List<Category> = allCategoryExpense.first()
-        val numberLastItem = result.lastOrNull()?.id?.substring(1)?.toInt()
-        val newId = numberLastItem?.let { it + 1 } ?: 0
-        val newCategoryItem = CategoryEntity("e$newId", name, iconID)
-        categoryDataSource.insert(newCategoryItem)
-    }
-
-    override suspend fun insertNewCategoryIncome(name: String, iconID: String) {
-        val result: List<Category> = allCategoryIncome.first()
-        val numberLastItem = result.lastOrNull()?.id?.substring(1)?.toInt()
-        val newId = numberLastItem?.let { it + 1 } ?: 0
-        val newCategoryItem = CategoryEntity("i$newId", name, iconID)
-        categoryDataSource.insert(newCategoryItem)
-    }
+    override suspend fun insertNewCategoryIncome(name: String, iconID: String) =
+        withContext(defaultDispatcher) {
+            val result: List<Category> = allCategoryIncome.first()
+            val numberLastItem = result.lastOrNull()?.id?.substring(1)?.toInt()
+            val newId = numberLastItem?.let { it + 1 } ?: 0
+            val newCategoryItem = CategoryEntity("i$newId", name, iconID)
+            categoryLocalDataSource.insert(newCategoryItem)
+        }
 }

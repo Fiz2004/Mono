@@ -12,7 +12,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".core.ui.report.category.ReportCategoryFragment">
+        tools:context=".feature_report.ui.category.ReportCategoryFragment">
 
 
         <com.google.android.material.button.MaterialButtonToggleGroup
@@ -81,7 +81,7 @@
 
 
         <TextView
-            android:id="@+id/thisTextView"
+            android:id="@+id/periodTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -99,7 +99,7 @@
             android:textSize="32sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/thisTextView"
+            app:layout_constraintTop_toBottomOf="@+id/periodTextView"
             tools:text="$871,81" />
 
         <ImageView

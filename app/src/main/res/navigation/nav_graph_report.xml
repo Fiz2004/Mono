@@ -6,7 +6,7 @@
     app:startDestination="@id/reportMonthlyFragment">
     <fragment
         android:id="@+id/reportMonthlyFragment"
-        android:name="com.fiz.mono.core.ui.report.monthly.ReportMonthlyFragment"
+        android:name="com.fiz.mono.feature_report.ui.monthly.ReportMonthlyFragment"
         android:label="fragment_report_monthly"
         tools:layout="@layout/fragment_report_monthly" >
         <action
@@ -15,7 +15,7 @@
     </fragment>
     <fragment
         android:id="@+id/selectCategoryFragment"
-        android:name="com.fiz.mono.core.ui.report.select.SelectCategoryFragment"
+        android:name="com.fiz.mono.feature_report.ui.select.SelectCategoryFragment"
         android:label="fragment_select_category"
         tools:layout="@layout/fragment_select_category" >
         <action
@@ -24,7 +24,7 @@
     </fragment>
     <fragment
         android:id="@+id/reportCategoryFragment"
-        android:name="com.fiz.mono.core.ui.report.category.ReportCategoryFragment"
+        android:name="com.fiz.mono.feature_report.ui.category.ReportCategoryFragment"
         android:label="fragment_report_category"
         tools:layout="@layout/fragment_report_category" >
         <argument

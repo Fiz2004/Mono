@@ -8,17 +8,11 @@ interface CategoryRepository {
     var allCategoryExpense: Flow<List<Category>>
     var allCategoryIncome: Flow<List<Category>>
 
-    fun getAllCategoryExpenseForEdit(): Flow<List<Category>>
-
-    fun getAllCategoryIncomeForEdit(): Flow<List<Category>>
-
     fun getAllCategoryExpenseForInput(): Flow<Resource<List<Category>>>
 
     fun getAllCategoryIncomeForInput(): Flow<List<Category>>
 
-    suspend fun removeCategoryExpense(category: Category)
-
-    suspend fun removeCategoryIncome(category: Category)
+    suspend fun removeCategory(category: Category)
 
     suspend fun insertNewCategoryExpense(name: String, iconID: String)
 

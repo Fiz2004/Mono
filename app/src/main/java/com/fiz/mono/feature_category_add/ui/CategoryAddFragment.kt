@@ -12,42 +12,35 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.fiz.mono.R
+import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.getColorCompat
 import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.databinding.FragmentCategoryAddBinding
 import com.fiz.mono.feature_category_add.ui.adapters.CategoryIconsAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.WithFragmentBindings
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-@WithFragmentBindings
 class CategoryAddFragment : Fragment() {
-    private var _binding: FragmentCategoryAddBinding? = null
-    private val binding get() = _binding!!
 
     private val viewModel: CategoryAddViewModel by viewModels()
 
-    private val adapter: CategoryIconsAdapter by lazy{
+    private val args: CategoryAddFragmentArgs by navArgs()
+
+    private val adapter: CategoryIconsAdapter by lazy {
         CategoryIconsAdapter { position ->
             viewModel.onEvent(FeatureAddUIEvent.ClickCategory(position))
         }
     }
 
-    private val args: CategoryAddFragmentArgs by navArgs()
+    private lateinit var binding: FragmentCategoryAddBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCategoryAddBinding.inflate(inflater, container, false)
+        binding = FragmentCategoryAddBinding.inflate(inflater, container, false)
         return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

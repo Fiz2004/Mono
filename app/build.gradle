@@ -1,19 +1,20 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+
     id 'androidx.navigation.safeargs.kotlin'
-    id("dagger.hilt.android.plugin")
+    id 'dagger.hilt.android.plugin'
+
+    id 'kotlin-kapt'
 }
 
-apply plugin:'kotlin-kapt'
-
 android {
-    compileSdk 32
+    compileSdk buildConfig.compileSdk
 
     defaultConfig {
         applicationId "com.fiz.mono"
-        minSdk 22
-        targetSdk 32
+        minSdk buildConfig.minSdk
+        targetSdk buildConfig.targetSdk
         versionCode 1
         versionName "0.0.2"
 
@@ -40,11 +41,18 @@ android {
 
 dependencies {
 
+    implementation project(':database')
+    implementation project(':base')
+    implementation project(':common-ui-resources')
+    implementation project(':feature-calculator')
+    implementation project(':feature-reminder')
+
     // Room
     implementation 'androidx.room:room-common:2.4.2'
     implementation 'androidx.room:room-ktx:2.4.2'
     implementation 'androidx.room:room-runtime:2.4.2'
     kapt 'androidx.room:room-compiler:2.4.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1-native-mt'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1-native-mt'
 
     implementation 'androidx.core:core-ktx:1.7.0'
@@ -71,22 +79,16 @@ dependencies {
     // Preference
     implementation 'androidx.preference:preference-ktx:1.2.0'
 
-    // Kotlin components
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1-native-mt"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1-native-mt"
-
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.41")
-    kapt("com.google.dagger:hilt-android-compiler:2.41")
+    implementation("com.google.dagger:hilt-android:2.39")
+    kapt("com.google.dagger:hilt-android-compiler:2.39")
 
 
     // Date
     implementation 'com.jakewharton.threetenabp:threetenabp:1.4.0'
 
-    implementation project(path: ':database')
-
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.mockito:mockito-core:4.5.0'
+    testImplementation 'org.mockito:mockito-core:4.5.1'
     debugImplementation 'androidx.fragment:fragment-testing:1.4.1'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.4.0'
     androidTestImplementation "androidx.room:room-testing:2.4.2"

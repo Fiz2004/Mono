@@ -2,22 +2,18 @@ package com.fiz.mono.feature_category_add.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fiz.mono.core.data.data_source.CategoryIconUiStateDataSource
 import com.fiz.mono.core.domain.models.Category
-import com.fiz.mono.core.domain.repositories.CategoryRepository
-import com.fiz.mono.core.ui.category_edit.CategoryEditViewModel.Companion.TYPE_EXPENSE
-import com.fiz.mono.feature_category_add.domain.use_case.SelectOneItemCategoryIconUseCase
+import com.fiz.mono.feature_category_add.domain.use_case.CategoryAddUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CategoryAddViewModel @Inject constructor(
-    private val categoryRepository: CategoryRepository,
-    private val categoryIconUiStateDataSource: CategoryIconUiStateDataSource,
-    private val selectOneItemCategoryIconUseCase: SelectOneItemCategoryIconUseCase
+    private val categoryAddUseCase: CategoryAddUseCase
 ) : ViewModel() {
 
     var uiState = MutableStateFlow(CategoryAddUiState()); private set
@@ -26,28 +22,30 @@ class CategoryAddViewModel @Inject constructor(
     private var allCategoryIncome: List<Category> = listOf()
 
     init {
-        viewModelScope.launch(Dispatchers.Default) {
-            launch {
-                categoryIconUiStateDataSource.allCategoryIcons
-                    .collect { allCategoryIcons ->
-                        uiState.value = uiState.value.copy(allCategoryIcons = allCategoryIcons)
-                    }
-            }
+        observeAllCategoriesExpense()
+        observeAllCategoriesIncome()
+        observeAllCategoryIcons()
+    }
 
-            launch {
-                categoryRepository.allCategoryExpense
-                    .collect { allCategoryExpense ->
-                        this@CategoryAddViewModel.allCategoryExpense = allCategoryExpense
-                    }
-            }
+    private fun observeAllCategoriesExpense() {
+        categoryAddUseCase.observeAllCategoriesExpenseUseCase()
+            .onEach { allCategoryExpense ->
+                this@CategoryAddViewModel.allCategoryExpense = allCategoryExpense
+            }.launchIn(viewModelScope)
+    }
 
-            launch {
-                categoryRepository.allCategoryIncome
-                    .collect { allCategoryIncome ->
-                        this@CategoryAddViewModel.allCategoryIncome = allCategoryIncome
-                    }
-            }
-        }
+    private fun observeAllCategoriesIncome() {
+        categoryAddUseCase.observeAllCategoriesIncomeUseCase()
+            .onEach { allCategoryIncome ->
+                this@CategoryAddViewModel.allCategoryIncome = allCategoryIncome
+            }.launchIn(viewModelScope)
+    }
+
+    private fun observeAllCategoryIcons() {
+        categoryAddUseCase.observeAllCategoryIconsUseCase()
+            .onEach { allCategoryIcons ->
+                uiState.value = uiState.value.copy(allCategoryIcons = allCategoryIcons)
+            }.launchIn(viewModelScope)
     }
 
     fun onEvent(event: FeatureAddUIEvent) {
@@ -57,36 +55,34 @@ class CategoryAddViewModel @Inject constructor(
             FeatureAddUIEvent.ClickBackButton -> clickBackButton()
             is FeatureAddUIEvent.ClickCategory -> clickRecyclerView(event.position)
             FeatureAddUIEvent.OnClickBackButton -> onClickBackButton()
-            is FeatureAddUIEvent.Loading -> init(event.type)
+            is FeatureAddUIEvent.Loading -> start(event.type)
         }
     }
 
-    private fun init(type: String) {
+    private fun start(type: String) {
         uiState.value = uiState.value.copy(type = type)
     }
 
     private fun clickRecyclerView(position: Int) {
         val allCategoryIcons =
-            selectOneItemCategoryIconUseCase(uiState.value.allCategoryIcons, position)
+            categoryAddUseCase.selectOneItemCategoryIconUseCase(
+                uiState.value.allCategoryIcons,
+                position
+            )
         uiState.value = uiState.value.copy(
             allCategoryIcons = allCategoryIcons
         )
     }
 
     private fun setCategoryName(newCategoryName: String) {
-        uiState.value = uiState.value.copy(nameCategory = newCategoryName.toString())
-
+        uiState.value = uiState.value.copy(nameCategory = newCategoryName)
     }
 
     private fun clickAddButton() {
         viewModelScope.launch {
             val name = uiState.value.nameCategory
             val selectedIcon = uiState.value.allCategoryIcons.first { it.selected }.id
-            if (uiState.value.type == TYPE_EXPENSE) {
-                categoryRepository.insertNewCategoryExpense(name, selectedIcon)
-            } else {
-                categoryRepository.insertNewCategoryIncome(name, selectedIcon)
-            }
+            categoryAddUseCase.insertNewCategoryUseCase(uiState.value.type, name, selectedIcon)
             uiState.value = uiState.value.copy(isReturn = true)
         }
     }
