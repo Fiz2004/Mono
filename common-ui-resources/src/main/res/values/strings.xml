@@ -123,6 +123,6 @@
     <string name="mono_notification_channel_id" translatable="false">mono_channel</string>
     <string name="mono_notification_channel_name" translatable="false">mono</string>
     <string name="notification_title">Mono Reminder</string>
-
+    <string name="invalid_number">Invalid number</string>
 
 </resources>

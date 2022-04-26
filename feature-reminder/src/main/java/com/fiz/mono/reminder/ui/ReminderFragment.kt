@@ -4,9 +4,7 @@ import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,9 +17,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.launchAndRepeatWithViewLifecycle
-import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.reminder.databinding.FragmentReminderBinding
-import com.fiz.mono.reminder.receiver.AlarmReceiver
 import com.fiz.mono.reminder.utils.cancelNotifications
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -35,12 +31,14 @@ class ReminderFragment : Fragment() {
 
     private lateinit var binding: FragmentReminderBinding
 
-    private lateinit var alarmManager: AlarmManager
-    private lateinit var notifyIntent: Intent
+    @Inject
+    lateinit var notifyIntent: Intent
 
-    private lateinit var alarm: PendingIntent
+    @Inject
+    lateinit var notifyPendingIntent: PendingIntent
 
-    private lateinit var notifyPendingIntent: PendingIntent
+    @Inject
+    lateinit var alarmManager: AlarmManager
 
     @Inject
     lateinit var notificationManager: NotificationManager
@@ -54,53 +52,11 @@ class ReminderFragment : Fragment() {
     ): View {
         binding = FragmentReminderBinding.inflate(inflater, container, false)
 
-        createChannel(
-            getString(R.string.mono_will_reminder_to_note_transaction_on_this_time_everyday),
-        )
-
-        alarmManager =
-            requireActivity().application.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        notifyIntent = Intent(context, AlarmReceiver::class.java)
-
-        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            PendingIntent.FLAG_IMMUTABLE
-        else
-            PendingIntent.FLAG_NO_CREATE
-
-        alarm = PendingIntent.getBroadcast(
-            context,
-            REQUEST_CODE_REMINDER,
-            notifyIntent,
-            flags
-        )
-
-        val flagsForNotify = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            PendingIntent.FLAG_IMMUTABLE
-        else
-            PendingIntent.FLAG_UPDATE_CURRENT
-
-        notifyPendingIntent = PendingIntent.getBroadcast(
-            context,
-            REQUEST_CODE_REMINDER,
-            notifyIntent,
-            flagsForNotify
-        )
-
-        return binding.root
-    }
-
-    private fun createChannel(
-        description: String,
-    ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationChannel.enableLights(true)
-            notificationChannel.lightColor = Color.RED
-            notificationChannel.enableVibration(true)
-            notificationChannel.description = description
-
             notificationManager.createNotificationChannel(notificationChannel)
         }
+
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -114,21 +70,11 @@ class ReminderFragment : Fragment() {
             viewModel.start()
 
             hoursEditText.doAfterTextChanged {
-                if (!viewModel.setHours(it.toString())) {
-                    hoursEditText.error = getString(com.fiz.mono.reminder.R.string.invalid_number)
-                    viewModel.canReminderNo()
-                } else {
-                    viewModel.setCanReminder()
-                }
+                viewModel.setHours(it.toString())
             }
 
             minutesEditText.doAfterTextChanged {
-                if (!viewModel.setMinutes(it.toString())) {
-                    minutesEditText.error = getString(com.fiz.mono.reminder.R.string.invalid_number)
-                    viewModel.canReminderNo()
-                } else {
-                    viewModel.setCanReminder()
-                }
+                viewModel.setMinutes(it.toString())
             }
 
             navigationBarLayout.backButton.setOnClickListener {
@@ -166,31 +112,27 @@ class ReminderFragment : Fragment() {
 
         launchAndRepeatWithViewLifecycle {
             viewModel.uiState.collect { uiState ->
-                binding.setReminderButton.isEnabled = uiState.isCanReminder
-
-                if (binding.hoursEditText.text.toString() != uiState.timeForReminder.hour.toString())
-                    binding.hoursEditText.setText(uiState.timeForReminder.hour.toString())
-
-
-                if (binding.minutesEditText.text.toString() != uiState.timeForReminder.minute.toString())
-                    binding.minutesEditText.setText(uiState.timeForReminder.minute.toString())
-
                 binding.hoursEditText.isEnabled = !uiState.isNotifyInstalled
+                binding.hoursEditText.error = if (uiState.isErrorHourEditText)
+                    getString(R.string.invalid_number)
+                else
+                    null
+                if (binding.hoursEditText.text.toString() != uiState.timeForReminder.hour)
+                    binding.hoursEditText.setText(uiState.timeForReminder.hour)
+
                 binding.minutesEditText.isEnabled = !uiState.isNotifyInstalled
-                binding.setReminderButton.isCheckable = uiState.isNotifyInstalled
+                binding.minutesEditText.error = if (uiState.isErrorMinuteEditText)
+                    getString(R.string.invalid_number)
+                else
+                    null
+                if (binding.minutesEditText.text.toString() != uiState.timeForReminder.minute)
+                    binding.minutesEditText.setText(uiState.timeForReminder.minute)
 
-
-                if (uiState.isNotifyInstalled) {
-                    binding.setReminderButton.isEnabled = true
-                    binding.setReminderButton.text = getString(R.string.remove_reminder)
-
-                    val hours = viewModel.loadHours()
-                    val minutes = viewModel.loadMinutes()
-                    viewModel.setHours(hours.toString())
-                    viewModel.setMinutes(minutes.toString())
-                } else {
-                    binding.setReminderButton.text = getString(R.string.set_reminder)
-                }
+                val textForButtonReminder =
+                    if (uiState.isNotifyInstalled) R.string.remove_reminder else R.string.set_reminder
+                binding.setReminderButton.text = getString(textForButtonReminder)
+                binding.setReminderButton.isActivated = uiState.isNotifyInstalled
+                binding.setReminderButton.isEnabled = uiState.isCanReminder
             }
         }
     }

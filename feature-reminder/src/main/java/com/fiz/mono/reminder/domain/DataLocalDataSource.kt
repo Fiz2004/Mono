@@ -1,11 +1,11 @@
 package com.fiz.mono.reminder.domain
 
 interface DataLocalDataSource {
-    fun loadMinutes(): Int
+    fun loadMinutes(): String
 
-    fun loadHours(): Int
+    fun loadHours(): String
 
-    fun saveMinute(minute: Int)
+    fun saveMinute(minute: String)
 
-    fun saveHour(hours: Int)
+    fun saveHour(hours: String)
 }

@@ -7,9 +7,9 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.fiz.mono.base.R
-import com.fiz.mono.base.databinding.ActivityMainBinding
+import com.fiz.mono.R
 import com.fiz.mono.core.util.setVisible
+import com.fiz.mono.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

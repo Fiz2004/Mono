@@ -31,30 +31,30 @@ class ReportMonthlyViewModel @Inject constructor(
                     .copy(currentBalance = currentBalance)
             }.launchIn(viewModelScope)
 
-        val date = uiState.mapLatest { uiState -> uiState.date }
+        val dateFlow = uiState.mapLatest { uiState -> uiState.date }
 
-        date.flatMapLatest { date ->
+        dateFlow.flatMapLatest { date ->
             reportUseCase.getCurrentIncomeUseCase(uiState.value.currency, date)
         }.onEach { currentIncome ->
             uiState.value = uiState.value
                 .copy(currentIncome = currentIncome)
         }.launchIn(viewModelScope)
 
-        date.flatMapLatest { date ->
+        dateFlow.flatMapLatest { date ->
             reportUseCase.getCurrentExpenseUseCase(uiState.value.currency, date)
         }.onEach { currentExpense ->
             uiState.value = uiState.value
                 .copy(currentExpense = currentExpense)
         }.launchIn(viewModelScope)
 
-        date.flatMapLatest { date ->
+        dateFlow.flatMapLatest { date ->
             reportUseCase.getBalanceForMonthUseCase(uiState.value.currency, date)
         }.onEach { currentExpenseIncome ->
             uiState.value = uiState.value
                 .copy(currentExpenseIncome = currentExpenseIncome)
         }.launchIn(viewModelScope)
 
-        date.flatMapLatest { date ->
+        dateFlow.flatMapLatest { date ->
             reportUseCase.getLastBalanceForMonthUseCase(uiState.value.currency, date)
         }.onEach { lastBalance ->
             uiState.value = uiState.value

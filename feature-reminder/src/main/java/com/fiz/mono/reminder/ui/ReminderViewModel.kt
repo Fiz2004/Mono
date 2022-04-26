@@ -15,6 +15,16 @@ class ReminderViewModel @Inject constructor(private val dataLocalDataSource: Dat
 
     var uiState = MutableStateFlow(ReminderUiState()); private set
 
+    fun start() {
+        val hours = loadHours()
+        val minutes = loadMinutes()
+        setHours(hours)
+        setMinutes(minutes)
+        if (uiState.value.timeForReminder.isNotEmpty()) {
+            onNotify()
+        }
+    }
+
     fun getTriggerTime(): Long {
         val selectedInterval = getTimerLengthSelection(LocalTime.now()) * 1000
         return SystemClock.elapsedRealtime() + selectedInterval
@@ -37,8 +47,8 @@ class ReminderViewModel @Inject constructor(private val dataLocalDataSource: Dat
     }
 
     fun resetTime() {
-        dataLocalDataSource.saveHour(0)
-        dataLocalDataSource.saveMinute(0)
+        dataLocalDataSource.saveHour("")
+        dataLocalDataSource.saveMinute("")
     }
 
     fun loadMinutes() = dataLocalDataSource.loadMinutes()
@@ -50,66 +60,39 @@ class ReminderViewModel @Inject constructor(private val dataLocalDataSource: Dat
             .copy(isNotifyInstalled = false)
     }
 
-    fun setHours(hour: String): Boolean {
+    fun setHours(hour: String) {
+        val timeForReminder = uiState.value.timeForReminder.copy(hour = hour)
+        uiState.value = uiState.value
+            .copy(timeForReminder = timeForReminder, isErrorHourEditText = !isStatusHour(hour))
+    }
+
+    fun setMinutes(minute: String) {
+        val timeForReminder = uiState.value.timeForReminder.copy(minute = minute)
+        uiState.value = uiState.value
+            .copy(timeForReminder = timeForReminder, isErrorMinuteEditText = !isStatusMinute(minute))
+    }
+
+    private fun isStatusHour(hour: String): Boolean {
+        if (hour.isBlank()) return true
         return try {
             val hourInt = hour.toInt()
             if (hourInt > 23)
                 return false
-            else {
-                val timeForReminder = uiState.value.timeForReminder.copy(hour = hourInt)
-                uiState.value = uiState.value
-                    .copy(timeForReminder = timeForReminder)
-            }
             true
         } catch (e: Exception) {
-            if (hour != "") {
-                return false
-            }
-            val timeForReminder = uiState.value.timeForReminder.copy(hour = 0)
-            uiState.value = uiState.value
-                .copy(timeForReminder = timeForReminder)
             false
         }
     }
 
-    fun setMinutes(minute: String): Boolean {
+    private fun isStatusMinute(minute: String): Boolean {
+        if (minute.isBlank()) return true
         return try {
             val minuteInt = minute.toInt()
             if (minuteInt > 59)
                 return false
-            else {
-                val timeForReminder = uiState.value.timeForReminder.copy(minute = minuteInt)
-                uiState.value = uiState.value
-                    .copy(timeForReminder = timeForReminder)
-            }
             true
         } catch (e: Exception) {
-            if (minute != "") {
-                return false
-            }
-            val timeForReminder = uiState.value.timeForReminder.copy(minute = 0)
-            uiState.value = uiState.value
-                .copy(timeForReminder = timeForReminder)
             false
         }
-    }
-
-    fun start() {
-        val hours = loadHours()
-        val minutes = loadMinutes()
-
-        if (hours != 0 && minutes != 0) {
-            onNotify()
-        }
-    }
-
-    fun canReminderNo() {
-        uiState.value = uiState.value
-            .copy(isCanReminder = false)
-    }
-
-    fun setCanReminder() {
-        uiState.value = uiState.value
-            .copy(isCanReminder = true)
     }
 }

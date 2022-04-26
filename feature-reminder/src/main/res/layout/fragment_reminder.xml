@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingStart="@dimen/fragmentPaddingStart"
-    android:paddingEnd="@dimen/fragmentPaddingEnd"
-    tools:context=".reminder.ui.ReminderFragment">
+    android:paddingEnd="@dimen/fragmentPaddingEnd">
 
     <include
         android:id="@+id/navigationBarLayout"
@@ -105,7 +104,7 @@
         android:enabled="true"
         android:text="@string/set_reminder"
         android:textColor="@drawable/button_text_default"
-        app:backgroundTint="@drawable/selector_color_blue_checkable_red_enabled_gray"
+        app:backgroundTint="@drawable/selector_color_blue_activated_red_enabled_gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -9,5 +9,10 @@ fun getCountSecondsBetween(now: LocalTime, needTime: LocalTime): Int {
     )
         needTime.minusHours(24)
 
-    return ChronoUnit.SECONDS.between(now, needTime).toInt()
+    val seconds = ChronoUnit.SECONDS.between(now, needTime).toInt()
+
+    return if (seconds < 0)
+        ChronoUnit.DAYS.duration.seconds.toInt() + seconds
+    else
+        seconds
 }

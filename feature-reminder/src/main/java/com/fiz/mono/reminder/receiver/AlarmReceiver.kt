@@ -10,11 +10,15 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.AlarmManagerCompat
 import com.fiz.mono.common.ui.resources.R
-import com.fiz.mono.core.ui.MainActivity
 import com.fiz.mono.reminder.ui.REQUEST_CODE_REMINDER
 import com.fiz.mono.reminder.utils.sendNotification
 import dagger.hilt.android.AndroidEntryPoint
+import org.threeten.bp.temporal.ChronoUnit
 import javax.inject.Inject
+
+interface GetMainActiviti {
+    fun get(): Class<*>
+}
 
 @AndroidEntryPoint
 class AlarmReceiver : BroadcastReceiver() {
@@ -28,7 +32,7 @@ class AlarmReceiver : BroadcastReceiver() {
             context.getText(R.string.mono_will_reminder_to_note_transaction_on_this_time_everyday)
                 .toString(),
             context,
-            MainActivity::class.java
+            ((context.applicationContext as Application) as GetMainActiviti).get()
         )
 
         val notifyIntent = Intent((context as Application), AlarmReceiver::class.java)
@@ -47,7 +51,7 @@ class AlarmReceiver : BroadcastReceiver() {
         AlarmManagerCompat.setExactAndAllowWhileIdle(
             context.getSystemService(Context.ALARM_SERVICE) as AlarmManager,
             AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            24 * 60 * 60,
+            ChronoUnit.DAYS.duration.seconds,
             notifyPendingIntent
         )
 

@@ -4,20 +4,20 @@
         android:id="@+id/inputFragment"
         android:enabled="true"
         android:icon="@drawable/selector_item_input"
-        android:title="@string/input"/>
+        android:title="@string/input" />
     <item
         android:id="@+id/calculatorFragment"
         android:enabled="true"
         android:icon="@drawable/selector_item_calculator"
-        android:title="@string/calculator"/>
+        android:title="@string/calculator" />
     <item
         android:id="@+id/reportFragment"
         android:enabled="true"
         android:icon="@drawable/selector_item_report"
-        android:title="@string/report"/>
+        android:title="@string/report" />
     <item
         android:id="@+id/settingsFragment"
         android:enabled="true"
         android:icon="@drawable/selector_item_settings"
-        android:title="@string/settings"/>
+        android:title="@string/settings" />
 </menu>
