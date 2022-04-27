@@ -1,15 +1,17 @@
 package com.fiz.mono.domain.repositories
 
+import kotlinx.coroutines.flow.Flow
+
 interface SettingsLocalDataSource {
     fun loadPin(): String
 
     fun savePin(pin: String)
 
-    fun loadConfirmPin(): Boolean
+    fun loadConfirmPin(): Flow<Boolean>
 
     fun saveConfirmPin(confirmPin: Boolean)
 
-    fun loadFirstTime(): Boolean
+    fun loadFirstTime(): Flow<Boolean>
 
     fun saveFirstTime(firstTime: Boolean)
 

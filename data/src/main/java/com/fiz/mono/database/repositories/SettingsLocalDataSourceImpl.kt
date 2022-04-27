@@ -2,24 +2,29 @@ package com.fiz.mono.database.repositories
 
 import android.content.SharedPreferences
 import com.fiz.mono.domain.repositories.SettingsLocalDataSource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class SettingsLocalDataSourceImpl @Inject constructor(private val sharedPreferences: SharedPreferences) :
     SettingsLocalDataSource {
-    override fun loadFirstTime() = sharedPreferences.getBoolean(FIRST_TIME, true)
+    override fun loadFirstTime(): Flow<Boolean> {
+        return flow {
+            emit(sharedPreferences.getBoolean(FIRST_TIME, true))
+        }
+    }
 
     override fun saveFirstTime(firstTime: Boolean) =
         sharedPreferences.edit().putBoolean(FIRST_TIME, firstTime).apply()
-
 
     override fun loadPin(): String = sharedPreferences.getString(PIN, "") ?: ""
 
     override fun savePin(pin: String) =
         sharedPreferences.edit().putString(PIN, pin).apply()
 
-    override fun loadConfirmPin(): Boolean = sharedPreferences.getBoolean(CONFIRM_PIN, false)
+    override fun loadConfirmPin(): Flow<Boolean> = flow { emit(sharedPreferences.getBoolean(CONFIRM_PIN, false)) }
 
     override fun saveConfirmPin(confirmPin: Boolean) =
         sharedPreferences.edit().putBoolean(CONFIRM_PIN, confirmPin).apply()
