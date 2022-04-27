@@ -14,9 +14,11 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Mono"
 include ':app'
-include ':database'
+include ':data'
 include ':common-ui-resources'
 include ':feature-calculator'
 include ':base'
 include ':feature-reminder'
 include ':feature-on_boarding'
+include ':feature-pin_password'
+include ':domain'

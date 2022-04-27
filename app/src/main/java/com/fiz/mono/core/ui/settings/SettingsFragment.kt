@@ -16,7 +16,7 @@ import com.fiz.mono.core.data.data_source.TransactionLocalDataSource
 import com.fiz.mono.core.ui.MainPreferencesViewModel
 import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.databinding.FragmentSettingsBinding
-import com.fiz.mono.feature_pin_password.ui.PINPasswordFragment
+import com.fiz.mono.pin_password.ui.PINPasswordFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

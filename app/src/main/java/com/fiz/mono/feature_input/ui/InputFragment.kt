@@ -19,9 +19,11 @@ import com.fiz.mono.core.util.ActivityContract
 import com.fiz.mono.core.util.launchAndRepeatWithViewLifecycle
 import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.databinding.FragmentInputBinding
-import com.fiz.mono.feature_pin_password.ui.PINPasswordFragment
+import com.fiz.mono.domain.repositories.SettingsLocalDataSource
+import com.fiz.mono.pin_password.ui.PINPasswordFragment
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class InputFragment : Fragment() {
@@ -42,6 +44,9 @@ class InputFragment : Fragment() {
     private lateinit var binding: FragmentInputBinding
 
     private lateinit var adapter: CategoriesAdapter
+
+    @Inject
+    lateinit var settingsLocalDataSource: SettingsLocalDataSource
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -86,6 +91,11 @@ class InputFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mainPreferencesViewModel.start()
     }
 
     private fun init() {
@@ -269,8 +279,8 @@ class InputFragment : Fragment() {
                 binding.currencyTextView.text = currency
             }
 
-            isFirstTime.observe(viewLifecycleOwner) { isFirstTime ->
-                if (isFirstTime) {
+            firstTime.observe(viewLifecycleOwner) { isFirstTime ->
+                if (settingsLocalDataSource.loadFirstTime()) {
                     val action =
                         InputFragmentDirections
                             .actionInputFragmentToOnBoardingFragment()
@@ -279,7 +289,7 @@ class InputFragment : Fragment() {
             }
 
             isConfirmPIN.observe(viewLifecycleOwner) { isConfirmPIN ->
-                if (!isConfirmPIN) {
+                if (!settingsLocalDataSource.loadConfirmPin()) {
                     val action =
                         InputFragmentDirections
                             .actionToPINPasswordFragment(PINPasswordFragment.START)

@@ -45,11 +45,12 @@ dependencies {
     implementation "androidx.activity:activity-ktx:1.4.0"
     implementation 'androidx.fragment:fragment-ktx:1.4.1'
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1-native-mt'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.39")
-    kapt("com.google.dagger:hilt-android-compiler:2.39")
+    implementation("com.google.dagger:hilt-android:${versions.hilt}")
+    kapt("com.google.dagger:hilt-android-compiler:${versions.hilt}")
 
     // Navigation component
     implementation "androidx.navigation:navigation-fragment-ktx:2.4.2"

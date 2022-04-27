@@ -1,13 +1,13 @@
 package com.fiz.mono.on_boarding.ui
 
 import androidx.lifecycle.ViewModel
-import com.fiz.mono.on_boarding.domain.FirstTimeLocalDataSource
+import com.fiz.mono.domain.repositories.SettingsLocalDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class OnBoardingViewModel @Inject constructor(private val firstTimeLocalDataSource: FirstTimeLocalDataSource) :
+class OnBoardingViewModel @Inject constructor(private val settingsLocalDataSource: SettingsLocalDataSource) :
     ViewModel() {
     var uiState = MutableStateFlow(OnBoardingUiState()); private set
 
@@ -44,7 +44,7 @@ class OnBoardingViewModel @Inject constructor(private val firstTimeLocalDataSour
     }
 
     fun changeFirstTime() {
-        firstTimeLocalDataSource.saveFirstTime(false)
+        settingsLocalDataSource.saveFirstTime(false)
     }
 
     fun getImage() =

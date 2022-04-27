@@ -2,6 +2,8 @@ plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
 
+    id 'androidx.navigation.safeargs.kotlin'
+
     id 'dagger.hilt.android.plugin'
 
     id 'kotlin-kapt'
@@ -38,6 +40,8 @@ dependencies {
 
     implementation project(':common-ui-resources')
     implementation project(':base')
+    implementation project(':data')
+    implementation project(':domain')
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
@@ -50,8 +54,16 @@ dependencies {
 
     // Hilt
     implementation("com.google.dagger:hilt-android:${versions.hilt}")
-
     kapt("com.google.dagger:hilt-android-compiler:${versions.hilt}")
+
+    // Navigation component
+    implementation "androidx.navigation:navigation-fragment-ktx:2.4.2"
+    implementation "androidx.navigation:navigation-ui-ktx:2.4.2"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.navigation:navigation-testing:2.4.2'
+
+    // Date
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.4.0'
 
     testImplementation 'junit:junit:4.13.2'
 

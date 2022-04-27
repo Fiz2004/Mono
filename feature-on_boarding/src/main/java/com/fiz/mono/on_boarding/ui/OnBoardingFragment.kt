@@ -24,8 +24,10 @@ class OnBoardingFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (!viewModel.clickBackPress())
+            if (!viewModel.clickBackPress()) {
+                isEnabled = false
                 activity?.onBackPressed()
+            }
         }
     }
 

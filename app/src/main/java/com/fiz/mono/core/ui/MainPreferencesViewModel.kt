@@ -1,80 +1,56 @@
 package com.fiz.mono.core.ui
 
-import android.content.SharedPreferences
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.fiz.mono.domain.repositories.SettingsLocalDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class MainPreferencesViewModel @Inject constructor(
-    private val sharedPreferences: SharedPreferences
+    private val settingsLocalDataSource: SettingsLocalDataSource
 ) : ViewModel() {
-    private var _firstTime = MutableLiveData(false)
-    val isFirstTime: LiveData<Boolean> = _firstTime
+    var firstTime = MutableLiveData(false); private set
 
-    private var _currency = MutableLiveData("$")
-    val currency: LiveData<String> = _currency
+    var currency = MutableLiveData("$"); private set
 
-    private var _pin = MutableLiveData("")
-    val pin: LiveData<String> = _pin
+    var pin = MutableLiveData(""); private set
 
-    private var _themeLight = MutableLiveData(true)
-    val themeLight: LiveData<Boolean> = _themeLight
+    var themeLight = MutableLiveData(true); private set
 
-    private var _isConfirmPIN = MutableLiveData(false)
-    val isConfirmPIN: LiveData<Boolean> = _isConfirmPIN
+    var isConfirmPIN = MutableLiveData(false); private set
 
     init {
-        _firstTime.value = sharedPreferences.getBoolean("firstTime", true)
-        setCurrency(sharedPreferences.getString("currency", "$") ?: "$")
-        _pin.value = sharedPreferences.getString("PIN", "") ?: ""
-        _themeLight.value = sharedPreferences.getBoolean("themeLight", true)
-        if (pin.value?.isBlank() == true)
-            _isConfirmPIN.value = true
+        firstTime.value = settingsLocalDataSource.loadFirstTime()
+        currency.value = settingsLocalDataSource.loadCurrency()
+        pin.value = settingsLocalDataSource.loadPin()
+        themeLight.value = settingsLocalDataSource.loadThemeLight()
+        isConfirmPIN.value = pin.value?.isBlank() == true
     }
 
-    fun setCurrency(loadCurrency: String) {
-        _currency.value = loadCurrency
-        sharedPreferences
-            .edit()
-            .putString("currency", loadCurrency)
-            .apply()
+    fun start() {
+        firstTime.value = settingsLocalDataSource.loadFirstTime()
+        currency.value = settingsLocalDataSource.loadCurrency()
+        pin.value = settingsLocalDataSource.loadPin()
+        themeLight.value = settingsLocalDataSource.loadThemeLight()
+        isConfirmPIN.value = getIsConfirmPIN()
     }
 
-    fun changeFirstTime() {
-        _firstTime.value = false
-        sharedPreferences.edit()
-            .putBoolean("firstTime", isFirstTime.value ?: false)
-            .apply()
-    }
-
-    fun deletePin() {
-        _pin.value = ""
-        sharedPreferences
-            .edit()
-            .putString("PIN", pin.value)
-            .apply()
-    }
-
-    fun setPin(pin: String) {
-        _pin.value = pin
-        sharedPreferences
-            .edit()
-            .putString("PIN", pin)
-            .apply()
+    fun setCurrency(currency: String) {
+        this.currency.value = currency
+        settingsLocalDataSource.saveCurrency(currency)
     }
 
     fun setThemeLight(themeLight: Boolean) {
-        _themeLight.value = themeLight
-        sharedPreferences
-            .edit()
-            .putBoolean("themeLight", themeLight)
-            .apply()
+        this.themeLight.value = themeLight
+        settingsLocalDataSource.saveThemeLight(themeLight)
     }
 
-    fun confirmPin() {
-        _isConfirmPIN.value = true
+    fun getIsConfirmPIN(): Boolean {
+        return if (pin.value?.isBlank() == true)
+            true
+        else
+            settingsLocalDataSource.loadConfirmPin()
     }
+
 }
