@@ -2,7 +2,7 @@ package com.fiz.mono.reminder.ui
 
 import android.os.SystemClock
 import androidx.lifecycle.ViewModel
-import com.fiz.mono.reminder.data.DataLocalDataSourceImpl
+import com.fiz.mono.reminder.domain.DataLocalDataSource
 import com.fiz.mono.reminder.domain.getCountSecondsBetween
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,7 +10,7 @@ import org.threeten.bp.LocalTime
 import javax.inject.Inject
 
 @HiltViewModel
-class ReminderViewModel @Inject constructor(private val dataLocalDataSource: DataLocalDataSourceImpl) :
+class ReminderViewModel @Inject constructor(private val dataLocalDataSource: DataLocalDataSource) :
     ViewModel() {
 
     var uiState = MutableStateFlow(ReminderUiState()); private set

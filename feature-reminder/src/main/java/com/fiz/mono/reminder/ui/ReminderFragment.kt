@@ -17,7 +17,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.launchAndRepeatWithViewLifecycle
-import com.fiz.mono.reminder.databinding.FragmentReminderBinding
+import com.fiz.mono.core.util.setVisible
+import com.fiz.mono.feature.reminder.databinding.FragmentReminderBinding
 import com.fiz.mono.reminder.utils.cancelNotifications
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

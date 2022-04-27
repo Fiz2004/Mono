@@ -11,8 +11,11 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.fiz.mono.common.ui.resources.R
+import com.fiz.mono.reminder.data.DataLocalDataSourceImpl
+import com.fiz.mono.reminder.domain.DataLocalDataSource
 import com.fiz.mono.reminder.receiver.AlarmReceiver
 import com.fiz.mono.reminder.ui.REQUEST_CODE_REMINDER
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +26,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class ReminderModule {
-
 
     @Provides
     @Singleton
@@ -81,4 +83,13 @@ class ReminderModule {
         )
     }
 
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class ReminderDataModule {
+
+    @Binds
+    @Singleton
+    abstract fun provideDataLocalDataSource(dataLocalDataSourceImpl: DataLocalDataSourceImpl): DataLocalDataSource
 }

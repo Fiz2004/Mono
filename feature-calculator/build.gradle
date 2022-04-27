@@ -48,8 +48,9 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1-native-mt'
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.39")
-    kapt("com.google.dagger:hilt-android-compiler:2.39")
+    implementation("com.google.dagger:hilt-android:${versions.hilt}")
+
+    kapt("com.google.dagger:hilt-android-compiler:${versions.hilt}")
 
     testImplementation 'junit:junit:4.13.2'
 

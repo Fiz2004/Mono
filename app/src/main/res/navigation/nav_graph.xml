@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/onBoardingFragment"
-        android:name="com.fiz.mono.feature_on_boarding.ui.OnBoardingFragment"
+        android:name="com.fiz.mono.on_boarding.ui.OnBoardingFragment"
         android:label="fragment_on_boarding"
         tools:layout="@layout/fragment_on_boarding" />
     <fragment

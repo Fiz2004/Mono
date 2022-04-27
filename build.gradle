@@ -7,12 +7,18 @@ buildscript {
             'targetSdk' : 32,
     ]
 
+    ext.versions = [
+            'hilt': '2.39',
+            'room': '2.4.2',
+
+    ]
+
     repositories {
         google()
     }
     dependencies {
         classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.4.2")
-        classpath("com.google.dagger:hilt-android-gradle-plugin:2.39")
+        classpath("com.google.dagger:hilt-android-gradle-plugin:${versions.hilt}")
     }
 }
 
