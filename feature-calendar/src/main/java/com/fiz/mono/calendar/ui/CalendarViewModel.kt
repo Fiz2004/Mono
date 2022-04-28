@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
+import org.threeten.bp.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,6 +22,79 @@ class CalendarViewModel @Inject constructor(
     var uiState = MutableStateFlow(CalendarUiState()); private set
 
     var navigationUiState = MutableStateFlow(CalendarNavigationState()); private set
+
+    fun getFormatDate(pattern: String): String {
+        return DateTimeFormatter.ofPattern(pattern).format(uiState.value.date)
+    }
+
+    fun setMonth(month: Int) {
+        val newDate = uiState.value.date.withMonth(month)
+
+        uiState.value = uiState.value
+            .copy(date = newDate)
+
+        viewModelScope.launch {
+            settingsLocalDataSource.saveDate(newDate)
+        }
+    }
+
+    fun setDate(day: Int) {
+        if (day == 0) return
+
+        val newDate = uiState.value.date.withDayOfMonth(day)
+
+        uiState.value = uiState.value
+            .copy(date = newDate)
+
+        viewModelScope.launch {
+            settingsLocalDataSource.saveDate(newDate)
+        }
+    }
+
+    fun dateDayPlusOne() {
+        val newDate = uiState.value.date.plusDays(1)
+
+        uiState.value = uiState.value
+            .copy(date = newDate)
+
+        viewModelScope.launch {
+            settingsLocalDataSource.saveDate(newDate)
+        }
+    }
+
+    private fun dateDayMinusOne() {
+        val newDate = uiState.value.date.minusDays(1)
+
+        uiState.value = uiState.value
+            .copy(date = newDate)
+
+        viewModelScope.launch {
+            settingsLocalDataSource.saveDate(newDate)
+        }
+    }
+
+    fun dateMonthPlusOne() {
+        val newDate = uiState.value.date.plusMonths(1)
+
+        uiState.value = uiState.value
+            .copy(date = newDate)
+
+        viewModelScope.launch {
+            settingsLocalDataSource.saveDate(newDate)
+        }
+    }
+
+    fun dateMonthMinusOne() {
+        val newDate = uiState.value.date.minusMonths(1)
+
+        uiState.value = uiState.value
+            .copy(date = newDate)
+
+        viewModelScope.launch {
+            settingsLocalDataSource.saveDate(newDate)
+        }
+    }
+
 
     init {
         viewModelScope.launch(Dispatchers.Default) {

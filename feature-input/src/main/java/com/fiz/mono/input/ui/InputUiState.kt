@@ -11,16 +11,14 @@ data class InputUiState(
     val allCategoryExpense: List<Category> = listOf(),
     val allCategoryIncome: List<Category> = listOf(),
     val allTransactions: List<Transaction> = listOf(),
-    val isAllTransactionsLoaded: Boolean = false,
     val isLoading: Boolean = false,
     val note: String = "",
     val value: String = "",
+    val cashCheckCameraHardware: Boolean? = null,
     val date: LocalDate = LocalDate.now(),
     val currency: String = "$",
     val selectedAdapter: Int = InputFragment.EXPENSE,
     val transactionId: Int? = null,
-
-
     val currentPhotoPath: String = "",
     val photoPaths: List<String?> = listOf(),
     val isPhotoPathsChange: Boolean = false

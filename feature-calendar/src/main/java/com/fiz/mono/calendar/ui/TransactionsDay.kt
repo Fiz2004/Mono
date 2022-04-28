@@ -1,4 +1,4 @@
-package com.fiz.mono.ui.calendar
+package com.fiz.mono.calendar.ui
 
 data class TransactionsDay(
     val day: Int,

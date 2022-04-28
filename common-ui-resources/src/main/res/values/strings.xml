@@ -124,5 +124,6 @@
     <string name="mono_notification_channel_name" translatable="false">mono</string>
     <string name="notification_title">Mono Reminder</string>
     <string name="invalid_number">Invalid number</string>
+    <string name="cant_create_file">I can\'t create a file</string>
 
 </resources>

@@ -1,16 +1,18 @@
-package com.fiz.mono.calendar.ui
+package com.fiz.mono.base.android.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.fiz.mono.base.android.databinding.ItemTransactionBinding
+import com.fiz.mono.base.android.databinding.ItemTransactionDateExpenseIncomeBinding
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.CurrentUtils.getCurrencyFormat
 import com.fiz.mono.core.util.getColorCompat
 import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.domain.models.Transaction
-import com.fiz.mono.feature.calendar.databinding.ItemTransactionBinding
-import com.fiz.mono.feature.calendar.databinding.ItemTransactionDateExpenseIncomeBinding
+import com.fiz.mono.report.ui.category.DataItemDiff
+import com.fiz.mono.report.ui.category.TransactionsDataItem
 
 private const val ITEM_VIEW_TYPE_HEADER = 0
 private const val ITEM_VIEW_TYPE_ITEM = 1
@@ -43,11 +45,13 @@ class TransactionsAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is InfoDayHeaderItemViewHolder -> {
-                val infoDay = getItem(position) as TransactionsDataItem.InfoDayHeaderItem
+                val infoDay =
+                    getItem(position) as TransactionsDataItem.InfoDayHeaderItem
                 holder.bind(infoDay.infoDay, currency)
             }
             is InfoTransactionItemViewHolder -> {
-                val transactionItem = getItem(position) as TransactionsDataItem.InfoTransactionItem
+                val transactionItem =
+                    getItem(position) as TransactionsDataItem.InfoTransactionItem
                 holder.bind(
                     transactionItem.transaction,
                     isVisibleIcon,

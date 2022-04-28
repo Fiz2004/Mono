@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.fiz.mono.base.android.adapters.CategoriesAdapter
 import com.fiz.mono.category_edit.databinding.FragmentCategoryEditBinding
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.getColorCompat

@@ -1,14 +1,8 @@
 package com.fiz.mono.input.ui
 
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Environment
-import android.provider.MediaStore
 import android.util.Log
-import android.widget.Toast
-import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.database.entity.TransactionEntity
@@ -27,103 +21,27 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
-import org.threeten.bp.ZoneOffset
-import org.threeten.bp.format.DateTimeFormatter
 import java.io.File
-import java.io.IOException
 import javax.inject.Inject
 import kotlin.math.abs
 
 @HiltViewModel
 class InputViewModel @Inject constructor(
     private val settingsLocalDataSource: SettingsLocalDataSource,
-    private val categoryRepository: CategoryRepository,
+    categoryRepository: CategoryRepository,
     private val transactionRepository: TransactionRepository
 ) : ViewModel() {
     var uiState = MutableStateFlow(InputUiState()); private set
 
     var navigationUiState = MutableStateFlow(InputNavigationState()); private set
 
-    fun getFormatDate(pattern: String): String {
-        return DateTimeFormatter.ofPattern(pattern).format(uiState.value.date)
-    }
-
-    fun setMonth(month: Int) {
-        val newDate = uiState.value.date.withMonth(month)
-
-        uiState.value = uiState.value
-            .copy(date = newDate)
-
-        viewModelScope.launch {
-            settingsLocalDataSource.saveDate(newDate)
-        }
-    }
-
-    fun setDate(day: Int) {
-        if (day == 0) return
-
-        val newDate = uiState.value.date.withDayOfMonth(day)
-
-        uiState.value = uiState.value
-            .copy(date = newDate)
-
-        viewModelScope.launch {
-            settingsLocalDataSource.saveDate(newDate)
-        }
-    }
-
-    fun dateDayPlusOne() {
-        val newDate = uiState.value.date.plusDays(1)
-
-        uiState.value = uiState.value
-            .copy(date = newDate)
-
-        viewModelScope.launch {
-            settingsLocalDataSource.saveDate(newDate)
-        }
-    }
-
-    fun dateDayMinusOne() {
-        val newDate = uiState.value.date.minusDays(1)
-
-        uiState.value = uiState.value
-            .copy(date = newDate)
-
-        viewModelScope.launch {
-            settingsLocalDataSource.saveDate(newDate)
-        }
-    }
-
-    fun dateMonthPlusOne() {
-        val newDate = uiState.value.date.plusMonths(1)
-
-        uiState.value = uiState.value
-            .copy(date = newDate)
-
-        viewModelScope.launch {
-            settingsLocalDataSource.saveDate(newDate)
-        }
-    }
-
-    fun dateMonthMinusOne() {
-        val newDate = uiState.value.date.minusMonths(1)
-
-        uiState.value = uiState.value
-            .copy(date = newDate)
-
-        viewModelScope.launch {
-            settingsLocalDataSource.saveDate(newDate)
-        }
-    }
-
     init {
         viewModelScope.launch {
-            settingsLocalDataSource.stateFlow.collect {
-                navigationUiState.value = navigationUiState.value
-                    .copy(isMoveOnBoarding = it.firstTime)
+            navigationUiState.value = navigationUiState.value
+                .copy(isMoveOnBoarding = settingsLocalDataSource.loadFirstTime())
 
+            settingsLocalDataSource.stateFlow.collect {
                 uiState.value = uiState.value
                     .copy(date = it.date)
 
@@ -135,11 +53,6 @@ class InputViewModel @Inject constructor(
                     .copy(currency = it.currency)
             }
         }
-    }
-
-    private var cashCheckCameraHardware: Boolean? = null
-
-    init {
 
         categoryRepository.getAllCategoryExpenseForInput()
             .onEach { allCategoryExpense ->
@@ -175,8 +88,11 @@ class InputViewModel @Inject constructor(
                     uiState.value
                         .copy(
                             allTransactions = allTransactions,
-                            isAllTransactionsLoaded = true
                         )
+                uiState.value.transaction?.let {
+                    setViewModelTransaction(it)
+                    setSelected(it.nameCategory)
+                }
             }.launchIn(viewModelScope)
 
     }
@@ -192,14 +108,12 @@ class InputViewModel @Inject constructor(
                 }
             }
 
-            is InputUiEvent.ClickCategory -> TODO()
-
             is InputUiEvent.ClickData -> {
                 clickDate()
             }
 
-            is InputUiEvent.ClickLeftData -> TODO()
-            is InputUiEvent.ClickRightData -> TODO()
+            is InputUiEvent.ClickLeftData -> dateDayMinusOne()
+            is InputUiEvent.ClickRightData -> dateDayPlusOne()
 
             is InputUiEvent.ClickSubmit -> {
                 clickSubmitButton()
@@ -212,16 +126,54 @@ class InputViewModel @Inject constructor(
             is InputUiEvent.ValueChange -> {
                 setValue(event.newValue)
             }
+            InputUiEvent.Start -> {
+                navigationUiState.value = navigationUiState.value
+                    .copy(isMoveOnBoarding = settingsLocalDataSource.loadFirstTime())
+            }
+            InputUiEvent.ClickBackButton -> clickBackButton()
+            InputUiEvent.ClickRemoveTransaction -> removeTransaction()
+            is InputUiEvent.ClickRemovePhoto -> removePhotoPath(event.numberPhoto)
+            is InputUiEvent.ClickCategory -> clickRecyclerView(event.position)
+            InputUiEvent.AddPhotoPath -> addPhotoPath()
+            is InputUiEvent.Init -> start(event.transactionId)
+            is InputUiEvent.UpdateCurrentPhotoPath -> updateCurrentPhotoPath(event.absolutePath)
+            InputUiEvent.MovedCalendar -> movedCalendar()
+            InputUiEvent.MovedEdit -> movedEdit()
+            InputUiEvent.MovedOnBoarding -> movedOnBoarding()
+            InputUiEvent.MovedPinPassword -> movedPinPassword()
+            InputUiEvent.Returned -> returned()
         }
     }
 
-    fun start(transactionId: Int) {
+    private fun dateDayPlusOne() {
+        val newDate = uiState.value.date.plusDays(1)
+
+        uiState.value = uiState.value
+            .copy(date = newDate)
+
+        viewModelScope.launch {
+            settingsLocalDataSource.saveDate(newDate)
+        }
+    }
+
+    private fun dateDayMinusOne() {
+        val newDate = uiState.value.date.minusDays(1)
+
+        uiState.value = uiState.value
+            .copy(date = newDate)
+
+        viewModelScope.launch {
+            settingsLocalDataSource.saveDate(newDate)
+        }
+    }
+
+    private fun start(transactionId: Int) {
         uiState.update {
             it.copy(transactionId = transactionId)
         }
     }
 
-    fun setSelected(nameCategory: String) {
+    private fun setSelected(nameCategory: String) {
         val position =
             uiState.value.currentCategory
                 .indexOfFirst { it.name == nameCategory }
@@ -232,7 +184,7 @@ class InputViewModel @Inject constructor(
             selectIncome(position)
     }
 
-    fun removeTransaction() {
+    private fun removeTransaction() {
         viewModelScope.launch(Dispatchers.Default) {
             uiState.value.transaction?.let { transactionRepository.delete(it) }
             navigationUiState.update {
@@ -243,10 +195,10 @@ class InputViewModel @Inject constructor(
 
     private fun setSelectedAdapter(adapter: Int) {
         if (uiState.value.selectedAdapter != adapter)
-            uiState.update {
-                it.copy(
-                    allCategoryExpense = it.allCategoryExpense.map { it.copy(selected = false) },
-                    allCategoryIncome = it.allCategoryIncome.map { it.copy(selected = false) },
+            uiState.update { inputUiState ->
+                inputUiState.copy(
+                    allCategoryExpense = inputUiState.allCategoryExpense.map { it.copy(selected = false) },
+                    allCategoryIncome = inputUiState.allCategoryIncome.map { it.copy(selected = false) },
                     selectedAdapter = adapter
                 )
             }
@@ -297,53 +249,9 @@ class InputViewModel @Inject constructor(
 
     }
 
-    fun setValue(text: String) {
+    private fun setValue(text: String) {
         uiState.update {
             it.copy(value = text)
-        }
-    }
-
-    fun getSelectedAdapter(): Int {
-        return uiState.value.selectedAdapter
-    }
-
-    fun dispatchTakePictureIntent(context: Context): Intent? {
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            val photoFile: File? = try {
-                createImageFile(context)
-            } catch (ex: IOException) {
-                Toast.makeText(context, "I can't create a file", Toast.LENGTH_LONG).show()
-                null
-            }
-
-            photoFile?.also {
-                val photoURI: Uri = FileProvider.getUriForFile(
-                    context,
-                    "com.fiz.mono.fileprovider",
-                    it
-                )
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                return takePictureIntent
-            }
-        }
-        return null
-    }
-
-    @Throws(IOException::class)
-    fun createImageFile(context: Context): File {
-        val timeStamp: String =
-            DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss").withZone(ZoneOffset.UTC).format(Instant.now())
-        val storageDir: File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
-        return File.createTempFile(
-            "JPEG_${timeStamp}_",
-            ".jpg",
-            storageDir
-        ).apply {
-            uiState.update {
-                it.copy(
-                    currentPhotoPath = absolutePath
-                )
-            }
         }
     }
 
@@ -355,18 +263,17 @@ class InputViewModel @Inject constructor(
         }
     }
 
-    fun addPhotoPath() {
+    private fun addPhotoPath() {
         uiState.update {
             val photoPaths = it.photoPaths.toMutableList()
             photoPaths.add(it.currentPhotoPath)
             it.copy(
                 photoPaths = photoPaths,
-                isPhotoPathsChange = true
             )
         }
     }
 
-    fun removePhotoPath(number: Int) {
+    private fun removePhotoPath(number: Int) {
         uiState.value.photoPaths[number - 1]?.let {
             val fDelete = File(it)
             if (fDelete.exists()) {
@@ -378,7 +285,6 @@ class InputViewModel @Inject constructor(
             photoPaths.removeAt(number - 1)
             it.copy(
                 photoPaths = photoPaths,
-                isPhotoPathsChange = true
             )
         }
     }
@@ -392,13 +298,16 @@ class InputViewModel @Inject constructor(
     fun checkCameraHardware(context: Context): Boolean {
         if (uiState.value.photoPaths.size == InputFragment.MAX_PHOTO)
             return false
-        if (cashCheckCameraHardware == null)
-            cashCheckCameraHardware =
-                context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
-        return cashCheckCameraHardware ?: false
+        if (uiState.value.cashCheckCameraHardware == null)
+            uiState.value = uiState.value
+                .copy(
+                    cashCheckCameraHardware =
+                    context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
+                )
+        return uiState.value.cashCheckCameraHardware ?: false
     }
 
-    fun setViewModelTransaction(transaction: Transaction) {
+    private fun setViewModelTransaction(transaction: Transaction) {
         if (transaction.value > 0)
             setSelectedAdapter(InputFragment.INCOME)
         else
@@ -411,13 +320,13 @@ class InputViewModel @Inject constructor(
         setPhotoPath(transaction.photo.toMutableList())
     }
 
-    fun clickRecyclerView(position: Int) {
+    private fun clickRecyclerView(position: Int) {
         viewModelScope.launch(Dispatchers.Default) {
             if (uiState.value.isClickEditPosition(position)) {
-                uiState.update {
-                    it.copy(
-                        allCategoryExpense = it.allCategoryExpense.map { it.copy(selected = false) },
-                        allCategoryIncome = it.allCategoryIncome.map { it.copy(selected = false) },
+                uiState.update { inputUiState ->
+                    inputUiState.copy(
+                        allCategoryExpense = inputUiState.allCategoryExpense.map { it.copy(selected = false) },
+                        allCategoryIncome = inputUiState.allCategoryIncome.map { it.copy(selected = false) },
                     )
                 }
                 navigationUiState.update {
@@ -436,27 +345,28 @@ class InputViewModel @Inject constructor(
     }
 
     private fun selectExpense(position: Int) {
-        uiState.update {
-            val allCategoryIncome = it.allCategoryIncome.map {
+        uiState.update { inputUiState ->
+            val allCategoryIncome = inputUiState.allCategoryIncome.map {
                 var selected = it.selected
                 if (it.selected)
                     selected = false
                 it.copy(selected = selected)
             }
 
-            val allCategoryExpense = it.allCategoryExpense.mapIndexed { index, categoryUiState ->
-                var selected = categoryUiState.selected
-                if (index != position && categoryUiState.selected)
-                    selected = false
-                if (index == position)
-                    selected = !selected
-                categoryUiState.copy(
-                    selected =
-                    selected
-                )
-            }
+            val allCategoryExpense =
+                inputUiState.allCategoryExpense.mapIndexed { index, categoryUiState ->
+                    var selected = categoryUiState.selected
+                    if (index != position && categoryUiState.selected)
+                        selected = false
+                    if (index == position)
+                        selected = !selected
+                    categoryUiState.copy(
+                        selected =
+                        selected
+                    )
+                }
 
-            it.copy(
+            inputUiState.copy(
                 allCategoryExpense = allCategoryExpense,
                 allCategoryIncome = allCategoryIncome
             )
@@ -464,27 +374,28 @@ class InputViewModel @Inject constructor(
     }
 
     private fun selectIncome(position: Int) {
-        uiState.update {
-            val allCategoryExpense = it.allCategoryExpense.map {
+        uiState.update { inputUiState ->
+            val allCategoryExpense = inputUiState.allCategoryExpense.map {
                 var selected = it.selected
                 if (it.selected)
                     selected = false
                 it.copy(selected = selected)
             }
 
-            val allCategoryIncome = it.allCategoryIncome.mapIndexed { index, categoryUiState ->
-                var selected = categoryUiState.selected
-                if (index != position && categoryUiState.selected)
-                    selected = false
-                if (index == position)
-                    selected = !selected
-                categoryUiState.copy(
-                    selected =
-                    selected
-                )
-            }
+            val allCategoryIncome =
+                inputUiState.allCategoryIncome.mapIndexed { index, categoryUiState ->
+                    var selected = categoryUiState.selected
+                    if (index != position && categoryUiState.selected)
+                        selected = false
+                    if (index == position)
+                        selected = !selected
+                    categoryUiState.copy(
+                        selected =
+                        selected
+                    )
+                }
 
-            it.copy(
+            inputUiState.copy(
                 allCategoryExpense = allCategoryExpense,
                 allCategoryIncome = allCategoryIncome
             )
@@ -519,10 +430,10 @@ class InputViewModel @Inject constructor(
                     )
                 transactionRepository.insertNewTransaction(transaction.toTransaction())
 
-                uiState.update {
-                    it.copy(
-                        allCategoryExpense = it.allCategoryExpense.map { it.copy(selected = false) },
-                        allCategoryIncome = it.allCategoryIncome.map { it.copy(selected = false) },
+                uiState.update { inputUiState ->
+                    inputUiState.copy(
+                        allCategoryExpense = inputUiState.allCategoryExpense.map { it.copy(selected = false) },
+                        allCategoryIncome = inputUiState.allCategoryIncome.map { it.copy(selected = false) },
                         value = "",
                         note = "",
                         photoPaths = emptyList<String>().toMutableList()
@@ -548,19 +459,7 @@ class InputViewModel @Inject constructor(
         }
     }
 
-    fun onPhotoPathsChange() {
-        uiState.update {
-            it.copy(isPhotoPathsChange = false)
-        }
-    }
-
-    fun onTrasactionLoaded() {
-        uiState.update {
-            it.copy(isAllTransactionsLoaded = false)
-        }
-    }
-
-    fun clickBackButton() {
+    private fun clickBackButton() {
         navigationUiState.value = navigationUiState.value
             .copy(isMoveReturn = true)
     }
@@ -570,32 +469,39 @@ class InputViewModel @Inject constructor(
             .copy(isMoveCalendar = true)
     }
 
-    fun movedCalendar() {
+    private fun movedCalendar() {
         navigationUiState.value = navigationUiState.value
             .copy(isMoveCalendar = false)
     }
 
-    fun movedOnBoarding() {
+    private fun movedOnBoarding() {
         navigationUiState.value = navigationUiState.value
             .copy(isMoveOnBoarding = false)
     }
 
-    fun movedPinPassword() {
+    private fun movedPinPassword() {
         navigationUiState.value = navigationUiState.value
             .copy(isMovePinPassword = false)
     }
 
 
-    fun movedEdit() {
+    private fun movedEdit() {
         navigationUiState.value = navigationUiState.value
             .copy(isMoveEdit = false)
     }
 
 
-    fun returned() {
+    private fun returned() {
         navigationUiState.value = navigationUiState.value
             .copy(isMoveReturn = false)
 
     }
 
+    private fun updateCurrentPhotoPath(absolutePath: String) {
+        uiState.update {
+            it.copy(
+                currentPhotoPath = absolutePath
+            )
+        }
+    }
 }

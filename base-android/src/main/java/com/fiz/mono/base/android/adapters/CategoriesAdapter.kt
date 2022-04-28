@@ -1,10 +1,10 @@
-package com.fiz.mono.category_edit.ui
+package com.fiz.mono.base.android.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.fiz.mono.category_edit.databinding.ItemCategoryBinding
+import com.fiz.mono.base.android.databinding.ItemCategoryBinding
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.getColorCompat
 import com.fiz.mono.core.util.setTextAppearanceCompat
@@ -56,10 +56,11 @@ class CategoriesViewHolder(
     }
 
     private fun getColorText(imgSrc: Int): Int {
-        return if (imgSrc != 0)
-            binding.root.context.themeColor(com.google.android.material.R.attr.colorPrimary)
+        val color = if (imgSrc != 0)
+            com.google.android.material.R.attr.colorPrimary
         else
-            binding.root.context.themeColor(com.google.android.material.R.attr.colorSecondary)
+            com.google.android.material.R.attr.colorSecondary
+        return binding.root.context.themeColor(color)
     }
 
     private fun getStrokeColor(selected: Boolean, colorSelected: Int): Int {

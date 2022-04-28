@@ -13,12 +13,12 @@ class SelectOneItemCategoryIconUseCase @Inject constructor() {
                 selected = false
             if (index == position)
                 selected = !selected
-            T.copy(selected = selected)
+            T.copySelected(selected = selected)
         }
     }
 }
 
 interface Selected<T> {
     val selected: Boolean
-    fun copy(selected: Boolean): T
+    fun copySelected(selected: Boolean): T
 }

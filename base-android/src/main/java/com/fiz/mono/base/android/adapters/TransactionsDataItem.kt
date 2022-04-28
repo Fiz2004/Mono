@@ -1,6 +1,7 @@
 package com.fiz.mono.report.ui.category
 
 import androidx.recyclerview.widget.DiffUtil
+import com.fiz.mono.base.android.adapters.InfoDay
 import com.fiz.mono.domain.models.Transaction
 
 sealed class TransactionsDataItem {

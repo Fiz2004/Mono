@@ -12,27 +12,14 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.setVisible
-import com.fiz.mono.database.data_source.CategoryLocalDataSource
-import com.fiz.mono.database.data_source.TransactionLocalDataSource
 import com.fiz.mono.settings.databinding.FragmentSettingsBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingsFragment : Fragment() {
     private val viewModel: SettingsViewModel by viewModels()
 
     private lateinit var binding: FragmentSettingsBinding
-
-    @Inject
-    lateinit var categoryLocalDataSource: CategoryLocalDataSource
-
-    @Inject
-    lateinit var transactionLocalDataSource: TransactionLocalDataSource
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -86,13 +73,8 @@ class SettingsFragment : Fragment() {
 
 
     private fun deleteOnClickListener(view: View) {
-        CoroutineScope(Dispatchers.Default).launch {
-            categoryLocalDataSource.deleteAll(requireContext())
-            transactionLocalDataSource.deleteAll()
-            withContext(Dispatchers.Main) {
-                Toast.makeText(requireContext(), R.string.delete_all_data, Toast.LENGTH_LONG).show()
-            }
-        }
+        viewModel.clickDelete()
+        Toast.makeText(requireContext(), R.string.delete_all_data, Toast.LENGTH_LONG).show()
     }
 
     private fun reminderOnClickListener(view: View) {
@@ -124,18 +106,16 @@ class SettingsFragment : Fragment() {
     }
 
     private fun modeOnClickListener(buttonView: CompoundButton, isChecked: Boolean) {
-        if (isChecked) {
-            viewModel.setThemeLight(false)
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        } else {
-            viewModel.setThemeLight(true)
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        }
+        viewModel.setThemeLight(!isChecked)
+        val mode = if (isChecked)
+            AppCompatDelegate.MODE_NIGHT_YES
+        else
+            AppCompatDelegate.MODE_NIGHT_NO
+        AppCompatDelegate.setDefaultNightMode(mode)
     }
 
     private fun updateUI() {
-        binding.modeSwitch.isChecked =
-            AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
+        binding.modeSwitch.isChecked = viewModel.themeLight
     }
 
 }

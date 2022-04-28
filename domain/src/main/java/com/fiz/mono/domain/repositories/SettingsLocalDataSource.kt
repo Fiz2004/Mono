@@ -4,7 +4,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.threeten.bp.LocalDate
 
 data class Settings(
-    val firstTime: Boolean = true,
     val date: LocalDate = LocalDate.now(),
     val isNeedConfirmPIN: Boolean = false,
     val isCurrentConfirmPIN: Boolean = false,
@@ -26,9 +25,9 @@ interface SettingsLocalDataSource {
 
     suspend fun saveCurrentConfirmPin(confirmPin: Boolean)
 
-    suspend fun loadFirstTime()
+    fun loadFirstTime(): Boolean
 
-    suspend fun saveFirstTime(firstTime: Boolean)
+    fun saveFirstTime(firstTime: Boolean)
 
     suspend fun loadCurrency()
 

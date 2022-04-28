@@ -6,6 +6,7 @@ import com.fiz.mono.database.dao.CategoryDao
 import com.fiz.mono.database.entity.CategoryEntity
 import com.fiz.mono.database.mapper.toCategoryEntity
 import com.fiz.mono.domain.models.Category
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -17,6 +18,7 @@ import javax.inject.Singleton
 
 @Singleton
 class CategoryLocalDataSource @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val categoryDao: CategoryDao,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) {
@@ -39,13 +41,13 @@ class CategoryLocalDataSource @Inject constructor(
         categoryDao.delete(category.toCategoryEntity())
     }
 
-    suspend fun deleteAll(context: Context) = withContext(defaultDispatcher) {
+    suspend fun deleteAll() = withContext(defaultDispatcher) {
         categoryDao.deleteAll()
 
-        addDefaultValues(context)
+        addDefaultValues()
     }
 
-    private suspend fun addDefaultValues(context: Context) = withContext(defaultDispatcher) {
+    private suspend fun addDefaultValues() = withContext(defaultDispatcher) {
         val allCategoryExpenseDefault = AppDatabase.getAllCategoryExpenseDefault(context)
         val allCategoryIncomeDefault = AppDatabase.getAllCategoryIncomeDefault(context)
 

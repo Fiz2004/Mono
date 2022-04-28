@@ -104,4 +104,5 @@
     <string name="add_more">Добавить еще</string>
     <string name="remove_reminder">Удалить напоминание</string>
     <string name="this_week">На этой неделе</string>
+    <string name="cant_create_file">I can\'t create a file</string>
 </resources>

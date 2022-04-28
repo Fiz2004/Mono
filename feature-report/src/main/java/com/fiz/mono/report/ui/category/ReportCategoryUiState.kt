@@ -1,6 +1,7 @@
 package com.fiz.mono.report.ui.category
 
 import android.graphics.*
+import com.fiz.mono.base.android.adapters.InfoDay
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.domain.models.Category
 import com.fiz.mono.domain.models.Transaction

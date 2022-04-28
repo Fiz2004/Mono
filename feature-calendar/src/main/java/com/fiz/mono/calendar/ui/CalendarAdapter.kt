@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.feature.calendar.databinding.ItemCalendarBinding
 import com.fiz.mono.feature.calendar.databinding.ItemCalendarDayWeekBinding
-import com.fiz.mono.ui.calendar.TransactionsDay
 
 private const val ITEM_VIEW_TYPE_DAY_WEEK = 0
 private const val ITEM_VIEW_TYPE_DAY = 1

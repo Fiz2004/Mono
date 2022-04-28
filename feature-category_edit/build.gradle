@@ -38,6 +38,7 @@ dependencies {
 
     implementation project(':common-ui-resources')
     implementation project(':base')
+    implementation project(':base-android')
     implementation project(':domain')
     implementation project(':data')
 
@@ -57,6 +58,7 @@ dependencies {
 
     // Hilt
     implementation("com.google.dagger:hilt-android:${versions.hilt}")
+    implementation project(path: ':base-android')
 
     kapt("com.google.dagger:hilt-android-compiler:${versions.hilt}")
 

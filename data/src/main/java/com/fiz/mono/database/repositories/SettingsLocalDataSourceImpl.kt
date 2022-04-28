@@ -14,17 +14,10 @@ class SettingsLocalDataSourceImpl @Inject constructor(private val sharedPreferen
 
     override val stateFlow = MutableStateFlow(Settings())
 
-    override suspend fun loadFirstTime() = stateFlow
-        .emit(
-            stateFlow.value
-                .copy(firstTime = sharedPreferences.getBoolean(FIRST_TIME, true))
-        )
+    override fun loadFirstTime() = sharedPreferences.getBoolean(FIRST_TIME, true)
 
-
-    override suspend fun saveFirstTime(firstTime: Boolean) {
+    override fun saveFirstTime(firstTime: Boolean) {
         sharedPreferences.edit().putBoolean(FIRST_TIME, firstTime).apply()
-        stateFlow.value = stateFlow.value
-            .copy(firstTime = sharedPreferences.getBoolean(FIRST_TIME, true))
     }
 
     override fun loadPin(): String = sharedPreferences.getString(PIN, "") ?: ""

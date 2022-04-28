@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import com.fiz.mono.base.android.adapters.TransactionsAdapter
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.getColorCompat
 import com.fiz.mono.core.util.launchAndRepeatWithViewLifecycle

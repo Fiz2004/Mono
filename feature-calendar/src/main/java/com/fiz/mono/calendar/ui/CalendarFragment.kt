@@ -5,14 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.fiz.mono.base.android.adapters.TransactionsAdapter
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.TimeUtils.getDateMonthYearString
+import com.fiz.mono.core.util.launchAndRepeatWithViewLifecycle
 import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.feature.calendar.databinding.FragmentCalendarBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,14 +22,27 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class CalendarFragment : Fragment(), MonthDialog.Choicer {
 
-    private val mainViewModel: MainViewModel by activityViewModels()
-
     private val viewModel: CalendarViewModel by viewModels()
 
-    private lateinit var binding: FragmentCalendarBinding
+    private val calendarAdapter: CalendarAdapter by lazy {
+        CalendarAdapter { transactionsDay ->
+            viewModel.setDate(transactionsDay.day)
+        }
+    }
 
-    private lateinit var calendarAdapter: CalendarAdapter
-    private lateinit var transactionAdapter: TransactionsAdapter
+    private val transactionAdapter: TransactionsAdapter by lazy {
+        TransactionsAdapter(
+            viewModel.uiState.value.currency,
+            true
+        ) { transactionItem ->
+            val action =
+                CalendarFragmentDirections
+                    .actionCalendarFragmentToInputFragment(transaction = transactionItem.id)
+            findNavController().navigate(action)
+        }
+    }
+
+    private lateinit var binding: FragmentCalendarBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,29 +55,10 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        init()
         bind()
         bindListener()
         subscribe()
         setupNavigation()
-    }
-
-    internal fun init() {
-        calendarAdapter = CalendarAdapter { transactionsDay ->
-            mainViewModel.setDate(transactionsDay.day)
-        }
-
-        val currency = viewModel.uiState.value.currency
-        transactionAdapter =
-            TransactionsAdapter(
-                currency,
-                true
-            ) { transactionItem ->
-                val action =
-                    CalendarFragmentDirections
-                        .actionCalendarFragmentToInputFragment(transaction = transactionItem.id)
-                findNavController().navigate(action)
-            }
     }
 
     private fun bind() {
@@ -87,7 +82,7 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
                 monthDialog.choicer = this@CalendarFragment
 
                 val args = Bundle()
-                val currentMonth = mainViewModel.date.value?.monthValue ?: 1
+                val currentMonth = viewModel.uiState.value.date.monthValue
                 args.putInt("currentMonth", currentMonth)
                 monthDialog.arguments = args
 
@@ -97,38 +92,35 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
     }
 
     private fun subscribe() {
-        mainViewModel.date.observe(viewLifecycleOwner) {
-            binding.navigationBarLayout.titleTextView.text = getDateMonthYearString(
-                it,
-                resources.getStringArray(R.array.name_month)
-            )
-            viewModel.changeData(it)
-        }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collect { uiState ->
+        launchAndRepeatWithViewLifecycle {
+            viewModel.uiState.collect { uiState ->
 
-                    if (uiState.isDateChange || uiState.isAllTransactionsLoaded) {
-                        binding.calendarRecyclerView.itemAnimator = null
-                        calendarAdapter.submitList(uiState.calendarDataItem)
-                        transactionAdapter.submitList(uiState.transactionsDataItem)
-                        binding.noTransactionsTextView.setVisible(uiState.transactionsDataItem.isEmpty())
-                        binding.transactionRecyclerView.setVisible(uiState.transactionsDataItem.isNotEmpty())
-                        if (uiState.isDateChange)
-                            viewModel.onChangeDate()
-                        if (uiState.isAllTransactionsLoaded)
-                            viewModel.onAllTransactionsLoaded()
-                    }
-
+                if (uiState.isDateChange || uiState.isAllTransactionsLoaded) {
+                    binding.calendarRecyclerView.itemAnimator = null
+                    calendarAdapter.submitList(uiState.calendarDataItem)
+                    transactionAdapter.submitList(uiState.transactionsDataItem)
+                    binding.noTransactionsTextView.setVisible(uiState.transactionsDataItem.isEmpty())
+                    binding.transactionRecyclerView.setVisible(uiState.transactionsDataItem.isNotEmpty())
+                    if (uiState.isDateChange)
+                        viewModel.onChangeDate()
+                    if (uiState.isAllTransactionsLoaded)
+                        viewModel.onAllTransactionsLoaded()
                 }
+
+                binding.navigationBarLayout.titleTextView.text = getDateMonthYearString(
+                    uiState.date,
+                    resources.getStringArray(R.array.name_month)
+                )
+                viewModel.changeData(uiState.date)
+
             }
         }
     }
 
 
     override fun choiceMonth(numberMonth: Int) {
-        mainViewModel.setMonth(numberMonth)
+        viewModel.setMonth(numberMonth)
     }
 
     private fun setupNavigation() {

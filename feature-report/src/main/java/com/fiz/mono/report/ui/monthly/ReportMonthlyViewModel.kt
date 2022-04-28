@@ -8,12 +8,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import org.threeten.bp.LocalDate
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ReportMonthlyViewModel @Inject constructor(
+    private val getTransactionsForMonth: GetTransactionsForMonth,
     private val settingsLocalDataSource: SettingsLocalDataSource,
     reportUseCase: ReportUseCase
 ) :
@@ -24,8 +24,13 @@ class ReportMonthlyViewModel @Inject constructor(
 
         reportUseCase.observeAllTransactionsUseCase()
             .onEach { allTransactions ->
+                val transactionsForMonth = getTransactionsForMonth(
+                    allTransactions,
+                    uiState.value.date,
+                    uiState.value.tabSelectedReport
+                )
                 uiState.value = uiState.value
-                    .copy(allTransactions = allTransactions)
+                    .copy(transactionsForMonth = transactionsForMonth)
             }.launchIn(viewModelScope)
 
         reportUseCase.getCurrentBalanceUseCase(uiState.value.currency)
@@ -63,9 +68,7 @@ class ReportMonthlyViewModel @Inject constructor(
             uiState.value = uiState.value
                 .copy(lastBalance = lastBalance)
         }.launchIn(viewModelScope)
-    }
 
-    init {
         viewModelScope.launch {
             settingsLocalDataSource.stateFlow.collect {
 
@@ -77,8 +80,32 @@ class ReportMonthlyViewModel @Inject constructor(
 
     fun onEvent(event: ReportMonthlyUiEvent) {
         when (event) {
-            is ReportMonthlyUiEvent.ObserveData -> setDate(event.date)
             is ReportMonthlyUiEvent.ClickTransactionsFilter -> setTabSelectedReport(event.filter)
+            ReportMonthlyUiEvent.ClickDateLeft -> dateMonthMinusOne()
+            ReportMonthlyUiEvent.ClickDateRight -> dateMonthPlusOne()
+        }
+    }
+
+
+    private fun dateMonthPlusOne() {
+        val newDate = uiState.value.date.plusMonths(1)
+
+        uiState.value = uiState.value
+            .copy(date = newDate)
+
+        viewModelScope.launch {
+            settingsLocalDataSource.saveDate(newDate)
+        }
+    }
+
+    private fun dateMonthMinusOne() {
+        val newDate = uiState.value.date.minusMonths(1)
+
+        uiState.value = uiState.value
+            .copy(date = newDate)
+
+        viewModelScope.launch {
+            settingsLocalDataSource.saveDate(newDate)
         }
     }
 
@@ -86,22 +113,5 @@ class ReportMonthlyViewModel @Inject constructor(
         uiState.value = uiState.value
             .copy(tabSelectedReport = tabSelectedReport)
     }
-
-    private fun setDate(date: LocalDate) {
-        uiState.value = uiState.value
-            .copy(
-                date = date,
-                isDateChange = true
-            )
-    }
-
-    fun start(currency: String) {
-        uiState.value = uiState.value
-            .copy(currency = currency)
-    }
-
-    fun dataChanged() {
-        uiState.value = uiState.value
-            .copy(isDateChange = false)
-    }
 }
+

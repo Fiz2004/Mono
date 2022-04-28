@@ -1,4 +1,4 @@
-package com.fiz.mono.calendar.ui
+package com.fiz.mono.base.android.adapters
 
 data class InfoDay(
     val date: String,

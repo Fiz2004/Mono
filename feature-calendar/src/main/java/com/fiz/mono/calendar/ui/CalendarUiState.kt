@@ -2,7 +2,7 @@ package com.fiz.mono.calendar.ui
 
 import com.fiz.mono.core.util.TimeUtils
 import com.fiz.mono.domain.models.Transaction
-import com.fiz.mono.ui.calendar.TransactionsDay
+import com.fiz.mono.report.ui.category.TransactionsDataItem
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.*
