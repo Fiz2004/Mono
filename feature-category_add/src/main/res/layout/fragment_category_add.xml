@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="@dimen/fragmentPaddingStart"
+    android:paddingEnd="@dimen/fragmentPaddingEnd"
+    tools:context=".category_add.ui.CategoryAddFragment">
+
+    <include
+        android:id="@+id/navigationBarLayout"
+        layout="@layout/navigation_bar"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/categoryNameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/category_name"
+        android:textAppearance="@style/size14_color_secondary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/navigationBarLayout" />
+
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/categoryNameEditText"
+        style="@style/EditText"
+        android:layout_width="match_parent"
+        android:layout_marginTop="8dp"
+        android:layout_height="48dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/categoryNameTextView" />
+
+    <TextView
+        android:id="@+id/iconTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/icon"
+        android:textAlignment="textStart"
+        android:textAppearance="@style/size14_color_secondary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/categoryNameEditText" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/categoryIconRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:clipToPadding="false"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iconTextView"
+        app:spanCount="@integer/count_columns"
+        tools:itemCount="16"
+        tools:listitem="@layout/item_category" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

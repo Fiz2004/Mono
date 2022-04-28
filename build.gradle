@@ -9,6 +9,7 @@ buildscript {
 
     ext.versions = [
             'hilt': '2.40',
+            'navigation': '2.4.2',
             'room': '2.4.2',
             'coroutines':'1.6.1'
     ]

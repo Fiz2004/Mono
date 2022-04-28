@@ -7,16 +7,17 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.fiz.mono.common.ui.resources.R
-import com.fiz.mono.core.data.data_source.CategoryIconsLocalDataSource
-import com.fiz.mono.core.data.data_source.CategoryLocalDataSource
-import com.fiz.mono.core.data.data_source.TransactionLocalDataSource
-import com.fiz.mono.core.data.repositories.CategoryRepositoryImpl
-import com.fiz.mono.core.data.repositories.TransactionRepositoryImpl
-import com.fiz.mono.core.domain.repositories.CategoryRepository
-import com.fiz.mono.core.domain.repositories.TransactionRepository
 import com.fiz.mono.database.AppDatabase
 import com.fiz.mono.database.dao.CategoryDao
 import com.fiz.mono.database.dao.TransactionDao
+import com.fiz.mono.database.data_source.CategoryIconsLocalDataSourceImpl
+import com.fiz.mono.database.data_source.CategoryLocalDataSource
+import com.fiz.mono.database.data_source.TransactionLocalDataSource
+import com.fiz.mono.database.repositories.CategoryIconsRepositoryImpl
+import com.fiz.mono.database.repositories.CategoryRepositoryImpl
+import com.fiz.mono.database.repositories.TransactionRepositoryImpl
+import com.fiz.mono.domain.repositories.CategoryRepository
+import com.fiz.mono.domain.repositories.TransactionRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -75,8 +76,14 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideCategoryIconUiStateDataSource(): CategoryIconsLocalDataSource {
-        return CategoryIconsLocalDataSource()
+    fun provideCategoryIconUiStateDataSource(): CategoryIconsLocalDataSourceImpl {
+        return CategoryIconsLocalDataSourceImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCategoryCategoryIconsRepository(categoryIconsLocalDataSourceImpl:CategoryIconsLocalDataSourceImpl): CategoryIconsRepositoryImpl {
+        return CategoryIconsRepositoryImpl(categoryIconsLocalDataSourceImpl)
     }
 
     @Provides

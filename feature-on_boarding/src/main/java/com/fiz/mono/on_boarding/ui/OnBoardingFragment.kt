@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.addCallback
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -19,16 +19,17 @@ class OnBoardingFragment : Fragment() {
 
     private val viewModel: OnBoardingViewModel by viewModels()
 
+    private val callback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            viewModel.onEvent(OnBoardingUiEvent.ClickBackPress)
+        }
+    }
+
     private lateinit var binding: FragmentOnBoardingBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (!viewModel.clickBackPress()) {
-                isEnabled = false
-                activity?.onBackPressed()
-            }
-        }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
     override fun onCreateView(
@@ -48,11 +49,11 @@ class OnBoardingFragment : Fragment() {
 
     private fun bindListener() {
         binding.continueOnBoardingButton.setOnClickListener {
-            viewModel.clickNextPages()
+            viewModel.onEvent(OnBoardingUiEvent.ClickNextPages)
         }
 
         binding.skipOnBoardingButton.setOnClickListener {
-            viewModel.clickSkipButton()
+            viewModel.onEvent(OnBoardingUiEvent.ClickSkipButton)
         }
     }
 
@@ -60,17 +61,17 @@ class OnBoardingFragment : Fragment() {
         launchAndRepeatWithViewLifecycle {
             viewModel.uiState.collect { uiState ->
 
-                if (uiState.pages < 3) {
+                if (uiState.page < OnBoardingUiState.MAX_PAGE) {
                     binding.apply {
                         pageNumberOnBoardingTextView.text =
-                            getString(R.string.pageNumber, uiState.pages + 1, 3)
-                        skipOnBoardingButton.setVisible(uiState.pages != 2)
+                            getString(R.string.pageNumber, uiState.page + 1, OnBoardingUiState.MAX_PAGE)
+                        skipOnBoardingButton.setVisible(uiState.page != OnBoardingUiState.MAX_PAGE-1)
                         headerOnBoardingTextView.text =
-                            resources.getStringArray(R.array.header)[uiState.pages]
+                            resources.getStringArray(R.array.header)[uiState.page]
                         descriptionOnBoardingTextView.text =
-                            resources.getStringArray(R.array.description)[uiState.pages]
+                            resources.getStringArray(R.array.description)[uiState.page]
                         continueOnBoardingButton.text =
-                            resources.getStringArray(R.array.getStarted)[uiState.pages]
+                            resources.getStringArray(R.array.getStarted)[uiState.page]
 
                         imageOnBoardingImageView
                             .setImageResource(viewModel.getImage())
@@ -83,8 +84,7 @@ class OnBoardingFragment : Fragment() {
         launchAndRepeatWithViewLifecycle {
             viewModel.navigationUiState.collect { navigationUiState ->
 
-                if (navigationUiState.isNextScreen) {
-                    viewModel.changeFirstTime()
+                if (navigationUiState.moveNextScreen) {
                     findNavController().popBackStack()
                 }
 

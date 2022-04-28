@@ -1,4 +1,4 @@
-package com.fiz.mono.core.util
+package com.fiz.mono.util
 
 sealed class Resource<T>(val data: T? = null, val message: String? = null) {
 

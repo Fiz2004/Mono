@@ -1,8 +1,8 @@
 package com.fiz.mono
 
 import android.app.Application
-import com.fiz.mono.core.ui.MainActivity
 import com.fiz.mono.reminder.receiver.GetMainActiviti
+import com.fiz.mono.ui.MainActivity
 import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.hilt.android.HiltAndroidApp
 

@@ -1,8 +1,11 @@
 package com.fiz.mono.domain.repositories
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 interface SettingsLocalDataSource {
+    val firstTimeFlow:MutableStateFlow<Boolean>
+
     fun loadPin(): String
 
     fun savePin(pin: String)
@@ -11,9 +14,9 @@ interface SettingsLocalDataSource {
 
     fun saveConfirmPin(confirmPin: Boolean)
 
-    fun loadFirstTime(): Flow<Boolean>
+    suspend fun loadFirstTime()
 
-    fun saveFirstTime(firstTime: Boolean)
+    suspend fun saveFirstTime(firstTime: Boolean)
 
     fun loadCurrency(): String
 

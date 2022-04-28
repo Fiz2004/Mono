@@ -3,6 +3,7 @@ package com.fiz.mono.database.repositories
 import android.content.SharedPreferences
 import com.fiz.mono.domain.repositories.SettingsLocalDataSource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -10,14 +11,17 @@ import javax.inject.Singleton
 @Singleton
 class SettingsLocalDataSourceImpl @Inject constructor(private val sharedPreferences: SharedPreferences) :
     SettingsLocalDataSource {
-    override fun loadFirstTime(): Flow<Boolean> {
-        return flow {
-            emit(sharedPreferences.getBoolean(FIRST_TIME, true))
-        }
+
+    override val firstTimeFlow= MutableStateFlow(true)
+
+    override suspend fun loadFirstTime() {
+        return firstTimeFlow.emit(sharedPreferences.getBoolean(FIRST_TIME, true))
     }
 
-    override fun saveFirstTime(firstTime: Boolean) =
+    override suspend fun saveFirstTime(firstTime: Boolean) {
         sharedPreferences.edit().putBoolean(FIRST_TIME, firstTime).apply()
+        firstTimeFlow.emit(firstTime)
+    }
 
     override fun loadPin(): String = sharedPreferences.getString(PIN, "") ?: ""
 
@@ -34,7 +38,7 @@ class SettingsLocalDataSourceImpl @Inject constructor(private val sharedPreferen
     override fun saveCurrency(currency: String) =
         sharedPreferences.edit().putString(CURRENCY, currency).apply()
 
-    override fun loadThemeLight(): Boolean = sharedPreferences.getBoolean(THEME_LIGHT, false)
+    override fun loadThemeLight(): Boolean = sharedPreferences.getBoolean(THEME_LIGHT, true)
 
     override fun saveThemeLight(themeLight: Boolean) =
         sharedPreferences.edit().putBoolean(THEME_LIGHT, themeLight).apply()

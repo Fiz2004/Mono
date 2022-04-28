@@ -37,6 +37,7 @@ dependencies {
 
     implementation project(':common-ui-resources')
     implementation project(':domain')
+    implementation project(':base')
 
     // Room
     implementation 'androidx.room:room-common:2.4.2'

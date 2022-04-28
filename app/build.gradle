@@ -53,6 +53,13 @@ dependencies {
     implementation project(':feature-reminder')
     implementation project(':feature-on_boarding')
     implementation project(':feature-pin_password')
+    implementation project(':feature-calendar')
+    implementation project(':feature-category_add')
+    implementation project(':feature-category_edit')
+    implementation project(':feature-currency')
+    implementation project(':feature-input')
+    implementation project(':feature-report')
+    implementation project(':feature-settings')
 
     // Room
     implementation 'androidx.room:room-common:2.4.2'
@@ -90,7 +97,6 @@ dependencies {
     // Hilt
     implementation("com.google.dagger:hilt-android:${versions.hilt}")
     kapt("com.google.dagger:hilt-android-compiler:${versions.hilt}")
-
 
     // Date
     implementation 'com.jakewharton.threetenabp:threetenabp:1.4.0'
