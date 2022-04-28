@@ -5,18 +5,21 @@ import android.graphics.Paint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.domain.repositories.CategoryRepository
+import com.fiz.mono.domain.repositories.SettingsLocalDataSource
 import com.fiz.mono.domain.repositories.TransactionRepository
 import com.fiz.mono.report.ui.select.SelectCategoryFragment
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
 class ReportCategoryViewModel @Inject constructor(
+    private val settingsLocalDataSource: SettingsLocalDataSource,
     private val categoryRepository: CategoryRepository,
     transactionRepository: TransactionRepository
 ) : ViewModel() {
@@ -42,6 +45,17 @@ class ReportCategoryViewModel @Inject constructor(
                     .copy(allTransactions = allTransactions)
             }.launchIn(viewModelScope)
 
+    }
+
+
+    init {
+        viewModelScope.launch {
+            settingsLocalDataSource.stateFlow.collect {
+
+                uiState.value = uiState.value
+                    .copy(currency = it.currency)
+            }
+        }
     }
 
     fun clickMonthToggleButton() {

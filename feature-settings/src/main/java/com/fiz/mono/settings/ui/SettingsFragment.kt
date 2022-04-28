@@ -8,7 +8,7 @@ import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.setVisible
@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingsFragment : Fragment() {
-    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels()
+    private val viewModel: SettingsViewModel by viewModels()
 
     private lateinit var binding: FragmentSettingsBinding
 
@@ -125,10 +125,10 @@ class SettingsFragment : Fragment() {
 
     private fun modeOnClickListener(buttonView: CompoundButton, isChecked: Boolean) {
         if (isChecked) {
-            mainPreferencesViewModel.setThemeLight(false)
+            viewModel.setThemeLight(false)
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         } else {
-            mainPreferencesViewModel.setThemeLight(true)
+            viewModel.setThemeLight(true)
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }

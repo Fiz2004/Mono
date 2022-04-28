@@ -2,6 +2,7 @@ package com.fiz.mono.calendar.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fiz.mono.domain.repositories.SettingsLocalDataSource
 import com.fiz.mono.domain.repositories.TransactionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -12,8 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
-    private val
-    transactionRepository: TransactionRepository
+    private val settingsLocalDataSource: SettingsLocalDataSource,
+    private val transactionRepository: TransactionRepository
 ) :
     ViewModel() {
 
@@ -35,6 +36,16 @@ class CalendarViewModel @Inject constructor(
 
         }
 
+    }
+
+    init {
+        viewModelScope.launch {
+            settingsLocalDataSource.stateFlow.collect {
+
+                uiState.value = uiState.value
+                    .copy(currency = it.currency)
+            }
+        }
     }
 
     fun clickBackButton() {

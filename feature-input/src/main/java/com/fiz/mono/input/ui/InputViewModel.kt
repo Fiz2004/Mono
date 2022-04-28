@@ -17,6 +17,7 @@ import com.fiz.mono.database.mapper.toTransaction
 import com.fiz.mono.domain.models.Category
 import com.fiz.mono.domain.models.Transaction
 import com.fiz.mono.domain.repositories.CategoryRepository
+import com.fiz.mono.domain.repositories.SettingsLocalDataSource
 import com.fiz.mono.domain.repositories.TransactionRepository
 import com.fiz.mono.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,12 +38,104 @@ import kotlin.math.abs
 
 @HiltViewModel
 class InputViewModel @Inject constructor(
+    private val settingsLocalDataSource: SettingsLocalDataSource,
     private val categoryRepository: CategoryRepository,
     private val transactionRepository: TransactionRepository
 ) : ViewModel() {
     var uiState = MutableStateFlow(InputUiState()); private set
 
     var navigationUiState = MutableStateFlow(InputNavigationState()); private set
+
+    fun getFormatDate(pattern: String): String {
+        return DateTimeFormatter.ofPattern(pattern).format(uiState.value.date)
+    }
+
+    fun setMonth(month: Int) {
+        val newDate = uiState.value.date.withMonth(month)
+
+        uiState.value = uiState.value
+            .copy(date = newDate)
+
+        viewModelScope.launch {
+            settingsLocalDataSource.saveDate(newDate)
+        }
+    }
+
+    fun setDate(day: Int) {
+        if (day == 0) return
+
+        val newDate = uiState.value.date.withDayOfMonth(day)
+
+        uiState.value = uiState.value
+            .copy(date = newDate)
+
+        viewModelScope.launch {
+            settingsLocalDataSource.saveDate(newDate)
+        }
+    }
+
+    fun dateDayPlusOne() {
+        val newDate = uiState.value.date.plusDays(1)
+
+        uiState.value = uiState.value
+            .copy(date = newDate)
+
+        viewModelScope.launch {
+            settingsLocalDataSource.saveDate(newDate)
+        }
+    }
+
+    fun dateDayMinusOne() {
+        val newDate = uiState.value.date.minusDays(1)
+
+        uiState.value = uiState.value
+            .copy(date = newDate)
+
+        viewModelScope.launch {
+            settingsLocalDataSource.saveDate(newDate)
+        }
+    }
+
+    fun dateMonthPlusOne() {
+        val newDate = uiState.value.date.plusMonths(1)
+
+        uiState.value = uiState.value
+            .copy(date = newDate)
+
+        viewModelScope.launch {
+            settingsLocalDataSource.saveDate(newDate)
+        }
+    }
+
+    fun dateMonthMinusOne() {
+        val newDate = uiState.value.date.minusMonths(1)
+
+        uiState.value = uiState.value
+            .copy(date = newDate)
+
+        viewModelScope.launch {
+            settingsLocalDataSource.saveDate(newDate)
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            settingsLocalDataSource.stateFlow.collect {
+                navigationUiState.value = navigationUiState.value
+                    .copy(isMoveOnBoarding = it.firstTime)
+
+                uiState.value = uiState.value
+                    .copy(date = it.date)
+
+                if (it.isNeedConfirmPIN && !it.isCurrentConfirmPIN)
+                    navigationUiState.value = navigationUiState.value
+                        .copy(isMovePinPassword = true)
+
+                uiState.value = uiState.value
+                    .copy(currency = it.currency)
+            }
+        }
+    }
 
     private var cashCheckCameraHardware: Boolean? = null
 
@@ -109,7 +202,7 @@ class InputViewModel @Inject constructor(
             is InputUiEvent.ClickRightData -> TODO()
 
             is InputUiEvent.ClickSubmit -> {
-                clickSubmitButton(event.date)
+                clickSubmitButton()
             }
 
             is InputUiEvent.NoteChange -> {
@@ -143,7 +236,7 @@ class InputViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Default) {
             uiState.value.transaction?.let { transactionRepository.delete(it) }
             navigationUiState.update {
-                it.copy(isReturn = true)
+                it.copy(isMoveReturn = true)
             }
         }
     }
@@ -318,18 +411,6 @@ class InputViewModel @Inject constructor(
         setPhotoPath(transaction.photo.toMutableList())
     }
 
-    fun returned() {
-        navigationUiState.update {
-            it.copy(isReturn = false)
-        }
-    }
-
-    fun clickBackButton() {
-        navigationUiState.update {
-            it.copy(isReturn = true)
-        }
-    }
-
     fun clickRecyclerView(position: Int) {
         viewModelScope.launch(Dispatchers.Default) {
             if (uiState.value.isClickEditPosition(position)) {
@@ -410,13 +491,8 @@ class InputViewModel @Inject constructor(
         }
     }
 
-    fun movedEdit() {
-        navigationUiState.update {
-            it.copy(isMoveEdit = false)
-        }
-    }
 
-    private fun clickSubmitButton(date: LocalDate) {
+    private fun clickSubmitButton() {
         viewModelScope.launch(Dispatchers.Default) {
             val selectedCategoryItem =
                 uiState.value.currentCategory
@@ -429,7 +505,7 @@ class InputViewModel @Inject constructor(
                 transactionRepository.updateTransaction(transaction.toTransaction())
 
                 navigationUiState.update {
-                    it.copy(isReturn = true)
+                    it.copy(isMoveReturn = true)
                 }
             } else {
                 val lastItem = uiState.value.allTransactions.lastOrNull()
@@ -439,7 +515,7 @@ class InputViewModel @Inject constructor(
                     getTransactionItemForNew(
                         selectedCategoryItem,
                         newId,
-                        date
+                        uiState.value.date
                     )
                 transactionRepository.insertNewTransaction(transaction.toTransaction())
 
@@ -453,18 +529,6 @@ class InputViewModel @Inject constructor(
                     )
                 }
             }
-        }
-    }
-
-    fun movedCalendar() {
-        navigationUiState.update {
-            it.copy(isMoveCalendar = false)
-        }
-    }
-
-    private fun clickDate() {
-        navigationUiState.update {
-            it.copy(isMoveCalendar = true)
         }
     }
 
@@ -496,5 +560,42 @@ class InputViewModel @Inject constructor(
         }
     }
 
+    fun clickBackButton() {
+        navigationUiState.value = navigationUiState.value
+            .copy(isMoveReturn = true)
+    }
+
+    private fun clickDate() {
+        navigationUiState.value = navigationUiState.value
+            .copy(isMoveCalendar = true)
+    }
+
+    fun movedCalendar() {
+        navigationUiState.value = navigationUiState.value
+            .copy(isMoveCalendar = false)
+    }
+
+    fun movedOnBoarding() {
+        navigationUiState.value = navigationUiState.value
+            .copy(isMoveOnBoarding = false)
+    }
+
+    fun movedPinPassword() {
+        navigationUiState.value = navigationUiState.value
+            .copy(isMovePinPassword = false)
+    }
+
+
+    fun movedEdit() {
+        navigationUiState.value = navigationUiState.value
+            .copy(isMoveEdit = false)
+    }
+
+
+    fun returned() {
+        navigationUiState.value = navigationUiState.value
+            .copy(isMoveReturn = false)
+
+    }
 
 }

@@ -58,7 +58,7 @@ class OnBoardingViewModel @Inject constructor(private val settingsLocalDataSourc
         }
 
         navigationUiState.value = navigationUiState.value
-            .copy(moveNextScreen = true)
+            .copy(isMoveNextScreen = true)
     }
 
     fun getImage() =

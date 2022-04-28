@@ -57,10 +57,9 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:${versions.hilt}")
 
     // Navigation component
-    implementation "androidx.navigation:navigation-fragment-ktx:2.4.2"
-    implementation "androidx.navigation:navigation-ui-ktx:2.4.2"
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.navigation:navigation-testing:2.4.2'
+    implementation "androidx.navigation:navigation-fragment-ktx:${versions.navigation}"
+    implementation "androidx.navigation:navigation-ui-ktx:${versions.navigation}"
+    implementation "androidx.navigation:navigation-testing:${versions.navigation}"
 
     // Date
     implementation 'com.jakewharton.threetenabp:threetenabp:1.4.0'

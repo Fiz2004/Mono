@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.fiz.mono.common.ui.resources.R
@@ -27,13 +26,11 @@ class ReportCategoryFragment : Fragment() {
 
     private val args: ReportCategoryFragmentArgs by navArgs()
 
-    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels()
-
     private val viewModel: ReportCategoryViewModel by viewModels()
 
     private val adapter: TransactionsAdapter by lazy {
         TransactionsAdapter(
-            mainPreferencesViewModel.currency.value ?: "$",
+            viewModel.uiState.value.currency,
             false
         )
     }
@@ -65,7 +62,7 @@ class ReportCategoryFragment : Fragment() {
             viewModel.uiState.collect { uiState ->
                 binding.periodTextView.text = getString(uiState.period)
                 binding.valueReportCategoryTextView.text = uiState.getValueReportCategory(
-                    mainPreferencesViewModel.currency.value ?: "$"
+                    viewModel.uiState.value.currency
                 )
                 adapter.submitList(uiState.getTransactions())
 

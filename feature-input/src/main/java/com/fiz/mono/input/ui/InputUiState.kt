@@ -5,6 +5,7 @@ import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.BitmapUtils
 import com.fiz.mono.domain.models.Category
 import com.fiz.mono.domain.models.Transaction
+import org.threeten.bp.LocalDate
 
 data class InputUiState(
     val allCategoryExpense: List<Category> = listOf(),
@@ -14,8 +15,11 @@ data class InputUiState(
     val isLoading: Boolean = false,
     val note: String = "",
     val value: String = "",
+    val date: LocalDate = LocalDate.now(),
+    val currency: String = "$",
     val selectedAdapter: Int = InputFragment.EXPENSE,
     val transactionId: Int? = null,
+
 
     val currentPhotoPath: String = "",
     val photoPaths: List<String?> = listOf(),

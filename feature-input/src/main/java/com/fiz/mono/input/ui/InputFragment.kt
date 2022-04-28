@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -19,14 +18,9 @@ import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.feature.input.databinding.FragmentInputBinding
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class InputFragment : Fragment() {
-
-    private val mainViewModel: MainViewModel by activityViewModels()
-
-    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels()
 
     private val viewModel: InputViewModel by viewModels()
 
@@ -63,10 +57,6 @@ class InputFragment : Fragment() {
         setupNavigation()
     }
 
-    override fun onResume() {
-        super.onResume()
-        mainPreferencesViewModel.start()
-    }
 
     private fun init() {
         viewModel.start(args.transaction)
@@ -100,10 +90,7 @@ class InputFragment : Fragment() {
             }
 
             submitButton.setOnClickListener {
-
-                mainViewModel.date.value?.let {
-                    viewModel.onEvent(InputUiEvent.ClickSubmit(it))
-                }
+                viewModel.onEvent(InputUiEvent.ClickSubmit)
             }
 
             backButton.setOnClickListener {
@@ -136,11 +123,11 @@ class InputFragment : Fragment() {
             })
 
             dataRangeLayout.leftDateRangeImageButton.setOnClickListener {
-                mainViewModel.dateDayMinusOne()
+                viewModel.dateDayMinusOne()
             }
 
             dataRangeLayout.rightDateRangeImageButton.setOnClickListener {
-                mainViewModel.dateDayPlusOne()
+                viewModel.dateDayPlusOne()
             }
         }
     }
@@ -237,49 +224,37 @@ class InputFragment : Fragment() {
 
                 if (uiState.isPhotoPathsChange)
                     viewModel.onPhotoPathsChange()
-            }
-        }
 
-        launchAndRepeatWithViewLifecycle {
-            mainPreferencesViewModel.firstTime.collectLatest {
-                if (it) {
-                    val action =
-                        InputFragmentDirections
-                            .actionInputFragmentToOnBoardingFragment()
-                    findNavController().navigate(action)
-                }
-            }
-        }
+                binding.dataRangeLayout.dateTextView.text =
+                    viewModel.getFormatDate("MMM dd, yyyy (EEE)")
 
-        launchAndRepeatWithViewLifecycle {
-            mainPreferencesViewModel.isConfirmPIN.collectLatest {
-                if (!it) {
-                    val action =
-                        InputFragmentDirections
-                            .actionToPINPasswordFragment("start")
-                    findNavController().navigate(action)
-                }
-            }
-        }
+                binding.titleTextView.text = viewModel.getFormatDate("MMM dd, yyyy (EEE)")
 
-        mainPreferencesViewModel.apply {
-            currency.observe(viewLifecycleOwner) { currency ->
-                binding.currencyTextView.text = currency
+                binding.currencyTextView.text = uiState.currency
             }
-        }
-
-        mainViewModel.date.observe(viewLifecycleOwner)
-        {
-            binding.dataRangeLayout.dateTextView.text =
-                mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
-            binding.titleTextView.text = mainViewModel.getFormatDate("MMM dd, yyyy (EEE)")
         }
     }
 
     private fun setupNavigation() {
         launchAndRepeatWithViewLifecycle {
             viewModel.navigationUiState.collect { navigationUiState ->
-                if (navigationUiState.isReturn) {
+                if (navigationUiState.isMoveOnBoarding) {
+                    val action =
+                        InputFragmentDirections
+                            .actionInputFragmentToOnBoardingFragment()
+                    findNavController().navigate(action)
+                    viewModel.movedOnBoarding()
+                }
+
+                if (navigationUiState.isMovePinPassword) {
+                    val action =
+                        InputFragmentDirections
+                            .actionToPINPasswordFragment("start")
+                    findNavController().navigate(action)
+                    viewModel.movedPinPassword()
+                }
+
+                if (navigationUiState.isMoveReturn) {
                     findNavController().popBackStack()
                     viewModel.returned()
                 }
@@ -299,6 +274,7 @@ class InputFragment : Fragment() {
                     findNavController().navigate(action)
                     viewModel.movedCalendar()
                 }
+
             }
         }
     }

@@ -23,8 +23,6 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
 
     private val mainViewModel: MainViewModel by activityViewModels()
 
-    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels()
-
     private val viewModel: CalendarViewModel by viewModels()
 
     private lateinit var binding: FragmentCalendarBinding
@@ -55,7 +53,7 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
             mainViewModel.setDate(transactionsDay.day)
         }
 
-        val currency = mainPreferencesViewModel.currency.value ?: "$"
+        val currency = viewModel.uiState.value.currency
         transactionAdapter =
             TransactionsAdapter(
                 currency,

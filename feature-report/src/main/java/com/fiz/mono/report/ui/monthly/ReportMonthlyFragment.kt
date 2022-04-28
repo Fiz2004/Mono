@@ -23,15 +23,13 @@ class ReportMonthlyFragment : Fragment() {
 
     private val mainViewModel: MainViewModel by activityViewModels()
 
-    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels()
-
     private val viewModel: ReportMonthlyViewModel by viewModels()
 
     private val parentViewModel: ReportViewModel by viewModels()
 
     private val adapter: TransactionsAdapter by lazy {
         TransactionsAdapter(
-            mainPreferencesViewModel.currency.value ?: "$",
+            viewModel.uiState.value.currency,
             true
         )
     }
@@ -59,7 +57,7 @@ class ReportMonthlyFragment : Fragment() {
     }
 
     private fun init() {
-        viewModel.start(mainPreferencesViewModel.currency.value ?: "$")
+        viewModel.start(viewModel.uiState.value.currency)
     }
 
     private fun bind() {

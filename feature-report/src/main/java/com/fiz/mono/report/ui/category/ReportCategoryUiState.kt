@@ -14,6 +14,7 @@ data class ReportCategoryUiState(
     val allCategoryIncome: List<Category> = listOf(),
     val allTransactions: List<Transaction> = listOf(),
     val reportFor: Int = MONTH,
+    val currency: String = "$",
     val isCanGraph: Boolean = false,
     val isExpense: Boolean = true,
     val id: String = "",

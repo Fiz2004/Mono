@@ -1,9 +1,11 @@
 package com.fiz.mono.pin_password.ui
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.fiz.mono.domain.repositories.SettingsLocalDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,7 +19,10 @@ class PINPasswordViewModel @Inject constructor(private val settingsLocalDataSour
     fun start(fromCome: String) {
         val pin = settingsLocalDataSource.loadPin()
         val isConfirmPIN = pin.isBlank()
-        settingsLocalDataSource.saveConfirmPin(isConfirmPIN)
+
+        viewModelScope.launch {
+            settingsLocalDataSource.saveCurrentConfirmPin(isConfirmPIN)
+        }
 
         val statePIN = if (fromCome == PINPasswordFragment.START) {
             if (pin.isBlank())
@@ -162,6 +167,9 @@ class PINPasswordViewModel @Inject constructor(private val settingsLocalDataSour
             .copy(
                 isConfirmPIN = true
             )
-        settingsLocalDataSource.saveConfirmPin(true)
+
+        viewModelScope.launch {
+            settingsLocalDataSource.saveNeedConfirmPin(true)
+        }
     }
 }

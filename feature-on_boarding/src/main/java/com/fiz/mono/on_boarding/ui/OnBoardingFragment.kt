@@ -84,7 +84,7 @@ class OnBoardingFragment : Fragment() {
         launchAndRepeatWithViewLifecycle {
             viewModel.navigationUiState.collect { navigationUiState ->
 
-                if (navigationUiState.moveNextScreen) {
+                if (navigationUiState.isMoveNextScreen) {
                     findNavController().popBackStack()
                 }
 

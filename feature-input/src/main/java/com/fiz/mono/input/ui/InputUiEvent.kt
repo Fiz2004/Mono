@@ -1,7 +1,5 @@
 package com.fiz.mono.input.ui
 
-import org.threeten.bp.LocalDate
-
 sealed class InputUiEvent {
     data class ChangeTypeTransactions(val typeTransactions: Int?) : InputUiEvent()
     object ClickData : InputUiEvent()
@@ -10,5 +8,5 @@ sealed class InputUiEvent {
     data class ValueChange(val newValue: String) : InputUiEvent()
     data class NoteChange(val newNote: String) : InputUiEvent()
     object ClickCategory : InputUiEvent()
-    data class ClickSubmit(val date: LocalDate) : InputUiEvent()
+    object ClickSubmit : InputUiEvent()
 }

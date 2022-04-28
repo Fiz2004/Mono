@@ -2,16 +2,19 @@ package com.fiz.mono.report.ui.monthly
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fiz.mono.domain.repositories.SettingsLocalDataSource
 import com.fiz.mono.domain.use_case.ReportUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ReportMonthlyViewModel @Inject constructor(
+    private val settingsLocalDataSource: SettingsLocalDataSource,
     reportUseCase: ReportUseCase
 ) :
     ViewModel() {
@@ -60,6 +63,16 @@ class ReportMonthlyViewModel @Inject constructor(
             uiState.value = uiState.value
                 .copy(lastBalance = lastBalance)
         }.launchIn(viewModelScope)
+    }
+
+    init {
+        viewModelScope.launch {
+            settingsLocalDataSource.stateFlow.collect {
+
+                uiState.value = uiState.value
+                    .copy(currency = it.currency)
+            }
+        }
     }
 
     fun onEvent(event: ReportMonthlyUiEvent) {

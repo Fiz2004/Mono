@@ -6,14 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.currency.databinding.FragmentCurrencyBinding
 
 class CurrencyFragment : Fragment() {
-    private val mainPreferencesViewModel: MainPreferencesViewModel by activityViewModels()
+    private val viewModel: CurrencyViewModel by viewModels()
 
     private var currencyRadioButton =
         mutableMapOf<String, com.google.android.material.radiobutton.MaterialRadioButton>()
@@ -44,7 +44,7 @@ class CurrencyFragment : Fragment() {
         currencyRadioButton["лв"] = binding.BGNRadioButton
         currencyRadioButton["đ"] = binding.VNDRadioButton
 
-        currencyRadioButton[mainPreferencesViewModel.currency.value]?.isChecked = true
+        currencyRadioButton[viewModel.uiState.value.currency]?.isChecked = true
 
         binding.navigationBarLayout.backButton.setVisible(true)
         binding.navigationBarLayout.actionButton.setVisible(false)
@@ -69,7 +69,7 @@ class CurrencyFragment : Fragment() {
                 val selectEntriesRadioButton = currencyRadioButton.entries.find { it.value.id == view.id }
                 selectEntriesRadioButton?.let {
                     it.value.isChecked = true
-                    mainPreferencesViewModel.setCurrency(it.key)
+                    viewModel.setCurrency(it.key)
                 }
             }
         }

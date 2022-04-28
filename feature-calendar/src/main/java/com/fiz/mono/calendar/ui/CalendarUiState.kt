@@ -10,6 +10,7 @@ import java.util.*
 data class CalendarUiState(
     val date: LocalDate = LocalDate.now(),
     val isDateChange: Boolean = true,
+    val currency: String = "$",
     val isAllTransactionsLoaded: Boolean = false,
     val allTransactions: List<Transaction> = listOf(),
 ) {
