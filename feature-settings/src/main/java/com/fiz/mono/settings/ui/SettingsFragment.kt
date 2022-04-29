@@ -7,13 +7,11 @@ import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.NavDeepLinkRequest
-import androidx.navigation.findNavController
-import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.setVisible
+import com.fiz.mono.navigation.navigate
+import com.fiz.mono.settings.R
 import com.fiz.mono.settings.databinding.FragmentSettingsBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -69,44 +67,35 @@ class SettingsFragment : Fragment() {
             navigationBarLayout.backButton.setVisible(false)
             navigationBarLayout.actionButton.setVisible(false)
             navigationBarLayout.choiceImageButton.setVisible(false)
-            navigationBarLayout.titleTextView.text = getString(R.string.settings)
+            navigationBarLayout.titleTextView.text =
+                getString(com.fiz.mono.common.ui.resources.R.string.settings)
         }
     }
 
 
     private fun deleteOnClickListener(view: View) {
         viewModel.clickDelete()
-        Toast.makeText(requireContext(), R.string.delete_all_data, Toast.LENGTH_LONG).show()
+        Toast.makeText(
+            requireContext(),
+            com.fiz.mono.common.ui.resources.R.string.delete_all_data,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun reminderOnClickListener(view: View) {
-        val request = NavDeepLinkRequest.Builder
-            .fromUri("android-app://com.fiz.mono/reminder.ui.ReminderFragment".toUri())
-            .build()
-        view.findNavController().navigate(request)
+        navigate(R.id.action_settingsFragment_to_reminderFragment)
     }
 
-    // Надо передать параметр "settings"
-    // You need to pass the parameter "settings" for proper operation
     private fun pinPasswordOnClickListener(view: View) {
-        val request = NavDeepLinkRequest.Builder
-            .fromUri("android-app://com.fiz.mono/pin_password.ui.PINPasswordFragment".toUri())
-            .build()
-        view.findNavController().navigate(request)
+        navigate(R.id.action_settingsFragment_to_PINPasswordFragment, data = "settings")
     }
 
     private fun currencyOnClickListener(view: View) {
-        val request = NavDeepLinkRequest.Builder
-            .fromUri("android-app://com.fiz.mono/currency.ui.CurrencyFragment".toUri())
-            .build()
-        view.findNavController().navigate(request)
+        navigate(R.id.action_settingsFragment_to_currencyFragment)
     }
 
     private fun categoryOnClickListener(view: View) {
-        val request = NavDeepLinkRequest.Builder
-            .fromUri("android-app://com.fiz.mono/category_edit.ui.CategoryEditFragment".toUri())
-            .build()
-        view.findNavController().navigate(request)
+        navigate(R.id.action_settingsFragment_to_categoryFragment)
     }
 
     private fun modeOnClickListener(buttonView: CompoundButton, isChecked: Boolean) {

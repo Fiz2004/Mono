@@ -2,7 +2,6 @@ package com.fiz.mono.category_edit.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavDirections
 import com.fiz.mono.domain.use_case.CategoryEditUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -109,13 +108,11 @@ class CategoryEditViewModel @Inject constructor(
         )
     }
 
-    fun getActionForMoveAdd(): NavDirections {
+    fun getType(): String {
         return if (uiState.value.type == TYPE_EXPENSE)
-            CategoryEditFragmentDirections
-                .actionCategoryFragmentToCategoryAddFragment(TYPE_EXPENSE)
+            TYPE_EXPENSE
         else
-            CategoryEditFragmentDirections
-                .actionCategoryFragmentToCategoryAddFragment(TYPE_INCOME)
+            TYPE_INCOME
     }
 
     fun movedAdd() {

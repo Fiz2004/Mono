@@ -2,31 +2,31 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph"
+    android:id="@+id/nav_graph_report"
     app:startDestination="@id/reportMonthlyFragment">
     <fragment
         android:id="@+id/reportMonthlyFragment"
-        android:name="com.fiz.mono.feature_report.ui.monthly.ReportMonthlyFragment"
+        android:name="com.fiz.mono.report.ui.monthly.ReportMonthlyFragment"
         android:label="fragment_report_monthly"
-        tools:layout="@layout/fragment_report_monthly">
+        tools:layout="@layout/fragment_report_monthly" >
         <action
             android:id="@+id/action_reportMonthlyFragment_to_selectCategoryFragment"
             app:destination="@id/selectCategoryFragment" />
     </fragment>
     <fragment
         android:id="@+id/selectCategoryFragment"
-        android:name="com.fiz.mono.feature_report.ui.select.SelectCategoryFragment"
+        android:name="com.fiz.mono.report.ui.select.SelectCategoryFragment"
         android:label="fragment_select_category"
-        tools:layout="@layout/fragment_select_category">
+        tools:layout="@layout/fragment_select_category" >
         <action
             android:id="@+id/action_selectCategoryFragment_to_reportCategoryFragment"
             app:destination="@id/reportCategoryFragment" />
     </fragment>
     <fragment
         android:id="@+id/reportCategoryFragment"
-        android:name="com.fiz.mono.feature_report.ui.category.ReportCategoryFragment"
+        android:name="com.fiz.mono.report.ui.category.ReportCategoryFragment"
         android:label="fragment_report_category"
-        tools:layout="@layout/fragment_report_category">
+        tools:layout="@layout/fragment_report_category" >
         <argument
             android:name="id"
             app:argType="string" />

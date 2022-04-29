@@ -15,6 +15,7 @@ import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.TimeUtils.getDateMonthYearString
 import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.feature.calendar.databinding.FragmentCalendarBinding
+import com.fiz.mono.navigation.navigate
 import com.fiz.mono.util.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -35,10 +36,10 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
             viewModel.uiState.value.currency,
             true
         ) { transactionItem ->
-            val action =
-                CalendarFragmentDirections
-                    .actionCalendarFragmentToInputFragment(transaction = transactionItem.id)
-            findNavController().navigate(action)
+            navigate(
+                com.fiz.mono.feature.calendar.R.id.action_calendarFragment_to_inputFragment,
+                data = transactionItem.id
+            )
         }
     }
 

@@ -34,6 +34,11 @@ class InputViewModel @Inject constructor(
     var navigationUiState = MutableStateFlow(InputNavigationState()); private set
 
     init {
+
+        viewModelScope.launch {
+            settingsRepository.currentConfirmPin.save(false)
+        }
+
         settingsRepository.currency.load()
             .onEach { currency ->
                 uiState.value = uiState.value
@@ -44,6 +49,11 @@ class InputViewModel @Inject constructor(
             .onEach { firstTime ->
                 navigationUiState.value = navigationUiState.value
                     .copy(isMoveOnBoarding = firstTime)
+            }.launchIn(viewModelScope)
+
+        settingsRepository.needConfirmPin.load()
+            .onEach { needConfirmPin ->
+                val need = needConfirmPin
             }.launchIn(viewModelScope)
 
         settingsRepository.needConfirmPin.load()

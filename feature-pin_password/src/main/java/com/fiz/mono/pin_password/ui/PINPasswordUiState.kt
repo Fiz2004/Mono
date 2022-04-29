@@ -6,5 +6,4 @@ data class PINPasswordUiState(
         mutableListOf(null, null, null, null),
 
     val pinValue: String = "",
-    val isConfirmPIN: Boolean = false
 )

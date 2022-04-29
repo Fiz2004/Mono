@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="action_settingsFragment_to_currencyFragment" type="id" />
+    <item name="action_settingsFragment_to_reminderFragment" type="id" />
+    <item name="action_settingsFragment_to_categoryFragment" type="id" />
+    <item name="action_settingsFragment_to_PINPasswordFragment" type="id" />
+</resources>

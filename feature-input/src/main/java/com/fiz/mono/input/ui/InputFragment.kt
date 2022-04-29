@@ -18,12 +18,12 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.fiz.mono.base.android.adapters.CategoriesAdapter
-import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.ActivityContract
 import com.fiz.mono.core.util.setVisible
-import com.fiz.mono.feature.input.databinding.FragmentInputBinding
+import com.fiz.mono.input.databinding.FragmentInputBinding
+import com.fiz.mono.navigation.navigate
+import com.fiz.mono.navigation.navigationData
 import com.fiz.mono.util.launchAndRepeatWithViewLifecycle
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,8 +38,6 @@ class InputFragment : Fragment() {
 
     private val viewModel: InputViewModel by viewModels()
 
-    private val args: InputFragmentArgs by navArgs()
-
     private val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy (EEE)")
 
     private val cameraActivityLauncher = registerForActivityResult(ActivityContract()) {
@@ -48,7 +46,7 @@ class InputFragment : Fragment() {
     }
 
     private val adapter: CategoriesAdapter by lazy {
-        CategoriesAdapter(R.color.blue) { position ->
+        CategoriesAdapter(com.fiz.mono.common.ui.resources.R.color.blue) { position ->
             viewModel.onEvent(InputUiEvent.ClickCategory(position))
         }
     }
@@ -82,7 +80,8 @@ class InputFragment : Fragment() {
     }
 
     private fun init() {
-        viewModel.onEvent(InputUiEvent.Init(args.transaction))
+        val transaction = navigationData as? Int ?: -1
+        viewModel.onEvent(InputUiEvent.Init(transaction))
     }
 
     private fun bind() {
@@ -154,7 +153,11 @@ class InputFragment : Fragment() {
             val photoFile: File? = try {
                 createImageFile(context)
             } catch (ex: IOException) {
-                Toast.makeText(context, getString(R.string.cant_create_file), Toast.LENGTH_LONG)
+                Toast.makeText(
+                    context,
+                    getString(com.fiz.mono.common.ui.resources.R.string.cant_create_file),
+                    Toast.LENGTH_LONG
+                )
                     .show()
                 null
             }
@@ -217,7 +220,7 @@ class InputFragment : Fragment() {
                     val expenseIncomeTextViewLayoutParams =
                         ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams
                     expenseIncomeTextViewLayoutParams.topToBottom =
-                        if (uiState.isInput) com.fiz.mono.feature.input.R.id.dataRangeLayout else com.fiz.mono.feature.input.R.id.titleTextView
+                        if (uiState.isInput) com.fiz.mono.input.R.id.dataRangeLayout else com.fiz.mono.input.R.id.titleTextView
 
                     if (uiState.isInput) {
                         val numberTab = if (uiState.selectedAdapter == EXPENSE) 0 else 1
@@ -260,18 +263,16 @@ class InputFragment : Fragment() {
         launchAndRepeatWithViewLifecycle {
             viewModel.navigationUiState.collect { navigationUiState ->
                 if (navigationUiState.isMoveOnBoarding) {
-                    val action =
-                        InputFragmentDirections
-                            .actionInputFragmentToOnBoardingFragment()
-                    findNavController().navigate(action)
+                    navigate(com.fiz.mono.input.R.id.action_inputFragment_to_onBoardingFragment)
                     viewModel.onEvent(InputUiEvent.MovedOnBoarding)
                 }
 
                 if (navigationUiState.isMovePinPassword) {
-                    val action =
-                        InputFragmentDirections
-                            .actionToPINPasswordFragment("start")
-                    findNavController().navigate(action)
+                    navigate(
+                        actionId =
+                        com.fiz.mono.input.R.id.action_inputFragment_to_PINPasswordFragment,
+                        data = "start"
+                    )
                     viewModel.onEvent(InputUiEvent.MovedPinPassword)
 
                 }
@@ -282,18 +283,15 @@ class InputFragment : Fragment() {
                 }
 
                 if (navigationUiState.isMoveEdit) {
-                    val action =
-                        InputFragmentDirections
-                            .actionToCategoryFragment()
-                    findNavController().navigate(action)
+                    navigate(com.fiz.mono.input.R.id.action_inputFragment_to_categoryFragment)
                     viewModel.onEvent(InputUiEvent.MovedEdit)
                 }
 
                 if (navigationUiState.isMoveCalendar) {
-                    val action =
-                        InputFragmentDirections
-                            .actionToCalendarFragment()
-                    findNavController().navigate(action)
+                    navigate(
+                        com.fiz.mono.input.R.id.action_inputFragment_to_calendarFragment,
+                        com.fiz.mono.navigation.R.id.nav_host_fragment
+                    )
                     viewModel.onEvent(InputUiEvent.MovedCalendar)
                 }
 

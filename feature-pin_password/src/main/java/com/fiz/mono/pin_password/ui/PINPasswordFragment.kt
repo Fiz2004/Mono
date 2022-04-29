@@ -13,12 +13,12 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.getColorCompat
 import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.core.util.showKeyboard
 import com.fiz.mono.feature.pin_password.databinding.FragmentPINPasswordBinding
+import com.fiz.mono.navigation.navigationData
 import com.fiz.mono.util.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.WithFragmentBindings
@@ -29,8 +29,6 @@ import kotlinx.coroutines.flow.collectLatest
 class PINPasswordFragment : Fragment() {
 
     private val viewModel: PINPasswordViewModel by viewModels()
-
-    private val args: PINPasswordFragmentArgs by navArgs()
 
     private lateinit var numbersEditText: List<EditText>
 
@@ -54,7 +52,8 @@ class PINPasswordFragment : Fragment() {
     }
 
     private fun init() {
-        viewModel.start(args.fromCome)
+        val fromCome = navigationData as? String ?: "settings"
+        viewModel.start(fromCome)
     }
 
     private fun bind() {
@@ -186,23 +185,16 @@ class PINPasswordFragment : Fragment() {
                         binding.decsriptionTextView.text = getString(R.string.delete_PIN)
                         binding.nextPINPasswordButton.text = getString(R.string.remove_PIN)
                         binding.nextPINPasswordButton.isActivated = true
-                        val pin = viewModel.getPin()
                     }
                     StatePin.REMOVE_CONFIRM_FINISH -> {
-                        viewModel.deletePin()
                         Toast.makeText(requireContext(), "PIN deleted", Toast.LENGTH_SHORT).show()
-
-                        findNavController().popBackStack()
+                        viewModel.deletePin()
                     }
                     StatePin.LOGIN_FINISH -> {
-                        viewModel.setPin(viewModel.getPIN())
-
-                        findNavController().popBackStack()
+                        viewModel.loginFinish()
                     }
                     StatePin.EDIT_FINISH, StatePin.CREATE_FINISH -> {
                         viewModel.setPin(viewModel.getPIN())
-
-                        findNavController().popBackStack()
                     }
                 }
 
@@ -215,8 +207,10 @@ class PINPasswordFragment : Fragment() {
 
         launchAndRepeatWithViewLifecycle {
             viewModel.navigationState.collectLatest { navigationState ->
-                if (navigationState.isReturn)
+                if (navigationState.isReturn) {
                     findNavController().popBackStack()
+//                    viewModel.returned()
+                }
             }
         }
 

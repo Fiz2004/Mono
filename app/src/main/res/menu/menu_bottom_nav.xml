@@ -16,7 +16,7 @@
         android:icon="@drawable/selector_item_report"
         android:title="@string/report" />
     <item
-        android:id="@id/settings_navigation"
+        android:id="@id/settingsFragment"
         android:enabled="true"
         android:icon="@drawable/selector_item_settings"
         android:title="@string/settings" />

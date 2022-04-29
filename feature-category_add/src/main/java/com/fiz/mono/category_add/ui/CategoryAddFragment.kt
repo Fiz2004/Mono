@@ -11,12 +11,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.fiz.mono.category_add.databinding.FragmentCategoryAddBinding
 import com.fiz.mono.category_add.ui.adapters.CategoryIconsAdapter
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.getColorCompat
 import com.fiz.mono.core.util.setVisible
+import com.fiz.mono.navigation.navigationData
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -24,8 +24,6 @@ import kotlinx.coroutines.launch
 class CategoryAddFragment : Fragment() {
 
     private val viewModel: CategoryAddViewModel by viewModels()
-
-    private val args: CategoryAddFragmentArgs by navArgs()
 
     private val adapter: CategoryIconsAdapter by lazy {
         CategoryIconsAdapter { position ->
@@ -53,7 +51,8 @@ class CategoryAddFragment : Fragment() {
     }
 
     private fun init() {
-        viewModel.onEvent(FeatureAddUIEvent.Loading(args.type))
+        val type = navigationData as? String ?: "expense"
+        viewModel.onEvent(FeatureAddUIEvent.Loading(type))
     }
 
     private fun bind() {

@@ -8,10 +8,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import com.fiz.mono.core.util.setVisible
-import com.fiz.mono.feature_report.ui.monthly.ReportMonthlyFragmentDirections
+import com.fiz.mono.navigation.navigate
 import com.fiz.mono.report.databinding.FragmentReportBinding
+import com.fiz.mono.report.ui.monthly.ReportMonthlyFragmentDirections
 import com.fiz.mono.util.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,7 +22,7 @@ class ReportFragment : Fragment(), ReportDialog.Choicer {
 
     private val navController: NavController by lazy {
         val navHostFragment: NavHostFragment =
-            (childFragmentManager.findFragmentById(com.fiz.mono.report.R.id.report_host_fragment) as NavHostFragment)
+            (childFragmentManager.findFragmentById(com.fiz.mono.navigation.R.id.report_host_fragment) as NavHostFragment)
         navHostFragment.navController
     }
 
@@ -47,8 +47,8 @@ class ReportFragment : Fragment(), ReportDialog.Choicer {
 
     private fun init() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            binding.navigationBarLayout.backButton.setVisible(destination.id == com.fiz.mono.common.ui.resources.R.id.reportCategoryFragment)
-            binding.navigationBarLayout.choiceImageButton.setVisible(destination.id != com.fiz.mono.common.ui.resources.R.id.reportCategoryFragment)
+            binding.navigationBarLayout.backButton.setVisible(destination.id == com.fiz.mono.report.R.id.reportCategoryFragment)
+            binding.navigationBarLayout.choiceImageButton.setVisible(destination.id != com.fiz.mono.report.R.id.reportCategoryFragment)
         }
     }
 
@@ -104,9 +104,6 @@ class ReportFragment : Fragment(), ReportDialog.Choicer {
     }
 
     fun clickData() {
-        val action =
-            ReportFragmentDirections
-                .actionToCalendarFragment()
-        findNavController().navigate(action)
+        navigate(com.fiz.mono.report.R.id.action_reportFragment_to_calendarFragment)
     }
 }

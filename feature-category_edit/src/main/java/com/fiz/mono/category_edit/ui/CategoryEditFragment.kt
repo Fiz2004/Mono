@@ -12,6 +12,7 @@ import com.fiz.mono.category_edit.databinding.FragmentCategoryEditBinding
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.getColorCompat
 import com.fiz.mono.core.util.setVisible
+import com.fiz.mono.navigation.navigate
 import com.fiz.mono.util.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -99,8 +100,10 @@ class CategoryEditFragment : Fragment() {
             viewModel.navigationUiState.collect { navigationUiState ->
 
                 if (navigationUiState.isMoveAdd) {
-                    val action = viewModel.getActionForMoveAdd()
-                    findNavController().navigate(action)
+                    navigate(
+                        com.fiz.mono.category_edit.R.id.action_categoryFragment_to_categoryAddFragment,
+                        data = viewModel.getType()
+                    )
                     viewModel.movedAdd()
                 }
 

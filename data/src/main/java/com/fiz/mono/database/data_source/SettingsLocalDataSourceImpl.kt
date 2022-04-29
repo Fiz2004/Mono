@@ -35,7 +35,7 @@ class SettingsLocalDataSource @Inject constructor(private val sharedPreferences:
         sharedPreferences.getBoolean(CURRENT_CONFIRM_PIN, false)
 
     fun saveCurrentConfirmPin(confirmPin: Boolean) {
-        sharedPreferences.edit().putBoolean(NEED_CONFIRM_PIN, confirmPin).apply()
+        sharedPreferences.edit().putBoolean(CURRENT_CONFIRM_PIN, confirmPin).apply()
     }
 
     fun loadCurrency() =

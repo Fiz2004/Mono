@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="action_inputFragment_to_PINPasswordFragment" type="id" />
+    <item name="action_inputFragment_to_onBoardingFragment" type="id" />
+    <item name="action_inputFragment_to_calendarFragment" type="id" />
+    <item name="action_inputFragment_to_categoryFragment" type="id" />
+</resources>

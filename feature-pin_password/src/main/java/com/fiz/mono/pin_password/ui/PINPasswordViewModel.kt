@@ -49,7 +49,6 @@ class PINPasswordViewModel @Inject constructor(private val settingsRepository: S
         uiState.value = uiState.value
             .copy(
                 statePIN = statePIN,
-                isConfirmPIN = isConfirmPIN
             )
     }
 
@@ -171,19 +170,31 @@ class PINPasswordViewModel @Inject constructor(private val settingsRepository: S
         viewModelScope.launch {
             settingsRepository.pin.save("")
         }
+        navigationState.value = navigationState.value
+            .copy(isReturn = true)
     }
 
     fun setPin(pin: String) {
-        viewModelScope.launch {
-            settingsRepository.pin.save(pin)
-        }
-        uiState.value = uiState.value
-            .copy(
-                isConfirmPIN = true
-            )
+        navigationState.value = navigationState.value
+            .copy(isReturn = true)
 
         viewModelScope.launch {
+            settingsRepository.pin.save(pin)
             settingsRepository.needConfirmPin.save(true)
         }
+    }
+
+    fun loginFinish() {
+        navigationState.value = navigationState.value
+            .copy(isReturn = true)
+
+        viewModelScope.launch {
+            settingsRepository.currentConfirmPin.save(true)
+        }
+    }
+
+    fun returned() {
+        navigationState.value = navigationState.value
+            .copy(isReturn = false)
     }
 }

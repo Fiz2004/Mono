@@ -6,10 +6,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.ui.NavigationUI
 import com.fiz.mono.R
 import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.databinding.ActivityMainBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,8 +23,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val navController: NavController by lazy {
-        val navHostFragment: NavHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(com.fiz.mono.navigation.R.id.nav_host_fragment) as NavHostFragment
         navHostFragment.navController
     }
 
@@ -38,15 +39,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNavigation() {
-        val bottomNavigation = binding.bottomNav
-        bottomNavigation.setupWithNavController(navController)
+        val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottom_nav)
+
+        NavigationUI.setupWithNavController(
+            bottomNavigation,
+            navController
+        )
+
+//        bottomNavigation.setupWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             bottomNavigation.setVisible(
                 destination.id == R.id.inputFragment ||
                         destination.id == R.id.calculatorFragment ||
                         destination.id == R.id.reportFragment ||
-                        destination.id == com.fiz.mono.settings.R.id.settingsFragment
+                        destination.id == R.id.settingsFragment
             )
         }
     }
