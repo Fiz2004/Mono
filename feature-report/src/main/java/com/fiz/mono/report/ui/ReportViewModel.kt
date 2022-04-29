@@ -2,33 +2,39 @@ package com.fiz.mono.report.ui
 
 import androidx.lifecycle.ViewModel
 import com.fiz.mono.common.ui.resources.R
-import com.fiz.mono.report.ui.ReportFragment.Companion.MONTHLY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class ReportViewModel @Inject constructor() : ViewModel() {
-    var categorySelectedReport = MutableStateFlow(MONTHLY); private set
+    var uiState = MutableStateFlow(ReportUiState()); private set
 
     fun clickMonthly(): Boolean {
-        if (categorySelectedReport.value == MONTHLY)
+        if (uiState.value.categorySelectedReport == MONTHLY)
             return false
 
-        categorySelectedReport.value = MONTHLY
+        uiState.value = uiState.value
+            .copy(categorySelectedReport = MONTHLY)
         return true
     }
 
     fun clickCategory(): Boolean {
-        if (categorySelectedReport.value == ReportFragment.CATEGORY)
+        if (uiState.value.categorySelectedReport == CATEGORY)
             return false
 
-        categorySelectedReport.value = ReportFragment.CATEGORY
+        uiState.value = uiState.value
+            .copy(categorySelectedReport = CATEGORY)
         return true
     }
 
-    fun getTextTypeReport() = if (categorySelectedReport.value == MONTHLY)
+    fun getTextTypeReport() = if (uiState.value.categorySelectedReport == MONTHLY)
         R.string.month_report
     else
         R.string.category_report
+
+    companion object {
+        const val MONTHLY = 0
+        const val CATEGORY = 1
+    }
 }

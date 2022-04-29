@@ -11,15 +11,12 @@ import com.fiz.mono.database.mapper.toTransaction
 import com.fiz.mono.domain.models.Category
 import com.fiz.mono.domain.models.Transaction
 import com.fiz.mono.domain.repositories.CategoryRepository
-import com.fiz.mono.domain.repositories.SettingsLocalDataSource
+import com.fiz.mono.domain.repositories.SettingsRepository
 import com.fiz.mono.domain.repositories.TransactionRepository
 import com.fiz.mono.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 import java.io.File
@@ -28,7 +25,7 @@ import kotlin.math.abs
 
 @HiltViewModel
 class InputViewModel @Inject constructor(
-    private val settingsLocalDataSource: SettingsLocalDataSource,
+    private val settingsRepository: SettingsRepository,
     categoryRepository: CategoryRepository,
     private val transactionRepository: TransactionRepository
 ) : ViewModel() {
@@ -37,23 +34,31 @@ class InputViewModel @Inject constructor(
     var navigationUiState = MutableStateFlow(InputNavigationState()); private set
 
     init {
-        viewModelScope.launch {
-            navigationUiState.value = navigationUiState.value
-                .copy(isMoveOnBoarding = settingsLocalDataSource.loadFirstTime())
-
-            settingsLocalDataSource.stateFlow.collect {
+        settingsRepository.currency.load()
+            .onEach { currency ->
                 uiState.value = uiState.value
-                    .copy(date = it.date)
+                    .copy(currency = currency)
+            }.launchIn(viewModelScope)
 
-                if (it.isNeedConfirmPIN && !it.isCurrentConfirmPIN)
+        settingsRepository.firstTime.load()
+            .onEach { firstTime ->
+                navigationUiState.value = navigationUiState.value
+                    .copy(isMoveOnBoarding = firstTime)
+            }.launchIn(viewModelScope)
+
+        settingsRepository.needConfirmPin.load()
+            .zip(settingsRepository.currentConfirmPin.load()) { needConfirmPin, currentConfirmPin ->
+                needConfirmPin && !currentConfirmPin
+            }
+            .onEach { isMovePinPassword ->
+                if (isMovePinPassword)
                     navigationUiState.value = navigationUiState.value
                         .copy(isMovePinPassword = true)
+            }.launchIn(viewModelScope)
+    }
 
-                uiState.value = uiState.value
-                    .copy(currency = it.currency)
-            }
-        }
 
+    init {
         categoryRepository.getAllCategoryExpenseForInput()
             .onEach { allCategoryExpense ->
 
@@ -126,10 +131,6 @@ class InputViewModel @Inject constructor(
             is InputUiEvent.ValueChange -> {
                 setValue(event.newValue)
             }
-            InputUiEvent.Start -> {
-                navigationUiState.value = navigationUiState.value
-                    .copy(isMoveOnBoarding = settingsLocalDataSource.loadFirstTime())
-            }
             InputUiEvent.ClickBackButton -> clickBackButton()
             InputUiEvent.ClickRemoveTransaction -> removeTransaction()
             is InputUiEvent.ClickRemovePhoto -> removePhotoPath(event.numberPhoto)
@@ -152,7 +153,7 @@ class InputViewModel @Inject constructor(
             .copy(date = newDate)
 
         viewModelScope.launch {
-            settingsLocalDataSource.saveDate(newDate)
+            settingsRepository.date.save(newDate)
         }
     }
 
@@ -163,7 +164,7 @@ class InputViewModel @Inject constructor(
             .copy(date = newDate)
 
         viewModelScope.launch {
-            settingsLocalDataSource.saveDate(newDate)
+            settingsRepository.date.save(newDate)
         }
     }
 

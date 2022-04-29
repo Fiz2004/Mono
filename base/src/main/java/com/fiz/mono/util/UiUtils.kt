@@ -1,4 +1,4 @@
-package com.fiz.mono.core.util
+package com.fiz.mono.util
 
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle

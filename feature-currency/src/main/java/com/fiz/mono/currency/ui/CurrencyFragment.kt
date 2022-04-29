@@ -11,12 +11,17 @@ import androidx.navigation.fragment.findNavController
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.currency.databinding.FragmentCurrencyBinding
+import com.fiz.mono.util.launchAndRepeatWithViewLifecycle
+import com.google.android.material.radiobutton.MaterialRadioButton
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
+@AndroidEntryPoint
 class CurrencyFragment : Fragment() {
     private val viewModel: CurrencyViewModel by viewModels()
 
     private var currencyRadioButton =
-        mutableMapOf<String, com.google.android.material.radiobutton.MaterialRadioButton>()
+        mutableMapOf<String, MaterialRadioButton>()
 
     private lateinit var binding: FragmentCurrencyBinding
 
@@ -32,6 +37,8 @@ class CurrencyFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         bind()
+        bindListener()
+        subscribe()
     }
 
     private fun bind() {
@@ -44,33 +51,43 @@ class CurrencyFragment : Fragment() {
         currencyRadioButton["лв"] = binding.BGNRadioButton
         currencyRadioButton["đ"] = binding.VNDRadioButton
 
-        currencyRadioButton[viewModel.uiState.value.currency]?.isChecked = true
-
         binding.navigationBarLayout.backButton.setVisible(true)
         binding.navigationBarLayout.actionButton.setVisible(false)
         binding.navigationBarLayout.choiceImageButton.setVisible(false)
         binding.navigationBarLayout.titleTextView.text = getString(R.string.currency)
 
-        currencyRadioButton.values.forEach { it.setOnClickListener(::onRadioButtonClicked) }
 
-        binding.navigationBarLayout.backButton.setOnClickListener(::backButtonOnClickListener)
     }
 
-    private fun backButtonOnClickListener(view: View) {
-        findNavController().popBackStack()
-    }
+    private fun bindListener() {
+        currencyRadioButton.values.forEach {
+            it.setOnClickListener { view ->
+                if (view is RadioButton) {
+                    val checked = view.isChecked
 
-    private fun onRadioButtonClicked(view: View) {
-        if (view is RadioButton) {
-            val checked = view.isChecked
+                    if (checked) {
+                        val selectEntriesRadioButton =
+                            currencyRadioButton.entries.find { it.value.id == view.id }
 
-            currencyRadioButton.values.forEach { it.isChecked = false }
-            if (checked) {
-                val selectEntriesRadioButton = currencyRadioButton.entries.find { it.value.id == view.id }
-                selectEntriesRadioButton?.let {
-                    it.value.isChecked = true
-                    viewModel.setCurrency(it.key)
+                        selectEntriesRadioButton?.let {
+                            viewModel.saveCurrency(it.key)
+                        }
+                    }
                 }
+            }
+        }
+
+        binding.navigationBarLayout.backButton.setOnClickListener {
+            findNavController().popBackStack()
+        }
+    }
+
+    private fun subscribe() {
+        launchAndRepeatWithViewLifecycle {
+            viewModel.uiState.collectLatest { uiState ->
+                currencyRadioButton.values.forEach { it.isChecked = false }
+
+                currencyRadioButton[uiState.currency]?.isChecked = true
             }
         }
     }

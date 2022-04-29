@@ -34,6 +34,8 @@
             android:name="fromCome"
             android:defaultValue="settings"
             app:argType="string" />
+
+        <deepLink app:uri="android-app://com.fiz.mono/pin_password.ui.PINPasswordFragment" />
     </fragment>
     <fragment
         android:id="@+id/inputFragment"
@@ -57,33 +59,33 @@
         android:name="com.fiz.mono.calculator.ui.CalculatorFragment"
         android:label="fragment_calculator"
         tools:layout="@layout/fragment_calculator" />
+
     <fragment
         android:id="@+id/reminderFragment"
         android:name="com.fiz.mono.reminder.ui.ReminderFragment"
         android:label="fragment_reminder"
-        tools:layout="@layout/fragment_reminder" />
+        tools:layout="@layout/fragment_reminder">
+        <deepLink app:uri="android-app://com.fiz.mono/reminder.ui.ReminderFragment" />
+
+    </fragment>
+
     <fragment
         android:id="@+id/reportFragment"
         android:name="com.fiz.mono.report.ui.ReportFragment"
         android:label="fragment_report"
         tools:layout="@layout/fragment_report" />
-    <fragment
-        android:id="@+id/settingsFragment"
-        android:name="com.fiz.mono.settings.ui.SettingsFragment"
-        android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings">
-        <action
-            android:id="@+id/action_settingsFragment_to_currencyFragment"
-            app:destination="@id/currencyFragment" />
-        <action
-            android:id="@+id/action_settingsFragment_to_reminderFragment"
-            app:destination="@id/reminderFragment" />
-    </fragment>
+
+    <include app:graph="@navigation/settings_navigation" />
+
     <fragment
         android:id="@+id/currencyFragment"
         android:name="com.fiz.mono.currency.ui.CurrencyFragment"
         android:label="fragment_currency"
-        tools:layout="@layout/fragment_currency" />
+        tools:layout="@layout/fragment_currency">
+        <deepLink app:uri="android-app://com.fiz.mono/currency.ui.CurrencyFragment" />
+
+
+    </fragment>
     <fragment
         android:id="@+id/calendarFragment"
         android:name="com.fiz.mono.calendar.ui.CalendarFragment"
@@ -103,6 +105,9 @@
             <action
                 android:id="@+id/action_categoryFragment_to_categoryAddFragment"
                 app:destination="@id/categoryAddFragment" />
+
+            <deepLink app:uri="android-app://com.fiz.mono/category_edit.ui.CategoryEditFragment" />
+
         </fragment>
         <fragment
             android:id="@+id/categoryAddFragment"

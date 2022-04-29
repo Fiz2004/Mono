@@ -2,35 +2,45 @@ package com.fiz.mono.pin_password.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fiz.mono.domain.repositories.SettingsLocalDataSource
+import com.fiz.mono.domain.repositories.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PINPasswordViewModel @Inject constructor(private val settingsLocalDataSource: SettingsLocalDataSource) :
+class PINPasswordViewModel @Inject constructor(private val settingsRepository: SettingsRepository) :
     ViewModel() {
 
     var uiState = MutableStateFlow(PINPasswordUiState()); private set
 
     var navigationState = MutableStateFlow(PINPasswordNavigationState()); private set
 
+
+    init {
+        settingsRepository.pin.load()
+            .onEach { pin ->
+                uiState.value = uiState.value
+                    .copy(pinValue = pin)
+            }.launchIn(viewModelScope)
+    }
+
     fun start(fromCome: String) {
-        val pin = settingsLocalDataSource.loadPin()
-        val isConfirmPIN = pin.isBlank()
+        val isConfirmPIN = uiState.value.pinValue.isBlank()
 
         viewModelScope.launch {
-            settingsLocalDataSource.saveCurrentConfirmPin(isConfirmPIN)
+            settingsRepository.currentConfirmPin.save(isConfirmPIN)
         }
 
         val statePIN = if (fromCome == PINPasswordFragment.START) {
-            if (pin.isBlank())
+            if (uiState.value.pinValue.isBlank())
                 StatePin.LOGIN_FINISH
             else
                 StatePin.LOGIN
         } else {
-            if (pin.isBlank())
+            if (uiState.value.pinValue.isBlank())
                 StatePin.CREATE
             else
                 StatePin.REMOVE
@@ -73,7 +83,7 @@ class PINPasswordViewModel @Inject constructor(private val settingsLocalDataSour
     }
 
     fun updateState() {
-        val oldPin = settingsLocalDataSource.loadPin()
+        val oldPin = uiState.value.pinValue
 
         val statePin: StatePin = when {
             (uiState.value.statePIN == StatePin.CREATE) -> {
@@ -158,18 +168,22 @@ class PINPasswordViewModel @Inject constructor(private val settingsLocalDataSour
     }
 
     fun deletePin() {
-        settingsLocalDataSource.savePin("")
+        viewModelScope.launch {
+            settingsRepository.pin.save("")
+        }
     }
 
     fun setPin(pin: String) {
-        settingsLocalDataSource.savePin(pin)
+        viewModelScope.launch {
+            settingsRepository.pin.save(pin)
+        }
         uiState.value = uiState.value
             .copy(
                 isConfirmPIN = true
             )
 
         viewModelScope.launch {
-            settingsLocalDataSource.saveNeedConfirmPin(true)
+            settingsRepository.needConfirmPin.save(true)
         }
     }
 }

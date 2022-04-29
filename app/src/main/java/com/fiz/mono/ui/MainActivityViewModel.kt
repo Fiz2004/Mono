@@ -1,23 +1,24 @@
 package com.fiz.mono.ui
 
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModel
-import com.fiz.mono.domain.repositories.SettingsLocalDataSource
+import androidx.lifecycle.viewModelScope
+import com.fiz.mono.domain.repositories.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    settingsLocalDataSource: SettingsLocalDataSource
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    var themeLight = settingsLocalDataSource.loadThemeLight(); private set
+    var theme: Int = -100; private set
 
-
-    fun getMode():Int{
-        return if (themeLight)
-            AppCompatDelegate.MODE_NIGHT_NO
-        else
-            AppCompatDelegate.MODE_NIGHT_YES
+    init {
+        settingsRepository.theme.load()
+            .onEach { theme ->
+                this.theme = theme
+            }.launchIn(viewModelScope)
     }
 }

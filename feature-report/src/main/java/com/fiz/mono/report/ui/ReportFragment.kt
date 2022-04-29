@@ -9,10 +9,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import com.fiz.mono.core.util.launchAndRepeatWithViewLifecycle
 import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.feature_report.ui.monthly.ReportMonthlyFragmentDirections
 import com.fiz.mono.report.databinding.FragmentReportBinding
+import com.fiz.mono.util.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -41,6 +41,7 @@ class ReportFragment : Fragment(), ReportDialog.Choicer {
 
         init()
         bind()
+        bindListener()
         subscribe()
     }
 
@@ -51,32 +52,39 @@ class ReportFragment : Fragment(), ReportDialog.Choicer {
         }
     }
 
-    private fun subscribe() {
-        launchAndRepeatWithViewLifecycle {
-            viewModel.categorySelectedReport.collect {
-                binding.navigationBarLayout.titleTextView.text = getString(viewModel.getTextTypeReport())
-            }
-        }
-
-    }
-
     private fun bind() {
         binding.apply {
             navigationBarLayout.actionButton.setVisible(false)
-            navigationBarLayout.backButton.setOnClickListener {
-                navController.popBackStack()
+        }
+    }
+
+    private fun bindListener() {
+        binding.apply {
+            navigationBarLayout.apply {
+                backButton.setOnClickListener {
+                    navController.popBackStack()
+                }
+
+                choiceImageButton.setOnClickListener {
+                    val reportDialog = ReportDialog()
+                    reportDialog.choicer = this@ReportFragment
+
+                    val args = Bundle()
+                    val currentChoice = viewModel.uiState.value.categorySelectedReport
+                    args.putInt("currentChoice", currentChoice)
+                    reportDialog.arguments = args
+
+                    reportDialog.show(childFragmentManager, "Choice Report")
+                }
             }
+        }
+    }
 
-            navigationBarLayout.choiceImageButton.setOnClickListener {
-                val reportDialog = ReportDialog()
-                reportDialog.choicer = this@ReportFragment
-
-                val args = Bundle()
-                val currentChoice = viewModel.categorySelectedReport.value
-                args.putInt("currentChoice", currentChoice)
-                reportDialog.arguments = args
-
-                reportDialog.show(childFragmentManager, "Choice Report")
+    private fun subscribe() {
+        launchAndRepeatWithViewLifecycle {
+            viewModel.uiState.collect {
+                binding.navigationBarLayout.titleTextView.text =
+                    getString(viewModel.getTextTypeReport())
             }
         }
     }
@@ -100,10 +108,5 @@ class ReportFragment : Fragment(), ReportDialog.Choicer {
             ReportFragmentDirections
                 .actionToCalendarFragment()
         findNavController().navigate(action)
-    }
-
-    companion object {
-        const val MONTHLY = 0
-        const val CATEGORY = 1
     }
 }

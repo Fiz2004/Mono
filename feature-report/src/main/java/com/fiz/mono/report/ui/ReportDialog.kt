@@ -10,17 +10,17 @@ import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.getColorCompat
 import com.fiz.mono.core.util.themeColor
 import com.fiz.mono.report.databinding.DialogChoiceReportBinding
+import com.fiz.mono.report.ui.ReportViewModel.Companion.MONTHLY
 
 class ReportDialog : DialogFragment() {
-    private var _binding: DialogChoiceReportBinding? = null
-    private val binding get() = _binding!!
-
     private var choice: Int = 0
 
     interface Choicer {
         fun choiceMonthly()
         fun choiceCategory()
     }
+
+    private lateinit var binding: DialogChoiceReportBinding
 
     // Be sure to install in the calling fragment
     var choicer: Choicer? = null
@@ -41,7 +41,7 @@ class ReportDialog : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = DialogChoiceReportBinding.inflate(inflater, container, false)
+        binding = DialogChoiceReportBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -51,7 +51,7 @@ class ReportDialog : DialogFragment() {
         binding.monthlyTextView.setOnClickListener(::monthlyOnClickListener)
         binding.categoryTextView.setOnClickListener(::categoryOnClickListener)
 
-        if (choice == ReportFragment.MONTHLY) {
+        if (choice == MONTHLY) {
             binding.monthlyTextView.setTextColor(requireContext().getColorCompat(R.color.blue))
             binding.categoryTextView.setTextColor(requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary))
         } else {

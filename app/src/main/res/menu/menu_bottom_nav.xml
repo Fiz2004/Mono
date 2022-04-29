@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/inputFragment"
+        android:id="@id/inputFragment"
         android:enabled="true"
         android:icon="@drawable/selector_item_input"
         android:title="@string/input" />
     <item
-        android:id="@+id/calculatorFragment"
+        android:id="@id/calculatorFragment"
         android:enabled="true"
         android:icon="@drawable/selector_item_calculator"
         android:title="@string/calculator" />
     <item
-        android:id="@+id/reportFragment"
+        android:id="@id/reportFragment"
         android:enabled="true"
         android:icon="@drawable/selector_item_report"
         android:title="@string/report" />
     <item
-        android:id="@+id/settingsFragment"
+        android:id="@id/settings_navigation"
         android:enabled="true"
         android:icon="@drawable/selector_item_settings"
         android:title="@string/settings" />

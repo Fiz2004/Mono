@@ -11,8 +11,8 @@ import com.fiz.mono.base.android.adapters.CategoriesAdapter
 import com.fiz.mono.category_edit.databinding.FragmentCategoryEditBinding
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.getColorCompat
-import com.fiz.mono.core.util.launchAndRepeatWithViewLifecycle
 import com.fiz.mono.core.util.setVisible
+import com.fiz.mono.util.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

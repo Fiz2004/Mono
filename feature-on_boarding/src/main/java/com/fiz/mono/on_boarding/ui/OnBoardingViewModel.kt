@@ -2,14 +2,14 @@ package com.fiz.mono.on_boarding.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fiz.mono.domain.repositories.SettingsLocalDataSource
+import com.fiz.mono.domain.repositories.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class OnBoardingViewModel @Inject constructor(private val settingsLocalDataSource: SettingsLocalDataSource) :
+class OnBoardingViewModel @Inject constructor(private val settingsRepository: SettingsRepository) :
     ViewModel() {
     var uiState = MutableStateFlow(OnBoardingUiState()); private set
 
@@ -54,7 +54,7 @@ class OnBoardingViewModel @Inject constructor(private val settingsLocalDataSourc
 
     private fun moveNextScreen() {
         viewModelScope.launch {
-            settingsLocalDataSource.saveFirstTime(false)
+            settingsRepository.firstTime.save(false)
         }
 
         navigationUiState.value = navigationUiState.value

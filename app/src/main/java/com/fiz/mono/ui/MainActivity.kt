@@ -21,21 +21,23 @@ class MainActivity : AppCompatActivity() {
         ActivityMainBinding.inflate(layoutInflater)
     }
 
-    private lateinit var navController: NavController
+    private val navController: NavController by lazy {
+        val navHostFragment: NavHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navHostFragment.navController
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        setupTheme()
+
         setContentView(binding.root)
 
         setupBottomNavigation()
-        setupTheme()
     }
 
     private fun setupBottomNavigation() {
-        val navHostFragment: NavHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        navController = navHostFragment.navController
-
         val bottomNavigation = binding.bottomNav
         bottomNavigation.setupWithNavController(navController)
 
@@ -44,13 +46,14 @@ class MainActivity : AppCompatActivity() {
                 destination.id == R.id.inputFragment ||
                         destination.id == R.id.calculatorFragment ||
                         destination.id == R.id.reportFragment ||
-                        destination.id == R.id.settingsFragment
+                        destination.id == com.fiz.mono.settings.R.id.settingsFragment
             )
         }
     }
 
     private fun setupTheme() {
-        val mode = viewModel.getMode()
-        AppCompatDelegate.setDefaultNightMode(mode)
+        if (AppCompatDelegate.getDefaultNightMode() == viewModel.theme) return
+
+        AppCompatDelegate.setDefaultNightMode(viewModel.theme)
     }
 }

@@ -1,9 +1,9 @@
 package com.fiz.mono.database.di
 
 import com.fiz.mono.database.repositories.CategoryIconsRepositoryImpl
-import com.fiz.mono.database.repositories.SettingsLocalDataSourceImpl
+import com.fiz.mono.database.repositories.SettingsRepositoryImpl
 import com.fiz.mono.domain.repositories.CategoryIconsRepository
-import com.fiz.mono.domain.repositories.SettingsLocalDataSource
+import com.fiz.mono.domain.repositories.SettingsRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -16,7 +16,7 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun provideSettingsLocalDataSource(settingsLocalDataSourceImpl: SettingsLocalDataSourceImpl): SettingsLocalDataSource
+    abstract fun provideSettingsRepository(settingsRepositoryImpl: SettingsRepositoryImpl): SettingsRepository
 
     @Binds
     @Singleton

@@ -22,9 +22,9 @@ import androidx.navigation.fragment.navArgs
 import com.fiz.mono.base.android.adapters.CategoriesAdapter
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.ActivityContract
-import com.fiz.mono.core.util.launchAndRepeatWithViewLifecycle
 import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.feature.input.databinding.FragmentInputBinding
+import com.fiz.mono.util.launchAndRepeatWithViewLifecycle
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import org.threeten.bp.Instant
@@ -79,11 +79,6 @@ class InputFragment : Fragment() {
         bindListener()
         subscribe()
         setupNavigation()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.onEvent(InputUiEvent.Start)
     }
 
     private fun init() {

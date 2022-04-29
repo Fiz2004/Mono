@@ -22,6 +22,7 @@
             android:name="com.fiz.mono.ui.MainActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true">
+            <nav-graph android:value="@navigation/nav_graph" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

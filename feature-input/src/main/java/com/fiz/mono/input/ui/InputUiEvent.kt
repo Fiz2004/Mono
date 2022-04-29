@@ -8,7 +8,6 @@ sealed class InputUiEvent {
     object ClickRightData : InputUiEvent()
     object ClickRemoveTransaction : InputUiEvent()
     object ClickSubmit : InputUiEvent()
-    object Start : InputUiEvent()
     object AddPhotoPath : InputUiEvent()
     object MovedOnBoarding : InputUiEvent()
     object MovedPinPassword : InputUiEvent()

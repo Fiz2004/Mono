@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.database.data_source.CategoryLocalDataSource
 import com.fiz.mono.database.data_source.TransactionLocalDataSource
-import com.fiz.mono.domain.repositories.SettingsLocalDataSource
+import com.fiz.mono.domain.repositories.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -13,13 +15,22 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val categoryLocalDataSource: CategoryLocalDataSource,
     private val transactionLocalDataSource: TransactionLocalDataSource,
-    private val settingsLocalDataSource: SettingsLocalDataSource
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
-    var themeLight = settingsLocalDataSource.loadThemeLight(); private set
 
-    fun setThemeLight(themeLight: Boolean) {
-        this.themeLight = themeLight
-        settingsLocalDataSource.saveThemeLight(themeLight)
+    var theme: Int = -100; private set
+
+    init {
+        settingsRepository.theme.load()
+            .onEach { theme ->
+                this.theme = theme
+            }.launchIn(viewModelScope)
+    }
+
+    fun clickSwitchTheme(theme: Int) {
+        viewModelScope.launch {
+            settingsRepository.theme.save(theme)
+        }
     }
 
     fun clickDelete() {
