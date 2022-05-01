@@ -1,13 +1,16 @@
-package com.fiz.mono.report.ui.monthly
+package com.fiz.mono.report.domain
 
 import com.fiz.mono.base.android.adapters.InfoDay
 import com.fiz.mono.domain.models.Transaction
+import com.fiz.mono.domain.repositories.TransactionRepository
 import com.fiz.mono.report.ui.category.TransactionsDataItem
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import javax.inject.Inject
 
-class GetTransactionsForMonth @Inject constructor() {
+class GetTransactionsForMonthUseCase @Inject constructor(
+    private val transactionRepository: TransactionRepository
+) {
 
     operator fun invoke(
         allTransactions: List<Transaction>,

@@ -2,8 +2,8 @@ package com.fiz.mono.category_add.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fiz.mono.category_add.domain.CategoryAddUseCase
 import com.fiz.mono.domain.models.Category
-import com.fiz.mono.domain.use_case.CategoryAddUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn

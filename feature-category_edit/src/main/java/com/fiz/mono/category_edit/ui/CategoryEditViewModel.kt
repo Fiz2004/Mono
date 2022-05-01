@@ -2,7 +2,7 @@ package com.fiz.mono.category_edit.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fiz.mono.domain.use_case.CategoryEditUseCase
+import com.fiz.mono.category_edit.domain.CategoryEditUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn

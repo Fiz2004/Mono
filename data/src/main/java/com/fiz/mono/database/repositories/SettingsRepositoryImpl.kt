@@ -1,7 +1,7 @@
 package com.fiz.mono.database.repositories
 
 import com.fiz.mono.database.data_source.SettingsLocalDataSource
-import com.fiz.mono.domain.repositories.Property
+import com.fiz.mono.domain.models.Property
 import com.fiz.mono.domain.repositories.SettingsRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers

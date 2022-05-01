@@ -1,5 +1,6 @@
-package com.fiz.mono.domain.use_case
+package com.fiz.mono.report.domain
 
+import com.fiz.mono.domain.use_case.ObserveAllTransactionsUseCase
 import javax.inject.Inject
 
 class ReportUseCase @Inject constructor(

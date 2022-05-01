@@ -1,4 +1,4 @@
-package com.fiz.mono.domain.use_case
+package com.fiz.mono.category_add.domain
 
 import com.fiz.mono.domain.repositories.CategoryRepository
 import kotlinx.coroutines.CoroutineDispatcher

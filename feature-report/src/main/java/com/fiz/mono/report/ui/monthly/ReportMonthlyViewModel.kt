@@ -3,7 +3,8 @@ package com.fiz.mono.report.ui.monthly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.domain.repositories.SettingsRepository
-import com.fiz.mono.domain.use_case.ReportUseCase
+import com.fiz.mono.report.domain.GetTransactionsForMonthUseCase
+import com.fiz.mono.report.domain.ReportUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -13,7 +14,7 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ReportMonthlyViewModel @Inject constructor(
-    private val getTransactionsForMonth: GetTransactionsForMonth,
+    private val getTransactionsForMonthUseCase: GetTransactionsForMonthUseCase,
     private val settingsRepository: SettingsRepository,
     reportUseCase: ReportUseCase
 ) :
@@ -35,7 +36,7 @@ class ReportMonthlyViewModel @Inject constructor(
         dateFlow.flatMapLatest { date ->
             reportUseCase.observeAllTransactionsUseCase()
         }.onEach { allTransactions ->
-            val transactionsForMonth = getTransactionsForMonth(
+            val transactionsForMonth = getTransactionsForMonthUseCase(
                 allTransactions,
                 uiState.value.date,
                 uiState.value.tabSelectedReport

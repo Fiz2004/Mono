@@ -47,8 +47,8 @@ class ReportFragment : Fragment(), ReportDialog.Choicer {
 
     private fun init() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            binding.navigationBarLayout.backButton.setVisible(destination.id == com.fiz.mono.report.R.id.reportCategoryFragment)
-            binding.navigationBarLayout.choiceImageButton.setVisible(destination.id != com.fiz.mono.report.R.id.reportCategoryFragment)
+            binding.navigationBarLayout.backButton.setVisible(destination.id == R.id.reportCategoryFragment)
+            binding.navigationBarLayout.choiceImageButton.setVisible(destination.id != R.id.reportCategoryFragment)
         }
     }
 
@@ -95,10 +95,6 @@ class ReportFragment : Fragment(), ReportDialog.Choicer {
                 R.id.action_reportMonthlyFragment_to_selectCategoryFragment,
                 com.fiz.mono.navigation.R.id.report_host_fragment
             )
-//            val action =
-//                ReportMonthlyFragmentDirections
-//                    .actionReportMonthlyFragmentToSelectCategoryFragment()
-//            navController.navigate(action)
         }
     }
 
@@ -108,6 +104,6 @@ class ReportFragment : Fragment(), ReportDialog.Choicer {
     }
 
     fun clickData() {
-        navigate(com.fiz.mono.report.R.id.action_reportFragment_to_calendarFragment)
+        navigate(R.id.action_reportFragment_to_calendarFragment)
     }
 }
