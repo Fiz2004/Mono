@@ -11,11 +11,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.navArgs
 import com.fiz.mono.base.android.adapters.TransactionsAdapter
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.getColorCompat
 import com.fiz.mono.core.util.themeColor
+import com.fiz.mono.navigation.CategoryInfoArgs
+import com.fiz.mono.navigation.navigationData
 import com.fiz.mono.report.databinding.FragmentReportCategoryBinding
 import com.fiz.mono.util.launchAndRepeatWithViewLifecycle
 import com.google.android.material.button.MaterialButtonToggleGroup
@@ -23,8 +24,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ReportCategoryFragment : Fragment() {
-
-    private val args: ReportCategoryFragmentArgs by navArgs()
 
     private val viewModel: ReportCategoryViewModel by viewModels()
 
@@ -54,7 +53,8 @@ class ReportCategoryFragment : Fragment() {
     }
 
     private fun init() {
-        viewModel.start(args.type, args.id)
+        val categoryInfoArgs = navigationData as? CategoryInfoArgs ?: CategoryInfoArgs()
+        viewModel.start(categoryInfoArgs.type, categoryInfoArgs.id)
     }
 
     private fun subscribe() {

@@ -25,3 +25,8 @@ fun Fragment.navigate(
 
 val Fragment.navigationData: Serializable?
     get() = arguments?.getSerializable(NAV_DATA)
+
+data class CategoryInfoArgs(
+    val type: String = "",
+    val id: String = "",
+) : Serializable

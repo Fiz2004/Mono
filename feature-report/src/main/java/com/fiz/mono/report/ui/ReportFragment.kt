@@ -10,8 +10,8 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.navigation.navigate
+import com.fiz.mono.report.R
 import com.fiz.mono.report.databinding.FragmentReportBinding
-import com.fiz.mono.report.ui.monthly.ReportMonthlyFragmentDirections
 import com.fiz.mono.util.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -91,10 +91,14 @@ class ReportFragment : Fragment(), ReportDialog.Choicer {
 
     override fun choiceCategory() {
         if (viewModel.clickCategory()) {
-            val action =
-                ReportMonthlyFragmentDirections
-                    .actionReportMonthlyFragmentToSelectCategoryFragment()
-            navController.navigate(action)
+            navigate(
+                R.id.action_reportMonthlyFragment_to_selectCategoryFragment,
+                com.fiz.mono.navigation.R.id.report_host_fragment
+            )
+//            val action =
+//                ReportMonthlyFragmentDirections
+//                    .actionReportMonthlyFragmentToSelectCategoryFragment()
+//            navController.navigate(action)
         }
     }
 
