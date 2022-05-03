@@ -38,7 +38,7 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
         ) { transactionItem ->
             navigate(
                 com.fiz.mono.feature.calendar.R.id.action_calendarFragment_to_inputFragment,
-                data = transactionItem.id
+                data = transactionItem.id,
             )
         }
     }
@@ -97,14 +97,12 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
         launchAndRepeatWithViewLifecycle {
             viewModel.uiState.collect { uiState ->
 
-                if (uiState.isDateChange || uiState.isAllTransactionsLoaded) {
+                if (uiState.isAllTransactionsLoaded) {
                     binding.calendarRecyclerView.itemAnimator = null
                     calendarAdapter.submitList(uiState.calendarDataItem)
                     transactionAdapter.submitList(uiState.transactionsDataItem)
                     binding.noTransactionsTextView.setVisible(uiState.transactionsDataItem.isEmpty())
                     binding.transactionRecyclerView.setVisible(uiState.transactionsDataItem.isNotEmpty())
-                    if (uiState.isDateChange)
-                        viewModel.onChangeDate()
                     if (uiState.isAllTransactionsLoaded)
                         viewModel.onAllTransactionsLoaded()
                 }

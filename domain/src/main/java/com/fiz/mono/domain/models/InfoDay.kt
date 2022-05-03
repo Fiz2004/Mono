@@ -1,4 +1,4 @@
-package com.fiz.mono.base.android.adapters
+package com.fiz.mono.domain.models
 
 data class InfoDay(
     val date: String,

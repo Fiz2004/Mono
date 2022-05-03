@@ -13,12 +13,12 @@ import com.fiz.mono.core.util.themeColor
 import com.fiz.mono.feature.calendar.databinding.DialogChoiceMonthBinding
 
 class MonthDialog : DialogFragment() {
-    private var _binding: DialogChoiceMonthBinding? = null
-    private val binding get() = _binding!!
 
     private val bindingMonthsTextView = emptyList<TextView>().toMutableList()
 
     private var month: Int = 0
+
+    private lateinit var binding: DialogChoiceMonthBinding
 
     interface Choicer {
         fun choiceMonth(numberMonth: Int)
@@ -43,7 +43,7 @@ class MonthDialog : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = DialogChoiceMonthBinding.inflate(inflater, container, false)
+        binding = DialogChoiceMonthBinding.inflate(inflater, container, false)
         return binding.root
     }
 

@@ -10,9 +10,10 @@ import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.CurrentUtils.getCurrencyFormat
 import com.fiz.mono.core.util.getColorCompat
 import com.fiz.mono.core.util.setVisible
+import com.fiz.mono.domain.models.DataItemDiff
+import com.fiz.mono.domain.models.InfoDay
 import com.fiz.mono.domain.models.Transaction
-import com.fiz.mono.report.ui.category.DataItemDiff
-import com.fiz.mono.report.ui.category.TransactionsDataItem
+import com.fiz.mono.domain.models.TransactionsDataItem
 
 private const val ITEM_VIEW_TYPE_HEADER = 0
 private const val ITEM_VIEW_TYPE_ITEM = 1

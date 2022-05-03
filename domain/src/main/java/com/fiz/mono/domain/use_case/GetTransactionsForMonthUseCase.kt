@@ -1,9 +1,9 @@
-package com.fiz.mono.report.domain
+package com.fiz.mono.domain.use_case
 
-import com.fiz.mono.base.android.adapters.InfoDay
+import com.fiz.mono.domain.models.InfoDay
 import com.fiz.mono.domain.models.Transaction
+import com.fiz.mono.domain.models.TransactionsDataItem
 import com.fiz.mono.domain.repositories.TransactionRepository
-import com.fiz.mono.report.ui.category.TransactionsDataItem
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import javax.inject.Inject
@@ -64,7 +64,6 @@ class GetTransactionsForMonthUseCase @Inject constructor(
         getAllTransactionsForMonth(allTransactions, date).groupBy {
             dateFormatMonthDayYear.format(it.localDate)
         }
-
 
     private fun getAllTransactionsForMonth(
         allTransactions: List<Transaction>,

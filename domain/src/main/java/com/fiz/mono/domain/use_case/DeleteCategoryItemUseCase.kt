@@ -1,4 +1,4 @@
-package com.fiz.mono.category_edit.domain
+package com.fiz.mono.domain.use_case
 
 import com.fiz.mono.domain.models.Category
 import com.fiz.mono.domain.repositories.CategoryRepository

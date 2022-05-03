@@ -1,6 +1,6 @@
 package com.fiz.mono.report.ui.monthly
 
-import com.fiz.mono.report.ui.category.TransactionsDataItem
+import com.fiz.mono.domain.models.TransactionsDataItem
 import org.threeten.bp.LocalDate
 
 data class ReportMonthlyUiState(

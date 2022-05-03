@@ -27,18 +27,16 @@ class CategoryEditViewModel @Inject constructor(
     private fun observeAllCategoriesExpense() {
         categoryEditUseCase.observeAllCategoriesExpenseUseCase()
             .onEach { list ->
-                uiState.value = uiState.value.copy(
-                    allCategoryExpense = list
-                )
+                uiState.value = uiState.value
+                    .copy(allCategoryExpense = list)
             }.launchIn(viewModelScope)
     }
 
     private fun observeAllCategoriesIncome() {
         categoryEditUseCase.observeAllCategoriesIncomeUseCase()
             .onEach { list ->
-                uiState.value = uiState.value.copy(
-                    allCategoryIncome = list
-                )
+                uiState.value = uiState.value
+                    .copy(allCategoryIncome = list)
             }.launchIn(viewModelScope)
     }
 
@@ -54,40 +52,40 @@ class CategoryEditViewModel @Inject constructor(
 
     private fun clickExpenseRecyclerView(position: Int) {
         viewModelScope.launch {
-            uiState.value = uiState.value.copy(
-                allCategoryExpense = categoryEditUseCase.selectItemForTwoListByLastItemClickUseCase.getNewClickList(
-                    uiState.value.allCategoryExpense, position
-                ),
-                allCategoryIncome = categoryEditUseCase.selectItemForTwoListByLastItemClickUseCase.getOtherList(
-                    uiState.value.allCategoryExpense, uiState.value.allCategoryIncome, position
-                ),
-                type = TYPE_EXPENSE
-            )
+            uiState.value = uiState.value
+                .copy(
+                    allCategoryExpense = categoryEditUseCase.selectItemForTwoListByLastItemClickUseCase.getNewClickList(
+                        uiState.value.allCategoryExpense, position
+                    ),
+                    allCategoryIncome = categoryEditUseCase.selectItemForTwoListByLastItemClickUseCase.getOtherList(
+                        uiState.value.allCategoryExpense, uiState.value.allCategoryIncome, position
+                    ),
+                    type = TYPE_EXPENSE
+                )
 
             if (position == uiState.value.allCategoryExpense.size - 1) {
-                navigationUiState.value = navigationUiState.value.copy(
-                    isMoveAdd = true
-                )
+                navigationUiState.value = navigationUiState.value
+                    .copy(isMoveAdd = true)
             }
         }
     }
 
     private fun clickIncomeRecyclerView(position: Int) {
         viewModelScope.launch {
-            uiState.value = uiState.value.copy(
-                allCategoryIncome = categoryEditUseCase.selectItemForTwoListByLastItemClickUseCase.getNewClickList(
-                    uiState.value.allCategoryIncome, position
-                ),
-                allCategoryExpense = categoryEditUseCase.selectItemForTwoListByLastItemClickUseCase.getOtherList(
-                    uiState.value.allCategoryIncome, uiState.value.allCategoryExpense, position
-                ),
-                type = TYPE_INCOME
-            )
+            uiState.value = uiState.value
+                .copy(
+                    allCategoryIncome = categoryEditUseCase.selectItemForTwoListByLastItemClickUseCase.getNewClickList(
+                        uiState.value.allCategoryIncome, position
+                    ),
+                    allCategoryExpense = categoryEditUseCase.selectItemForTwoListByLastItemClickUseCase.getOtherList(
+                        uiState.value.allCategoryIncome, uiState.value.allCategoryExpense, position
+                    ),
+                    type = TYPE_INCOME
+                )
 
             if (position == uiState.value.allCategoryIncome.size - 1) {
-                navigationUiState.value = navigationUiState.value.copy(
-                    isMoveAdd = true
-                )
+                navigationUiState.value = navigationUiState.value
+                    .copy(isMoveAdd = true)
             }
         }
     }
@@ -103,9 +101,8 @@ class CategoryEditViewModel @Inject constructor(
     }
 
     private fun clickBackButton() {
-        navigationUiState.value = navigationUiState.value.copy(
-            isReturn = true
-        )
+        navigationUiState.value = navigationUiState.value
+            .copy(isReturn = true)
     }
 
     fun getType(): String {
@@ -116,15 +113,13 @@ class CategoryEditViewModel @Inject constructor(
     }
 
     fun movedAdd() {
-        navigationUiState.value = navigationUiState.value.copy(
-            isMoveAdd = false
-        )
+        navigationUiState.value = navigationUiState.value
+            .copy(isMoveAdd = false)
     }
 
     fun returned() {
-        navigationUiState.value = navigationUiState.value.copy(
-            isReturn = false
-        )
+        navigationUiState.value = navigationUiState.value
+            .copy(isReturn = false)
     }
 
     companion object {

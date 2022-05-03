@@ -3,7 +3,7 @@ package com.fiz.mono.report.ui.monthly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.domain.repositories.SettingsRepository
-import com.fiz.mono.report.domain.GetTransactionsForMonthUseCase
+import com.fiz.mono.domain.use_case.GetTransactionsForMonthUseCase
 import com.fiz.mono.report.domain.ReportUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -89,7 +89,6 @@ class ReportMonthlyViewModel @Inject constructor(
             ReportMonthlyUiEvent.ClickDateRight -> dateMonthPlusOne()
         }
     }
-
 
     private fun dateMonthPlusOne() {
         val newDate = uiState.value.date.plusMonths(1)

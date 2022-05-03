@@ -11,7 +11,7 @@ data class CategoryIcon(
     override val selected: Boolean = false
 ) : Selected<CategoryIcon> {
     override fun copySelected(selected: Boolean): CategoryIcon {
-        return copySelected(selected = selected)
+        return copy(selected = selected)
     }
 }
 

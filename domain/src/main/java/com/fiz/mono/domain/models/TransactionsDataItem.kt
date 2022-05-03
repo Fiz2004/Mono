@@ -1,8 +1,6 @@
-package com.fiz.mono.report.ui.category
+package com.fiz.mono.domain.models
 
 import androidx.recyclerview.widget.DiffUtil
-import com.fiz.mono.base.android.adapters.InfoDay
-import com.fiz.mono.domain.models.Transaction
 
 sealed class TransactionsDataItem {
     data class InfoTransactionItem(val transaction: Transaction) : TransactionsDataItem()
