@@ -21,6 +21,7 @@ import androidx.navigation.fragment.findNavController
 import com.fiz.mono.base.android.adapters.CategoriesAdapter
 import com.fiz.mono.core.util.ActivityContract
 import com.fiz.mono.core.util.setVisible
+import com.fiz.mono.input.R
 import com.fiz.mono.input.databinding.FragmentInputBinding
 import com.fiz.mono.navigation.navigate
 import com.fiz.mono.navigation.navigationData
@@ -59,13 +60,14 @@ class InputFragment : Fragment() {
         )
     }
 
-    private lateinit var binding: FragmentInputBinding
+    private var _binding: FragmentInputBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentInputBinding.inflate(inflater, container, false)
+        _binding = FragmentInputBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -220,7 +222,7 @@ class InputFragment : Fragment() {
                     val expenseIncomeTextViewLayoutParams =
                         ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams
                     expenseIncomeTextViewLayoutParams.topToBottom =
-                        if (uiState.isInput) com.fiz.mono.input.R.id.dataRangeLayout else com.fiz.mono.input.R.id.titleTextView
+                        if (uiState.isInput) R.id.dataRangeLayout else R.id.titleTextView
 
                     if (uiState.isInput) {
                         val numberTab = if (uiState.selectedAdapter == EXPENSE) 0 else 1
@@ -262,37 +264,32 @@ class InputFragment : Fragment() {
     private fun setupNavigation() {
         launchAndRepeatWithViewLifecycle {
             viewModel.navigationUiState.collect { navigationUiState ->
-                if (navigationUiState.isMoveOnBoarding) {
-                    navigate(com.fiz.mono.input.R.id.action_inputFragment_to_onBoardingFragment)
-                    viewModel.onEvent(InputUiEvent.MovedOnBoarding)
+                if (navigationUiState is InputNavigationEvent.MoveOnBoarding) {
+                    navigate(R.id.action_inputFragment_to_onBoardingFragment)
                 }
 
-                if (navigationUiState.isMovePinPassword) {
+                if (navigationUiState is InputNavigationEvent.MovePinPassword) {
                     navigate(
                         actionId =
-                        com.fiz.mono.input.R.id.action_inputFragment_to_PINPasswordFragment,
+                        R.id.action_inputFragment_to_PINPasswordFragment,
                         data = "start"
                     )
-                    viewModel.onEvent(InputUiEvent.MovedPinPassword)
 
                 }
 
-                if (navigationUiState.isMoveReturn) {
+                if (navigationUiState is InputNavigationEvent.MoveReturn) {
                     findNavController().popBackStack()
-                    viewModel.onEvent(InputUiEvent.Returned)
                 }
 
-                if (navigationUiState.isMoveEdit) {
-                    navigate(com.fiz.mono.input.R.id.action_inputFragment_to_categoryFragment)
-                    viewModel.onEvent(InputUiEvent.MovedEdit)
+                if (navigationUiState is InputNavigationEvent.MoveEdit) {
+                    navigate(R.id.action_inputFragment_to_categoryFragment)
                 }
 
-                if (navigationUiState.isMoveCalendar) {
+                if (navigationUiState is InputNavigationEvent.MoveCalendar) {
                     navigate(
-                        com.fiz.mono.input.R.id.action_inputFragment_to_calendarFragment,
+                        R.id.action_inputFragment_to_calendarFragment,
                         com.fiz.mono.navigation.R.id.nav_host_fragment
                     )
-                    viewModel.onEvent(InputUiEvent.MovedCalendar)
                 }
 
             }
@@ -301,6 +298,12 @@ class InputFragment : Fragment() {
 
     private fun isCanAddPhoto(): Boolean {
         return viewModel.checkCameraHardware(requireContext())
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.categoryRecyclerView.adapter = null
+        _binding = null
     }
 
     companion object {

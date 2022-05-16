@@ -16,16 +16,16 @@ data class Category(
 
 object CategoryItemDiff : DiffUtil.ItemCallback<Category>() {
     override fun areItemsTheSame(
-        old: Category,
-        aNew: Category
+        oldItem: Category,
+        newItem: Category
     ): Boolean {
-        return old.name == aNew.name
+        return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(
-        old: Category,
-        aNew: Category
+        oldItem: Category,
+        newItem: Category
     ): Boolean {
-        return old == aNew
+        return oldItem == newItem
     }
 }

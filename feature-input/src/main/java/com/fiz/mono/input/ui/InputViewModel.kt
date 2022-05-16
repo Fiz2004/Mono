@@ -31,7 +31,7 @@ class InputViewModel @Inject constructor(
 ) : ViewModel() {
     var uiState = MutableStateFlow(InputUiState()); private set
 
-    var navigationUiState = MutableStateFlow(InputNavigationState()); private set
+    var navigationUiState = MutableSharedFlow<InputNavigationEvent>(); private set
 
     init {
 
@@ -47,13 +47,8 @@ class InputViewModel @Inject constructor(
 
         settingsRepository.firstTime.load()
             .onEach { firstTime ->
-                navigationUiState.value = navigationUiState.value
-                    .copy(isMoveOnBoarding = firstTime)
-            }.launchIn(viewModelScope)
-
-        settingsRepository.needConfirmPin.load()
-            .onEach { needConfirmPin ->
-                val need = needConfirmPin
+                if (firstTime)
+                    navigationUiState.emit(InputNavigationEvent.MoveOnBoarding)
             }.launchIn(viewModelScope)
 
         settingsRepository.needConfirmPin.load()
@@ -62,8 +57,7 @@ class InputViewModel @Inject constructor(
             }
             .onEach { isMovePinPassword ->
                 if (isMovePinPassword)
-                    navigationUiState.value = navigationUiState.value
-                        .copy(isMovePinPassword = true)
+                    navigationUiState.emit(InputNavigationEvent.MovePinPassword)
             }.launchIn(viewModelScope)
     }
 
@@ -148,11 +142,6 @@ class InputViewModel @Inject constructor(
             InputUiEvent.AddPhotoPath -> addPhotoPath()
             is InputUiEvent.Init -> start(event.transactionId)
             is InputUiEvent.UpdateCurrentPhotoPath -> updateCurrentPhotoPath(event.absolutePath)
-            InputUiEvent.MovedCalendar -> movedCalendar()
-            InputUiEvent.MovedEdit -> movedEdit()
-            InputUiEvent.MovedOnBoarding -> movedOnBoarding()
-            InputUiEvent.MovedPinPassword -> movedPinPassword()
-            InputUiEvent.Returned -> returned()
         }
     }
 
@@ -198,9 +187,7 @@ class InputViewModel @Inject constructor(
     private fun removeTransaction() {
         viewModelScope.launch(Dispatchers.Default) {
             uiState.value.transaction?.let { transactionRepository.delete(it) }
-            navigationUiState.update {
-                it.copy(isMoveReturn = true)
-            }
+            navigationUiState.emit(InputNavigationEvent.MoveReturn)
         }
     }
 
@@ -340,11 +327,7 @@ class InputViewModel @Inject constructor(
                         allCategoryIncome = inputUiState.allCategoryIncome.map { it.copy(selected = false) },
                     )
                 }
-                navigationUiState.update {
-                    it.copy(
-                        isMoveEdit = true
-                    )
-                }
+                navigationUiState.emit(InputNavigationEvent.MoveEdit)
                 return@launch
             }
             if (uiState.value.selectedAdapter == InputFragment.EXPENSE) {
@@ -426,9 +409,7 @@ class InputViewModel @Inject constructor(
 
                 transactionRepository.updateTransaction(transaction.toTransaction())
 
-                navigationUiState.update {
-                    it.copy(isMoveReturn = true)
-                }
+                navigationUiState.emit(InputNavigationEvent.MoveReturn)
             } else {
                 val lastItem = uiState.value.allTransactions.lastOrNull()
                 val id = lastItem?.id
@@ -471,41 +452,15 @@ class InputViewModel @Inject constructor(
     }
 
     private fun clickBackButton() {
-        navigationUiState.value = navigationUiState.value
-            .copy(isMoveReturn = true)
+        viewModelScope.launch {
+            navigationUiState.emit(InputNavigationEvent.MoveReturn)
+        }
     }
 
     private fun clickDate() {
-        navigationUiState.value = navigationUiState.value
-            .copy(isMoveCalendar = true)
-    }
-
-    private fun movedCalendar() {
-        navigationUiState.value = navigationUiState.value
-            .copy(isMoveCalendar = false)
-    }
-
-    private fun movedOnBoarding() {
-        navigationUiState.value = navigationUiState.value
-            .copy(isMoveOnBoarding = false)
-    }
-
-    private fun movedPinPassword() {
-        navigationUiState.value = navigationUiState.value
-            .copy(isMovePinPassword = false)
-    }
-
-
-    private fun movedEdit() {
-        navigationUiState.value = navigationUiState.value
-            .copy(isMoveEdit = false)
-    }
-
-
-    private fun returned() {
-        navigationUiState.value = navigationUiState.value
-            .copy(isMoveReturn = false)
-
+        viewModelScope.launch {
+            navigationUiState.emit(InputNavigationEvent.MoveCalendar)
+        }
     }
 
     private fun updateCurrentPhotoPath(absolutePath: String) {
