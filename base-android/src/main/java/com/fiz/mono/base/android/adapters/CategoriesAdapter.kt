@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fiz.mono.base.android.databinding.ItemCategoryBinding
 import com.fiz.mono.common.ui.resources.R
-import com.fiz.mono.core.util.getColorCompat
 import com.fiz.mono.core.util.setTextAppearanceCompat
 import com.fiz.mono.core.util.setVisible
-import com.fiz.mono.core.util.themeColor
 import com.fiz.mono.domain.models.Category
 import com.fiz.mono.domain.models.CategoryItemDiff
+import com.fiz.mono.util.getColorCompat
+import com.fiz.mono.util.themeColor
 
 class CategoriesAdapter(
     private val colorSelected: Int,

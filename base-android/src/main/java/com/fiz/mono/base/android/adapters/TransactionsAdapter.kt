@@ -8,12 +8,12 @@ import com.fiz.mono.base.android.databinding.ItemTransactionBinding
 import com.fiz.mono.base.android.databinding.ItemTransactionDateExpenseIncomeBinding
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.core.util.CurrentUtils.getCurrencyFormat
-import com.fiz.mono.core.util.getColorCompat
 import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.domain.models.DataItemDiff
 import com.fiz.mono.domain.models.InfoDay
 import com.fiz.mono.domain.models.Transaction
 import com.fiz.mono.domain.models.TransactionsDataItem
+import com.fiz.mono.util.getColorCompat
 
 private const val ITEM_VIEW_TYPE_HEADER = 0
 private const val ITEM_VIEW_TYPE_ITEM = 1

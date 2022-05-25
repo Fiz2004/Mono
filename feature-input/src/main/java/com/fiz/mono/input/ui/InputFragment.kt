@@ -300,8 +300,8 @@ class InputFragment : Fragment() {
         return viewModel.checkCameraHardware(requireContext())
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         binding.categoryRecyclerView.adapter = null
         _binding = null
     }

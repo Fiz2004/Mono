@@ -1,4 +1,4 @@
-package com.fiz.mono.core.util
+package com.fiz.mono.util
 
 import android.annotation.SuppressLint
 import android.content.Context

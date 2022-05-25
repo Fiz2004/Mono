@@ -23,7 +23,7 @@ class Converters {
     @TypeConverter
     fun listPhotoToPhoto(list: List<String?>): String {
         var result = ""
-        list.forEach { result = "$it;" }
+        list.forEach { result += "$it;" }
         if (result != "")
             result = result.substring(0, result.length - 1)
         return result

@@ -7,10 +7,10 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.DialogFragment
 import com.fiz.mono.common.ui.resources.R
-import com.fiz.mono.core.util.getColorCompat
-import com.fiz.mono.core.util.themeColor
 import com.fiz.mono.report.databinding.DialogChoiceReportBinding
 import com.fiz.mono.report.ui.ReportViewModel.Companion.MONTHLY
+import com.fiz.mono.util.getColorCompat
+import com.fiz.mono.util.themeColor
 
 class ReportDialog : DialogFragment() {
     private var choice: Int = 0
