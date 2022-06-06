@@ -2,9 +2,9 @@ package com.fiz.mono.input.ui
 
 import android.graphics.Bitmap
 import com.fiz.mono.common.ui.resources.R
-import com.fiz.mono.core.util.BitmapUtils
 import com.fiz.mono.domain.models.Category
 import com.fiz.mono.domain.models.Transaction
+import com.fiz.mono.util.BitmapUtils
 import org.threeten.bp.LocalDate
 
 data class InputUiState(

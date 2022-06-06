@@ -8,7 +8,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.fiz.mono.R
-import com.fiz.mono.core.util.setVisible
+import com.fiz.mono.base.android.utils.setVisible
 import com.fiz.mono.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint

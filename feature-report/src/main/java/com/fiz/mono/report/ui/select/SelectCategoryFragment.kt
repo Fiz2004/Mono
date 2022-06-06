@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.fiz.mono.base.android.adapters.CategoriesAdapter
+import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
 import com.fiz.mono.navigation.CategoryInfoArgs
 import com.fiz.mono.navigation.navigate
 import com.fiz.mono.report.R
 import com.fiz.mono.report.databinding.FragmentSelectCategoryBinding
-import com.fiz.mono.util.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -2,11 +2,11 @@ package com.fiz.mono.category_add.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fiz.mono.category_add.databinding.ItemIconCategoryBinding
 import com.fiz.mono.domain.models.CategoryIcon
-import com.fiz.mono.domain.models.CategoryIconItemDiff
 
 class CategoryIconsAdapter(private val clickCallback: (Int) -> Unit) :
     ListAdapter<CategoryIcon, CategoryIconsViewHolder>(CategoryIconItemDiff) {
@@ -36,5 +36,22 @@ class CategoryIconsViewHolder(
 
             root.setOnClickListener { callback(adapterPosition) }
         }
+    }
+}
+
+
+object CategoryIconItemDiff : DiffUtil.ItemCallback<CategoryIcon>() {
+    override fun areItemsTheSame(
+        oldItem: CategoryIcon,
+        newItem: CategoryIcon
+    ): Boolean {
+        return oldItem.imgSrc == newItem.imgSrc
+    }
+
+    override fun areContentsTheSame(
+        oldItem: CategoryIcon,
+        newItem: CategoryIcon
+    ): Boolean {
+        return oldItem == newItem
     }
 }

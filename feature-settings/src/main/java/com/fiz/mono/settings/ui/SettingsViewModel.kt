@@ -2,8 +2,8 @@ package com.fiz.mono.settings.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fiz.mono.database.data_source.CategoryLocalDataSource
-import com.fiz.mono.database.data_source.TransactionLocalDataSource
+import com.fiz.mono.data.data_source.CategoryLocalDataSource
+import com.fiz.mono.data.data_source.TransactionLocalDataSource
 import com.fiz.mono.domain.repositories.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -18,7 +18,8 @@ class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    var theme: Int = -100; private set
+    var theme: Int = -100
+        private set
 
     init {
         settingsRepository.theme.load()

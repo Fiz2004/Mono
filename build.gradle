@@ -2,17 +2,17 @@
 
 buildscript {
     ext.buildConfig = [
-            'compileSdk': 32,
-            'minSdk'    : 22,
-            'targetSdk' : 32,
+            "compileSdk": 32,
+            "minSdk"    : 22,
+            "targetSdk" : 32,
     ]
 
     ext.versions = [
-            'hilt': '2.40.1',
-            'navigation': '2.4.2',
-            'room': '2.4.2',
-            'coroutines':'1.6.1',
-            'material':'1.6.0'
+            "hilt"      : "2.40.1",
+            "navigation": "2.4.2",
+            "room"      : "2.4.2",
+            "coroutines": "1.6.2",
+            "material"  : "1.6.1"
     ]
 
     repositories {
@@ -24,10 +24,10 @@ buildscript {
 }
 
 plugins {
-    id 'com.android.application' version '7.2.0' apply false
-    id 'com.android.library' version '7.2.0' apply false
-    id 'org.jetbrains.kotlin.android' version '1.6.21' apply false
-    id 'org.jetbrains.kotlin.jvm' version '1.6.21' apply false
+    id("com.android.application") version "7.2.1" apply false
+    id("com.android.library") version "7.2.1" apply false
+    id("org.jetbrains.kotlin.android") version "1.6.21" apply false
+    id("org.jetbrains.kotlin.jvm") version "1.6.21" apply false
 }
 
 task clean(type: Delete) {

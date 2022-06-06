@@ -1,4 +1,4 @@
-package com.fiz.mono.core.util
+package com.fiz.mono.util
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -6,6 +6,9 @@ import android.graphics.Matrix
 import androidx.exifinterface.media.ExifInterface
 import kotlin.math.max
 import kotlin.math.min
+
+private const val WIDTH_PICTURE_DEFAULT = 300
+private const val HEIGHT_PICTURE_DEFAULT = 300
 
 object BitmapUtils {
     private fun setPic(targetW: Int, targetH: Int, path: String): Bitmap? {
@@ -45,7 +48,7 @@ object BitmapUtils {
 
     fun getBitmapsFrom(photoPaths: List<String?>): List<Bitmap?> {
         return photoPaths.map { path ->
-            path?.let { setPic(300, 300, it) }
+            path?.let { setPic(WIDTH_PICTURE_DEFAULT, HEIGHT_PICTURE_DEFAULT, it) }
         }
     }
 }

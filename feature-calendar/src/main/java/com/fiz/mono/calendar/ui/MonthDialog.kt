@@ -7,10 +7,10 @@ import android.os.Bundle
 import android.view.*
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import com.fiz.mono.base.android.utils.getColorCompat
+import com.fiz.mono.base.android.utils.themeColor
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.feature.calendar.databinding.DialogChoiceMonthBinding
-import com.fiz.mono.util.getColorCompat
-import com.fiz.mono.util.themeColor
 
 class MonthDialog : DialogFragment() {
 

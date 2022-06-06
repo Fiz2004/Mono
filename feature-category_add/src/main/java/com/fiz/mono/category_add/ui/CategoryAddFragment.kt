@@ -11,12 +11,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.fiz.mono.base.android.utils.getColorCompat
+import com.fiz.mono.base.android.utils.setVisible
 import com.fiz.mono.category_add.databinding.FragmentCategoryAddBinding
 import com.fiz.mono.category_add.ui.adapters.CategoryIconsAdapter
 import com.fiz.mono.common.ui.resources.R
-import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.navigation.navigationData
-import com.fiz.mono.util.getColorCompat
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 

@@ -2,16 +2,16 @@ package com.fiz.mono.base.android.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fiz.mono.base.android.databinding.ItemCategoryBinding
+import com.fiz.mono.base.android.utils.getColorCompat
+import com.fiz.mono.base.android.utils.setTextAppearanceCompat
+import com.fiz.mono.base.android.utils.setVisible
+import com.fiz.mono.base.android.utils.themeColor
 import com.fiz.mono.common.ui.resources.R
-import com.fiz.mono.core.util.setTextAppearanceCompat
-import com.fiz.mono.core.util.setVisible
 import com.fiz.mono.domain.models.Category
-import com.fiz.mono.domain.models.CategoryItemDiff
-import com.fiz.mono.util.getColorCompat
-import com.fiz.mono.util.themeColor
 
 class CategoriesAdapter(
     private val colorSelected: Int,
@@ -70,5 +70,22 @@ class CategoriesViewHolder(
             else
                 themeColor(R.attr.colorGray)
         }
+    }
+}
+
+
+object CategoryItemDiff : DiffUtil.ItemCallback<Category>() {
+    override fun areItemsTheSame(
+        oldItem: Category,
+        newItem: Category
+    ): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(
+        oldItem: Category,
+        newItem: Category
+    ): Boolean {
+        return oldItem == newItem
     }
 }

@@ -2,18 +2,18 @@ package com.fiz.mono.base.android.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fiz.mono.base.android.databinding.ItemTransactionBinding
 import com.fiz.mono.base.android.databinding.ItemTransactionDateExpenseIncomeBinding
+import com.fiz.mono.base.android.utils.getColorCompat
+import com.fiz.mono.base.android.utils.setVisible
 import com.fiz.mono.common.ui.resources.R
-import com.fiz.mono.core.util.CurrentUtils.getCurrencyFormat
-import com.fiz.mono.core.util.setVisible
-import com.fiz.mono.domain.models.DataItemDiff
 import com.fiz.mono.domain.models.InfoDay
 import com.fiz.mono.domain.models.Transaction
 import com.fiz.mono.domain.models.TransactionsDataItem
-import com.fiz.mono.util.getColorCompat
+import com.fiz.mono.util.CurrentUtils.getCurrencyFormat
 
 private const val ITEM_VIEW_TYPE_HEADER = 0
 private const val ITEM_VIEW_TYPE_ITEM = 1
@@ -144,6 +144,22 @@ class TransactionsAdapter(
                 return InfoDayHeaderItemViewHolder(view)
             }
         }
+    }
+}
+
+object DataItemDiff : DiffUtil.ItemCallback<TransactionsDataItem>() {
+    override fun areItemsTheSame(
+        oldItem: TransactionsDataItem,
+        newItem: TransactionsDataItem
+    ): Boolean {
+        return oldItem == newItem
+    }
+
+    override fun areContentsTheSame(
+        oldItem: TransactionsDataItem,
+        newItem: TransactionsDataItem
+    ): Boolean {
+        return oldItem == newItem
     }
 }
 

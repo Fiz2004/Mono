@@ -19,13 +19,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.base.android.adapters.CategoriesAdapter
-import com.fiz.mono.core.util.ActivityContract
-import com.fiz.mono.core.util.setVisible
+import com.fiz.mono.base.android.utils.ActivityContract
+import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
+import com.fiz.mono.base.android.utils.setVisible
 import com.fiz.mono.input.R
 import com.fiz.mono.input.databinding.FragmentInputBinding
 import com.fiz.mono.navigation.navigate
 import com.fiz.mono.navigation.navigationData
-import com.fiz.mono.util.launchAndRepeatWithViewLifecycle
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import org.threeten.bp.Instant

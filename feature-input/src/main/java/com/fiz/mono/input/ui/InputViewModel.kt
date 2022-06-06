@@ -5,9 +5,9 @@ import android.content.pm.PackageManager
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fiz.mono.database.entity.TransactionEntity
-import com.fiz.mono.database.mapper.toCategoryEntity
-import com.fiz.mono.database.mapper.toTransaction
+import com.fiz.mono.data.entity.TransactionEntity
+import com.fiz.mono.data.mapper.toCategoryEntity
+import com.fiz.mono.data.mapper.toTransaction
 import com.fiz.mono.domain.models.Category
 import com.fiz.mono.domain.models.Transaction
 import com.fiz.mono.domain.repositories.CategoryRepository
