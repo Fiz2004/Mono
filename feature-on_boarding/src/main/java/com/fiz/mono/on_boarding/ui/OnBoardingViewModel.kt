@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.domain.repositories.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -11,19 +12,21 @@ import javax.inject.Inject
 @HiltViewModel
 class OnBoardingViewModel @Inject constructor(private val settingsRepository: SettingsRepository) :
     ViewModel() {
-    var uiState = MutableStateFlow(OnBoardingUiState()); private set
+    var uiState = MutableStateFlow(OnBoardingViewState())
+        private set
 
-    var navigationUiState = MutableStateFlow(OnBoardingNavigationState()); private set
+    var viewEffects = MutableSharedFlow<OnBoardingViewEffect>()
+        private set
 
-    fun onEvent(event: OnBoardingUiEvent) {
+    fun onEvent(event: OnBoardingEvent) {
         when (event) {
-            OnBoardingUiEvent.ClickNextPages -> clickNextPages()
-            OnBoardingUiEvent.ClickSkipButton -> clickSkipButton()
-            OnBoardingUiEvent.ClickBackPress -> clickBackPress()
+            OnBoardingEvent.NextPagesClicked -> nextPagesClicked()
+            OnBoardingEvent.SkipButtonClicked -> skipButtonClicked()
+            OnBoardingEvent.BackPressClicked -> backPressClicked()
         }
     }
 
-    private fun clickNextPages() {
+    private fun nextPagesClicked() {
         if (uiState.value.page < 3) {
             val pages = uiState.value.page + 1
             uiState.value = uiState.value
@@ -35,17 +38,17 @@ class OnBoardingViewModel @Inject constructor(private val settingsRepository: Se
 
     }
 
-    private fun clickSkipButton() {
+    private fun skipButtonClicked() {
         uiState.value = uiState.value
             .copy(page = 3)
 
         moveNextScreen()
     }
 
-    private fun clickBackPress() {
+    private fun backPressClicked() {
         if (uiState.value.page == 0) {
             moveNextScreen()
-        }else {
+        } else {
             val pages = uiState.value.page - 1
             uiState.value = uiState.value
                 .copy(page = pages)
@@ -54,11 +57,9 @@ class OnBoardingViewModel @Inject constructor(private val settingsRepository: Se
 
     private fun moveNextScreen() {
         viewModelScope.launch {
-            settingsRepository.firstTime.save(false)
+            settingsRepository.firstTime = false
+            viewEffects.emit(OnBoardingViewEffect.MoveNextScreen)
         }
-
-        navigationUiState.value = navigationUiState.value
-            .copy(isMoveNextScreen = true)
     }
 
     fun getImage() =

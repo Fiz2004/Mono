@@ -8,10 +8,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.fiz.mono.base.android.adapters.CategoriesAdapter
 import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
+import com.fiz.mono.feature.report.R
+import com.fiz.mono.feature.report.databinding.FragmentSelectCategoryBinding
 import com.fiz.mono.navigation.CategoryInfoArgs
 import com.fiz.mono.navigation.navigate
-import com.fiz.mono.report.R
-import com.fiz.mono.report.databinding.FragmentSelectCategoryBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -43,54 +43,51 @@ class SelectCategoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bind()
-        subscribe()
-
-        setupNavigation()
+        setupUI()
+        observeViewStateUpdates()
+        observeViewEffects()
     }
 
-    private fun bind() {
+    private fun setupUI() {
         binding.apply {
             expenseRecyclerView.adapter = expenseAdapter
             incomeRecyclerView.adapter = incomeAdapter
         }
     }
 
-    private fun subscribe() {
+    private fun observeViewStateUpdates() {
         launchAndRepeatWithViewLifecycle {
-            viewModel.uiState.collect { uiState ->
-                expenseAdapter.submitList(uiState.allCategoryExpense)
-                incomeAdapter.submitList(uiState.allCategoryIncome)
+            viewModel.viewState.collect { newState ->
+                updateScreenState(newState)
             }
         }
     }
 
-    private fun setupNavigation() {
+    private fun updateScreenState(newState: SelectViewState) {
+        expenseAdapter.submitList(newState.allCategoryExpense)
+        incomeAdapter.submitList(newState.allCategoryIncome)
+    }
+
+    private fun observeViewEffects() {
         launchAndRepeatWithViewLifecycle {
-            viewModel.navigationUiState.collect { navigationUiState ->
-                if (navigationUiState.isMove) {
-                    val categoryInfoArgs = CategoryInfoArgs(navigationUiState.type, navigationUiState.id)
-                    navigate(
-                        R.id.action_selectCategoryFragment_to_reportCategoryFragment,
-                        com.fiz.mono.navigation.R.id.report_host_fragment,
-                        categoryInfoArgs
-                    )
-//                    val action =
-//                        SelectCategoryFragmentDirections
-//                            .actionSelectCategoryFragmentToReportCategoryFragment(
-//                                navigationUiState.id,
-//                                navigationUiState.type
-//                            )
-//                    findNavController().navigate(action)
-                    viewModel.moved()
-                }
+            viewModel.viewEffects.collect { viewEffect ->
+                reactTo(viewEffect)
             }
         }
     }
 
-    companion object {
-        const val TYPE_EXPENSE = "expense"
-        const val TYPE_INCOME = "income"
+    private fun reactTo(viewEffect: SelectViewEffect) {
+        when (viewEffect) {
+            is SelectViewEffect.MoveCategoryReport -> {
+                val categoryInfoArgs =
+                    CategoryInfoArgs(viewEffect.type, viewEffect.id)
+                navigate(
+                    R.id.action_selectCategoryFragment_to_reportCategoryFragment,
+                    com.fiz.mono.navigation.R.id.report_host_fragment,
+                    categoryInfoArgs
+                )
+            }
+        }
     }
 
 }

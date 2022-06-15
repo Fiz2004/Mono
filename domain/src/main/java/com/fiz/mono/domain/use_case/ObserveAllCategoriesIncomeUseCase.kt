@@ -17,7 +17,7 @@ class ObserveAllCategoriesIncomeUseCase @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     operator fun invoke(): Flow<List<Category>> {
-        return categoryRepository.allCategoryIncome.map {
+        return categoryRepository.observeCategoriesIncome.map {
             it + Category(
                 "i",
                 context.getString(com.fiz.mono.common.ui.resources.R.string.add_more),

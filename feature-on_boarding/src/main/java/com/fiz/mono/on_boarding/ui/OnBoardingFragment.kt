@@ -21,7 +21,7 @@ class OnBoardingFragment : Fragment() {
 
     private val callback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            viewModel.onEvent(OnBoardingUiEvent.ClickBackPress)
+            viewModel.onEvent(OnBoardingEvent.BackPressClicked)
         }
     }
 
@@ -43,51 +43,56 @@ class OnBoardingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bindListener()
-        subscribe()
+        setupListeners()
+        observeViewStateUpdates()
+        observeViewEffects()
     }
 
-    private fun bindListener() {
+    private fun setupListeners() {
         binding.continueOnBoardingButton.setOnClickListener {
-            viewModel.onEvent(OnBoardingUiEvent.ClickNextPages)
+            viewModel.onEvent(OnBoardingEvent.NextPagesClicked)
         }
 
         binding.skipOnBoardingButton.setOnClickListener {
-            viewModel.onEvent(OnBoardingUiEvent.ClickSkipButton)
+            viewModel.onEvent(OnBoardingEvent.SkipButtonClicked)
         }
     }
 
-    private fun subscribe() {
+    private fun observeViewStateUpdates() {
         launchAndRepeatWithViewLifecycle {
-            viewModel.uiState.collect { uiState ->
-
-                if (uiState.page < OnBoardingUiState.MAX_PAGE) {
-                    binding.apply {
-                        pageNumberOnBoardingTextView.text =
-                            getString(R.string.pageNumber, uiState.page + 1, OnBoardingUiState.MAX_PAGE)
-                        skipOnBoardingButton.setVisible(uiState.page != OnBoardingUiState.MAX_PAGE-1)
-                        headerOnBoardingTextView.text =
-                            resources.getStringArray(R.array.header)[uiState.page]
-                        descriptionOnBoardingTextView.text =
-                            resources.getStringArray(R.array.description)[uiState.page]
-                        continueOnBoardingButton.text =
-                            resources.getStringArray(R.array.getStarted)[uiState.page]
-
-                        imageOnBoardingImageView
-                            .setImageResource(viewModel.getImage())
-                    }
-                }
-
+            viewModel.uiState.collect { newState ->
+                updateScreenState(newState)
             }
         }
+    }
 
+    private fun observeViewEffects() {
         launchAndRepeatWithViewLifecycle {
-            viewModel.navigationUiState.collect { navigationUiState ->
-
-                if (navigationUiState.isMoveNextScreen) {
-                    findNavController().popBackStack()
+            viewModel.viewEffects.collect { viewEffect ->
+                when (viewEffect) {
+                    OnBoardingViewEffect.MoveNextScreen -> {
+                        findNavController().popBackStack()
+                    }
                 }
+            }
+        }
+    }
 
+    private fun updateScreenState(newState: OnBoardingViewState) {
+        if (newState.page < OnBoardingViewState.MAX_PAGE) {
+            binding.apply {
+                pageNumberOnBoardingTextView.text =
+                    getString(R.string.pageNumber, newState.page + 1, OnBoardingViewState.MAX_PAGE)
+                skipOnBoardingButton.setVisible(newState.page != OnBoardingViewState.MAX_PAGE - 1)
+                headerOnBoardingTextView.text =
+                    resources.getStringArray(R.array.header)[newState.page]
+                descriptionOnBoardingTextView.text =
+                    resources.getStringArray(R.array.description)[newState.page]
+                continueOnBoardingButton.text =
+                    resources.getStringArray(R.array.getStarted)[newState.page]
+
+                imageOnBoardingImageView
+                    .setImageResource(viewModel.getImage())
             }
         }
     }

@@ -6,32 +6,27 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import com.fiz.mono.base.android.utils.getColorCompat
 import com.fiz.mono.base.android.utils.themeColor
-import com.fiz.mono.common.ui.resources.R
-import com.fiz.mono.report.databinding.DialogChoiceReportBinding
-import com.fiz.mono.report.ui.ReportViewModel.Companion.MONTHLY
+import com.fiz.mono.feature.report.databinding.DialogChoiceReportBinding
 
 class ReportDialog : DialogFragment() {
-    private var choice: Int = 0
+    private val binding get() = _binding!!
 
-    interface Choicer {
-        fun choiceMonthly()
-        fun choiceCategory()
-    }
-
-    private lateinit var binding: DialogChoiceReportBinding
-
-    // Be sure to install in the calling fragment
-    var choicer: Choicer? = null
+    private var _binding: DialogChoiceReportBinding? = null
+    private val viewModel: ReportViewModel by viewModels(
+        ownerProducer = { requireParentFragment() }
+    )
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        choice = arguments?.getInt("currentChoice") ?: 0
         val dialog = super.onCreateDialog(savedInstanceState)
 
-        dialog.window?.attributes?.gravity = Gravity.TOP.or(Gravity.END)
-        dialog.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.let {
+            it.attributes?.gravity = Gravity.TOP.or(Gravity.END)
+            it.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            it.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
 
         return dialog
     }
@@ -41,33 +36,53 @@ class ReportDialog : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = DialogChoiceReportBinding.inflate(inflater, container, false)
+        _binding = DialogChoiceReportBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.monthlyTextView.setOnClickListener(::monthlyOnClickListener)
-        binding.categoryTextView.setOnClickListener(::categoryOnClickListener)
+        binding.apply {
+            monthlyTextView.apply {
+                setOnClickListener(::monthlyOnClickListener)
 
-        if (choice == MONTHLY) {
-            binding.monthlyTextView.setTextColor(requireContext().getColorCompat(R.color.blue))
-            binding.categoryTextView.setTextColor(requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary))
-        } else {
-            binding.monthlyTextView.setTextColor(requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary))
-            binding.categoryTextView.setTextColor(requireContext().getColorCompat(R.color.blue))
+                val color =
+                    if (viewModel.viewState.value.categorySelectedReport == CategoryReport.Monthly)
+                        requireContext().getColorCompat(com.fiz.mono.common.ui.resources.R.color.blue)
+                    else
+                        requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary)
+
+                setTextColor(color)
+            }
+
+            categoryTextView.apply {
+                setOnClickListener(::categoryOnClickListener)
+
+                val color =
+                    if (viewModel.viewState.value.categorySelectedReport == CategoryReport.Monthly)
+                        requireContext().themeColor(androidx.appcompat.R.attr.colorPrimary)
+                    else
+                        requireContext().getColorCompat(com.fiz.mono.common.ui.resources.R.color.blue)
+
+                setTextColor(color)
+            }
         }
     }
 
     private fun categoryOnClickListener(view: View) {
-        choicer?.choiceCategory()
+        viewModel.onEvent(ReportEvent.CategoryClicked)
         dismiss()
     }
 
     private fun monthlyOnClickListener(view: View) {
-        choicer?.choiceMonthly()
+        viewModel.onEvent(ReportEvent.MonthlyClicked)
         dismiss()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }

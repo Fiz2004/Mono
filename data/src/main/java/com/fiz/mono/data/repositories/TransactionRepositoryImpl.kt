@@ -18,13 +18,20 @@ class TransactionRepositoryImpl(
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : TransactionRepository {
 
-    override val allTransactions: Flow<List<Transaction>> =
-        transactionLocalDataSource.allTransactions.map {
+    override val observeTransactions: Flow<List<Transaction>> =
+        transactionLocalDataSource.observeTransactions.map {
             it.map { it.toTransaction() }
         }.flowOn(defaultDispatcher)
 
+    override suspend fun getTransactions(): List<Transaction> =
+        withContext(defaultDispatcher) {
+            transactionLocalDataSource.getTransactions().map {
+                it.toTransaction()
+            }
+        }
+
     override fun getCurrentBalance(): Flow<Double> {
-        return allTransactions
+        return observeTransactions
             .map {
                 it
                     .map { it.value }
@@ -36,7 +43,7 @@ class TransactionRepositoryImpl(
     private fun getAllTransactionsForMonth(
         date: LocalDate
     ): Flow<List<Transaction>> {
-        return allTransactions.map {
+        return observeTransactions.map {
             it.filter { it.localDate.year == date.year }
                 .filter { it.localDate.month == date.month }
 
@@ -72,4 +79,5 @@ class TransactionRepositoryImpl(
         withContext(defaultDispatcher) {
             transactionLocalDataSource.updateTransaction(transaction.toTransactionEntity())
         }
+
 }

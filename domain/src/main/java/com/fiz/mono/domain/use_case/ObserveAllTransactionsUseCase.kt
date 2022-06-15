@@ -10,7 +10,7 @@ class ObserveAllTransactionsUseCase @Inject constructor(
 ) {
 
     operator fun invoke(): Flow<List<Transaction>> {
-        return transactionRepository.allTransactions
+        return transactionRepository.observeTransactions
     }
 
 }

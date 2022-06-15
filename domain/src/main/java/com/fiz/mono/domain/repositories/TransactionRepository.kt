@@ -5,7 +5,9 @@ import kotlinx.coroutines.flow.Flow
 import org.threeten.bp.LocalDate
 
 interface TransactionRepository {
-    val allTransactions: Flow<List<Transaction>>
+    val observeTransactions: Flow<List<Transaction>>
+
+    suspend fun getTransactions(): List<Transaction>
 
     fun getCurrentBalance(): Flow<Double>
 

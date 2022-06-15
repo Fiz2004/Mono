@@ -6,24 +6,24 @@ import org.junit.Test
 
 class CalculatorMemoryTest {
 
-    private lateinit var calculatorMemory: CalculatorMemory
+    private lateinit var calculator: Calculator
 
     @Before
     fun setUp() {
-        calculatorMemory = CalculatorMemory()
+        calculator = Calculator()
     }
 
     @Test
     fun getResult() {
-        val newCalculatorMemory =
-            CalculatorMemory(number1 = "23", number2 = "12", currentOperator = "+")
+        val newCalculator =
+            Calculator(number1 = "23", number2 = "12", currentOperator = "+")
 
-        assertEquals("23+12", newCalculatorMemory.getResult())
+        assertEquals("23+12", newCalculator.getResult())
     }
 
     @Test
     fun deleteLastSymbolForNumber1() {
-        val newCalculatorMemory = calculatorMemory
+        val newCalculatorMemory = calculator
             .addNumber("5")
             .addNumber("2")
             .addNumber("1")
@@ -34,7 +34,7 @@ class CalculatorMemoryTest {
 
     @Test
     fun deleteLastSymbolForNumber2() {
-        val newCalculatorMemory = calculatorMemory
+        val newCalculatorMemory = calculator
             .addNumber("1")
             .doOperator("+")
             .addNumber("5")
@@ -46,7 +46,7 @@ class CalculatorMemoryTest {
 
     @Test
     fun deleteLastSymbolForCurrentOperator() {
-        val newCalculatorMemory = calculatorMemory
+        val newCalculatorMemory = calculator
             .addNumber("1")
             .doOperator("+")
             .deleteLastSymbol()
@@ -56,7 +56,7 @@ class CalculatorMemoryTest {
 
     @Test
     fun addNumberForNumber1() {
-        val newCalculatorMemory = calculatorMemory
+        val newCalculatorMemory = calculator
             .addNumber("5")
             .addNumber("2")
             .addNumber("1")
@@ -67,7 +67,7 @@ class CalculatorMemoryTest {
 
     @Test
     fun addNumberForNumber2() {
-        val newCalculatorMemory = calculatorMemory
+        val newCalculatorMemory = calculator
             .addNumber("1")
             .doOperator("+")
             .addNumber("5")
@@ -80,7 +80,7 @@ class CalculatorMemoryTest {
 
     @Test
     fun addNumberForNumber1AfterOperation() {
-        val newCalculatorMemory = calculatorMemory
+        val newCalculatorMemory = calculator
             .addNumber("1")
             .doOperator("+")
             .addNumber("5")
@@ -91,7 +91,7 @@ class CalculatorMemoryTest {
 
 
         assertEquals(
-            CalculatorMemory(
+            Calculator(
                 number1 = "5225",
                 number2 = "",
                 currentOperator = "",
@@ -102,7 +102,7 @@ class CalculatorMemoryTest {
 
     @Test
     fun doOperatorIfOperatorPlus() {
-        val newCalculatorMemory = calculatorMemory
+        val newCalculatorMemory = calculator
             .addNumber("1")
             .doOperator("+")
             .addNumber("5")
@@ -111,7 +111,7 @@ class CalculatorMemoryTest {
             .doOperator("=")
 
         assertEquals(
-            CalculatorMemory(
+            Calculator(
                 number1 = "522",
                 number2 = "",
                 currentOperator = "",
@@ -122,7 +122,7 @@ class CalculatorMemoryTest {
 
     @Test
     fun getHistory() {
-        val history = calculatorMemory
+        val history = calculator
             .addNumber("1")
             .doOperator("+")
             .addNumber("5")
@@ -135,7 +135,7 @@ class CalculatorMemoryTest {
 
     @Test
     fun reset() {
-        val newCalculatorMemory = calculatorMemory
+        val newCalculatorMemory = calculator
             .addNumber("1")
             .doOperator("+")
             .addNumber("5")
@@ -143,6 +143,6 @@ class CalculatorMemoryTest {
             .addNumber("1")
             .reset()
 
-        assertEquals(CalculatorMemory(), newCalculatorMemory)
+        assertEquals(Calculator(), newCalculatorMemory)
     }
 }

@@ -15,10 +15,10 @@ import com.fiz.mono.base.android.adapters.TransactionsAdapter
 import com.fiz.mono.base.android.utils.getColorCompat
 import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
 import com.fiz.mono.base.android.utils.themeColor
-import com.fiz.mono.common.ui.resources.R
+import com.fiz.mono.feature.report.R
+import com.fiz.mono.feature.report.databinding.FragmentReportCategoryBinding
 import com.fiz.mono.navigation.CategoryInfoArgs
 import com.fiz.mono.navigation.navigationData
-import com.fiz.mono.report.databinding.FragmentReportCategoryBinding
 import com.google.android.material.button.MaterialButtonToggleGroup
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,18 +29,23 @@ class ReportCategoryFragment : Fragment() {
 
     private val adapter: TransactionsAdapter by lazy {
         TransactionsAdapter(
-            viewModel.uiState.value.currency,
+            viewModel.viewState.value.currency,
             false
         )
     }
 
-    private lateinit var binding: FragmentReportCategoryBinding
+    private val binding get() = _binding!!
+    private var _binding: FragmentReportCategoryBinding? = null
+
+    private val reportCategoryGraph by lazy {
+        initReportCategoryGraph()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentReportCategoryBinding.inflate(inflater, container, false)
+        _binding = FragmentReportCategoryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -48,40 +53,22 @@ class ReportCategoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         init()
-        bind()
-        subscribe()
+        setupUI()
+        observeViewStateUpdates()
     }
 
     private fun init() {
-        val categoryInfoArgs = navigationData as? CategoryInfoArgs ?: CategoryInfoArgs()
-        viewModel.start(categoryInfoArgs.type, categoryInfoArgs.id)
-    }
-
-    private fun subscribe() {
-        launchAndRepeatWithViewLifecycle {
-            viewModel.uiState.collect { uiState ->
-                binding.periodTextView.text = getString(uiState.period)
-                binding.valueReportCategoryTextView.text = uiState.getValueReportCategory(
-                    viewModel.uiState.value.currency
-                )
-                adapter.submitList(uiState.getTransactions())
-
-                uiState.category?.let {
-                    binding.iconImageView.setImageResource(it.imgSrc)
-                    binding.iconTextView.text = it.name
-                }
-
-                if (uiState.isCanGraph)
-                    drawGraph()
-            }
+        val categoryInfoArgs = navigationData as? CategoryInfoArgs
+        categoryInfoArgs?.let {
+            viewModel.start(it.type, it.id)
         }
     }
 
-    private fun bind() {
-        val color = if (viewModel.uiState.value.isExpense)
-            R.color.expense
+    private fun setupUI() {
+        val color = if (viewModel.viewState.value.isExpense)
+            com.fiz.mono.common.ui.resources.R.color.expense
         else
-            R.color.income
+            com.fiz.mono.common.ui.resources.R.color.income
 
         binding.iconImageView.imageTintList = ColorStateList.valueOf(
             requireContext().getColorCompat(color)
@@ -100,11 +87,11 @@ class ReportCategoryFragment : Fragment() {
                                                                    isChecked: Boolean ->
 
             when (checkedId) {
-                com.fiz.mono.report.R.id.monthToggleButton -> {
+                R.id.monthToggleButton -> {
                     if (isChecked)
                         viewModel.clickMonthToggleButton()
                 }
-                com.fiz.mono.report.R.id.weekToggleButton -> {
+                R.id.weekToggleButton -> {
                     if (isChecked)
                         viewModel.clickWeekToggleButton()
                 }
@@ -118,37 +105,70 @@ class ReportCategoryFragment : Fragment() {
         }
     }
 
-    private fun drawGraph() {
-        if (binding.graphImageView.width == 0 || binding.graphImageView.height == 0) return
+    private fun observeViewStateUpdates() {
+        launchAndRepeatWithViewLifecycle {
+            viewModel.viewState.collect { newState ->
+                updateScreenState(newState)
+            }
+        }
+    }
 
+    private fun updateScreenState(newState: ReportCategoryViewState) {
+        binding.periodTextView.text = getString(newState.period)
+        binding.valueReportCategoryTextView.text = newState.getValueReportCategory(
+            viewModel.viewState.value.currency
+        )
+        adapter.submitList(newState.getTransactions())
+
+        newState.category?.let {
+            binding.iconImageView.setImageResource(it.imgSrc)
+            binding.iconTextView.text = it.name
+        }
+
+        if (newState.isCanGraph)
+            drawGraph()
+    }
+
+    private fun drawGraph() {
         val width = binding.graphImageView.width
         val height = binding.graphImageView.height
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
+        reportCategoryGraph.drawGraph(
+            canvas, viewModel.viewState.value,
+        )
+        binding.graphImageView.setImageBitmap(bitmap)
+    }
+
+
+    private fun initReportCategoryGraph(): ReportCategoryGraph {
+
+        val width = binding.graphImageView.width
+        val height = binding.graphImageView.height
+
         val color = requireContext().getColorCompat(
-            if (viewModel.uiState.value.isExpense)
-                R.color.expense
+            if (viewModel.viewState.value.isExpense)
+                com.fiz.mono.common.ui.resources.R.color.expense
             else
-                R.color.income
+                com.fiz.mono.common.ui.resources.R.color.income
         )
         val density = resources.displayMetrics.density
         val textSize = spToPx(16f, requireContext())
         val colorText =
             requireContext().themeColor(com.google.android.material.R.attr.colorSecondary)
         val colorForShader1 = requireContext().getColorCompat(
-            if (viewModel.uiState.value.isExpense)
-                R.color.expense_gradient_0
+            if (viewModel.viewState.value.isExpense)
+                com.fiz.mono.common.ui.resources.R.color.expense_gradient_0
             else
-                R.color.income_gradient_0
+                com.fiz.mono.common.ui.resources.R.color.income_gradient_0
         )
         val colorForShader2 = requireContext().getColorCompat(
-            if (viewModel.uiState.value.isExpense)
-                R.color.expense_gradient_1
+            if (viewModel.viewState.value.isExpense)
+                com.fiz.mono.common.ui.resources.R.color.expense_gradient_1
             else
-                R.color.income_gradient_1
+                com.fiz.mono.common.ui.resources.R.color.income_gradient_1
         )
-        viewModel.drawGraph(
-            canvas,
+        return ReportCategoryGraph(
             width,
             height,
             color,
@@ -158,7 +178,6 @@ class ReportCategoryFragment : Fragment() {
             colorForShader1,
             colorForShader2
         )
-        binding.graphImageView.setImageBitmap(bitmap)
     }
 
     private fun spToPx(sp: Float, context: Context): Float {
@@ -168,4 +187,11 @@ class ReportCategoryFragment : Fragment() {
             context.resources.displayMetrics
         )
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.transactionsRecyclerView.adapter = null
+        _binding = null
+    }
+
 }

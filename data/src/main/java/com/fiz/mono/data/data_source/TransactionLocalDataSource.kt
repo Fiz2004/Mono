@@ -17,15 +17,20 @@ class TransactionLocalDataSourceImpl @Inject constructor(
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : TransactionLocalDataSource {
 
-    override val allTransactions: Flow<List<TransactionEntity>> =
-        transactionDao.getAll()
+    override val observeTransactions: Flow<List<TransactionEntity>> =
+        transactionDao.observeTransactions()
             .distinctUntilChanged()
             .flowOn(defaultDispatcher)
+
+    override suspend fun getTransactions(): List<TransactionEntity> =
+        withContext(defaultDispatcher) {
+            transactionDao.getTransactions()
+        }
 
     override fun deleteAll() {
         CoroutineScope(defaultDispatcher)
             .launch {
-                allTransactions.first().map {
+                observeTransactions.first().map {
                     it.photoPaths.map path@{
                         if (it == null) return@path
                         val fdelete = File(it)
@@ -55,7 +60,9 @@ class TransactionLocalDataSourceImpl @Inject constructor(
 
 interface TransactionLocalDataSource {
 
-    val allTransactions: Flow<List<TransactionEntity>>
+    val observeTransactions: Flow<List<TransactionEntity>>
+
+    suspend fun getTransactions(): List<TransactionEntity>
 
     fun deleteAll()
 

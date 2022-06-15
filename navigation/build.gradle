@@ -5,6 +5,8 @@ android {
 }
 
 dependencies {
+    implementation project(":domain")
+
     implementation("androidx.fragment:fragment-ktx:1.4.1")
 
     // Navigation component

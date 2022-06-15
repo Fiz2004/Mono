@@ -1,40 +1,73 @@
 package com.fiz.mono.report.ui
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.fiz.mono.common.ui.resources.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ReportViewModel @Inject constructor() : ViewModel() {
-    var uiState = MutableStateFlow(ReportUiState()); private set
+    var viewState = MutableStateFlow(ReportViewState())
+        private set
 
-    fun clickMonthly(): Boolean {
-        if (uiState.value.categorySelectedReport == MONTHLY)
-            return false
+    var viewEffects = MutableSharedFlow<ReportViewEffect>()
+        private set
 
-        uiState.value = uiState.value
-            .copy(categorySelectedReport = MONTHLY)
-        return true
-    }
-
-    fun clickCategory(): Boolean {
-        if (uiState.value.categorySelectedReport == CATEGORY)
-            return false
-
-        uiState.value = uiState.value
-            .copy(categorySelectedReport = CATEGORY)
-        return true
-    }
-
-    fun getTextTypeReport() = if (uiState.value.categorySelectedReport == MONTHLY)
+    fun getTextTypeReport() = if (viewState.value.categorySelectedReport == CategoryReport.Monthly)
         R.string.month_report
     else
         R.string.category_report
 
-    companion object {
-        const val MONTHLY = 0
-        const val CATEGORY = 1
+    fun onEvent(event: ReportEvent) {
+        when (event) {
+            ReportEvent.CategoryClicked -> categoryClicked()
+            ReportEvent.MonthlyClicked -> monthlyClicked()
+            ReportEvent.DateTextClicked -> dateTextClicked()
+        }
     }
+
+    private fun dateTextClicked() {
+        viewModelScope.launch {
+            viewEffects.emit(ReportViewEffect.MoveCalendar)
+        }
+    }
+
+    private fun monthlyClicked() {
+        viewModelScope.launch {
+            if (clickMonthly())
+                viewEffects.emit(ReportViewEffect.MoveReturn)
+        }
+    }
+
+    private fun clickMonthly(): Boolean {
+        if (viewState.value.categorySelectedReport == CategoryReport.Monthly)
+            return false
+
+        viewState.value = viewState.value
+            .copy(categorySelectedReport = CategoryReport.Monthly)
+        return true
+    }
+
+    private fun categoryClicked() {
+        viewModelScope.launch {
+            if (clickCategory()) {
+                viewEffects.emit(ReportViewEffect.MoveSelectCategory)
+            }
+        }
+    }
+
+    private fun clickCategory(): Boolean {
+        if (viewState.value.categorySelectedReport == CategoryReport.Category)
+            return false
+
+        viewState.value = viewState.value
+            .copy(categorySelectedReport = CategoryReport.Category)
+        return true
+    }
+
 }
+

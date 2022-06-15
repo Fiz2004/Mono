@@ -12,7 +12,8 @@ buildscript {
             "navigation": "2.4.2",
             "room"      : "2.4.2",
             "coroutines": "1.6.2",
-            "material"  : "1.6.1"
+            "material"  : "1.6.1",
+            "appcompat" : "1.4.2"
     ]
 
     repositories {
@@ -20,6 +21,7 @@ buildscript {
     }
     dependencies {
         classpath("com.google.dagger:hilt-android-gradle-plugin:${versions.hilt}")
+        classpath("com.android.tools.build:gradle:7.2.1")
     }
 }
 

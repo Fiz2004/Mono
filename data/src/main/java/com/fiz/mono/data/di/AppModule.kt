@@ -10,13 +10,8 @@ import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.data.AppDatabase
 import com.fiz.mono.data.dao.CategoryDao
 import com.fiz.mono.data.dao.TransactionDao
-import com.fiz.mono.data.data_source.CategoryIconsLocalDataSourceImpl
-import com.fiz.mono.data.data_source.CategoryLocalDataSource
 import com.fiz.mono.data.data_source.TransactionLocalDataSource
-import com.fiz.mono.data.repositories.CategoryIconsRepositoryImpl
-import com.fiz.mono.data.repositories.CategoryRepositoryImpl
 import com.fiz.mono.data.repositories.TransactionRepositoryImpl
-import com.fiz.mono.domain.repositories.CategoryRepository
 import com.fiz.mono.domain.repositories.TransactionRepository
 import dagger.Module
 import dagger.Provides
@@ -44,30 +39,6 @@ class AppModule {
             context.getString(R.string.preferences),
             AppCompatActivity.MODE_PRIVATE
         )
-    }
-
-    @Provides
-    @Singleton
-    fun provideCategoryRepository(
-        @ApplicationContext context: Context,
-        categoryLocalStore: CategoryLocalDataSource
-    ): CategoryRepository {
-        return CategoryRepositoryImpl(
-            categoryLocalStore,
-            context.getString(R.string.edit),
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideCategoryIconUiStateDataSource(): CategoryIconsLocalDataSourceImpl {
-        return CategoryIconsLocalDataSourceImpl()
-    }
-
-    @Provides
-    @Singleton
-    fun provideCategoryCategoryIconsRepository(categoryIconsLocalDataSourceImpl: CategoryIconsLocalDataSourceImpl): CategoryIconsRepositoryImpl {
-        return CategoryIconsRepositoryImpl(categoryIconsLocalDataSourceImpl)
     }
 
     @Provides

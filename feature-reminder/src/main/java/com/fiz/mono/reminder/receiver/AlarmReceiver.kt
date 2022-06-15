@@ -16,7 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.threeten.bp.temporal.ChronoUnit
 import javax.inject.Inject
 
-interface GetMainActiviti {
+interface GetMainActivity {
     fun get(): Class<*>
 }
 
@@ -32,7 +32,7 @@ class AlarmReceiver : BroadcastReceiver() {
             context.getText(R.string.mono_will_reminder_to_note_transaction_on_this_time_everyday)
                 .toString(),
             context,
-            ((context.applicationContext as Application) as GetMainActiviti).get()
+            ((context.applicationContext as Application) as GetMainActivity).get()
         )
 
         val notifyIntent = Intent((context as Application), AlarmReceiver::class.java)

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
+import com.fiz.mono.domain.models.TypeTransaction
 import java.io.Serializable
 
 const val NAV_DATA = "navigation data"
@@ -27,6 +28,6 @@ val Fragment.navigationData: Serializable?
     get() = arguments?.getSerializable(NAV_DATA)
 
 data class CategoryInfoArgs(
-    val type: String = "",
-    val id: String = "",
+    val type: TypeTransaction,
+    val id: String,
 ) : Serializable

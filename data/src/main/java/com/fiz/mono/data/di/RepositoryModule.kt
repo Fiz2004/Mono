@@ -5,8 +5,10 @@ import com.fiz.mono.data.data_source.CategoryLocalDataSourceImpl
 import com.fiz.mono.data.data_source.TransactionLocalDataSource
 import com.fiz.mono.data.data_source.TransactionLocalDataSourceImpl
 import com.fiz.mono.data.repositories.CategoryIconsRepositoryImpl
+import com.fiz.mono.data.repositories.CategoryRepositoryImpl
 import com.fiz.mono.data.repositories.SettingsRepositoryImpl
 import com.fiz.mono.domain.repositories.CategoryIconsRepository
+import com.fiz.mono.domain.repositories.CategoryRepository
 import com.fiz.mono.domain.repositories.SettingsRepository
 import dagger.Binds
 import dagger.Module
@@ -21,6 +23,11 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun provideSettingsRepository(settingsRepositoryImpl: SettingsRepositoryImpl): SettingsRepository
+
+    @Binds
+    @Singleton
+    abstract fun provideCategoryRepository(categoryRepository: CategoryRepositoryImpl): CategoryRepository
+
 
     @Binds
     @Singleton

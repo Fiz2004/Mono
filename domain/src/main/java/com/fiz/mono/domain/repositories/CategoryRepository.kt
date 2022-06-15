@@ -1,16 +1,11 @@
 package com.fiz.mono.domain.repositories
 
 import com.fiz.mono.domain.models.Category
-import com.fiz.mono.util.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface CategoryRepository {
-    var allCategoryExpense: Flow<List<Category>>
-    var allCategoryIncome: Flow<List<Category>>
-
-    fun getAllCategoryExpenseForInput(): Flow<Resource<List<Category>>>
-
-    fun getAllCategoryIncomeForInput(): Flow<List<Category>>
+    var observeCategoriesExpense: Flow<List<Category>>
+    var observeCategoriesIncome: Flow<List<Category>>
 
     suspend fun removeCategory(category: Category)
 

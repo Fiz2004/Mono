@@ -6,20 +6,6 @@
     app:startDestination="@id/inputFragment">
 
     <fragment
-        android:id="@+id/onBoardingFragment"
-        android:name="com.fiz.mono.on_boarding.ui.OnBoardingFragment"
-        android:label="fragment_on_boarding"
-        tools:layout="@layout/fragment_on_boarding" />
-    <fragment
-        android:id="@+id/PINPasswordFragment"
-        android:name="com.fiz.mono.pin_password.ui.PINPasswordFragment"
-        android:label="fragment_p_i_n_password"
-        tools:layout="@layout/fragment_p_i_n_password">
-        <action
-            android:id="@+id/action_PINPasswordFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
-    </fragment>
-    <fragment
         android:id="@+id/inputFragment"
         android:name="com.fiz.mono.input.ui.InputFragment"
         android:label="fragment_input"
@@ -33,22 +19,39 @@
         <action
             android:id="@id/action_inputFragment_to_calendarFragment"
             app:destination="@id/calendarFragment" />
-
         <action
             android:id="@id/action_inputFragment_to_categoryFragment"
             app:destination="@id/categoryManageGraph" />
-
     </fragment>
+
+    <fragment
+        android:id="@+id/onBoardingFragment"
+        android:name="com.fiz.mono.on_boarding.ui.OnBoardingFragment"
+        android:label="fragment_on_boarding"
+        tools:layout="@layout/fragment_on_boarding" />
+
+    <fragment
+        android:id="@+id/PINPasswordFragment"
+        android:name="com.fiz.mono.pin_password.ui.PINPasswordFragment"
+        android:label="fragment_p_i_n_password"
+        tools:layout="@layout/fragment_p_i_n_password">
+        <action
+            android:id="@+id/action_PINPasswordFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/calculatorFragment"
         android:name="com.fiz.mono.calculator.ui.CalculatorFragment"
         android:label="fragment_calculator"
         tools:layout="@layout/fragment_calculator" />
+
     <fragment
         android:id="@+id/reminderFragment"
         android:name="com.fiz.mono.reminder.ui.ReminderFragment"
         android:label="fragment_reminder"
         tools:layout="@layout/fragment_reminder" />
+
     <fragment
         android:id="@+id/reportFragment"
         android:name="com.fiz.mono.report.ui.ReportFragment"
@@ -83,10 +86,8 @@
         android:id="@+id/currencyFragment"
         android:name="com.fiz.mono.currency.ui.CurrencyFragment"
         android:label="fragment_currency"
-        tools:layout="@layout/fragment_currency">
+        tools:layout="@layout/fragment_currency" />
 
-
-    </fragment>
     <fragment
         android:id="@+id/calendarFragment"
         android:name="com.fiz.mono.calendar.ui.CalendarFragment"
@@ -95,9 +96,11 @@
             android:id="@+id/action_calendarFragment_to_inputFragment"
             app:destination="@id/inputFragment" />
     </fragment>
+
     <navigation
         android:id="@+id/categoryManageGraph"
         app:startDestination="@id/categoryEditFragment">
+
         <fragment
             android:id="@+id/categoryEditFragment"
             android:name="com.fiz.mono.category_edit.ui.CategoryEditFragment"
@@ -106,13 +109,14 @@
             <action
                 android:id="@+id/action_categoryFragment_to_categoryAddFragment"
                 app:destination="@id/categoryAddFragment" />
-
         </fragment>
+
         <fragment
             android:id="@+id/categoryAddFragment"
             android:name="com.fiz.mono.category_add.ui.CategoryAddFragment"
             android:label="fragment_category_add"
-            tools:layout="@layout/fragment_category_add">
-        </fragment>
+            tools:layout="@layout/fragment_category_add" />
+
     </navigation>
+
 </navigation>

@@ -10,10 +10,16 @@ interface CategoryDao {
     fun getAll(): Flow<List<CategoryEntity>>
 
     @Query("SELECT * FROM CategoryEntity WHERE id LIKE '%e%'")
-    fun getAllExpense(): Flow<List<CategoryEntity>>
+    fun getObserveAllExpense(): Flow<List<CategoryEntity>>
 
     @Query("SELECT * FROM CategoryEntity WHERE id LIKE '%i%'")
-    fun getAllIncome(): Flow<List<CategoryEntity>>
+    fun getObserveAllIncome(): Flow<List<CategoryEntity>>
+
+    @Query("SELECT * FROM CategoryEntity WHERE id LIKE '%e%'")
+    suspend fun getAllExpense(): List<CategoryEntity>
+
+    @Query("SELECT * FROM CategoryEntity WHERE id LIKE '%i%'")
+    suspend fun getAllIncome(): List<CategoryEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(categoryEntity: CategoryEntity)

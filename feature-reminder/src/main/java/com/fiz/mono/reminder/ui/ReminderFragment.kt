@@ -85,7 +85,7 @@ class ReminderFragment : Fragment() {
             setReminderButton.setOnClickListener {
                 notificationManager.cancelNotifications()
 
-                if (viewModel.uiState.value.isNotifyInstalled) {
+                if (viewModel.viewState.value.isNotifyInstalled) {
                     alarmManager.cancel(notifyPendingIntent)
 
                     viewModel.cancelNotification()
@@ -106,35 +106,38 @@ class ReminderFragment : Fragment() {
             }
         }
 
-        subscribe()
+        observeViewStateUpdates()
     }
 
-    private fun subscribe() {
-
+    private fun observeViewStateUpdates() {
         launchAndRepeatWithViewLifecycle {
-            viewModel.uiState.collect { uiState ->
-                binding.hoursEditText.isEnabled = !uiState.isNotifyInstalled
-                binding.hoursEditText.error = if (uiState.isErrorHourEditText)
-                    getString(R.string.invalid_number)
-                else
-                    null
-                if (binding.hoursEditText.text.toString() != uiState.timeForReminder.hour)
-                    binding.hoursEditText.setText(uiState.timeForReminder.hour)
-
-                binding.minutesEditText.isEnabled = !uiState.isNotifyInstalled
-                binding.minutesEditText.error = if (uiState.isErrorMinuteEditText)
-                    getString(R.string.invalid_number)
-                else
-                    null
-                if (binding.minutesEditText.text.toString() != uiState.timeForReminder.minute)
-                    binding.minutesEditText.setText(uiState.timeForReminder.minute)
-
-                val textForButtonReminder =
-                    if (uiState.isNotifyInstalled) R.string.remove_reminder else R.string.set_reminder
-                binding.setReminderButton.text = getString(textForButtonReminder)
-                binding.setReminderButton.isActivated = uiState.isNotifyInstalled
-                binding.setReminderButton.isEnabled = uiState.isCanReminder
+            viewModel.viewState.collect { newState ->
+                updateScreenState(newState)
             }
         }
+    }
+
+    private fun updateScreenState(newState: ReminderViewState) {
+        binding.hoursEditText.isEnabled = !newState.isNotifyInstalled
+        binding.hoursEditText.error = if (newState.isErrorHourEditText)
+            getString(R.string.invalid_number)
+        else
+            null
+        if (binding.hoursEditText.text.toString() != newState.timeForReminder.hour)
+            binding.hoursEditText.setText(newState.timeForReminder.hour)
+
+        binding.minutesEditText.isEnabled = !newState.isNotifyInstalled
+        binding.minutesEditText.error = if (newState.isErrorMinuteEditText)
+            getString(R.string.invalid_number)
+        else
+            null
+        if (binding.minutesEditText.text.toString() != newState.timeForReminder.minute)
+            binding.minutesEditText.setText(newState.timeForReminder.minute)
+
+        val textForButtonReminder =
+            if (newState.isNotifyInstalled) R.string.remove_reminder else R.string.set_reminder
+        binding.setReminderButton.text = getString(textForButtonReminder)
+        binding.setReminderButton.isActivated = newState.isNotifyInstalled
+        binding.setReminderButton.isEnabled = newState.isCanReminder
     }
 }

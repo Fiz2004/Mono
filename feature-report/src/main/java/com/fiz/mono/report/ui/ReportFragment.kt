@@ -10,15 +10,17 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
 import com.fiz.mono.base.android.utils.setVisible
+import com.fiz.mono.feature.report.R
+import com.fiz.mono.feature.report.databinding.FragmentReportBinding
 import com.fiz.mono.navigation.navigate
-import com.fiz.mono.report.R
-import com.fiz.mono.report.databinding.FragmentReportBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ReportFragment : Fragment(), ReportDialog.Choicer {
+class ReportFragment : Fragment() {
 
-    private val viewModel: ReportViewModel by viewModels()
+    private val viewModel: ReportViewModel by viewModels(
+        ownerProducer = { this }
+    )
 
     private val navController: NavController by lazy {
         val navHostFragment: NavHostFragment =
@@ -26,84 +28,95 @@ class ReportFragment : Fragment(), ReportDialog.Choicer {
         navHostFragment.navController
     }
 
-    private lateinit var binding: FragmentReportBinding
+    private val binding get() = _binding!!
+    private var _binding: FragmentReportBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentReportBinding.inflate(inflater, container, false)
+        _binding = FragmentReportBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        init()
-        bind()
-        bindListener()
-        subscribe()
+        setupUI()
+        setupListeners()
+        observeViewStateUpdates()
+        observeViewEffects()
     }
 
-    private fun init() {
+    private fun setupUI() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            binding.navigationBarLayout.backButton.setVisible(destination.id == R.id.reportCategoryFragment)
-            binding.navigationBarLayout.choiceImageButton.setVisible(destination.id != R.id.reportCategoryFragment)
+            binding.navigationBarLayout.apply {
+                backButton.setVisible(destination.id == R.id.reportCategoryFragment)
+                choiceImageButton.setVisible(destination.id != R.id.reportCategoryFragment)
+            }
+        }
+
+        binding.navigationBarLayout.apply {
+            actionButton.setVisible(false)
         }
     }
 
-    private fun bind() {
-        binding.apply {
-            navigationBarLayout.actionButton.setVisible(false)
-        }
-    }
-
-    private fun bindListener() {
+    private fun setupListeners() {
         binding.apply {
             navigationBarLayout.apply {
+
                 backButton.setOnClickListener {
                     navController.popBackStack()
                 }
 
                 choiceImageButton.setOnClickListener {
                     val reportDialog = ReportDialog()
-                    reportDialog.choicer = this@ReportFragment
-
-                    val args = Bundle()
-                    val currentChoice = viewModel.uiState.value.categorySelectedReport
-                    args.putInt("currentChoice", currentChoice)
-                    reportDialog.arguments = args
-
                     reportDialog.show(childFragmentManager, "Choice Report")
                 }
             }
         }
     }
 
-    private fun subscribe() {
+    private fun observeViewStateUpdates() {
         launchAndRepeatWithViewLifecycle {
-            viewModel.uiState.collect {
-                binding.navigationBarLayout.titleTextView.text =
-                    getString(viewModel.getTextTypeReport())
+            viewModel.viewState.collect { newState ->
+                updateScreenState()
             }
         }
     }
 
-    override fun choiceCategory() {
-        if (viewModel.clickCategory()) {
-            navigate(
-                R.id.action_reportMonthlyFragment_to_selectCategoryFragment,
-                com.fiz.mono.navigation.R.id.report_host_fragment
-            )
+    private fun updateScreenState() {
+        binding.navigationBarLayout.titleTextView.text =
+            getString(viewModel.getTextTypeReport())
+    }
+
+    private fun observeViewEffects() {
+        launchAndRepeatWithViewLifecycle {
+            viewModel.viewEffects.collect { viewEffect ->
+                reactTo(viewEffect)
+            }
         }
     }
 
-    override fun choiceMonthly() {
-        if (viewModel.clickMonthly())
-            navController.popBackStack()
+    private fun reactTo(viewEffect: ReportViewEffect) {
+        when (viewEffect) {
+            ReportViewEffect.MoveSelectCategory -> {
+                navigate(
+                    R.id.action_reportMonthlyFragment_to_selectCategoryFragment,
+                    com.fiz.mono.navigation.R.id.report_host_fragment
+                )
+            }
+            ReportViewEffect.MoveReturn -> {
+                navController.popBackStack()
+            }
+            ReportViewEffect.MoveCalendar -> {
+                navigate(R.id.action_reportFragment_to_calendarFragment)
+            }
+        }
     }
 
-    fun clickData() {
-        navigate(R.id.action_reportFragment_to_calendarFragment)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

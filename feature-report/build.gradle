@@ -1,5 +1,5 @@
 apply from:"$rootProject.projectDir/android-library.gradle"
 
 android {
-    namespace "com.fiz.mono.report"
+    namespace "com.fiz.mono.feature.report"
 }
