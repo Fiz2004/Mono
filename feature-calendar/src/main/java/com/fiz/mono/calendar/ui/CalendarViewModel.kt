@@ -2,11 +2,11 @@ package com.fiz.mono.calendar.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fiz.mono.calendar.domain.getAllTransactionsForDay
+import com.fiz.mono.calendar.domain.getTransactionsForDaysCurrentMonth
 import com.fiz.mono.domain.models.TransactionsDataItem
 import com.fiz.mono.domain.repositories.SettingsRepository
 import com.fiz.mono.domain.repositories.TransactionRepository
-import com.fiz.mono.domain.use_case.getAllTransactionsForDay
-import com.fiz.mono.domain.use_case.getTransactionsForDaysCurrentMonth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -19,31 +19,37 @@ class CalendarViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository
 ) : ViewModel() {
 
-    var uiState = MutableStateFlow(CalendarUiState()); private set
+    var viewState = MutableStateFlow(CalendarViewState())
+        private set
 
-    var navigationUiState = MutableStateFlow(CalendarNavigationState()); private set
+    var viewEffects = MutableSharedFlow<CalendarViewEffect>()
+        private set
 
     init {
 
-        val dateFlow = uiState.mapLatest { uiState -> uiState.date }
+        settingsRepository.observeDate()
+            .onEach { date ->
+                viewState.value = viewState.value
+                    .copy(date = date)
+            }.launchIn(viewModelScope)
 
         settingsRepository.currency.load()
             .onEach { currency ->
-                uiState.value = uiState.value
+                viewState.value = viewState.value
                     .copy(currency = currency)
             }.launchIn(viewModelScope)
 
-        dateFlow.flatMapLatest { date ->
+        settingsRepository.observeDate().flatMapLatest { date ->
             transactionRepository.allTransactions
         }.onEach { allTransactions ->
-            uiState.value = uiState.value
+            viewState.value = viewState.value
                 .copy(
                     isAllTransactionsLoaded = true,
                     calendarDataItem = CalendarDataItem.getListCalendarDataItem(
-                        getTransactionsForDaysCurrentMonth(allTransactions, uiState.value.date)
+                        getTransactionsForDaysCurrentMonth(allTransactions, viewState.value.date)
                     ),
                     transactionsDataItem = TransactionsDataItem.getListTransactionsDataItem(
-                        getAllTransactionsForDay(allTransactions, uiState.value.date)
+                        getAllTransactionsForDay(allTransactions, viewState.value.date)
                     )
                 )
         }.launchIn(viewModelScope)
@@ -51,46 +57,40 @@ class CalendarViewModel @Inject constructor(
     }
 
     fun setMonth(month: Int) {
-        val newDate = uiState.value.date.withMonth(month)
-
-        uiState.value = uiState.value
-            .copy(date = newDate)
-
         viewModelScope.launch {
-            settingsRepository.date.save(newDate)
+            val date = settingsRepository.getDate()
+
+            val newDate = date.withMonth(month)
+
+            settingsRepository.setDate(newDate)
         }
     }
 
     fun setDate(day: Int) {
-        if (day == 0) return
-
-        val newDate = uiState.value.date.withDayOfMonth(day)
-
-        uiState.value = uiState.value
-            .copy(date = newDate)
-
         viewModelScope.launch {
-            settingsRepository.date.save(newDate)
+            if (day == 0) return@launch
+
+            val date = settingsRepository.getDate()
+
+            val newDate = date.withDayOfMonth(day)
+
+            settingsRepository.setDate(newDate)
         }
     }
 
     fun clickBackButton() {
-        navigationUiState.value = navigationUiState.value
-            .copy(isReturn = true)
-    }
-
-    fun returned() {
-        navigationUiState.value = navigationUiState.value
-            .copy(isReturn = false)
+        viewModelScope.launch {
+            viewEffects.emit(CalendarViewEffect.MoveReturn)
+        }
     }
 
     fun changeData(date: LocalDate) {
-        uiState.value = uiState.value
+        viewState.value = viewState.value
             .copy(date = date)
     }
 
     fun onAllTransactionsLoaded() {
-        uiState.value = uiState.value
+        viewState.value = viewState.value
             .copy(isAllTransactionsLoaded = false)
     }
 }

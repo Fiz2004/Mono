@@ -19,7 +19,7 @@ class ObserveAllCategoriesExpenseUseCase @Inject constructor(
 ) {
 
     operator fun invoke(): Flow<List<Category>> {
-        return categoryRepository.allCategoryExpense.map {
+        return categoryRepository.observeCategoriesExpense.map {
             it + Category(
                 "e",
                 context.getString(R.string.add_more),

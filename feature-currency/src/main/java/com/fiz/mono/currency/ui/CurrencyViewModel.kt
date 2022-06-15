@@ -10,20 +10,17 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class CurrencyUiState(
-    val currency: String = "$"
-)
-
 @HiltViewModel
 class CurrencyViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
-    var uiState = MutableStateFlow(CurrencyUiState()); private set
+    var viewState = MutableStateFlow(CurrencyViewState())
+        private set
 
     init {
         settingsRepository.currency.load()
             .onEach { currency ->
-                uiState.value = uiState.value
+                viewState.value = viewState.value
                     .copy(currency = currency)
             }.launchIn(viewModelScope)
     }

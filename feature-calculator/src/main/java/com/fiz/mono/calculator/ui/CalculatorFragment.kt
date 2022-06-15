@@ -29,21 +29,21 @@ class CalculatorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bind()
-        bindListener()
-        subscribe()
+        setupUI()
+        setupListeners()
+        observeViewStateUpdates()
     }
 
-    private fun bind() {
-        binding.apply {
-            navigationBarLayout.backButton.setVisible(false)
-            navigationBarLayout.actionButton.setVisible(false)
-            navigationBarLayout.choiceImageButton.setVisible(false)
-            navigationBarLayout.titleTextView.text = getString(R.string.calculator)
+    private fun setupUI() {
+        binding.navigationBarLayout.apply {
+            backButton.setVisible(false)
+            actionButton.setVisible(false)
+            choiceImageButton.setVisible(false)
+            titleTextView.text = getString(R.string.calculator)
         }
     }
 
-    private fun bindListener() {
+    private fun setupListeners() {
         binding.apply {
             oneCalendarImageButton.setOnClickListener(::onNumberClick)
             twoCalendarImageButton.setOnClickListener(::onNumberClick)
@@ -64,15 +64,15 @@ class CalculatorFragment : Fragment() {
             equalsCalendarImageButton.setOnClickListener(::onOperationClick)
 
             resetCalendarImageButton.setOnClickListener {
-                viewModel.onEvent(CalculatorUIEvent.ClickReset)
+                viewModel.onEvent(CalculatorEvent.ResetClicked)
             }
 
             acCalendarImageButton.setOnClickListener {
-                viewModel.onEvent(CalculatorUIEvent.ClickAC)
+                viewModel.onEvent(CalculatorEvent.ACClicked)
             }
 
             deleteCalendarImageButton.setOnClickListener {
-                viewModel.onEvent(CalculatorUIEvent.ClickDelete)
+                viewModel.onEvent(CalculatorEvent.DeleteClicked)
             }
         }
     }
@@ -80,21 +80,27 @@ class CalculatorFragment : Fragment() {
     private fun onNumberClick(view: View) {
         val button: Button = view as Button
         val number=button.text.toString()
-        viewModel.onEvent(CalculatorUIEvent.ClickNumber(number))
+        viewModel.onEvent(CalculatorEvent.NumberClicked(number))
     }
 
     private fun onOperationClick(view: View) {
         val button: Button = view as Button
         val operator=button.text.toString()
-        viewModel.onEvent(CalculatorUIEvent.ClickOperator(operator))
+        viewModel.onEvent(CalculatorEvent.OperatorClicked(operator))
     }
 
-    private fun subscribe() {
+    private fun observeViewStateUpdates() {
         launchAndRepeatWithViewLifecycle {
-            viewModel.uiState.collect { uiState ->
-                binding.resultCalendarTextView.text = uiState.result
-                binding.operationCalendarTextView.text = uiState.history
+            viewModel.viewState.collect { newState ->
+                updateScreenState(newState)
             }
+        }
+    }
+
+    private fun updateScreenState(newState: CalculatorViewState) {
+        binding.apply {
+            resultCalendarTextView.text = newState.result
+            operationCalendarTextView.text = newState.history
         }
     }
 

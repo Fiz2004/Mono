@@ -32,12 +32,12 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bind()
-        bindListener()
+        setupUI()
+        setupListeners()
         updateUI()
     }
 
-    private fun bind() {
+    private fun setupUI() {
         binding.navigationBarLayout.apply {
             backButton.setVisible(false)
             actionButton.setVisible(false)
@@ -46,7 +46,7 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    private fun bindListener() {
+    private fun setupListeners() {
         binding.apply {
             modeSwitch.setOnCheckedChangeListener { _, isChecked -> modeOnClickListener(isChecked) }
 

@@ -1,83 +1,74 @@
 package com.fiz.mono.data.data_source
 
 import com.fiz.mono.common.ui.resources.R
-import com.fiz.mono.data.entity.CategoryIconEntity
+import com.fiz.mono.data.entity.IconCategoryEntity
 import com.fiz.mono.data.mapper.toCategoryIcon
 import com.fiz.mono.domain.models.CategoryIcon
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 
-class CategoryIconsLocalDataSourceImpl {
-    var allCategoryIcons: Flow<List<CategoryIcon>> = flow {
-        emit(
-            listOf(
-                CategoryIconEntity("user", R.drawable.user),
-                CategoryIconEntity("plane", R.drawable.plane),
-                CategoryIconEntity("chair", R.drawable.chair),
-                CategoryIconEntity("baby", R.drawable.baby),
-                CategoryIconEntity("bank", R.drawable.bank),
-                CategoryIconEntity("gym", R.drawable.gym),
-                CategoryIconEntity("cycles", R.drawable.cycles),
-                CategoryIconEntity("bird", R.drawable.bird),
-                CategoryIconEntity("boat", R.drawable.boat),
-                CategoryIconEntity("books", R.drawable.books),
-                CategoryIconEntity("brain", R.drawable.brain),
-                CategoryIconEntity("building", R.drawable.building),
-                CategoryIconEntity("birthday", R.drawable.birthday),
-                CategoryIconEntity("camera", R.drawable.camera),
-                CategoryIconEntity("car", R.drawable.car),
-                CategoryIconEntity("cat", R.drawable.cat),
-                CategoryIconEntity("study", R.drawable.study),
-                CategoryIconEntity("coffee", R.drawable.coffee),
-                CategoryIconEntity("coin", R.drawable.coin),
-                CategoryIconEntity("pie", R.drawable.pie),
-                CategoryIconEntity("cook", R.drawable.cook),
-                CategoryIconEntity("coin", R.drawable.coin),
-                CategoryIconEntity("dog", R.drawable.dog),
-                CategoryIconEntity("facemask", R.drawable.facemask),
-                CategoryIconEntity("medican", R.drawable.medican),
-                CategoryIconEntity("flower", R.drawable.flower),
-                CategoryIconEntity("dinner", R.drawable.dinner),
-                CategoryIconEntity("gas", R.drawable.gas),
-                CategoryIconEntity("gift", R.drawable.gift),
-                CategoryIconEntity("bag", R.drawable.bag),
-                CategoryIconEntity("challenge", R.drawable.challenge),
-                CategoryIconEntity("music", R.drawable.music),
-                CategoryIconEntity("house", R.drawable.house),
-                CategoryIconEntity("map", R.drawable.map),
-                CategoryIconEntity("glass", R.drawable.glass),
-                CategoryIconEntity("money", R.drawable.money),
-                CategoryIconEntity("package1", R.drawable.package1),
-                CategoryIconEntity("run", R.drawable.run),
-                CategoryIconEntity("pill", R.drawable.pill),
-                CategoryIconEntity("food", R.drawable.food),
-                CategoryIconEntity("fun", R.drawable.`fun`),
-                CategoryIconEntity("receipt", R.drawable.receipt),
-                CategoryIconEntity("lawer", R.drawable.lawer),
-                CategoryIconEntity("market", R.drawable.market),
-                CategoryIconEntity("shower", R.drawable.shower),
-                CategoryIconEntity("football", R.drawable.football),
-                CategoryIconEntity("store", R.drawable.store),
-                CategoryIconEntity("study", R.drawable.study),
-                CategoryIconEntity("tennis_ball", R.drawable.tennis_ball),
-                CategoryIconEntity("wc", R.drawable.wc),
-                CategoryIconEntity("train", R.drawable.train),
-                CategoryIconEntity("cup", R.drawable.cup),
-                CategoryIconEntity("clothes", R.drawable.clothes),
-                CategoryIconEntity("wallet", R.drawable.wallet),
-                CategoryIconEntity("sea", R.drawable.sea),
-                CategoryIconEntity("party", R.drawable.party),
-                CategoryIconEntity("fix", R.drawable.fix)
-            ).map { it.toCategoryIcon() }
-        )
-    }
+var mapIconsCategories: List<CategoryIcon> = listOf(
+    IconCategoryEntity("user", R.drawable.user),
+    IconCategoryEntity("plane", R.drawable.plane),
+    IconCategoryEntity("chair", R.drawable.chair),
+    IconCategoryEntity("baby", R.drawable.baby),
+    IconCategoryEntity("bank", R.drawable.bank),
+    IconCategoryEntity("gym", R.drawable.gym),
+    IconCategoryEntity("cycles", R.drawable.cycles),
+    IconCategoryEntity("bird", R.drawable.bird),
+    IconCategoryEntity("boat", R.drawable.boat),
+    IconCategoryEntity("books", R.drawable.books),
+    IconCategoryEntity("brain", R.drawable.brain),
+    IconCategoryEntity("building", R.drawable.building),
+    IconCategoryEntity("birthday", R.drawable.birthday),
+    IconCategoryEntity("camera", R.drawable.camera),
+    IconCategoryEntity("car", R.drawable.car),
+    IconCategoryEntity("cat", R.drawable.cat),
+    IconCategoryEntity("study", R.drawable.study),
+    IconCategoryEntity("coffee", R.drawable.coffee),
+    IconCategoryEntity("coin", R.drawable.coin),
+    IconCategoryEntity("pie", R.drawable.pie),
+    IconCategoryEntity("cook", R.drawable.cook),
+    IconCategoryEntity("coin", R.drawable.coin),
+    IconCategoryEntity("dog", R.drawable.dog),
+    IconCategoryEntity("facemask", R.drawable.facemask),
+    IconCategoryEntity("medican", R.drawable.medican),
+    IconCategoryEntity("flower", R.drawable.flower),
+    IconCategoryEntity("dinner", R.drawable.dinner),
+    IconCategoryEntity("gas", R.drawable.gas),
+    IconCategoryEntity("gift", R.drawable.gift),
+    IconCategoryEntity("bag", R.drawable.bag),
+    IconCategoryEntity("challenge", R.drawable.challenge),
+    IconCategoryEntity("music", R.drawable.music),
+    IconCategoryEntity("house", R.drawable.house),
+    IconCategoryEntity("map", R.drawable.map),
+    IconCategoryEntity("glass", R.drawable.glass),
+    IconCategoryEntity("money", R.drawable.money),
+    IconCategoryEntity("package1", R.drawable.package1),
+    IconCategoryEntity("run", R.drawable.run),
+    IconCategoryEntity("pill", R.drawable.pill),
+    IconCategoryEntity("food", R.drawable.food),
+    IconCategoryEntity("fun", R.drawable.`fun`),
+    IconCategoryEntity("receipt", R.drawable.receipt),
+    IconCategoryEntity("lawer", R.drawable.lawer),
+    IconCategoryEntity("market", R.drawable.market),
+    IconCategoryEntity("shower", R.drawable.shower),
+    IconCategoryEntity("football", R.drawable.football),
+    IconCategoryEntity("store", R.drawable.store),
+    IconCategoryEntity("study", R.drawable.study),
+    IconCategoryEntity("tennis_ball", R.drawable.tennis_ball),
+    IconCategoryEntity("wc", R.drawable.wc),
+    IconCategoryEntity("train", R.drawable.train),
+    IconCategoryEntity("cup", R.drawable.cup),
+    IconCategoryEntity("clothes", R.drawable.clothes),
+    IconCategoryEntity("wallet", R.drawable.wallet),
+    IconCategoryEntity("sea", R.drawable.sea),
+    IconCategoryEntity("party", R.drawable.party),
+    IconCategoryEntity("fix", R.drawable.fix)
+).map { it.toCategoryIcon() }
 
-    suspend fun getDrawableCategoryIcon(id: String): Int {
-        return allCategoryIcons.first().first { it.id == id }.imgSrc
-    }
+fun getResourceDrawableByIdIconsCategories(id: String): Int {
+    return mapIconsCategories.first { it.id == id }.imgSrc
+}
 
-    suspend fun getIDCategoryIcon(imgSrc: Int): String {
-        return allCategoryIcons.first().first { it.imgSrc == imgSrc }.id
-    }
+fun getIdIconsCategoriesByResourceDrawable(imgSrc: Int): String {
+    return mapIconsCategories.first { it.imgSrc == imgSrc }.id
 }

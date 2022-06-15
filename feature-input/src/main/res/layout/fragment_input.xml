@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:paddingStart="@dimen/fragmentPaddingStart"
     android:paddingEnd="@dimen/fragmentPaddingEnd"
-    tools:context=".input.ui.InputFragment">
+    tools:context="com.fiz.mono.input.ui.InputFragment">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
@@ -316,24 +316,6 @@
                 app:spanCount="@integer/count_columns"
                 tools:itemCount="160"
                 tools:listitem="@layout/item_category" />
-
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/circularProgressIndicator"
-                style="@style/Widget.Material3.CircularProgressIndicator.Medium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:indeterminate="true"
-                android:visibility="visible"
-                app:indicatorColor="@color/blue"
-                app:hideAnimationBehavior="inward"
-                app:indicatorDirectionCircular="clockwise"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/categoryRecyclerView"
-                app:layout_constraintVertical_bias="0.32999998"
-                app:showAnimationBehavior="outward" />
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

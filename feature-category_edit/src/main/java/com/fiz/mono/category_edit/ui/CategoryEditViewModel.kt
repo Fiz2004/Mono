@@ -3,7 +3,9 @@ package com.fiz.mono.category_edit.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.category_edit.domain.CategoryEditUseCase
+import com.fiz.mono.domain.models.TypeTransaction
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -15,9 +17,11 @@ class CategoryEditViewModel @Inject constructor(
     private val categoryEditUseCase: CategoryEditUseCase,
 ) : ViewModel() {
 
-    var uiState = MutableStateFlow(CategoryEditUiState()); private set
+    var viewState = MutableStateFlow(CategoryEditViewState())
+        private set
 
-    var navigationUiState = MutableStateFlow(CategoryEditNavigationUIState()); private set
+    var viewEffects = MutableSharedFlow<CategoryEditViewEffect>()
+        private set
 
     init {
         observeAllCategoriesExpense()
@@ -27,7 +31,7 @@ class CategoryEditViewModel @Inject constructor(
     private fun observeAllCategoriesExpense() {
         categoryEditUseCase.observeAllCategoriesExpenseUseCase()
             .onEach { list ->
-                uiState.value = uiState.value
+                viewState.value = viewState.value
                     .copy(allCategoryExpense = list)
             }.launchIn(viewModelScope)
     }
@@ -35,95 +39,80 @@ class CategoryEditViewModel @Inject constructor(
     private fun observeAllCategoriesIncome() {
         categoryEditUseCase.observeAllCategoriesIncomeUseCase()
             .onEach { list ->
-                uiState.value = uiState.value
+                viewState.value = viewState.value
                     .copy(allCategoryIncome = list)
             }.launchIn(viewModelScope)
     }
 
-    fun onEvent(event: CategoryEditUiEvent) {
+    fun onEvent(event: CategoryEditEvent) {
         when (event) {
-            is CategoryEditUiEvent.ClickExpenseItem -> clickExpenseRecyclerView(event.position)
-            is CategoryEditUiEvent.ClickIncomeItem -> clickIncomeRecyclerView(event.position)
-
-            CategoryEditUiEvent.ClickBackButton -> clickBackButton()
-            CategoryEditUiEvent.ClickRemoveButton -> removeSelectItem()
+            CategoryEditEvent.BackButtonClicked -> backButtonClicked()
+            CategoryEditEvent.RemoveButtonClicked -> removeButtonClicked()
+            is CategoryEditEvent.ExpenseItemClicked -> expenseItemClicked(event.position)
+            is CategoryEditEvent.IncomeItemClicked -> incomeItemClicked(event.position)
         }
     }
 
-    private fun clickExpenseRecyclerView(position: Int) {
+    private fun expenseItemClicked(position: Int) {
         viewModelScope.launch {
-            uiState.value = uiState.value
+            viewState.value = viewState.value
                 .copy(
                     allCategoryExpense = categoryEditUseCase.selectItemForTwoListByLastItemClickUseCase.getNewClickList(
-                        uiState.value.allCategoryExpense, position
+                        viewState.value.allCategoryExpense, position
                     ),
                     allCategoryIncome = categoryEditUseCase.selectItemForTwoListByLastItemClickUseCase.getOtherList(
-                        uiState.value.allCategoryExpense, uiState.value.allCategoryIncome, position
+                        viewState.value.allCategoryExpense,
+                        viewState.value.allCategoryIncome,
+                        position
                     ),
-                    type = TYPE_EXPENSE
+                    type = TypeTransaction.Expense
                 )
 
-            if (position == uiState.value.allCategoryExpense.size - 1) {
-                navigationUiState.value = navigationUiState.value
-                    .copy(isMoveAdd = true)
+            if (position == viewState.value.allCategoryExpense.size - 1) {
+                viewEffects.emit(CategoryEditViewEffect.MoveCategoryAdd)
             }
         }
     }
 
-    private fun clickIncomeRecyclerView(position: Int) {
+    private fun incomeItemClicked(position: Int) {
         viewModelScope.launch {
-            uiState.value = uiState.value
+            viewState.value = viewState.value
                 .copy(
                     allCategoryIncome = categoryEditUseCase.selectItemForTwoListByLastItemClickUseCase.getNewClickList(
-                        uiState.value.allCategoryIncome, position
+                        viewState.value.allCategoryIncome, position
                     ),
                     allCategoryExpense = categoryEditUseCase.selectItemForTwoListByLastItemClickUseCase.getOtherList(
-                        uiState.value.allCategoryIncome, uiState.value.allCategoryExpense, position
+                        viewState.value.allCategoryIncome,
+                        viewState.value.allCategoryExpense,
+                        position
                     ),
-                    type = TYPE_INCOME
+                    type = TypeTransaction.Income
                 )
 
-            if (position == uiState.value.allCategoryIncome.size - 1) {
-                navigationUiState.value = navigationUiState.value
-                    .copy(isMoveAdd = true)
+            if (position == viewState.value.allCategoryIncome.size - 1) {
+                viewEffects.emit(CategoryEditViewEffect.MoveCategoryAdd)
             }
         }
     }
 
-    private fun removeSelectItem() {
+    private fun removeButtonClicked() {
         viewModelScope.launch {
             categoryEditUseCase.deleteCategoryItemUseCase(
-                uiState.value.allCategoryExpense,
-                uiState.value.allCategoryIncome
+                viewState.value.allCategoryExpense,
+                viewState.value.allCategoryIncome
             )
 
         }
     }
 
-    private fun clickBackButton() {
-        navigationUiState.value = navigationUiState.value
-            .copy(isReturn = true)
+    private fun backButtonClicked() {
+        viewModelScope.launch {
+            viewEffects.emit(CategoryEditViewEffect.MoveReturn)
+        }
     }
 
-    fun getType(): String {
-        return if (uiState.value.type == TYPE_EXPENSE)
-            TYPE_EXPENSE
-        else
-            TYPE_INCOME
+    fun getType(): TypeTransaction {
+        return viewState.value.type
     }
 
-    fun movedAdd() {
-        navigationUiState.value = navigationUiState.value
-            .copy(isMoveAdd = false)
-    }
-
-    fun returned() {
-        navigationUiState.value = navigationUiState.value
-            .copy(isReturn = false)
-    }
-
-    companion object {
-        const val TYPE_EXPENSE = "expense"
-        const val TYPE_INCOME = "income"
-    }
 }

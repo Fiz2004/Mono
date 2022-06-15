@@ -36,12 +36,12 @@ class CurrencyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bind()
-        bindListener()
-        subscribe()
+        setupUI()
+        setupListeners()
+        observeViewStateUpdates()
     }
 
-    private fun bind() {
+    private fun setupUI() {
         currencyRadioButton["$"] = binding.USDRadioButton
         currencyRadioButton["¥"] = binding.JPYRadioButton
         currencyRadioButton["₡"] = binding.CRCRadioButton
@@ -59,7 +59,7 @@ class CurrencyFragment : Fragment() {
 
     }
 
-    private fun bindListener() {
+    private fun setupListeners() {
         currencyRadioButton.values.forEach {
             it.setOnClickListener { view ->
                 if (view is RadioButton) {
@@ -82,13 +82,17 @@ class CurrencyFragment : Fragment() {
         }
     }
 
-    private fun subscribe() {
+    private fun observeViewStateUpdates() {
         launchAndRepeatWithViewLifecycle {
-            viewModel.uiState.collectLatest { uiState ->
-                currencyRadioButton.values.forEach { it.isChecked = false }
-
-                currencyRadioButton[uiState.currency]?.isChecked = true
+            viewModel.viewState.collectLatest { newState ->
+                updateScreenState(newState)
             }
         }
+    }
+
+    private fun updateScreenState(newState: CurrencyViewState) {
+        currencyRadioButton.values.forEach { it.isChecked = false }
+
+        currencyRadioButton[newState.currency]?.isChecked = true
     }
 }

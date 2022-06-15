@@ -46,8 +46,6 @@ class MainActivity : AppCompatActivity() {
             navController
         )
 
-//        bottomNavigation.setupWithNavController(navController)
-
         navController.addOnDestinationChangedListener { _, destination, _ ->
             bottomNavigation.setVisible(
                 destination.id == R.id.inputFragment ||

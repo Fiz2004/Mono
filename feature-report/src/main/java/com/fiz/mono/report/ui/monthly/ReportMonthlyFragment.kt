@@ -8,9 +8,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.fiz.mono.base.android.adapters.TransactionsAdapter
 import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
-import com.fiz.mono.common.ui.resources.R
-import com.fiz.mono.report.databinding.FragmentReportMonthlyBinding
-import com.fiz.mono.report.ui.ReportFragment
+import com.fiz.mono.feature.report.R
+import com.fiz.mono.feature.report.databinding.FragmentReportMonthlyBinding
+import com.fiz.mono.report.ui.ReportEvent
+import com.fiz.mono.report.ui.ReportViewModel
 import com.fiz.mono.util.TimeUtils
 import com.google.android.material.button.MaterialButtonToggleGroup
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,53 +21,61 @@ class ReportMonthlyFragment : Fragment() {
 
     private val viewModel: ReportMonthlyViewModel by viewModels()
 
+    private val viewModelParent: ReportViewModel by viewModels(
+        ownerProducer = { requireParentFragment().requireParentFragment() }
+    )
+
     private val adapter: TransactionsAdapter by lazy {
         TransactionsAdapter(
-            viewModel.uiState.value.currency,
+            viewModel.viewState.value.currency,
             true
         )
     }
 
     private val toggleButtons =
-        listOf(com.fiz.mono.report.R.id.toggle1, com.fiz.mono.report.R.id.toggle2, com.fiz.mono.report.R.id.toggle3)
+        listOf(
+            R.id.toggle1,
+            R.id.toggle2,
+            R.id.toggle3
+        )
 
-    private lateinit var binding: FragmentReportMonthlyBinding
+    private val binding get() = _binding!!
+    private var _binding: FragmentReportMonthlyBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentReportMonthlyBinding.inflate(inflater, container, false)
+        _binding = FragmentReportMonthlyBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bind()
-        bindListener()
-        subscribe()
+        setupUI()
+        setupListeners()
+        observeViewStateUpdates()
     }
 
-    private fun bind() {
+    private fun setupUI() {
         binding.apply {
             transactionsRecyclerView.adapter = adapter
         }
     }
 
-    private fun bindListener() {
+    private fun setupListeners() {
         binding.apply {
             dataRangeLayout.leftDateRangeImageButton.setOnClickListener {
-                viewModel.onEvent(ReportMonthlyUiEvent.ClickDateLeft)
-
+                viewModel.onEvent(ReportMonthlyEvent.DateLeftClicked)
             }
 
             dataRangeLayout.rightDateRangeImageButton.setOnClickListener {
-                viewModel.onEvent(ReportMonthlyUiEvent.ClickDateRight)
+                viewModel.onEvent(ReportMonthlyEvent.DateRightClicked)
             }
 
             dataRangeLayout.dateTextView.setOnClickListener {
-                (requireParentFragment().parentFragment as ReportFragment).clickData()
+                viewModelParent.onEvent(ReportEvent.DateTextClicked)
             }
 
             allExpenseIncomeToggleButton.addOnButtonCheckedListener { toggleButton: MaterialButtonToggleGroup,
@@ -75,29 +84,39 @@ class ReportMonthlyFragment : Fragment() {
                 if (isChecked) {
                     val numberButton = toggleButtons.indexOf(checkedId)
                     viewModel.onEvent(
-                        ReportMonthlyUiEvent.ClickTransactionsFilter(numberButton)
+                        ReportMonthlyEvent.TransactionsFilterClicked(numberButton)
                     )
                 }
             }
         }
     }
 
-    private fun subscribe() {
+    private fun observeViewStateUpdates() {
         launchAndRepeatWithViewLifecycle {
-            viewModel.uiState.collect { uiState ->
-                binding.valueReportTextView.text = uiState.currentBalance
-                binding.incomeValueReportTextView.text = uiState.currentIncome
-                binding.expenseValueReportTextView.text = uiState.currentExpense
-                binding.expenseIncomeValueReportTextView.text = uiState.currentExpenseIncome
-                binding.previousBalanceValueReportTextView.text = uiState.lastBalance
-
-                adapter.submitList(uiState.transactionsForMonth)
-
-                binding.dataRangeLayout.dateTextView.text = TimeUtils.getDateMonthYearString(
-                    uiState.date,
-                    resources.getStringArray(R.array.name_month)
-                )
+            viewModel.viewState.collect { newState ->
+                updateScreenState(newState)
             }
         }
+    }
+
+    private fun updateScreenState(newState: ReportMonthlyViewState) {
+        binding.valueReportTextView.text = newState.currentBalance
+        binding.incomeValueReportTextView.text = newState.currentIncome
+        binding.expenseValueReportTextView.text = newState.currentExpense
+        binding.expenseIncomeValueReportTextView.text = newState.currentExpenseIncome
+        binding.previousBalanceValueReportTextView.text = newState.lastBalance
+
+        adapter.submitList(newState.transactionsForMonth)
+
+        binding.dataRangeLayout.dateTextView.text = TimeUtils.getDateMonthYearString(
+            newState.date,
+            resources.getStringArray(com.fiz.mono.common.ui.resources.R.array.name_month)
+        )
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.transactionsRecyclerView.adapter = null
+        _binding = null
     }
 }

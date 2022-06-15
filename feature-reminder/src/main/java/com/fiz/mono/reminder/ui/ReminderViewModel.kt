@@ -13,14 +13,14 @@ import javax.inject.Inject
 class ReminderViewModel @Inject constructor(private val dataLocalDataSource: DataLocalDataSource) :
     ViewModel() {
 
-    var uiState = MutableStateFlow(ReminderUiState()); private set
+    var viewState = MutableStateFlow(ReminderViewState()); private set
 
     fun start() {
         val hours = loadHours()
         val minutes = loadMinutes()
         setHours(hours)
         setMinutes(minutes)
-        if (uiState.value.timeForReminder.isNotEmpty()) {
+        if (viewState.value.timeForReminder.isNotEmpty()) {
             onNotify()
         }
     }
@@ -31,19 +31,19 @@ class ReminderViewModel @Inject constructor(private val dataLocalDataSource: Dat
     }
 
     private fun getTimerLengthSelection(now: LocalTime): Int {
-        val needTime = uiState.value.timeForReminder.getLocalTime()
+        val needTime = viewState.value.timeForReminder.getLocalTime()
 
         return getCountSecondsBetween(now, needTime)
     }
 
     fun onNotify() {
-        uiState.value = uiState.value
+        viewState.value = viewState.value
             .copy(isNotifyInstalled = true)
     }
 
     fun saveTime() {
-        dataLocalDataSource.saveHour(uiState.value.timeForReminder.hour)
-        dataLocalDataSource.saveMinute(uiState.value.timeForReminder.minute)
+        dataLocalDataSource.saveHour(viewState.value.timeForReminder.hour)
+        dataLocalDataSource.saveMinute(viewState.value.timeForReminder.minute)
     }
 
     fun resetTime() {
@@ -56,19 +56,19 @@ class ReminderViewModel @Inject constructor(private val dataLocalDataSource: Dat
     fun loadHours() = dataLocalDataSource.loadHours()
 
     fun cancelNotification() {
-        uiState.value = uiState.value
+        viewState.value = viewState.value
             .copy(isNotifyInstalled = false)
     }
 
     fun setHours(hour: String) {
-        val timeForReminder = uiState.value.timeForReminder.copy(hour = hour)
-        uiState.value = uiState.value
+        val timeForReminder = viewState.value.timeForReminder.copy(hour = hour)
+        viewState.value = viewState.value
             .copy(timeForReminder = timeForReminder, isErrorHourEditText = !isStatusHour(hour))
     }
 
     fun setMinutes(minute: String) {
-        val timeForReminder = uiState.value.timeForReminder.copy(minute = minute)
-        uiState.value = uiState.value
+        val timeForReminder = viewState.value.timeForReminder.copy(minute = minute)
+        viewState.value = viewState.value
             .copy(timeForReminder = timeForReminder, isErrorMinuteEditText = !isStatusMinute(minute))
     }
 

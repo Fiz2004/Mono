@@ -12,7 +12,7 @@ dependencies {
     implementation project(":domain")
     implementation project(":base")
 
-    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation("androidx.appcompat:appcompat:${versions.appcompat}")
 
     // Room
     implementation("androidx.room:room-common:2.4.2")

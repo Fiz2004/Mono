@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.domain.repositories.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -14,46 +15,48 @@ import javax.inject.Inject
 class PINPasswordViewModel @Inject constructor(private val settingsRepository: SettingsRepository) :
     ViewModel() {
 
-    var uiState = MutableStateFlow(PINPasswordUiState()); private set
+    var viewState = MutableStateFlow(PINPasswordViewState())
+        private set
 
-    var navigationState = MutableStateFlow(PINPasswordNavigationState()); private set
+    var viewEffects = MutableSharedFlow<PINPasswordViewEffect>()
+        private set
 
 
     init {
         settingsRepository.pin.load()
             .onEach { pin ->
-                uiState.value = uiState.value
+                viewState.value = viewState.value
                     .copy(pinValue = pin)
             }.launchIn(viewModelScope)
     }
 
     fun start(fromCome: String) {
-        val isConfirmPIN = uiState.value.pinValue.isBlank()
+        val isConfirmPIN = viewState.value.pinValue.isBlank()
 
         viewModelScope.launch {
             settingsRepository.currentConfirmPin.save(isConfirmPIN)
         }
 
         val statePIN = if (fromCome == PINPasswordFragment.START) {
-            if (uiState.value.pinValue.isBlank())
+            if (viewState.value.pinValue.isBlank())
                 StatePin.LOGIN_FINISH
             else
                 StatePin.LOGIN
         } else {
-            if (uiState.value.pinValue.isBlank())
+            if (viewState.value.pinValue.isBlank())
                 StatePin.CREATE
             else
                 StatePin.REMOVE
         }
 
-        uiState.value = uiState.value
+        viewState.value = viewState.value
             .copy(
                 statePIN = statePIN,
             )
     }
 
     fun clickEditButton() {
-        uiState.value = uiState.value
+        viewState.value = viewState.value
             .copy(
                 statePIN = StatePin.EDIT
             )
@@ -61,13 +64,13 @@ class PINPasswordViewModel @Inject constructor(private val settingsRepository: S
 
     fun exitError() {
         val statePin: StatePin = when {
-            (uiState.value.statePIN == StatePin.REMOVE_CONFIRM_ERROR) -> {
+            (viewState.value.statePIN == StatePin.REMOVE_CONFIRM_ERROR) -> {
                 StatePin.REMOVE_CONFIRM
             }
-            (uiState.value.statePIN == StatePin.EDIT_ERROR) -> {
+            (viewState.value.statePIN == StatePin.EDIT_ERROR) -> {
                 StatePin.EDIT
             }
-            (uiState.value.statePIN == StatePin.LOGIN_ERROR) -> {
+            (viewState.value.statePIN == StatePin.LOGIN_ERROR) -> {
                 StatePin.LOGIN
             }
             else -> {
@@ -75,31 +78,31 @@ class PINPasswordViewModel @Inject constructor(private val settingsRepository: S
             }
         }
 
-        uiState.value = uiState.value
+        viewState.value = viewState.value
             .copy(
                 statePIN = statePin
             )
     }
 
     fun updateState() {
-        val oldPin = uiState.value.pinValue
+        val oldPin = viewState.value.pinValue
 
         val statePin: StatePin = when {
-            (uiState.value.statePIN == StatePin.CREATE) -> {
+            (viewState.value.statePIN == StatePin.CREATE) -> {
 
                 StatePin.CREATE_FINISH
             }
-            (uiState.value.statePIN == StatePin.REMOVE) -> {
+            (viewState.value.statePIN == StatePin.REMOVE) -> {
                 StatePin.REMOVE_CONFIRM
             }
-            (uiState.value.statePIN == StatePin.REMOVE_CONFIRM) -> {
+            (viewState.value.statePIN == StatePin.REMOVE_CONFIRM) -> {
                 if (oldPin == getPIN())
                     StatePin.REMOVE_CONFIRM_FINISH
                 else
                     StatePin.REMOVE_CONFIRM_ERROR
             }
 
-            (uiState.value.statePIN == StatePin.EDIT) -> {
+            (viewState.value.statePIN == StatePin.EDIT) -> {
 
                 if (oldPin == getPIN())
                     StatePin.CREATE
@@ -107,7 +110,7 @@ class PINPasswordViewModel @Inject constructor(private val settingsRepository: S
                     StatePin.EDIT_ERROR
             }
 
-            (uiState.value.statePIN == StatePin.LOGIN) -> {
+            (viewState.value.statePIN == StatePin.LOGIN) -> {
                 if (oldPin == getPIN()) {
                     StatePin.LOGIN_FINISH
                 } else {
@@ -117,21 +120,20 @@ class PINPasswordViewModel @Inject constructor(private val settingsRepository: S
             else -> return
         }
 
-        uiState.value = uiState.value
+        viewState.value = viewState.value
             .copy(
                 statePIN = statePin
             )
     }
 
     fun clickBackButton() {
-        navigationState.value = navigationState.value
-            .copy(
-                isReturn = true
-            )
+        viewModelScope.launch {
+            viewEffects.emit(PINPasswordViewEffect.MoveReturn)
+        }
     }
 
     fun setText(number: Int, text: CharSequence?) {
-        val pin = uiState.value.pin.toMutableList()
+        val pin = viewState.value.pin.toMutableList()
 
         pin[number] = try {
             text.toString().toInt()
@@ -139,62 +141,52 @@ class PINPasswordViewModel @Inject constructor(private val settingsRepository: S
             null
         }
 
-        uiState.value = uiState.value
+        viewState.value = viewState.value
             .copy(
                 pin = pin
             )
     }
 
     fun getPIN() =
-        uiState.value.pin[0].toString() +
-                uiState.value.pin[1].toString() +
-                uiState.value.pin[2].toString() +
-                uiState.value.pin[3].toString()
+        viewState.value.pin[0].toString() +
+                viewState.value.pin[1].toString() +
+                viewState.value.pin[2].toString() +
+                viewState.value.pin[3].toString()
 
     fun isNextPINPasswordButtonEnabled(): Boolean {
-        return uiState.value.pin[0] != null &&
-                uiState.value.pin[1] != null &&
-                uiState.value.pin[2] != null &&
-                uiState.value.pin[3] != null
+        return viewState.value.pin[0] != null &&
+                viewState.value.pin[1] != null &&
+                viewState.value.pin[2] != null &&
+                viewState.value.pin[3] != null
     }
 
     fun isCanPopBackStack(): Boolean {
-        return uiState.value.statePIN != StatePin.LOGIN
+        return viewState.value.statePIN != StatePin.LOGIN
     }
 
     fun getPin(): List<Int?> {
-        return uiState.value.pin
+        return viewState.value.pin
     }
 
     fun deletePin() {
         viewModelScope.launch {
             settingsRepository.pin.save("")
+            viewEffects.emit(PINPasswordViewEffect.MoveReturn)
         }
-        navigationState.value = navigationState.value
-            .copy(isReturn = true)
     }
 
     fun setPin(pin: String) {
-        navigationState.value = navigationState.value
-            .copy(isReturn = true)
-
         viewModelScope.launch {
             settingsRepository.pin.save(pin)
             settingsRepository.needConfirmPin.save(true)
+            viewEffects.emit(PINPasswordViewEffect.MoveReturn)
         }
     }
 
     fun loginFinish() {
-        navigationState.value = navigationState.value
-            .copy(isReturn = true)
-
         viewModelScope.launch {
             settingsRepository.currentConfirmPin.save(true)
+            viewEffects.emit(PINPasswordViewEffect.MoveReturn)
         }
-    }
-
-    fun returned() {
-        navigationState.value = navigationState.value
-            .copy(isReturn = false)
     }
 }

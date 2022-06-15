@@ -1,6 +1,7 @@
 package com.fiz.mono.calculator.ui
 
 import androidx.lifecycle.ViewModel
+import com.fiz.mono.calculator.domain.models.Calculator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
@@ -9,57 +10,52 @@ import javax.inject.Inject
 class CalculatorViewModel @Inject constructor() :
     ViewModel() {
 
-    var uiState = MutableStateFlow(CalculatorUiState()); private set
+    private val calculator: Calculator = Calculator()
 
-    fun onEvent(event: CalculatorUIEvent) {
+    var viewState = MutableStateFlow(CalculatorViewState())
+        private set
+
+    fun onEvent(event: CalculatorEvent) {
         when (event) {
-            CalculatorUIEvent.ClickAC -> resetData()
-
-            CalculatorUIEvent.ClickReset -> resetData()
-
-            is CalculatorUIEvent.ClickNumber -> numberClick(event.number)
-
-            is CalculatorUIEvent.ClickOperator -> operatorClick(event.operator)
-
-            CalculatorUIEvent.ClickDelete -> deleteClick()
+            CalculatorEvent.ACClicked -> resetClicked()
+            CalculatorEvent.ResetClicked -> resetClicked()
+            is CalculatorEvent.NumberClicked -> numberClicked(event.number)
+            is CalculatorEvent.OperatorClicked -> operatorClicked(event.operator)
+            CalculatorEvent.DeleteClicked -> deleteClicked()
         }
     }
 
-    private fun resetData() {
-        val calculatorMemory = uiState.value.calculatorMemory
-        val newCalculatorMemory = calculatorMemory.reset()
+    private fun resetClicked() {
+        calculator.reset()
 
-        uiState.value = uiState.value
-            .copy(calculatorMemory = newCalculatorMemory)
+        viewState.value = viewState.value
+            .copy(result = calculator.getResult())
     }
 
-    private fun deleteClick() {
-        if (uiState.value.result.isBlank())
+    private fun deleteClicked() {
+        if (calculator.getResult().isBlank())
             return
 
-        val calculatorMemory = uiState.value.calculatorMemory
-        val newCalculatorMemory = calculatorMemory.deleteLastSymbol()
+        calculator.deleteLastSymbol()
 
-        uiState.value = uiState.value
-            .copy(calculatorMemory = newCalculatorMemory)
+        viewState.value = viewState.value
+            .copy(result = calculator.getResult())
     }
 
-    private fun numberClick(newNumber: String) {
-        val calculatorMemory = uiState.value.calculatorMemory
-        val newCalculatorMemory = calculatorMemory.addNumber(newNumber)
+    private fun numberClicked(newNumber: String) {
+        calculator.addNumber(newNumber)
 
-        uiState.value = uiState.value
-            .copy(calculatorMemory = newCalculatorMemory)
+        viewState.value = viewState.value
+            .copy(result = calculator.getResult())
     }
 
-    private fun operatorClick(operator: String) {
-        val calculatorMemory = uiState.value.calculatorMemory
-        val history = calculatorMemory.getHistory(operator)
-        val newCalculatorMemory = calculatorMemory.doOperator(operator)
+    private fun operatorClicked(operator: String) {
+        val history = calculator.getHistory(operator)
+        calculator.doOperator(operator)
 
-        uiState.value = uiState.value
+        viewState.value = viewState.value
             .copy(
-                calculatorMemory = newCalculatorMemory,
+                result = calculator.getResult(),
                 history = history
             )
     }

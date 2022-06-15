@@ -5,51 +5,45 @@ import android.content.pm.PackageManager
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.data.entity.TransactionEntity
 import com.fiz.mono.data.mapper.toCategoryEntity
 import com.fiz.mono.data.mapper.toTransaction
 import com.fiz.mono.domain.models.Category
-import com.fiz.mono.domain.models.Transaction
 import com.fiz.mono.domain.repositories.CategoryRepository
 import com.fiz.mono.domain.repositories.SettingsRepository
 import com.fiz.mono.domain.repositories.TransactionRepository
-import com.fiz.mono.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
+import org.threeten.bp.format.DateTimeFormatter
 import java.io.File
 import javax.inject.Inject
 import kotlin.math.abs
 
 @HiltViewModel
 class InputViewModel @Inject constructor(
+    @ApplicationContext context: Context,
     private val settingsRepository: SettingsRepository,
     categoryRepository: CategoryRepository,
     private val transactionRepository: TransactionRepository
 ) : ViewModel() {
-    var uiState = MutableStateFlow(InputUiState()); private set
+    var viewState = MutableStateFlow(InputViewState())
+        private set
 
-    var navigationUiState = MutableSharedFlow<InputNavigationEvent>(); private set
+    var viewEffects = MutableSharedFlow<InputViewEffect>()
+        private set
+
+    private val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy (EEE)")
 
     init {
-
-        viewModelScope.launch {
-            settingsRepository.currentConfirmPin.save(false)
-        }
-
-        settingsRepository.currency.load()
-            .onEach { currency ->
-                uiState.value = uiState.value
-                    .copy(currency = currency)
-            }.launchIn(viewModelScope)
-
-        settingsRepository.firstTime.load()
-            .onEach { firstTime ->
-                if (firstTime)
-                    navigationUiState.emit(InputNavigationEvent.MoveOnBoarding)
-            }.launchIn(viewModelScope)
+        if (settingsRepository.firstTime)
+            viewModelScope.launch {
+                viewEffects.emit(InputViewEffect.MoveOnBoarding)
+            }
 
         settingsRepository.needConfirmPin.load()
             .zip(settingsRepository.currentConfirmPin.load()) { needConfirmPin, currentConfirmPin ->
@@ -57,155 +51,143 @@ class InputViewModel @Inject constructor(
             }
             .onEach { isMovePinPassword ->
                 if (isMovePinPassword)
-                    navigationUiState.emit(InputNavigationEvent.MovePinPassword)
+                    viewEffects.emit(InputViewEffect.MovePinPassword)
             }.launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            settingsRepository.currentConfirmPin.save(false)
+        }
+
+        settingsRepository.currency.load()
+            .onEach { currency ->
+                viewState.value = viewState.value
+                    .copy(currency = currency)
+            }.launchIn(viewModelScope)
+
+        settingsRepository.observeDate()
+            .onEach { date ->
+                val dateFormat = dateFormatter.format(date)
+                viewState.value = viewState.value
+                    .copy(date = dateFormat)
+            }.launchIn(viewModelScope)
+
     }
 
-
     init {
-        categoryRepository.getAllCategoryExpenseForInput()
-            .onEach { allCategoryExpense ->
 
-                val isLoading = when (allCategoryExpense) {
-                    is Resource.Loading -> true
-                    is Resource.Error -> false
-                    is Resource.Success -> false
-                }
+        categoryRepository.observeCategoriesExpense
+            .onEach { categoriesExpense ->
+                val editCategory = Category("e", context.getString(R.string.edit), 0)
+                val categoriesExpenseWithEdit = categoriesExpense.toMutableList() + editCategory
 
-                val allCategoryExpenseData = when (allCategoryExpense) {
-                    is Resource.Loading -> listOf()
-                    is Resource.Error -> listOf()
-                    is Resource.Success -> allCategoryExpense.data ?: listOf()
-                }
+                viewState.value = viewState.value
+                    .copy(allCategoryExpense = categoriesExpenseWithEdit)
 
-                uiState.value = uiState.value
-                    .copy(
-                        isLoading = isLoading,
-                        allCategoryExpense = allCategoryExpenseData
-                    )
-            }.launchIn(viewModelScope)
+            }
+            .flowOn(Dispatchers.Default)
+            .launchIn(viewModelScope)
 
-        categoryRepository.getAllCategoryIncomeForInput()
-            .onEach { allCategoryIncome ->
-                uiState.value = uiState.value
-                    .copy(allCategoryIncome = allCategoryIncome)
-            }.launchIn(viewModelScope)
+        categoryRepository.observeCategoriesIncome
+            .onEach { categoriesIncome ->
+                val editCategory = Category("i", context.getString(R.string.edit), 0)
+                val categoriesIncomeWithEdit = categoriesIncome.toMutableList() + editCategory
+
+                viewState.value = viewState.value
+                    .copy(allCategoryIncome = categoriesIncomeWithEdit)
+
+            }
+            .flowOn(Dispatchers.Default)
+            .launchIn(viewModelScope)
 
         transactionRepository.allTransactions
             .onEach { allTransactions ->
-                uiState.value =
-                    uiState.value
-                        .copy(
-                            allTransactions = allTransactions,
-                        )
-                uiState.value.transaction?.let {
-                    setViewModelTransaction(it)
-                    setSelected(it.nameCategory)
+                viewState.value = viewState.value
+                    .copy(allTransactions = allTransactions)
+
+                viewState.value.transaction?.let { transaction ->
+                    if (transaction.value > 0)
+                        typeTransactionChanged(TypeTransaction.Income)
+                    else
+                        typeTransactionChanged(TypeTransaction.Expense)
+                    transaction.value = abs(transaction.value)
+                    valueTransactionChanged(transaction.value.toString())
+                    noteTransactionChanged(transaction.note)
+                    setPhotoPath(transaction.photo.toMutableList())
+
+                    val position =
+                        viewState.value.currentCategory
+                            .indexOfFirst { it.name == transaction.nameCategory }
+
+                    if (viewState.value.selectedAdapter == TypeTransaction.Expense)
+                        selectExpense(position)
+                    else
+                        selectIncome(position)
                 }
             }.launchIn(viewModelScope)
 
     }
 
-    fun onEvent(event: InputUiEvent) {
+    fun onEvent(event: InputEvent) {
         when (event) {
-            is InputUiEvent.ChangeTypeTransactions -> {
-                event.typeTransactions?.let {
-                    when (it) {
-                        0 -> setSelectedAdapter(InputFragment.EXPENSE)
-                        1 -> setSelectedAdapter(InputFragment.INCOME)
-                    }
-                }
-            }
-
-            is InputUiEvent.ClickData -> {
-                clickDate()
-            }
-
-            is InputUiEvent.ClickLeftData -> dateDayMinusOne()
-            is InputUiEvent.ClickRightData -> dateDayPlusOne()
-
-            is InputUiEvent.ClickSubmit -> {
-                clickSubmitButton()
-            }
-
-            is InputUiEvent.NoteChange -> {
-                setNote(event.newNote)
-            }
-
-            is InputUiEvent.ValueChange -> {
-                setValue(event.newValue)
-            }
-            InputUiEvent.ClickBackButton -> clickBackButton()
-            InputUiEvent.ClickRemoveTransaction -> removeTransaction()
-            is InputUiEvent.ClickRemovePhoto -> removePhotoPath(event.numberPhoto)
-            is InputUiEvent.ClickCategory -> clickRecyclerView(event.position)
-            InputUiEvent.AddPhotoPath -> addPhotoPath()
-            is InputUiEvent.Init -> start(event.transactionId)
-            is InputUiEvent.UpdateCurrentPhotoPath -> updateCurrentPhotoPath(event.absolutePath)
+            InputEvent.BackButtonClicked -> backButtonClicked()
+            InputEvent.RemoveTransactionButtonClicked -> removeTransactionButtonClicked()
+            InputEvent.AddPhotoPathButtonClicked -> addPhotoPathButtonClicked()
+            is InputEvent.Init -> init(event.transactionId)
+            is InputEvent.TypeTransactionChanged -> typeTransactionChanged(event.typeTransactions)
+            is InputEvent.DataTextClicked -> dataTextClicked()
+            is InputEvent.LeftDataIconClicked -> leftDataIconClicked()
+            is InputEvent.RightDataIconClicked -> rightDataIconClicked()
+            is InputEvent.SubmitButtonClicked -> submitButtonClicked()
+            is InputEvent.NoteTransactionChanged -> noteTransactionChanged(event.value)
+            is InputEvent.ValueTransactionChanged -> valueTransactionChanged(event.value)
+            is InputEvent.RemovePhotoButtonClicked -> removePhotoButtonClicked(event.numberPhoto)
+            is InputEvent.CategoryItemCardClicked -> categoryItemCardClicked(event.position)
+            is InputEvent.UpdateCurrentPhotoPath -> updateCurrentPhotoPath(event.absolutePath)
         }
     }
 
-    private fun dateDayPlusOne() {
-        val newDate = uiState.value.date.plusDays(1)
-
-        uiState.value = uiState.value
-            .copy(date = newDate)
-
-        viewModelScope.launch {
-            settingsRepository.date.save(newDate)
-        }
+    private fun init(transactionId: Int) {
+        viewState.value = viewState.value
+            .copy(transactionId = transactionId)
     }
 
-    private fun dateDayMinusOne() {
-        val newDate = uiState.value.date.minusDays(1)
-
-        uiState.value = uiState.value
-            .copy(date = newDate)
-
-        viewModelScope.launch {
-            settingsRepository.date.save(newDate)
-        }
-    }
-
-    private fun start(transactionId: Int) {
-        uiState.update {
-            it.copy(transactionId = transactionId)
-        }
-    }
-
-    private fun setSelected(nameCategory: String) {
-        val position =
-            uiState.value.currentCategory
-                .indexOfFirst { it.name == nameCategory }
-
-        if (uiState.value.selectedAdapter == InputFragment.EXPENSE)
-            selectExpense(position)
-        else
-            selectIncome(position)
-    }
-
-    private fun removeTransaction() {
-        viewModelScope.launch(Dispatchers.Default) {
-            uiState.value.transaction?.let { transactionRepository.delete(it) }
-            navigationUiState.emit(InputNavigationEvent.MoveReturn)
-        }
-    }
-
-    private fun setSelectedAdapter(adapter: Int) {
-        if (uiState.value.selectedAdapter != adapter)
-            uiState.update { inputUiState ->
-                inputUiState.copy(
-                    allCategoryExpense = inputUiState.allCategoryExpense.map { it.copy(selected = false) },
-                    allCategoryIncome = inputUiState.allCategoryIncome.map { it.copy(selected = false) },
-                    selectedAdapter = adapter
+    private fun typeTransactionChanged(typeTransactions: TypeTransaction) {
+        if (viewState.value.selectedAdapter != typeTransactions)
+            viewState.value = viewState.value
+                .copy(
+                    allCategoryExpense = viewState.value.allCategoryExpense.map { it.copy(selected = false) },
+                    allCategoryIncome = viewState.value.allCategoryIncome.map { it.copy(selected = false) },
+                    selectedAdapter = typeTransactions
                 )
-            }
+    }
+
+    private fun rightDataIconClicked() {
+        viewModelScope.launch(Dispatchers.Default) {
+            val date = settingsRepository.getDate()
+            val newDate = date.plusDays(1)
+            settingsRepository.setDate(newDate)
+        }
+    }
+
+    private fun leftDataIconClicked() {
+        viewModelScope.launch(Dispatchers.Default) {
+            val date = settingsRepository.getDate()
+            val newDate = date.minusDays(1)
+            settingsRepository.setDate(newDate)
+        }
+    }
+
+    private fun removeTransactionButtonClicked() {
+        viewModelScope.launch(Dispatchers.Default) {
+            viewState.value.transaction?.let { transactionRepository.delete(it) }
+            viewEffects.emit(InputViewEffect.MoveReturn)
+        }
     }
 
     private suspend fun getTransactionItemForUpdate(selectedCategory: Category): TransactionEntity? {
-        val state = uiState.value
+        val state = viewState.value
         val valueTransaction = state.value.toDouble() *
-                if (uiState.value.selectedAdapter == InputFragment.EXPENSE)
+                if (viewState.value.selectedAdapter == TypeTransaction.Expense)
                     -1
                 else
                     1
@@ -227,9 +209,9 @@ class InputViewModel @Inject constructor(
         newId: Int,
         date: LocalDate
     ): TransactionEntity {
-        val state = uiState.value
+        val state = viewState.value
         val valueTransaction = state.value.toDouble() *
-                if (uiState.value.selectedAdapter == InputFragment.EXPENSE)
+                if (viewState.value.selectedAdapter == TypeTransaction.Expense)
                     -1
                 else
                     1
@@ -247,90 +229,74 @@ class InputViewModel @Inject constructor(
 
     }
 
-    private fun setValue(text: String) {
-        uiState.update {
-            it.copy(value = text)
-        }
+    private fun valueTransactionChanged(text: String) {
+        viewState.value = viewState.value
+            .copy(value = text)
     }
 
     private fun setPhotoPath(list: MutableList<String?>) {
-        uiState.update {
-            it.copy(
-                photoPaths = if (list[0] == "") emptyList<String?>().toMutableList() else list
-            )
-        }
+        val newPhotoPaths = if (list[0] == "")
+            emptyList<String?>().toMutableList()
+        else
+            list
+
+        viewState.value = viewState.value
+            .copy(photoPaths = newPhotoPaths)
     }
 
-    private fun addPhotoPath() {
-        uiState.update {
-            val photoPaths = it.photoPaths.toMutableList()
-            photoPaths.add(it.currentPhotoPath)
-            it.copy(
-                photoPaths = photoPaths,
-            )
-        }
+    private fun addPhotoPathButtonClicked() {
+        val photoPaths = viewState.value.photoPaths.toMutableList()
+        photoPaths.add(viewState.value.currentPhotoPath)
+
+        viewState.value = viewState.value
+            .copy(photoPaths = photoPaths)
     }
 
-    private fun removePhotoPath(number: Int) {
-        uiState.value.photoPaths[number - 1]?.let {
+    private fun removePhotoButtonClicked(number: Int) {
+        viewState.value.photoPaths[number - 1]?.let {
             val fDelete = File(it)
             if (fDelete.exists()) {
                 fDelete.delete()
             }
         }
-        uiState.update {
-            val photoPaths = it.photoPaths.toMutableList()
-            photoPaths.removeAt(number - 1)
-            it.copy(
-                photoPaths = photoPaths,
-            )
-        }
+
+        val photoPaths = viewState.value.photoPaths.toMutableList()
+        photoPaths.removeAt(number - 1)
+
+        viewState.value = viewState.value
+            .copy(photoPaths = photoPaths)
     }
 
-    private fun setNote(newNote: String) {
-        uiState.update {
-            it.copy(note = newNote)
-        }
+    private fun noteTransactionChanged(newNote: String) {
+        viewState.value = viewState.value
+            .copy(note = newNote)
     }
 
     fun checkCameraHardware(context: Context): Boolean {
-        if (uiState.value.photoPaths.size == InputFragment.MAX_PHOTO)
+        if (viewState.value.photoPaths.size == InputFragment.MAX_PHOTO)
             return false
-        if (uiState.value.cashCheckCameraHardware == null)
-            uiState.value = uiState.value
+        if (viewState.value.cashCheckCameraHardware == null)
+            viewState.value = viewState.value
                 .copy(
                     cashCheckCameraHardware =
                     context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
                 )
-        return uiState.value.cashCheckCameraHardware ?: false
+        return viewState.value.cashCheckCameraHardware ?: false
     }
 
-    private fun setViewModelTransaction(transaction: Transaction) {
-        if (transaction.value > 0)
-            setSelectedAdapter(InputFragment.INCOME)
-        else
-            setSelectedAdapter(InputFragment.EXPENSE)
-
-        transaction.value = abs(transaction.value)
-
-        setValue(transaction.value.toString())
-        setNote(transaction.note)
-        setPhotoPath(transaction.photo.toMutableList())
-    }
-
-    private fun clickRecyclerView(position: Int) {
+    private fun categoryItemCardClicked(position: Int) {
         viewModelScope.launch(Dispatchers.Default) {
-            if (uiState.value.isClickEditPosition(position)) {
-                uiState.update { inputUiState ->
+            if (viewState.value.isClickEditPosition(position)) {
+                viewState.update { inputUiState ->
                     inputUiState.copy(
                         allCategoryExpense = inputUiState.allCategoryExpense.map { it.copy(selected = false) },
                         allCategoryIncome = inputUiState.allCategoryIncome.map { it.copy(selected = false) },
                     )
                 }
-                navigationUiState.emit(InputNavigationEvent.MoveEdit)
+                viewEffects.emit(InputViewEffect.MoveEdit)
                 return@launch
             }
-            if (uiState.value.selectedAdapter == InputFragment.EXPENSE) {
+            if (viewState.value.selectedAdapter == TypeTransaction.Expense) {
                 selectExpense(position)
             } else {
                 selectIncome(position)
@@ -339,7 +305,7 @@ class InputViewModel @Inject constructor(
     }
 
     private fun selectExpense(position: Int) {
-        uiState.update { inputUiState ->
+        viewState.update { inputUiState ->
             val allCategoryIncome = inputUiState.allCategoryIncome.map {
                 var selected = it.selected
                 if (it.selected)
@@ -368,7 +334,7 @@ class InputViewModel @Inject constructor(
     }
 
     private fun selectIncome(position: Int) {
-        uiState.update { inputUiState ->
+        viewState.update { inputUiState ->
             val allCategoryExpense = inputUiState.allCategoryExpense.map {
                 var selected = it.selected
                 if (it.selected)
@@ -397,32 +363,32 @@ class InputViewModel @Inject constructor(
     }
 
 
-    private fun clickSubmitButton() {
+    private fun submitButtonClicked() {
         viewModelScope.launch(Dispatchers.Default) {
             val selectedCategoryItem =
-                uiState.value.currentCategory
+                viewState.value.currentCategory
                     .first { it.selected }
 
-            if (uiState.value.transaction != null) {
+            if (viewState.value.transaction != null) {
                 val transaction =
                     getTransactionItemForUpdate(selectedCategoryItem) ?: return@launch
 
                 transactionRepository.updateTransaction(transaction.toTransaction())
 
-                navigationUiState.emit(InputNavigationEvent.MoveReturn)
+                viewEffects.emit(InputViewEffect.MoveReturn)
             } else {
-                val lastItem = uiState.value.allTransactions.lastOrNull()
+                val lastItem = viewState.value.allTransactions.lastOrNull()
                 val id = lastItem?.id
                 val newId = id?.let { it + 1 } ?: 0
                 val transaction =
                     getTransactionItemForNew(
                         selectedCategoryItem,
                         newId,
-                        uiState.value.date
+                        settingsRepository.getDate()
                     )
                 transactionRepository.insertNewTransaction(transaction.toTransaction())
 
-                uiState.update { inputUiState ->
+                viewState.update { inputUiState ->
                     inputUiState.copy(
                         allCategoryExpense = inputUiState.allCategoryExpense.map { it.copy(selected = false) },
                         allCategoryIncome = inputUiState.allCategoryIncome.map { it.copy(selected = false) },
@@ -438,9 +404,9 @@ class InputViewModel @Inject constructor(
     // TODO не вызывается, причина не понятна
     override fun onCleared() {
         super.onCleared()
-        if (uiState.value.isInput) {
+        if (viewState.value.isInput) {
             Log.d("AAA", "123")
-            uiState.value.photoPaths.forEach {
+            viewState.value.photoPaths.forEach {
                 it?.let {
                     val fDelete = File(it)
                     if (fDelete.exists()) {
@@ -451,23 +417,21 @@ class InputViewModel @Inject constructor(
         }
     }
 
-    private fun clickBackButton() {
+    private fun backButtonClicked() {
         viewModelScope.launch {
-            navigationUiState.emit(InputNavigationEvent.MoveReturn)
+            viewEffects.emit(InputViewEffect.MoveReturn)
         }
     }
 
-    private fun clickDate() {
+    private fun dataTextClicked() {
         viewModelScope.launch {
-            navigationUiState.emit(InputNavigationEvent.MoveCalendar)
+            viewEffects.emit(InputViewEffect.MoveCalendar)
         }
     }
 
     private fun updateCurrentPhotoPath(absolutePath: String) {
-        uiState.update {
-            it.copy(
-                currentPhotoPath = absolutePath
-            )
-        }
+        viewState.value = viewState.value
+            .copy(currentPhotoPath = absolutePath)
     }
+
 }

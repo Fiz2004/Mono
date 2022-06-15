@@ -3,7 +3,8 @@ package com.fiz.mono.report.ui.monthly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.domain.repositories.SettingsRepository
-import com.fiz.mono.domain.use_case.*
+import com.fiz.mono.domain.use_case.ObserveAllTransactionsUseCase
+import com.fiz.mono.report.domain.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -23,101 +24,106 @@ class ReportMonthlyViewModel @Inject constructor(
     private val getLastBalanceForMonthUseCase: GetLastBalanceForMonthUseCase,
 ) :
     ViewModel() {
-    var uiState = MutableStateFlow(ReportMonthlyUiState()); private set
+    var viewState = MutableStateFlow(ReportMonthlyViewState())
+        private set
 
     init {
         settingsRepository.currency.load()
             .onEach { currency ->
-                uiState.value = uiState.value
+                viewState.value = viewState.value
                     .copy(currency = currency)
+            }.launchIn(viewModelScope)
+
+        settingsRepository.observeDate()
+            .onEach { date ->
+                viewState.value = viewState.value
+                    .copy(date = date)
             }.launchIn(viewModelScope)
     }
 
     init {
 
-        val dateFlow = uiState.mapLatest { uiState -> uiState.date }
+        val dateFlow = viewState.mapLatest { uiState -> uiState.date }
 
         dateFlow.flatMapLatest { date ->
             observeAllTransactionsUseCase()
         }.onEach { allTransactions ->
             val transactionsForMonth = getTransactionsForMonthUseCase(
                 allTransactions,
-                uiState.value.date,
-                uiState.value.tabSelectedReport
+                viewState.value.date,
+                viewState.value.tabSelectedReport
             )
-            uiState.value = uiState.value
+            viewState.value = viewState.value
                 .copy(transactionsForMonth = transactionsForMonth)
         }.launchIn(viewModelScope)
 
         dateFlow.flatMapLatest { date ->
-            getCurrentBalanceUseCase(uiState.value.currency)
+            getCurrentBalanceUseCase(viewState.value.currency)
         }.onEach { currentBalance ->
-            uiState.value = uiState.value
+            viewState.value = viewState.value
                 .copy(currentBalance = currentBalance)
         }.launchIn(viewModelScope)
 
         dateFlow.flatMapLatest { date ->
-            getCurrentIncomeUseCase(uiState.value.currency, date)
+            getCurrentIncomeUseCase(viewState.value.currency, date)
         }.onEach { currentIncome ->
-            uiState.value = uiState.value
+            viewState.value = viewState.value
                 .copy(currentIncome = currentIncome)
         }.launchIn(viewModelScope)
 
         dateFlow.flatMapLatest { date ->
-            getCurrentExpenseUseCase(uiState.value.currency, date)
+            getCurrentExpenseUseCase(viewState.value.currency, date)
         }.onEach { currentExpense ->
-            uiState.value = uiState.value
+            viewState.value = viewState.value
                 .copy(currentExpense = currentExpense)
         }.launchIn(viewModelScope)
 
         dateFlow.flatMapLatest { date ->
-            getBalanceForMonthUseCase(uiState.value.currency, date)
+            getBalanceForMonthUseCase(viewState.value.currency, date)
         }.onEach { currentExpenseIncome ->
-            uiState.value = uiState.value
+            viewState.value = viewState.value
                 .copy(currentExpenseIncome = currentExpenseIncome)
         }.launchIn(viewModelScope)
 
         dateFlow.flatMapLatest { date ->
-            getLastBalanceForMonthUseCase(uiState.value.currency, date)
+            getLastBalanceForMonthUseCase(viewState.value.currency, date)
         }.onEach { lastBalance ->
-            uiState.value = uiState.value
+            viewState.value = viewState.value
                 .copy(lastBalance = lastBalance)
         }.launchIn(viewModelScope)
 
     }
 
-    fun onEvent(event: ReportMonthlyUiEvent) {
+    fun onEvent(event: ReportMonthlyEvent) {
         when (event) {
-            is ReportMonthlyUiEvent.ClickTransactionsFilter -> setTabSelectedReport(event.filter)
-            ReportMonthlyUiEvent.ClickDateLeft -> dateMonthMinusOne()
-            ReportMonthlyUiEvent.ClickDateRight -> dateMonthPlusOne()
+            ReportMonthlyEvent.DateLeftClicked -> dateLeftClicked()
+            ReportMonthlyEvent.DateRightClicked -> dateRightClicked()
+            is ReportMonthlyEvent.TransactionsFilterClicked -> transactionsFilterClicked(event.filter)
         }
     }
 
-    private fun dateMonthPlusOne() {
-        val newDate = uiState.value.date.plusMonths(1)
-
-        uiState.value = uiState.value
-            .copy(date = newDate)
-
+    private fun dateLeftClicked() {
         viewModelScope.launch {
-            settingsRepository.date.save(newDate)
+            val date = settingsRepository.getDate()
+
+            val newDate = date.minusMonths(1)
+
+            settingsRepository.setDate(newDate)
         }
     }
 
-    private fun dateMonthMinusOne() {
-        val newDate = uiState.value.date.minusMonths(1)
-
-        uiState.value = uiState.value
-            .copy(date = newDate)
-
+    private fun dateRightClicked() {
         viewModelScope.launch {
-            settingsRepository.date.save(newDate)
+            val date = settingsRepository.getDate()
+
+            val newDate = date.plusMonths(1)
+
+            settingsRepository.setDate(newDate)
         }
     }
 
-    private fun setTabSelectedReport(tabSelectedReport: Int) {
-        uiState.value = uiState.value
+    private fun transactionsFilterClicked(tabSelectedReport: Int) {
+        viewState.value = viewState.value
             .copy(tabSelectedReport = tabSelectedReport)
     }
 }

@@ -25,7 +25,7 @@ class CategoryEditFragment : Fragment() {
         CategoriesAdapter(
             R.color.red
         ) { position ->
-            viewModel.onEvent(CategoryEditUiEvent.ClickExpenseItem(position))
+            viewModel.onEvent(CategoryEditEvent.ExpenseItemClicked(position))
         }
     }
 
@@ -33,7 +33,7 @@ class CategoryEditFragment : Fragment() {
         CategoriesAdapter(
             R.color.red
         ) { position ->
-            viewModel.onEvent(CategoryEditUiEvent.ClickIncomeItem(position))
+            viewModel.onEvent(CategoryEditEvent.IncomeItemClicked(position))
         }
     }
 
@@ -50,14 +50,14 @@ class CategoryEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bind()
-        bindListener()
-        subscribe()
+        setupUI()
+        setupListeners()
+        observeViewStateUpdates()
 
-        setupNavigation()
+        observeViewEffects()
     }
 
-    private fun bind() {
+    private fun setupUI() {
         binding.apply {
             navigationBarLayout.backButton.setVisible(true)
             navigationBarLayout.actionButton.setVisible(false)
@@ -70,46 +70,47 @@ class CategoryEditFragment : Fragment() {
         }
     }
 
-    private fun bindListener() {
+    private fun setupListeners() {
         binding.apply {
             navigationBarLayout.backButton.setOnClickListener {
-                viewModel.onEvent(CategoryEditUiEvent.ClickBackButton)
+                viewModel.onEvent(CategoryEditEvent.BackButtonClicked)
             }
 
             navigationBarLayout.actionButton.setOnClickListener {
-                viewModel.onEvent(CategoryEditUiEvent.ClickRemoveButton)
+                viewModel.onEvent(CategoryEditEvent.RemoveButtonClicked)
             }
         }
     }
 
-    private fun subscribe() {
+    private fun observeViewStateUpdates() {
         launchAndRepeatWithViewLifecycle {
-            viewModel.uiState.collect { uiState ->
-
-                binding.navigationBarLayout.actionButton.setVisible(uiState.isRemoveButtonVisible)
-
-                expenseAdapter.submitList(uiState.allCategoryExpense)
-                incomeAdapter.submitList(uiState.allCategoryIncome)
-
+            viewModel.viewState.collect { newState ->
+                updateScreenState(newState)
             }
         }
     }
 
-    private fun setupNavigation() {
+    private fun updateScreenState(newState: CategoryEditViewState) {
+        binding.navigationBarLayout.actionButton.setVisible(newState.isRemoveButtonVisible)
+
+        expenseAdapter.submitList(newState.allCategoryExpense)
+        incomeAdapter.submitList(newState.allCategoryIncome)
+    }
+
+    private fun observeViewEffects() {
         launchAndRepeatWithViewLifecycle {
-            viewModel.navigationUiState.collect { navigationUiState ->
+            viewModel.viewEffects.collect { viewEffect ->
 
-                if (navigationUiState.isMoveAdd) {
-                    navigate(
-                        com.fiz.mono.category_edit.R.id.action_categoryFragment_to_categoryAddFragment,
-                        data = viewModel.getType()
-                    )
-                    viewModel.movedAdd()
-                }
-
-                if (navigationUiState.isReturn) {
-                    findNavController().popBackStack()
-                    viewModel.returned()
+                when (viewEffect) {
+                    CategoryEditViewEffect.MoveCategoryAdd -> {
+                        navigate(
+                            com.fiz.mono.category_edit.R.id.action_categoryFragment_to_categoryAddFragment,
+                            data = viewModel.getType()
+                        )
+                    }
+                    CategoryEditViewEffect.MoveReturn -> {
+                        findNavController().popBackStack()
+                    }
                 }
 
             }

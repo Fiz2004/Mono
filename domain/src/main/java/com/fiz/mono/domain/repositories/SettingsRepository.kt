@@ -1,13 +1,14 @@
 package com.fiz.mono.domain.repositories
 
 import com.fiz.mono.domain.models.Property
+import kotlinx.coroutines.flow.Flow
 import org.threeten.bp.LocalDate
 
 interface SettingsRepository {
 
-    var currency: Property<String>
+    var firstTime: Boolean
 
-    var firstTime: Property<Boolean>
+    var currency: Property<String>
 
     var pin: Property<String>
 
@@ -17,5 +18,10 @@ interface SettingsRepository {
 
     var theme: Property<Int>
 
-    var date: Property<LocalDate>
+    fun getDate(): LocalDate
+    fun setDate(value: LocalDate)
+
+    fun observeDate(): Flow<LocalDate>
+
+
 }

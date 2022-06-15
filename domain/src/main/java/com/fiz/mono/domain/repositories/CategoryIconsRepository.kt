@@ -1,10 +1,9 @@
 package com.fiz.mono.domain.repositories
 
 import com.fiz.mono.domain.models.CategoryIcon
-import kotlinx.coroutines.flow.Flow
 
 interface CategoryIconsRepository {
-    var allCategoryIcons: Flow<List<CategoryIcon>>
+    var mapIconsCategories: List<CategoryIcon>
 
     suspend fun getDrawableCategoryIcon(id: String): Int
 

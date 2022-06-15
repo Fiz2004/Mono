@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.category_add.domain.CategoryAddUseCase
 import com.fiz.mono.domain.models.Category
+import com.fiz.mono.domain.models.TypeTransaction
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -16,7 +18,11 @@ class CategoryAddViewModel @Inject constructor(
     private val categoryAddUseCase: CategoryAddUseCase
 ) : ViewModel() {
 
-    var uiState = MutableStateFlow(CategoryAddUiState()); private set
+    var viewState = MutableStateFlow(CategoryAddViewState())
+        private set
+
+    var viewEffects = MutableSharedFlow<CategoryAddViewEffect>()
+        private set
 
     private var allCategoryExpense: List<Category> = listOf()
     private var allCategoryIncome: List<Category> = listOf()
@@ -42,57 +48,53 @@ class CategoryAddViewModel @Inject constructor(
     }
 
     private fun observeAllCategoryIcons() {
-        categoryAddUseCase.observeAllCategoryIconsUseCase()
-            .onEach { allCategoryIcons ->
-                uiState.value = uiState.value.copy(allCategoryIcons = allCategoryIcons)
-            }.launchIn(viewModelScope)
+        viewState.value =
+            viewState.value.copy(allCategoryIcons = categoryAddUseCase.observeAllCategoryIconsUseCase())
     }
 
-    fun onEvent(event: FeatureAddUIEvent) {
+    fun onEvent(event: FeatureAddEvent) {
         when (event) {
-            is FeatureAddUIEvent.ChangeCategoryName -> setCategoryName(event.newCategoryName)
-            FeatureAddUIEvent.ClickAddButton -> clickAddButton()
-            FeatureAddUIEvent.ClickBackButton -> clickBackButton()
-            is FeatureAddUIEvent.ClickCategory -> clickRecyclerView(event.position)
-            FeatureAddUIEvent.OnClickBackButton -> onClickBackButton()
-            is FeatureAddUIEvent.Loading -> start(event.type)
+            is FeatureAddEvent.CategoryNameChanged -> setCategoryName(event.newCategoryName)
+            FeatureAddEvent.AddButtonClicked -> clickAddButton()
+            FeatureAddEvent.BackButtonClicked -> clickBackButton()
+            is FeatureAddEvent.CategoryClicked -> clickRecyclerView(event.position)
+            is FeatureAddEvent.ActivityLoaded -> start(event.type)
         }
     }
 
-    private fun start(type: String) {
-        uiState.value = uiState.value.copy(type = type)
+    private fun start(type: TypeTransaction) {
+        viewState.value = viewState.value.copy(type = type)
     }
 
     private fun clickRecyclerView(position: Int) {
         val allCategoryIcons =
             categoryAddUseCase.selectOneItemCategoryIconUseCase(
-                uiState.value.allCategoryIcons,
+                viewState.value.allCategoryIcons,
                 position
             )
-        uiState.value = uiState.value.copy(
+        viewState.value = viewState.value.copy(
             allCategoryIcons = allCategoryIcons
         )
     }
 
     private fun setCategoryName(newCategoryName: String) {
-        uiState.value = uiState.value.copy(nameCategory = newCategoryName)
+        viewState.value = viewState.value.copy(nameCategory = newCategoryName)
     }
 
     private fun clickAddButton() {
         viewModelScope.launch {
-            val name = uiState.value.nameCategory
-            val selectedIcon = uiState.value.allCategoryIcons.first { it.selected }.id
-            categoryAddUseCase.insertNewCategoryUseCase(uiState.value.type, name, selectedIcon)
-            uiState.value = uiState.value.copy(isReturn = true)
+            val name = viewState.value.nameCategory
+            val selectedIcon = viewState.value.allCategoryIcons.first { it.selected }.id
+            categoryAddUseCase.insertNewCategoryUseCase(viewState.value.type, name, selectedIcon)
+
+            viewEffects.emit(CategoryAddViewEffect.MoveReturn)
         }
     }
 
     private fun clickBackButton() {
-        uiState.value = uiState.value.copy(isReturn = true)
-    }
-
-    private fun onClickBackButton() {
-        uiState.value = uiState.value.copy(isReturn = false)
+        viewModelScope.launch {
+            viewEffects.emit(CategoryAddViewEffect.MoveReturn)
+        }
     }
 }
 

@@ -6,9 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.base.android.adapters.TransactionsAdapter
 import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
@@ -18,7 +15,6 @@ import com.fiz.mono.feature.calendar.databinding.FragmentCalendarBinding
 import com.fiz.mono.navigation.navigate
 import com.fiz.mono.util.TimeUtils.getDateMonthYearString
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CalendarFragment : Fragment(), MonthDialog.Choicer {
@@ -33,7 +29,7 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
 
     private val transactionAdapter: TransactionsAdapter by lazy {
         TransactionsAdapter(
-            viewModel.uiState.value.currency,
+            viewModel.viewState.value.currency,
             true
         ) { transactionItem ->
             navigate(
@@ -56,13 +52,13 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bind()
-        bindListener()
-        subscribe()
-        setupNavigation()
+        setupUI()
+        setupListeners()
+        observeViewStateUpdates()
+        observeViewEffects()
     }
 
-    private fun bind() {
+    private fun setupUI() {
         binding.apply {
             navigationBarLayout.backButton.setVisible(true)
             navigationBarLayout.actionButton.setVisible(false)
@@ -72,7 +68,7 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
         }
     }
 
-    private fun bindListener() {
+    private fun setupListeners() {
         binding.apply {
             navigationBarLayout.backButton.setOnClickListener {
                 viewModel.clickBackButton()
@@ -83,7 +79,7 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
                 monthDialog.choicer = this@CalendarFragment
 
                 val args = Bundle()
-                val currentMonth = viewModel.uiState.value.date.monthValue
+                val currentMonth = viewModel.viewState.value.date.monthValue
                 args.putInt("currentMonth", currentMonth)
                 monthDialog.arguments = args
 
@@ -92,29 +88,30 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
         }
     }
 
-    private fun subscribe() {
-
+    private fun observeViewStateUpdates() {
         launchAndRepeatWithViewLifecycle {
-            viewModel.uiState.collect { uiState ->
-
-                if (uiState.isAllTransactionsLoaded) {
-                    binding.calendarRecyclerView.itemAnimator = null
-                    calendarAdapter.submitList(uiState.calendarDataItem)
-                    transactionAdapter.submitList(uiState.transactionsDataItem)
-                    binding.noTransactionsTextView.setVisible(uiState.transactionsDataItem.isEmpty())
-                    binding.transactionRecyclerView.setVisible(uiState.transactionsDataItem.isNotEmpty())
-                    if (uiState.isAllTransactionsLoaded)
-                        viewModel.onAllTransactionsLoaded()
-                }
-
-                binding.navigationBarLayout.titleTextView.text = getDateMonthYearString(
-                    uiState.date,
-                    resources.getStringArray(R.array.name_month)
-                )
-                viewModel.changeData(uiState.date)
-
+            viewModel.viewState.collect { newState ->
+                updateScreenState(newState)
             }
         }
+    }
+
+    private fun updateScreenState(newState: CalendarViewState) {
+        if (newState.isAllTransactionsLoaded) {
+            binding.calendarRecyclerView.itemAnimator = null
+            calendarAdapter.submitList(newState.calendarDataItem)
+            transactionAdapter.submitList(newState.transactionsDataItem)
+            binding.noTransactionsTextView.setVisible(newState.transactionsDataItem.isEmpty())
+            binding.transactionRecyclerView.setVisible(newState.transactionsDataItem.isNotEmpty())
+            if (newState.isAllTransactionsLoaded)
+                viewModel.onAllTransactionsLoaded()
+        }
+
+        binding.navigationBarLayout.titleTextView.text = getDateMonthYearString(
+            newState.date,
+            resources.getStringArray(R.array.name_month)
+        )
+        viewModel.changeData(newState.date)
     }
 
 
@@ -122,13 +119,12 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
         viewModel.setMonth(numberMonth)
     }
 
-    private fun setupNavigation() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.navigationUiState.collect { navigationUiState ->
-                    if (navigationUiState.isReturn) {
+    private fun observeViewEffects() {
+        launchAndRepeatWithViewLifecycle {
+            viewModel.viewEffects.collect { viewEffect ->
+                when (viewEffect) {
+                    CalendarViewEffect.MoveReturn -> {
                         findNavController().popBackStack()
-                        viewModel.returned()
                     }
                 }
             }
