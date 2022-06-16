@@ -1,32 +1,6 @@
-plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-}
+apply from: "$rootProject.projectDir/android.gradle"
 
 android {
-    compileSdk buildConfig.compileSdk
-
-    defaultConfig {
-        minSdk buildConfig.minSdk
-        targetSdk buildConfig.targetSdk
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-
     namespace "com.fiz.mono.navigation"
 }
 
