@@ -1,10 +1,12 @@
 package com.fiz.mono.currency.ui
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.domain.repositories.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -14,30 +16,28 @@ import javax.inject.Inject
 class CurrencyViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
-    var viewState = MutableStateFlow(CurrencyViewState())
-        private set
+    var viewState by mutableStateOf(CurrencyViewState())
 
     init {
         settingsRepository.currency.load()
             .onEach { currency ->
-                viewState.value = viewState.value
+                viewState = viewState
                     .copy(currency = currency)
             }.launchIn(viewModelScope)
     }
 
-    fun saveCurrency(currency: String) {
-        viewModelScope.launch {
-            settingsRepository.currency.save(currency)
+    fun onEvent(event: CurrencyEvent) {
+        when (event) {
+            is CurrencyEvent.CurrencyItemClicked -> currencyItemClicked(event.currency)
         }
     }
 
-    fun clickDb() {
-        if (viewState.value.currency != "đ") {
-            viewState.value = viewState.value
-                .copy(currency = "đ")
+    private fun currencyItemClicked(currency: String) {
+        if (viewState.currency != currency) {
             viewModelScope.launch {
-                settingsRepository.currency.save("đ")
+                settingsRepository.currency.save(currency)
             }
         }
     }
 }
+
