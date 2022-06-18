@@ -30,4 +30,14 @@ class CurrencyViewModel @Inject constructor(
             settingsRepository.currency.save(currency)
         }
     }
+
+    fun clickDb() {
+        if (viewState.value.currency != "đ") {
+            viewState.value = viewState.value
+                .copy(currency = "đ")
+            viewModelScope.launch {
+                settingsRepository.currency.save("đ")
+            }
+        }
+    }
 }

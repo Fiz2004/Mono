@@ -408,59 +408,10 @@
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/currencyScreen"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginStart="28dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:background="?attr/colorGray" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/line8"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/VNDRadioButton"
-                    style="@style/Widget.Material3.CompoundButton.RadioButton.Mono"
-                    android:layout_width="28dp"
-                    android:layout_height="32dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/iconVNDRadioButton"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:background="@drawable/edit_image_bg"
-                    android:gravity="center"
-                    android:text="đ"
-                    android:textAppearance="@style/size16_color_primary"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/VNDRadioButton"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="100.000đ"
-                    android:textAppearance="@style/size16_color_primary"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/iconVNDRadioButton"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="VND"
-                    android:textAppearance="@style/size16_color_primary"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
     </ScrollView>
