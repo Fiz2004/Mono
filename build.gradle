@@ -8,6 +8,7 @@ buildscript {
     ]
 
     ext.versions = [
+            "compose"   : "1.2.0-rc01",
             "hilt"      : "2.40.1",
             "navigation": "2.4.2",
             "room"      : "2.4.2",

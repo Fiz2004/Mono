@@ -1,5 +1,32 @@
-apply from:"$rootProject.projectDir/android-library.gradle"
+apply from: "$rootProject.projectDir/android-library.gradle"
 
 android {
+
+    buildFeatures {
+        // Enables Jetpack Compose for this module
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion versions.compose
+    }
+
     namespace "com.fiz.mono.currency"
+}
+
+dependencies {
+    // Integration with activities
+    implementation("androidx.activity:activity-compose:1.4.0")
+    // Compose Material Design
+    implementation("androidx.compose.material:material:${versions.compose}")
+    // Animations
+    implementation("androidx.compose.animation:animation:${versions.compose}")
+    // Tooling support (Previews, etc.)
+    implementation("androidx.compose.ui:ui-tooling:${versions.compose}")
+    // Integration with ViewModels
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1")
+    // When using a MDC theme
+    implementation "com.google.android.material:compose-theme-adapter:1.1.11"
+    // UI Tests
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:${versions.compose}")
 }
