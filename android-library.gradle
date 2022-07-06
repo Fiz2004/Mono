@@ -2,12 +2,6 @@ apply from:"$rootProject.projectDir/android.gradle"
 apply plugin: "dagger.hilt.android.plugin"
 apply plugin: "kotlin-kapt"
 
-android {
-    buildFeatures {
-        viewBinding true
-    }
-}
-
 dependencies {
 
     implementation project(":common-ui-resources")
@@ -19,7 +13,7 @@ dependencies {
 
     implementation("androidx.appcompat:appcompat:${versions.appcompat}")
     implementation("com.google.android.material:material:${versions.material}")
-    implementation("androidx.fragment:fragment-ktx:1.4.1")
+    implementation("androidx.fragment:fragment-ktx:1.5.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}")
 
@@ -30,8 +24,8 @@ dependencies {
     implementation("com.jakewharton.threetenabp:threetenabp:1.4.0")
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:${versions.hilt}")
-    kapt("com.google.dagger:hilt-android-compiler:${versions.hilt}")
+    implementation("com.google.dagger:hilt-android:2.42")
+    kapt("com.google.dagger:hilt-android-compiler:2.42")
 
     testImplementation("junit:junit:4.13.2")
 

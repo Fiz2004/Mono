@@ -63,6 +63,16 @@ class CategoryLocalDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun initDefaultValue() {
+        withContext(defaultDispatcher) {
+            val allCategoryExpenseDefault = AppDatabase.getAllCategoryExpenseDefault(context)
+            val allCategoryIncomeDefault = AppDatabase.getAllCategoryIncomeDefault(context)
+
+            categoryDao.insertAll(allCategoryExpenseDefault)
+            categoryDao.insertAll(allCategoryIncomeDefault)
+        }
+    }
+
     private suspend fun addDefaultValues() {
         withContext(defaultDispatcher) {
             val allCategoryExpenseDefault = AppDatabase.getAllCategoryExpenseDefault(context)
@@ -90,5 +100,7 @@ interface CategoryLocalDataSource {
     suspend fun delete(category: CategoryEntity)
 
     suspend fun deleteAll()
+
+    suspend fun initDefaultValue()
 
 }

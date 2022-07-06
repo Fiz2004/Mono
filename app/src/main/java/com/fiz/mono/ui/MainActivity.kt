@@ -1,9 +1,11 @@
 package com.fiz.mono.ui
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
@@ -12,6 +14,7 @@ import com.fiz.mono.base.android.utils.setVisible
 import com.fiz.mono.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -57,8 +60,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupTheme() {
-        if (AppCompatDelegate.getDefaultNightMode() == viewModel.theme) return
+        lifecycleScope.launch {
+            val currentTheme = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+            viewModel.checkThemeFirstTime(currentTheme)
+            if (currentTheme == viewModel.loadTheme()) return@launch
 
-        AppCompatDelegate.setDefaultNightMode(viewModel.theme)
+            val mode = if (viewModel.theme == Configuration.UI_MODE_NIGHT_YES)
+                AppCompatDelegate.MODE_NIGHT_YES
+            else
+                AppCompatDelegate.MODE_NIGHT_NO
+
+            AppCompatDelegate.setDefaultNightMode(mode)
+        }
     }
 }

@@ -1,44 +1,32 @@
-plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-
-    id("dagger.hilt.android.plugin")
-
-    id("kotlin-kapt")
-}
+apply plugin: "com.android.application"
+apply from:"$rootProject.projectDir/android.gradle"
+apply plugin: "dagger.hilt.android.plugin"
+apply plugin: "kotlin-kapt"
 
 android {
-    compileSdk buildConfig.compileSdk
 
     defaultConfig {
         applicationId "com.fiz.mono"
-        minSdk buildConfig.minSdk
-        targetSdk buildConfig.targetSdk
         versionCode 1
         versionName "0.0.2"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+
     buildFeatures {
         viewBinding true
     }
+
     hilt {
         enableAggregatingTask = true
     }
+
     namespace "com.fiz.mono"
 
 }
@@ -65,7 +53,7 @@ dependencies {
 
     implementation("androidx.appcompat:appcompat:${versions.appcompat}")
     implementation("com.google.android.material:material:${versions.material}")
-    implementation("androidx.activity:activity-ktx:1.4.0")
+    implementation("androidx.activity:activity-ktx:1.5.0")
 
     // Navigation component
     implementation("androidx.navigation:navigation-fragment-ktx:${versions.navigation}")
@@ -80,7 +68,7 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     testImplementation('org.mockito:mockito-core:4.6.1')
-    debugImplementation("androidx.fragment:fragment-testing:1.4.1")
+    debugImplementation('androidx.fragment:fragment-testing:1.5.0')
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.4.0")
     androidTestImplementation("androidx.room:room-testing:2.4.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")

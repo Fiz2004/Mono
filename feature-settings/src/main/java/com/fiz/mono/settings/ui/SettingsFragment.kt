@@ -1,5 +1,6 @@
 package com.fiz.mono.settings.ui
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -33,8 +34,8 @@ class SettingsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupUI()
-        setupListeners()
         updateUI()
+        setupListeners()
     }
 
     private fun setupUI() {
@@ -102,17 +103,18 @@ class SettingsFragment : Fragment() {
         else
             AppCompatDelegate.MODE_NIGHT_NO
 
-        if (AppCompatDelegate.getDefaultNightMode() == mode) return
+        val theme = if (isChecked)
+            Configuration.UI_MODE_NIGHT_YES
+        else
+            Configuration.UI_MODE_NIGHT_NO
 
-        viewModel.clickSwitchTheme(mode)
+        viewModel.clickSwitchTheme(theme)
 
         AppCompatDelegate.setDefaultNightMode(mode)
     }
 
-    // Надо проверить другие режимы
-    // Need to check other modes
     private fun updateUI() {
-        binding.modeSwitch.isChecked = viewModel.theme == AppCompatDelegate.MODE_NIGHT_YES
+        binding.modeSwitch.isChecked = viewModel.theme == Configuration.UI_MODE_NIGHT_YES
     }
 
     override fun onDestroyView() {

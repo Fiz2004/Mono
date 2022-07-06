@@ -135,9 +135,9 @@
     </style>
 
     <style name="EditText" parent="ThemeOverlay.Material3.TextInputEditText">
-        <item name="android:background">@drawable/edit_image_bg</item>
-        <item name="android:paddingStart">@dimen/paddingEditText</item>
-        <item name="android:paddingEnd">@dimen/paddingEditText</item>
+        <item name="background">@drawable/edit_image_bg</item>
+        <item name="paddingStart">@dimen/paddingEditText</item>
+        <item name="paddingEnd">@dimen/paddingEditText</item>
         <item name="android:textAppearance">@style/size16_color_primary</item>
         <item name="android:textColorHint">?attr/colorGray</item>
         <item name="android:hint">@string/please_input</item>

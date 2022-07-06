@@ -58,4 +58,10 @@ class CategoryRepositoryImpl @Inject constructor(
             categoryLocalDataSource.insert(newCategoryItem)
         }
     }
+
+    override suspend fun initDefaultValue() {
+        withContext(defaultDispatcher) {
+            categoryLocalDataSource.initDefaultValue()
+        }
+    }
 }

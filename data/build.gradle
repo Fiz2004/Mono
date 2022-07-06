@@ -1,3 +1,4 @@
+apply plugin: "com.android.library"
 apply from:"$rootProject.projectDir/android.gradle"
 apply plugin: "dagger.hilt.android.plugin"
 apply plugin: "kotlin-kapt"

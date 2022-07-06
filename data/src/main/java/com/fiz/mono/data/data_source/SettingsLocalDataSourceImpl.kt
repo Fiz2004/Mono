@@ -1,7 +1,7 @@
 package com.fiz.mono.data.data_source
 
 import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatDelegate
+import android.content.res.Configuration
 import org.threeten.bp.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -47,7 +47,7 @@ class SettingsLocalDataSource @Inject constructor(private val sharedPreferences:
     }
 
     fun loadTheme(): Int =
-        sharedPreferences.getInt(THEME, AppCompatDelegate.MODE_NIGHT_UNSPECIFIED)
+        sharedPreferences.getInt(THEME, Configuration.UI_MODE_NIGHT_NO)
 
     fun saveTheme(theme: Int) =
         sharedPreferences.edit().putInt(THEME, theme).apply()

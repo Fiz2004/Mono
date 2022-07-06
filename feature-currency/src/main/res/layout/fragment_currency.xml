@@ -94,6 +94,60 @@
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/RUBRadioButton"
+                    style="@style/Widget.Material3.CompoundButton.RadioButton.Mono"
+                    android:layout_width="28dp"
+                    android:layout_height="32dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/iconRUBRadioButton"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/edit_image_bg"
+                    android:gravity="center"
+                    android:text="₽"
+                    android:textAppearance="@style/size16_color_primary"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/RUBRadioButton"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="₽100.000"
+                    android:textAppearance="@style/size16_color_primary"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/iconRUBRadioButton"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RUB"
+                    android:textAppearance="@style/size16_color_primary"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="28dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="?attr/colorGray" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/line3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
                     android:id="@+id/JPYRadioButton"
                     style="@style/Widget.Material3.CompoundButton.RadioButton.Mono"
                     android:layout_width="28dp"
@@ -144,7 +198,7 @@
                 android:background="?attr/colorGray" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/line3"
+                android:id="@+id/line4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -199,7 +253,7 @@
                 android:background="?attr/colorGray" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/line4"
+                android:id="@+id/line5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -254,7 +308,7 @@
                 android:background="?attr/colorGray" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/line5"
+                android:id="@+id/line6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -309,7 +363,7 @@
                 android:background="?attr/colorGray" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/line6"
+                android:id="@+id/line7"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -363,7 +417,7 @@
                 android:background="?attr/colorGray" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/line7"
+                android:id="@+id/line8"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -417,7 +471,7 @@
                 android:background="?attr/colorGray" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/line8"
+                android:id="@+id/line9"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 

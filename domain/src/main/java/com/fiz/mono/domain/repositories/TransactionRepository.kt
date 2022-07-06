@@ -18,4 +18,6 @@ interface TransactionRepository {
     suspend fun delete(transaction: Transaction)
 
     suspend fun updateTransaction(transaction: Transaction)
+
+    suspend fun initDefaultValue()
 }

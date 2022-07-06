@@ -72,4 +72,10 @@ class TransactionRepositoryImpl(
         withContext(defaultDispatcher) {
             transactionLocalDataSource.updateTransaction(transaction.toTransactionEntity())
         }
+
+    override suspend fun initDefaultValue() {
+        withContext(defaultDispatcher) {
+            transactionLocalDataSource.initDefaultValue()
+        }
+    }
 }

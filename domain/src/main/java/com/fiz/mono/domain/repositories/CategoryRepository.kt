@@ -12,4 +12,5 @@ interface CategoryRepository {
     suspend fun insertNewCategoryExpense(name: String, iconID: String)
 
     suspend fun insertNewCategoryIncome(name: String, iconID: String)
+    suspend fun initDefaultValue()
 }

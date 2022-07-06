@@ -42,6 +42,8 @@ class InputViewModel @Inject constructor(
     init {
         if (settingsRepository.firstTime)
             viewModelScope.launch {
+                categoryRepository.initDefaultValue()
+                transactionRepository.initDefaultValue()
                 viewEffects.emit(InputViewEffect.MoveOnBoarding)
             }
 

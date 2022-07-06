@@ -1,5 +1,6 @@
 package com.fiz.mono.settings.ui
 
+import android.content.res.Configuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiz.mono.data.data_source.CategoryLocalDataSource
@@ -18,7 +19,7 @@ class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    var theme: Int = -100
+    var theme: Int = Configuration.UI_MODE_NIGHT_NO
         private set
 
     init {

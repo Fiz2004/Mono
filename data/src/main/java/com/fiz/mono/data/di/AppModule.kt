@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.data.AppDatabase
 import com.fiz.mono.data.dao.CategoryDao
@@ -18,10 +16,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import javax.inject.Provider
 import javax.inject.Singleton
 
 private const val NAME_DATABASE = "category_item_database"
@@ -29,8 +23,6 @@ private const val NAME_DATABASE = "category_item_database"
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
-
-    lateinit var database: AppDatabase
 
     @Provides
     @Singleton
@@ -55,8 +47,6 @@ class AppModule {
     @Singleton
     fun provideRoomDatabase(
         @ApplicationContext context: Context,
-        categoryDaoProvider: Provider<CategoryDao>,
-        transactionDaoProvider: Provider<TransactionDao>
     ): AppDatabase {
         return Room.databaseBuilder(
             context.applicationContext,
@@ -64,28 +54,7 @@ class AppModule {
             NAME_DATABASE
         )
             .fallbackToDestructiveMigration()
-            .addCallback(dataBaseCallback(context, categoryDaoProvider, transactionDaoProvider))
             .build()
-    }
-
-    private fun dataBaseCallback(
-        context: Context,
-        categoryDaoProvider: Provider<CategoryDao>,
-        transactionDaoProvider: Provider<TransactionDao>
-    ) = object : RoomDatabase.Callback() {
-        override fun onCreate(db: SupportSQLiteDatabase) {
-            super.onCreate(db)
-
-            val allCategoryExpenseDefault = AppDatabase.getAllCategoryExpenseDefault(context)
-            val allCategoryIncomeDefault = AppDatabase.getAllCategoryIncomeDefault(context)
-            val allTransactionsDefault = AppDatabase.getTransactionsDefault(context)
-
-            CoroutineScope(Dispatchers.Default).launch {
-                categoryDaoProvider.get().insertAll(allCategoryExpenseDefault)
-                categoryDaoProvider.get().insertAll(allCategoryIncomeDefault)
-                transactionDaoProvider.get().insertAll(allTransactionsDefault)
-            }
-        }
     }
 
     @Provides

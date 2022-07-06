@@ -43,6 +43,7 @@ class CurrencyFragment : Fragment() {
 
     private fun setupUI() {
         currencyRadioButton["$"] = binding.USDRadioButton
+        currencyRadioButton["₽"] = binding.RUBRadioButton
         currencyRadioButton["¥"] = binding.JPYRadioButton
         currencyRadioButton["₡"] = binding.CRCRadioButton
         currencyRadioButton["£"] = binding.GBPRadioButton
@@ -55,8 +56,6 @@ class CurrencyFragment : Fragment() {
         binding.navigationBarLayout.actionButton.setVisible(false)
         binding.navigationBarLayout.choiceImageButton.setVisible(false)
         binding.navigationBarLayout.titleTextView.text = getString(R.string.currency)
-
-
     }
 
     private fun setupListeners() {
