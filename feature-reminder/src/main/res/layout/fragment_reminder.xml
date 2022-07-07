@@ -45,6 +45,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/divided"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText"
                 tools:text="21" />
 
             <TextView
@@ -60,7 +61,8 @@
                 app:layout_constraintBottom_toBottomOf="@+id/minutesEditText"
                 app:layout_constraintEnd_toStartOf="@+id/minutesEditText"
                 app:layout_constraintStart_toEndOf="@+id/hoursEditText"
-                app:layout_constraintTop_toTopOf="@+id/minutesEditText" />
+                app:layout_constraintTop_toTopOf="@+id/minutesEditText"
+                tools:ignore="HardcodedText" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/minutesEditText"
@@ -74,12 +76,13 @@
                 android:hint="00"
                 android:inputType="number"
                 android:maxLength="2"
-                android:nextFocusRight="@+id/minutesEditText"
+                android:nextFocusRight="@+id/setReminderButton"
                 android:textAppearance="@style/size56_color_primary"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/divided"
                 app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText"
                 tools:text="00" />
 
             <TextView

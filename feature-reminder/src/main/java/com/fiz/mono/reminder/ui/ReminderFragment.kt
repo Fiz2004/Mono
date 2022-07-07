@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.core.app.AlarmManagerCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -17,6 +18,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
 import com.fiz.mono.base.android.utils.setVisible
+import com.fiz.mono.base.android.utils.textString
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.feature.reminder.databinding.FragmentReminderBinding
 import com.fiz.mono.reminder.utils.cancelNotifications
@@ -52,24 +54,38 @@ class ReminderFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentReminderBinding.inflate(inflater, container, false)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationManager.createNotificationChannel(notificationChannel)
-        }
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        init()
+        setupUI()
+        setupListeners()
+        observeViewStateUpdates()
+    }
+
+    private fun init() {
+        createNotificationChannel()
+        viewModel.start()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun createNotificationChannel() {
+        notificationManager.createNotificationChannel(notificationChannel)
+    }
+
+    private fun setupUI() {
         binding.apply {
             navigationBarLayout.backButton.setVisible(true)
             navigationBarLayout.actionButton.setVisible(false)
             navigationBarLayout.choiceImageButton.setVisible(false)
             navigationBarLayout.titleTextView.text = getString(R.string.reminder)
+        }
+    }
 
-            viewModel.start()
-
+    private fun setupListeners() {
+        binding.apply {
             hoursEditText.doAfterTextChanged {
                 viewModel.setHours(it.toString())
             }
@@ -105,8 +121,6 @@ class ReminderFragment : Fragment() {
                 }
             }
         }
-
-        observeViewStateUpdates()
     }
 
     private fun observeViewStateUpdates() {
@@ -118,26 +132,18 @@ class ReminderFragment : Fragment() {
     }
 
     private fun updateScreenState(newState: ReminderViewState) {
-        binding.hoursEditText.isEnabled = !newState.isNotifyInstalled
-        binding.hoursEditText.error = if (newState.isErrorHourEditText)
-            getString(R.string.invalid_number)
-        else
-            null
-        if (binding.hoursEditText.text.toString() != newState.timeForReminder.hour)
-            binding.hoursEditText.setText(newState.timeForReminder.hour)
+        binding.apply {
+            hoursEditText.isEnabled = !newState.isNotifyInstalled
+            hoursEditText.error = newState.hoursErrorEditText?.let { getString(it) }
+            hoursEditText.textString = newState.timeForReminder.hour
 
-        binding.minutesEditText.isEnabled = !newState.isNotifyInstalled
-        binding.minutesEditText.error = if (newState.isErrorMinuteEditText)
-            getString(R.string.invalid_number)
-        else
-            null
-        if (binding.minutesEditText.text.toString() != newState.timeForReminder.minute)
-            binding.minutesEditText.setText(newState.timeForReminder.minute)
+            minutesEditText.isEnabled = !newState.isNotifyInstalled
+            minutesEditText.error = newState.minutesErrorEditText?.let { getString(it) }
+            minutesEditText.textString = newState.timeForReminder.minute
 
-        val textForButtonReminder =
-            if (newState.isNotifyInstalled) R.string.remove_reminder else R.string.set_reminder
-        binding.setReminderButton.text = getString(textForButtonReminder)
-        binding.setReminderButton.isActivated = newState.isNotifyInstalled
-        binding.setReminderButton.isEnabled = newState.isCanReminder
+            setReminderButton.text = getString(newState.textForButtonReminder)
+            setReminderButton.isActivated = newState.isNotifyInstalled
+            setReminderButton.isEnabled = newState.isCanReminder
+        }
     }
 }

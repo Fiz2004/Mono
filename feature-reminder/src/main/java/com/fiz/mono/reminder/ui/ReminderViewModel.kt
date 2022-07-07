@@ -51,9 +51,9 @@ class ReminderViewModel @Inject constructor(private val dataLocalDataSource: Dat
         dataLocalDataSource.saveMinute("")
     }
 
-    fun loadMinutes() = dataLocalDataSource.loadMinutes()
+    private fun loadMinutes() = dataLocalDataSource.loadMinutes()
 
-    fun loadHours() = dataLocalDataSource.loadHours()
+    private fun loadHours() = dataLocalDataSource.loadHours()
 
     fun cancelNotification() {
         viewState.value = viewState.value
@@ -63,36 +63,12 @@ class ReminderViewModel @Inject constructor(private val dataLocalDataSource: Dat
     fun setHours(hour: String) {
         val timeForReminder = viewState.value.timeForReminder.copy(hour = hour)
         viewState.value = viewState.value
-            .copy(timeForReminder = timeForReminder, isErrorHourEditText = !isStatusHour(hour))
+            .copy(timeForReminder = timeForReminder)
     }
 
     fun setMinutes(minute: String) {
         val timeForReminder = viewState.value.timeForReminder.copy(minute = minute)
         viewState.value = viewState.value
-            .copy(timeForReminder = timeForReminder, isErrorMinuteEditText = !isStatusMinute(minute))
-    }
-
-    private fun isStatusHour(hour: String): Boolean {
-        if (hour.isBlank()) return true
-        return try {
-            val hourInt = hour.toInt()
-            if (hourInt > 23)
-                return false
-            true
-        } catch (e: Exception) {
-            false
-        }
-    }
-
-    private fun isStatusMinute(minute: String): Boolean {
-        if (minute.isBlank()) return true
-        return try {
-            val minuteInt = minute.toInt()
-            if (minuteInt > 59)
-                return false
-            true
-        } catch (e: Exception) {
-            false
-        }
+            .copy(timeForReminder = timeForReminder)
     }
 }
