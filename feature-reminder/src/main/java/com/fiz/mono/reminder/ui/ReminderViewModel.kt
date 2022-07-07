@@ -2,26 +2,88 @@ package com.fiz.mono.reminder.ui
 
 import android.os.SystemClock
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.fiz.mono.reminder.domain.DataLocalDataSource
 import com.fiz.mono.reminder.domain.getCountSecondsBetween
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import org.threeten.bp.LocalTime
 import javax.inject.Inject
+
+sealed class ReminderEvent {
+    object ActivityCreated : ReminderEvent()
+    object BackButtonClicked : ReminderEvent()
+    object SetReminderButtonClicked : ReminderEvent()
+    data class HoursEditTextChanged(val value: String) : ReminderEvent()
+    data class MinutesEditTextChanged(val value: String) : ReminderEvent()
+}
+
+sealed class ReminderViewEffect {
+    object MoveReturn : ReminderViewEffect()
+}
 
 @HiltViewModel
 class ReminderViewModel @Inject constructor(private val dataLocalDataSource: DataLocalDataSource) :
     ViewModel() {
 
-    var viewState = MutableStateFlow(ReminderViewState()); private set
+    var viewState = MutableStateFlow(ReminderViewState())
+        private set
 
-    fun start() {
-        val hours = loadHours()
-        val minutes = loadMinutes()
-        setHours(hours)
-        setMinutes(minutes)
+    var viewEffects = MutableSharedFlow<ReminderViewEffect>()
+        private set
+
+    fun onEvent(event: ReminderEvent) {
+        when (event) {
+            ReminderEvent.ActivityCreated -> activityCreated()
+            ReminderEvent.BackButtonClicked -> backButtonClicked()
+            is ReminderEvent.HoursEditTextChanged -> hoursEditTextChanged(event.value)
+            is ReminderEvent.MinutesEditTextChanged -> minutesEditTextChanged(event.value)
+            ReminderEvent.SetReminderButtonClicked -> setReminderButtonClicked()
+        }
+    }
+
+    private fun activityCreated() {
+        val hours = dataLocalDataSource.loadHours()
+        val minutes = dataLocalDataSource.loadMinutes()
+        hoursEditTextChanged(hours)
+        minutesEditTextChanged(minutes)
         if (viewState.value.timeForReminder.isNotEmpty()) {
-            onNotify()
+            viewState.value = viewState.value
+                .copy(isNotifyInstalled = true)
+        }
+    }
+
+    private fun hoursEditTextChanged(value: String) {
+        val timeForReminder = viewState.value.timeForReminder.copy(hour = value)
+        viewState.value = viewState.value
+            .copy(timeForReminder = timeForReminder)
+    }
+
+    private fun minutesEditTextChanged(value: String) {
+        val timeForReminder = viewState.value.timeForReminder.copy(minute = value)
+        viewState.value = viewState.value
+            .copy(timeForReminder = timeForReminder)
+    }
+
+    private fun backButtonClicked() {
+        viewModelScope.launch {
+            viewEffects.emit(ReminderViewEffect.MoveReturn)
+        }
+    }
+
+    private fun setReminderButtonClicked() {
+        viewModelScope.launch {
+            viewState.value = viewState.value
+                .copy(isNotifyInstalled = !viewState.value.isNotifyInstalled)
+
+            if (viewState.value.isNotifyInstalled) {
+                resetTime()
+            } else {
+                saveTime()
+                viewEffects.emit(ReminderViewEffect.MoveReturn)
+            }
         }
     }
 
@@ -32,43 +94,16 @@ class ReminderViewModel @Inject constructor(private val dataLocalDataSource: Dat
 
     private fun getTimerLengthSelection(now: LocalTime): Int {
         val needTime = viewState.value.timeForReminder.getLocalTime()
-
         return getCountSecondsBetween(now, needTime)
     }
 
-    fun onNotify() {
-        viewState.value = viewState.value
-            .copy(isNotifyInstalled = true)
-    }
-
-    fun saveTime() {
+    private fun saveTime() {
         dataLocalDataSource.saveHour(viewState.value.timeForReminder.hour)
         dataLocalDataSource.saveMinute(viewState.value.timeForReminder.minute)
     }
 
-    fun resetTime() {
+    private fun resetTime() {
         dataLocalDataSource.saveHour("")
         dataLocalDataSource.saveMinute("")
-    }
-
-    private fun loadMinutes() = dataLocalDataSource.loadMinutes()
-
-    private fun loadHours() = dataLocalDataSource.loadHours()
-
-    fun cancelNotification() {
-        viewState.value = viewState.value
-            .copy(isNotifyInstalled = false)
-    }
-
-    fun setHours(hour: String) {
-        val timeForReminder = viewState.value.timeForReminder.copy(hour = hour)
-        viewState.value = viewState.value
-            .copy(timeForReminder = timeForReminder)
-    }
-
-    fun setMinutes(minute: String) {
-        val timeForReminder = viewState.value.timeForReminder.copy(minute = minute)
-        viewState.value = viewState.value
-            .copy(timeForReminder = timeForReminder)
     }
 }

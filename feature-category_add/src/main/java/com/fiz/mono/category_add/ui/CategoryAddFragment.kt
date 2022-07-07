@@ -25,7 +25,7 @@ class CategoryAddFragment : Fragment() {
 
     private val adapter: CategoryIconsAdapter by lazy {
         CategoryIconsAdapter { position ->
-            viewModel.onEvent(FeatureAddEvent.CategoryClicked(position))
+            viewModel.onEvent(CategoryAddEvent.CategoryClicked(position))
         }
     }
 
@@ -51,7 +51,7 @@ class CategoryAddFragment : Fragment() {
 
     private fun init() {
         val type = navigationData as? TypeTransaction ?: TypeTransaction.Expense
-        viewModel.onEvent(FeatureAddEvent.ActivityLoaded(type))
+        viewModel.onEvent(CategoryAddEvent.ActivityLoaded(type))
     }
 
     private fun setupUI() {
@@ -72,15 +72,15 @@ class CategoryAddFragment : Fragment() {
     private fun setupListeners() {
         binding.apply {
             navigationBarLayout.backButton.setOnClickListener {
-                viewModel.onEvent(FeatureAddEvent.BackButtonClicked)
+                viewModel.onEvent(CategoryAddEvent.BackButtonClicked)
             }
 
             navigationBarLayout.actionButton.setOnClickListener {
-                viewModel.onEvent(FeatureAddEvent.AddButtonClicked)
+                viewModel.onEvent(CategoryAddEvent.AddButtonClicked)
             }
 
             categoryNameEditText.doAfterTextChanged {
-                viewModel.onEvent(FeatureAddEvent.CategoryNameChanged(it.toString()))
+                viewModel.onEvent(CategoryAddEvent.CategoryNameChanged(it.toString()))
             }
         }
     }

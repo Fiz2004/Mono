@@ -32,7 +32,8 @@ class ReminderFragment : Fragment() {
 
     private val viewModel: ReminderViewModel by viewModels()
 
-    private lateinit var binding: FragmentReminderBinding
+    private val binding get() = _binding!!
+    private var _binding: FragmentReminderBinding? = null
 
     @Inject
     lateinit var notifyIntent: Intent
@@ -53,7 +54,7 @@ class ReminderFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentReminderBinding.inflate(inflater, container, false)
+        _binding = FragmentReminderBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -63,11 +64,12 @@ class ReminderFragment : Fragment() {
         setupUI()
         setupListeners()
         observeViewStateUpdates()
+        observeViewEffects()
     }
 
     private fun init() {
         createNotificationChannel()
-        viewModel.start()
+        viewModel.onEvent(ReminderEvent.ActivityCreated)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -87,38 +89,30 @@ class ReminderFragment : Fragment() {
     private fun setupListeners() {
         binding.apply {
             hoursEditText.doAfterTextChanged {
-                viewModel.setHours(it.toString())
+                viewModel.onEvent(ReminderEvent.HoursEditTextChanged(it.toString()))
             }
 
             minutesEditText.doAfterTextChanged {
-                viewModel.setMinutes(it.toString())
+                viewModel.onEvent(ReminderEvent.MinutesEditTextChanged(it.toString()))
             }
 
             navigationBarLayout.backButton.setOnClickListener {
-                findNavController().popBackStack()
+                viewModel.onEvent(ReminderEvent.BackButtonClicked)
             }
 
             setReminderButton.setOnClickListener {
                 notificationManager.cancelNotifications()
-
                 if (viewModel.viewState.value.isNotifyInstalled) {
                     alarmManager.cancel(notifyPendingIntent)
-
-                    viewModel.cancelNotification()
-                    viewModel.resetTime()
                 } else {
-
                     AlarmManagerCompat.setExactAndAllowWhileIdle(
                         alarmManager,
                         AlarmManager.ELAPSED_REALTIME_WAKEUP,
                         viewModel.getTriggerTime(),
                         notifyPendingIntent
                     )
-                    viewModel.saveTime()
-                    viewModel.onNotify()
-
-                    findNavController().popBackStack()
                 }
+                viewModel.onEvent(ReminderEvent.SetReminderButtonClicked)
             }
         }
     }
@@ -133,17 +127,45 @@ class ReminderFragment : Fragment() {
 
     private fun updateScreenState(newState: ReminderViewState) {
         binding.apply {
-            hoursEditText.isEnabled = !newState.isNotifyInstalled
-            hoursEditText.error = newState.hoursErrorEditText?.let { getString(it) }
-            hoursEditText.textString = newState.timeForReminder.hour
+            hoursEditText.apply {
+                isEnabled = !newState.isNotifyInstalled
+                error = newState.hoursErrorEditText?.let { getString(it) }
+                textString = newState.timeForReminder.hour
+            }
 
-            minutesEditText.isEnabled = !newState.isNotifyInstalled
-            minutesEditText.error = newState.minutesErrorEditText?.let { getString(it) }
-            minutesEditText.textString = newState.timeForReminder.minute
+            minutesEditText.apply {
+                isEnabled = !newState.isNotifyInstalled
+                error = newState.minutesErrorEditText?.let { getString(it) }
+                textString = newState.timeForReminder.minute
+            }
 
-            setReminderButton.text = getString(newState.textForButtonReminder)
-            setReminderButton.isActivated = newState.isNotifyInstalled
-            setReminderButton.isEnabled = newState.isCanReminder
+            setReminderButton.apply {
+                text = getString(newState.textForButtonReminder)
+                isActivated = newState.isNotifyInstalled
+                isEnabled = newState.isCanReminder
+            }
         }
+    }
+
+
+    private fun observeViewEffects() {
+        launchAndRepeatWithViewLifecycle {
+            viewModel.viewEffects.collect { viewEffect ->
+                reactTo(viewEffect)
+            }
+        }
+    }
+
+    private fun reactTo(viewEffect: ReminderViewEffect) {
+        when (viewEffect) {
+            ReminderViewEffect.MoveReturn -> {
+                findNavController().popBackStack()
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

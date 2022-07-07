@@ -52,13 +52,13 @@ class CategoryAddViewModel @Inject constructor(
             viewState.value.copy(allCategoryIcons = categoryAddUseCase.observeAllCategoryIconsUseCase())
     }
 
-    fun onEvent(event: FeatureAddEvent) {
+    fun onEvent(event: CategoryAddEvent) {
         when (event) {
-            is FeatureAddEvent.CategoryNameChanged -> setCategoryName(event.newCategoryName)
-            FeatureAddEvent.AddButtonClicked -> clickAddButton()
-            FeatureAddEvent.BackButtonClicked -> clickBackButton()
-            is FeatureAddEvent.CategoryClicked -> clickRecyclerView(event.position)
-            is FeatureAddEvent.ActivityLoaded -> start(event.type)
+            is CategoryAddEvent.CategoryNameChanged -> setCategoryName(event.newCategoryName)
+            CategoryAddEvent.AddButtonClicked -> clickAddButton()
+            CategoryAddEvent.BackButtonClicked -> clickBackButton()
+            is CategoryAddEvent.CategoryClicked -> clickRecyclerView(event.position)
+            is CategoryAddEvent.ActivityLoaded -> start(event.type)
         }
     }
 

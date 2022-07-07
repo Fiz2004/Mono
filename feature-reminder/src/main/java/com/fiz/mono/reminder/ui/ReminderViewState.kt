@@ -5,9 +5,7 @@ import com.fiz.mono.reminder.domain.models.TimeForReminder
 
 data class ReminderViewState(
     val timeForReminder: TimeForReminder = TimeForReminder(),
-    var isNotifyInstalled: Boolean = false,
-    val isErrorHourEditText: Boolean = false,
-    val isErrorMinuteEditText: Boolean = false,
+    var isNotifyInstalled: Boolean = false
 ) {
     val isCanReminder: Boolean
         get() {
