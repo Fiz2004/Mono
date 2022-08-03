@@ -8,7 +8,7 @@ android {
 dependencies {
     implementation project(":domain")
 
-    implementation("androidx.fragment:fragment-ktx:1.5.0")
+    implementation("androidx.fragment:fragment-ktx:${versions.fragmentKtx}")
 
     // Navigation component
     implementation("androidx.navigation:navigation-fragment-ktx:${versions.navigation}")

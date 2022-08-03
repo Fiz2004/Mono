@@ -105,4 +105,5 @@
     <string name="remove_reminder">Удалить напоминание</string>
     <string name="this_week">На этой неделе</string>
     <string name="cant_create_file">I can\'t create a file</string>
+    <string name="invalid_number">Неправильное число</string>
 </resources>

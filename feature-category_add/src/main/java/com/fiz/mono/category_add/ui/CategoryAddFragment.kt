@@ -8,12 +8,9 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.fiz.mono.base.android.utils.getColorCompat
 import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
-import com.fiz.mono.base.android.utils.setVisible
 import com.fiz.mono.category_add.databinding.FragmentCategoryAddBinding
 import com.fiz.mono.category_add.ui.adapters.CategoryIconsAdapter
-import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.domain.models.TypeTransaction
 import com.fiz.mono.navigation.navigationData
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,26 +53,17 @@ class CategoryAddFragment : Fragment() {
 
     private fun setupUI() {
         binding.apply {
-            navigationBarLayout.apply {
-                backButton.setVisible(true)
-                actionButton.setVisible(false)
-                actionButton.text = getString(R.string.add)
-                actionButton.setTextColor(requireContext().getColorCompat(R.color.blue))
-                choiceImageButton.setVisible(false)
-                titleTextView.text = getString(R.string.add_category)
-            }
-
             categoryIconRecyclerView.adapter = adapter
         }
     }
 
     private fun setupListeners() {
         binding.apply {
-            navigationBarLayout.backButton.setOnClickListener {
+            navigationBarLayout.setOnClickListenerBackButton {
                 viewModel.onEvent(CategoryAddEvent.BackButtonClicked)
             }
 
-            navigationBarLayout.actionButton.setOnClickListener {
+            navigationBarLayout.setOnClickListenerActionButton {
                 viewModel.onEvent(CategoryAddEvent.AddButtonClicked)
             }
 
@@ -94,7 +82,7 @@ class CategoryAddFragment : Fragment() {
     }
 
     private fun updateScreenState(newState: CategoryAddViewState) {
-        binding.navigationBarLayout.actionButton.setVisible(newState.isVisibilityAddButton)
+        binding.navigationBarLayout.setVisibilityActionButton(newState.isVisibilityAddButton)
         adapter.submitList(newState.allCategoryIcons)
     }
 

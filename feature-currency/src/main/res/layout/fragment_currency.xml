@@ -8,11 +8,14 @@
     android:paddingEnd="@dimen/fragmentPaddingEnd"
     tools:context="com.fiz.mono.currency.ui.CurrencyFragment">
 
-    <include
+    <com.fiz.mono.common.ui.components.NavigationBarView
         android:id="@+id/navigationBarLayout"
-        layout="@layout/navigation_bar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="40dp"
+        app:textTitle="@string/currency"
+        app:visibilityActionButton="false"
+        app:visibilityBackButton="true"
+        app:visibilityChoiceButton="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

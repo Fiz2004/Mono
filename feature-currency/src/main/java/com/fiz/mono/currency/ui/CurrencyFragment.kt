@@ -9,8 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
-import com.fiz.mono.base.android.utils.setVisible
-import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.currency.databinding.FragmentCurrencyBinding
 import com.google.android.material.radiobutton.MaterialRadioButton
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,11 +49,6 @@ class CurrencyFragment : Fragment() {
         currencyRadioButton["€"] = binding.ALLRadioButton
         currencyRadioButton["лв"] = binding.BGNRadioButton
         currencyRadioButton["đ"] = binding.VNDRadioButton
-
-        binding.navigationBarLayout.backButton.setVisible(true)
-        binding.navigationBarLayout.actionButton.setVisible(false)
-        binding.navigationBarLayout.choiceImageButton.setVisible(false)
-        binding.navigationBarLayout.titleTextView.text = getString(R.string.currency)
     }
 
     private fun setupListeners() {
@@ -76,7 +69,7 @@ class CurrencyFragment : Fragment() {
             }
         }
 
-        binding.navigationBarLayout.backButton.setOnClickListener {
+        binding.navigationBarLayout.setOnClickListenerBackButton {
             findNavController().popBackStack()
         }
     }

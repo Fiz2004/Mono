@@ -6,13 +6,18 @@
     android:layout_height="match_parent"
     android:paddingStart="@dimen/fragmentPaddingStart"
     android:paddingEnd="@dimen/fragmentPaddingEnd"
-    tools:context=".category_add.ui.CategoryAddFragment">
+    tools:context="com.fiz.mono.category_add.ui.CategoryAddFragment">
 
-    <include
+    <com.fiz.mono.common.ui.components.NavigationBarView
         android:id="@+id/navigationBarLayout"
-        layout="@layout/navigation_bar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="40dp"
+        app:colorTextAction="@color/blue"
+        app:textAction="@string/add"
+        app:textTitle="@string/add_category"
+        app:visibilityActionButton="false"
+        app:visibilityBackButton="true"
+        app:visibilityChoiceButton="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -55,7 +55,7 @@ dependencies {
 
     implementation("androidx.appcompat:appcompat:${versions.appcompat}")
     implementation("com.google.android.material:material:${versions.material}")
-    implementation("androidx.activity:activity-ktx:1.5.0")
+    implementation("androidx.activity:activity-ktx:1.5.1")
 
     implementation platform("com.google.firebase:firebase-bom:30.3.1")
     implementation("com.google.firebase:firebase-crashlytics-ktx")
@@ -63,7 +63,7 @@ dependencies {
 
     // Navigation component
     implementation("androidx.navigation:navigation-fragment-ktx:${versions.navigation}")
-    implementation "androidx.navigation:navigation-ui-ktx:${versions.navigation}"
+    implementation("androidx.navigation:navigation-ui-ktx:${versions.navigation}")
 
     // Hilt
     implementation("com.google.dagger:hilt-android:${versions.hilt}")
@@ -73,10 +73,10 @@ dependencies {
     implementation("com.jakewharton.threetenabp:threetenabp:1.4.0")
 
     testImplementation("junit:junit:4.13.2")
-    testImplementation('org.mockito:mockito-core:4.6.1')
-    debugImplementation('androidx.fragment:fragment-testing:1.5.0')
+    testImplementation("org.mockito:mockito-core:4.6.1")
+    debugImplementation("androidx.fragment:fragment-testing:${versions.fragmentKtx}")
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.4.0")
-    androidTestImplementation("androidx.room:room-testing:2.4.2")
+    androidTestImplementation("androidx.room:room-testing:${versions.room}")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.ext:junit-ktx:1.1.3")
     androidTestImplementation("androidx.test:core-ktx:1.4.0")

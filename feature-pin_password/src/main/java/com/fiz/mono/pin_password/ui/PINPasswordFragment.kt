@@ -13,7 +13,6 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.fiz.mono.base.android.utils.getColorCompat
 import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
 import com.fiz.mono.base.android.utils.setVisible
 import com.fiz.mono.base.android.utils.showKeyboard
@@ -65,13 +64,6 @@ class PINPasswordFragment : Fragment() {
                 number3EditText,
                 number4EditText,
             )
-
-            navigationBarLayout.choiceImageButton.setVisible(false)
-            navigationBarLayout.titleTextView.text = getString(R.string.PIN_password)
-
-            navigationBarLayout.actionButton
-                .setTextColor(requireContext().getColorCompat(R.color.blue))
-            navigationBarLayout.actionButton.text = getString(R.string.edit)
         }
     }
 
@@ -84,11 +76,11 @@ class PINPasswordFragment : Fragment() {
         }
 
         binding.apply {
-            navigationBarLayout.backButton.setOnClickListener {
+            navigationBarLayout.setOnClickListenerBackButton {
                 viewModel.clickBackButton()
             }
 
-            navigationBarLayout.actionButton.setOnClickListener {
+            navigationBarLayout.setOnClickListenerActionButton {
                 viewModel.clickEditButton()
             }
 
@@ -150,8 +142,8 @@ class PINPasswordFragment : Fragment() {
 
     private fun updateScreenState(newState: PINPasswordViewState) {
         val state_Pin = newState.statePIN
-        binding.navigationBarLayout.actionButton.setVisible(state_Pin == StatePin.REMOVE)
-        binding.navigationBarLayout.backButton.setVisible(state_Pin.isNotLogin())
+        binding.navigationBarLayout.setVisibilityActionButton(state_Pin == StatePin.REMOVE)
+        binding.navigationBarLayout.setVisibilityBackButton(state_Pin.isNotLogin())
 
         // change background on red for Remove
         binding.nextPINPasswordButton.isCheckable = state_Pin == StatePin.REMOVE
