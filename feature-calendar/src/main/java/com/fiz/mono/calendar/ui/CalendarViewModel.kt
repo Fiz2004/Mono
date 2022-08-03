@@ -8,11 +8,13 @@ import com.fiz.mono.domain.models.TransactionsDataItem
 import com.fiz.mono.domain.repositories.SettingsRepository
 import com.fiz.mono.domain.repositories.TransactionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,

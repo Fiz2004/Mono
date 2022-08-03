@@ -60,9 +60,6 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
 
     private fun setupUI() {
         binding.apply {
-            navigationBarLayout.backButton.setVisible(true)
-            navigationBarLayout.actionButton.setVisible(false)
-            navigationBarLayout.choiceImageButton.setVisible(true)
             calendarRecyclerView.adapter = calendarAdapter
             transactionRecyclerView.adapter = transactionAdapter
         }
@@ -70,11 +67,11 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
 
     private fun setupListeners() {
         binding.apply {
-            navigationBarLayout.backButton.setOnClickListener {
+            navigationBarLayout.setOnClickListenerBackButton {
                 viewModel.clickBackButton()
             }
 
-            navigationBarLayout.choiceImageButton.setOnClickListener {
+            navigationBarLayout.setOnClickListenerChoiceButton {
                 val monthDialog = MonthDialog()
                 monthDialog.choicer = this@CalendarFragment
 
@@ -107,9 +104,11 @@ class CalendarFragment : Fragment(), MonthDialog.Choicer {
                 viewModel.onAllTransactionsLoaded()
         }
 
-        binding.navigationBarLayout.titleTextView.text = getDateMonthYearString(
-            newState.date,
-            resources.getStringArray(R.array.name_month)
+        binding.navigationBarLayout.setTextTitle(
+            getDateMonthYearString(
+                newState.date,
+                resources.getStringArray(R.array.name_month)
+            )
         )
         viewModel.changeData(newState.date)
     }

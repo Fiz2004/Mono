@@ -79,10 +79,10 @@ class ReminderViewModel @Inject constructor(private val dataLocalDataSource: Dat
                 .copy(isNotifyInstalled = !viewState.value.isNotifyInstalled)
 
             if (viewState.value.isNotifyInstalled) {
-                resetTime()
-            } else {
                 saveTime()
                 viewEffects.emit(ReminderViewEffect.MoveReturn)
+            } else {
+                resetTime()
             }
         }
     }

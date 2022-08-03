@@ -11,11 +11,16 @@
         android:padding="16dp"
         tools:context=".core.ui.category_edit.CategoryEditFragment">
 
-        <include
+        <com.fiz.mono.common.ui.components.NavigationBarView
             android:id="@+id/navigationBarLayout"
-            layout="@layout/navigation_bar"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="40dp"
+            app:colorTextAction="@color/red"
+            app:textAction="@string/remove"
+            app:textTitle="@string/category_edit"
+            app:visibilityActionButton="false"
+            app:visibilityBackButton="true"
+            app:visibilityChoiceButton="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

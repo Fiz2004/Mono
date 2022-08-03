@@ -4,13 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".feature_category_add.ui.CategoryAddFragment">
+    tools:context="com.fiz.mono.calendar.ui.CalendarFragment">
 
-    <include
+    <com.fiz.mono.common.ui.components.NavigationBarView
         android:id="@+id/navigationBarLayout"
-        layout="@layout/navigation_bar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="40dp"
+        app:colorTextAction="@color/red"
+        app:visibilityActionButton="false"
+        app:visibilityBackButton="true"
+        app:visibilityChoiceButton="true"
         android:layout_marginStart="@dimen/fragmentPaddingStart"
         android:layout_marginEnd="@dimen/fragmentPaddingEnd"
         app:layout_constraintEnd_toEndOf="parent"

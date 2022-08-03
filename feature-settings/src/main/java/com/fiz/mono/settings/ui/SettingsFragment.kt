@@ -9,7 +9,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.fiz.mono.base.android.utils.setVisible
 import com.fiz.mono.navigation.navigate
 import com.fiz.mono.settings.R
 import com.fiz.mono.settings.databinding.FragmentSettingsBinding
@@ -33,18 +32,8 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupUI()
         updateUI()
         setupListeners()
-    }
-
-    private fun setupUI() {
-        binding.navigationBarLayout.apply {
-            backButton.setVisible(false)
-            actionButton.setVisible(false)
-            choiceImageButton.setVisible(false)
-            titleTextView.text = getString(com.fiz.mono.common.ui.resources.R.string.settings)
-        }
     }
 
     private fun setupListeners() {

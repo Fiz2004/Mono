@@ -4,4 +4,25 @@
     <attr name="colorBackground" format="color|reference" />
     <attr name="colorMain" format="color|reference" />
     <attr name="switcher" format="reference" />
+
+    <declare-styleable name="NavigationBarView">
+        <attr name="colorTextAction" format="color" />
+        <attr name="textAction" format="string" />
+        <attr name="visibilityBackButton" format="boolean" />
+        <attr name="visibilityActionButton" format="boolean" />
+        <attr name="visibilityChoiceButton" format="boolean" />
+        <attr name="textTitle" format="string" />
+    </declare-styleable>
+
+    <attr name="NavigationBarViewStyle" format="reference" />
+
+    <style name="DefaultNavigationBarViewStyle">
+        <item name="colorTextAction">@color/blue</item>
+        <item name="textAction">Action</item>
+        <item name="visibilityBackButton">true</item>
+        <item name="visibilityActionButton">false</item>
+        <item name="visibilityChoiceButton">false</item>
+        <item name="textTitle">Title</item>
+    </style>
+
 </resources>

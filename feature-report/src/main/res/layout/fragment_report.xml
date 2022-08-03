@@ -4,16 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include
+    <com.fiz.mono.common.ui.components.NavigationBarView
         android:id="@+id/navigationBarLayout"
-        layout="@layout/navigation_bar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="40dp"
         android:layout_marginStart="@dimen/fragmentPaddingStart"
         android:layout_marginEnd="@dimen/fragmentPaddingEnd"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:visibilityActionButton="false" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@id/report_host_fragment"

@@ -1,5 +1,5 @@
 apply plugin: "com.android.library"
-apply from:"$rootProject.projectDir/android.gradle"
+apply from: "$rootProject.projectDir/android.gradle"
 
 android {
     buildFeatures {
@@ -17,7 +17,7 @@ dependencies {
     implementation("com.google.android.material:material:${versions.material}")
 
     // Lifecycle components
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.0"
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
 
     // Bitmap
     implementation("androidx.exifinterface:exifinterface:1.3.3")

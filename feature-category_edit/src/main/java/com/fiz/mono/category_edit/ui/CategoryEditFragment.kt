@@ -4,13 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.base.android.adapters.CategoriesAdapter
-import com.fiz.mono.base.android.utils.getColorCompat
 import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
-import com.fiz.mono.base.android.utils.setVisible
 import com.fiz.mono.category_edit.databinding.FragmentCategoryEditBinding
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.navigation.navigate
@@ -59,12 +58,6 @@ class CategoryEditFragment : Fragment() {
 
     private fun setupUI() {
         binding.apply {
-            navigationBarLayout.backButton.setVisible(true)
-            navigationBarLayout.actionButton.setVisible(false)
-            navigationBarLayout.actionButton.text = getString(R.string.remove)
-            navigationBarLayout.actionButton.setTextColor(requireContext().getColorCompat(R.color.red))
-            navigationBarLayout.choiceImageButton.setVisible(false)
-            navigationBarLayout.titleTextView.text = getString(R.string.category_edit)
             expenseRecyclerView.adapter = expenseAdapter
             incomeRecyclerView.adapter = incomeAdapter
         }
@@ -72,14 +65,15 @@ class CategoryEditFragment : Fragment() {
 
     private fun setupListeners() {
         binding.apply {
-            navigationBarLayout.backButton.setOnClickListener {
+            navigationBarLayout.setOnClickListenerBackButton {
                 viewModel.onEvent(CategoryEditEvent.BackButtonClicked)
             }
 
-            navigationBarLayout.actionButton.setOnClickListener {
+            navigationBarLayout.setOnClickListenerActionButton {
                 viewModel.onEvent(CategoryEditEvent.RemoveButtonClicked)
             }
         }
+        Button(context).setOnClickListener { }
     }
 
     private fun observeViewStateUpdates() {
@@ -91,7 +85,7 @@ class CategoryEditFragment : Fragment() {
     }
 
     private fun updateScreenState(newState: CategoryEditViewState) {
-        binding.navigationBarLayout.actionButton.setVisible(newState.isRemoveButtonVisible)
+        binding.navigationBarLayout.setVisibilityActionButton(newState.isRemoveButtonVisible)
 
         expenseAdapter.submitList(newState.allCategoryExpense)
         incomeAdapter.submitList(newState.allCategoryIncome)

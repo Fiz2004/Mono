@@ -167,12 +167,19 @@
         <entry key="..\:/Users/Fiz20/AndroidStudioProjects/Mono/feature-report/src/main/res/layout/fragment_report.xml" value="0.4197916666666667" />
         <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/app/src/main/res/layout/activity_main.xml" value="0.30012825994014536" />
         <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/common-ui-resources/src/main/res/drawable-anydpi-v26/ic_launcher_foreground.xml" value="0.2755" />
-        <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/common-ui-resources/src/main/res/layout/navigation_bar.xml" value="0.30012825994014536" />
+        <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/common-ui-resources/src/main/res/layout/layout_data_range.xml" value="0.30012825994014536" />
+        <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/common-ui-resources/src/main/res/layout/navigation_bar.xml" value="0.1" />
         <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/common-ui-resources/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2755" />
+        <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/feature-calculator/src/main/res/layout/fragment_calculator.xml" value="0.30012825994014536" />
+        <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/feature-calendar/src/main/res/layout/fragment_calendar.xml" value="0.30012825994014536" />
         <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/feature-category_add/src/main/res/layout/fragment_category_add.xml" value="0.30012825994014536" />
+        <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/feature-category_edit/src/main/res/layout/fragment_category_edit.xml" value="0.1" />
         <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/feature-currency/src/main/res/layout/fragment_currency.xml" value="0.30012825994014536" />
-        <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/feature-input/src/main/res/layout/fragment_input.xml" value="0.25" />
+        <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/feature-input/src/main/res/layout/fragment_input.xml" value="0.1" />
+        <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/feature-pin_password/src/main/res/layout/fragment_p_i_n_password.xml" value="0.14450619923044036" />
         <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/feature-reminder/src/main/res/layout/fragment_reminder.xml" value="0.2928637627432808" />
+        <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/feature-report/src/main/res/layout/fragment_report.xml" value="0.1" />
+        <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/feature-report/src/main/res/layout/fragment_report_category.xml" value="0.22488242838820008" />
         <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/feature-report/src/main/res/layout/fragment_select_category.xml" value="0.30012825994014536" />
         <entry key="..\:/Users/faa.GORSM/AndroidStudioProjects/Fiz2004/Mono/feature-settings/src/main/res/layout/fragment_settings.xml" value="0.18" />
       </map>

@@ -9,7 +9,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
-import com.fiz.mono.base.android.utils.setVisible
 import com.fiz.mono.feature.report.R
 import com.fiz.mono.feature.report.databinding.FragmentReportBinding
 import com.fiz.mono.navigation.navigate
@@ -50,14 +49,8 @@ class ReportFragment : Fragment() {
 
     private fun setupUI() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            binding.navigationBarLayout.apply {
-                backButton.setVisible(destination.id == R.id.reportCategoryFragment)
-                choiceImageButton.setVisible(destination.id != R.id.reportCategoryFragment)
-            }
-        }
-
-        binding.navigationBarLayout.apply {
-            actionButton.setVisible(false)
+            binding.navigationBarLayout.setVisibilityBackButton(destination.id == R.id.reportCategoryFragment)
+            binding.navigationBarLayout.setVisibilityChoiceButton(destination.id != R.id.reportCategoryFragment)
         }
     }
 
@@ -65,11 +58,11 @@ class ReportFragment : Fragment() {
         binding.apply {
             navigationBarLayout.apply {
 
-                backButton.setOnClickListener {
+                setOnClickListenerBackButton {
                     navController.popBackStack()
                 }
 
-                choiceImageButton.setOnClickListener {
+                setOnClickListenerChoiceButton {
                     val reportDialog = ReportDialog()
                     reportDialog.show(childFragmentManager, "Choice Report")
                 }
@@ -86,8 +79,7 @@ class ReportFragment : Fragment() {
     }
 
     private fun updateScreenState() {
-        binding.navigationBarLayout.titleTextView.text =
-            getString(viewModel.getTextTypeReport())
+        binding.navigationBarLayout.setTextTitle(getString(viewModel.getTextTypeReport()))
     }
 
     private fun observeViewEffects() {

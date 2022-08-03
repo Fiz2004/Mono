@@ -17,9 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
-import com.fiz.mono.base.android.utils.setVisible
 import com.fiz.mono.base.android.utils.textString
-import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.feature.reminder.databinding.FragmentReminderBinding
 import com.fiz.mono.reminder.utils.cancelNotifications
 import dagger.hilt.android.AndroidEntryPoint
@@ -61,7 +59,6 @@ class ReminderFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()
-        setupUI()
         setupListeners()
         observeViewStateUpdates()
         observeViewEffects()
@@ -77,15 +74,6 @@ class ReminderFragment : Fragment() {
         notificationManager.createNotificationChannel(notificationChannel)
     }
 
-    private fun setupUI() {
-        binding.apply {
-            navigationBarLayout.backButton.setVisible(true)
-            navigationBarLayout.actionButton.setVisible(false)
-            navigationBarLayout.choiceImageButton.setVisible(false)
-            navigationBarLayout.titleTextView.text = getString(R.string.reminder)
-        }
-    }
-
     private fun setupListeners() {
         binding.apply {
             hoursEditText.doAfterTextChanged {
@@ -96,7 +84,7 @@ class ReminderFragment : Fragment() {
                 viewModel.onEvent(ReminderEvent.MinutesEditTextChanged(it.toString()))
             }
 
-            navigationBarLayout.backButton.setOnClickListener {
+            navigationBarLayout.setOnClickListenerBackButton {
                 viewModel.onEvent(ReminderEvent.BackButtonClicked)
             }
 

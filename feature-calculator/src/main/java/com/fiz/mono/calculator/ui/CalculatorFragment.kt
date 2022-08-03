@@ -8,8 +8,6 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
-import com.fiz.mono.base.android.utils.setVisible
-import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.feature.calculator.databinding.FragmentCalculatorBinding
 
 class CalculatorFragment : Fragment() {
@@ -29,18 +27,8 @@ class CalculatorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupUI()
         setupListeners()
         observeViewStateUpdates()
-    }
-
-    private fun setupUI() {
-        binding.navigationBarLayout.apply {
-            backButton.setVisible(false)
-            actionButton.setVisible(false)
-            choiceImageButton.setVisible(false)
-            titleTextView.text = getString(R.string.calculator)
-        }
     }
 
     private fun setupListeners() {

@@ -111,11 +111,11 @@ class InputFragment : Fragment() {
                 viewModel.onEvent(InputEvent.SubmitButtonClicked)
             }
 
-            backButton.setOnClickListener {
+            navigationBarLayout.setOnClickListenerBackButton {
                 viewModel.onEvent(InputEvent.BackButtonClicked)
             }
 
-            removeButton.setOnClickListener {
+            navigationBarLayout.setOnClickListenerActionButton {
                 viewModel.onEvent(InputEvent.RemoveTransactionButtonClicked)
             }
 
@@ -222,14 +222,12 @@ class InputFragment : Fragment() {
 
             dataRangeLayout.root.setVisible(newState.isInput)
             tabLayout.setVisible(newState.isInput)
-            titleTextView.setVisible(newState.isEdit)
-            backButton.setVisible(newState.isEdit)
-            removeButton.setVisible(newState.isEdit)
+            navigationBarLayout.setVisible(newState.isEdit)
 
             val expenseIncomeTextViewLayoutParams =
                 ExpenseIncomeTextView.layoutParams as ConstraintLayout.LayoutParams
             expenseIncomeTextViewLayoutParams.topToBottom =
-                if (newState.isInput) R.id.dataRangeLayout else R.id.titleTextView
+                if (newState.isInput) R.id.dataRangeLayout else R.id.navigationBarLayout
 
             if (newState.isInput) {
                 val numberTab =
@@ -261,7 +259,7 @@ class InputFragment : Fragment() {
 
             dataRangeLayout.dateTextView.text = newState.date
 
-            titleTextView.text = newState.date
+            navigationBarLayout.setTextTitle(newState.date)
 
             currencyTextView.text = newState.currency
         }
