@@ -15,11 +15,10 @@ import androidx.annotation.ColorRes
 fun Context.themeColor(
     @AttrRes themeAttrId: Int
 ): Int {
-    return obtainStyledAttributes(
-        intArrayOf(themeAttrId)
-    ).use {
-        it.getColor(0, Color.MAGENTA)
-    }
+    val typedArray = obtainStyledAttributes(intArrayOf(themeAttrId))
+    val color = typedArray.getColor(0, Color.MAGENTA)
+    typedArray.recycle()
+    return color
 }
 
 @ColorInt
