@@ -60,6 +60,9 @@
         <action
             android:id="@id/action_reportFragment_to_calendarFragment"
             app:destination="@id/calendarFragment" />
+        <action
+            android:id="@id/action_reportFragment_to_inputFragment"
+            app:destination="@id/inputFragment" />
     </fragment>
 
     <fragment

@@ -10,6 +10,7 @@ import com.fiz.mono.base.android.adapters.TransactionsAdapter
 import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
 import com.fiz.mono.feature.report.R
 import com.fiz.mono.feature.report.databinding.FragmentReportMonthlyBinding
+import com.fiz.mono.navigation.navigate
 import com.fiz.mono.report.ui.ReportEvent
 import com.fiz.mono.report.ui.ReportViewModel
 import com.fiz.mono.util.TimeUtils
@@ -29,7 +30,12 @@ class ReportMonthlyFragment : Fragment() {
         TransactionsAdapter(
             viewModel.viewState.value.currency,
             true
-        )
+        ) { transactionItem ->
+            navigate(
+                R.id.action_reportFragment_to_inputFragment,
+                com.fiz.mono.navigation.R.id.nav_host_fragment, data = transactionItem.id
+            )
+        }
     }
 
     private val toggleButtons =
