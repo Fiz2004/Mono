@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.fiz.mono.base.android.utils.showToast
 import com.fiz.mono.navigation.navigate
 import com.fiz.mono.settings.R
 import com.fiz.mono.settings.databinding.FragmentSettingsBinding
@@ -63,11 +63,7 @@ class SettingsFragment : Fragment() {
 
     private fun deleteOnClickListener() {
         viewModel.clickDelete()
-        Toast.makeText(
-            requireContext(),
-            com.fiz.mono.common.ui.resources.R.string.delete_all_data,
-            Toast.LENGTH_LONG
-        ).show()
+        showToast(com.fiz.mono.common.ui.resources.R.string.delete_all_data)
     }
 
     private fun reminderOnClickListener() {

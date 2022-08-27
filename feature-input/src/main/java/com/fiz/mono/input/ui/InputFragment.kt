@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.FileProvider
@@ -22,6 +21,7 @@ import com.fiz.mono.base.android.adapters.CategoriesAdapter
 import com.fiz.mono.base.android.utils.ActivityContract
 import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
 import com.fiz.mono.base.android.utils.setVisible
+import com.fiz.mono.base.android.utils.showToast
 import com.fiz.mono.input.R
 import com.fiz.mono.input.databinding.FragmentInputBinding
 import com.fiz.mono.navigation.navigate
@@ -159,12 +159,7 @@ class InputFragment : Fragment() {
             val photoFile: File? = try {
                 createImageFile(context)
             } catch (ex: IOException) {
-                Toast.makeText(
-                    context,
-                    getString(com.fiz.mono.common.ui.resources.R.string.cant_create_file),
-                    Toast.LENGTH_LONG
-                )
-                    .show()
+                showToast(com.fiz.mono.common.ui.resources.R.string.cant_create_file)
                 null
             }
 
@@ -267,36 +262,39 @@ class InputFragment : Fragment() {
 
     private fun observeViewEffects() {
         launchAndRepeatWithViewLifecycle {
-            viewModel.viewEffects.collect { navigationAction ->
+            viewModel.viewEffects.collect { viewEffect ->
+                reactTo(viewEffect)
+            }
+        }
+    }
 
-                when (navigationAction) {
-                    InputViewEffect.MoveCalendar -> {
-                        navigate(
-                            R.id.action_inputFragment_to_calendarFragment,
-                            com.fiz.mono.navigation.R.id.nav_host_fragment
-                        )
-                    }
+    private fun reactTo(viewEffect: InputViewEffect) {
+        when (viewEffect) {
+            InputViewEffect.MoveCalendar -> {
+                navigate(
+                    R.id.action_inputFragment_to_calendarFragment,
+                    com.fiz.mono.navigation.R.id.nav_host_fragment
+                )
+            }
 
-                    InputViewEffect.MoveEdit -> {
-                        navigate(R.id.action_inputFragment_to_categoryFragment)
-                    }
+            InputViewEffect.MoveEdit -> {
+                navigate(R.id.action_inputFragment_to_categoryFragment)
+            }
 
-                    InputViewEffect.MoveOnBoarding -> {
-                        navigate(R.id.action_inputFragment_to_onBoardingFragment)
-                    }
+            InputViewEffect.MoveOnBoarding -> {
+                navigate(R.id.action_inputFragment_to_onBoardingFragment)
+            }
 
-                    InputViewEffect.MovePinPassword -> {
-                        navigate(
-                            actionId =
-                            R.id.action_inputFragment_to_PINPasswordFragment,
-                            data = "start"
-                        )
-                    }
+            InputViewEffect.MovePinPassword -> {
+                navigate(
+                    actionId =
+                    R.id.action_inputFragment_to_PINPasswordFragment,
+                    data = "start"
+                )
+            }
 
-                    InputViewEffect.MoveReturn -> {
-                        findNavController().popBackStack()
-                    }
-                }
+            InputViewEffect.MoveReturn -> {
+                findNavController().popBackStack()
             }
         }
     }
@@ -312,9 +310,6 @@ class InputFragment : Fragment() {
     }
 
     companion object {
-        const val EXPENSE = 0
-        const val INCOME = 1
-
         const val MAX_PHOTO = 3
     }
 }

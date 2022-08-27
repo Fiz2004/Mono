@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -16,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
 import com.fiz.mono.base.android.utils.setVisible
 import com.fiz.mono.base.android.utils.showKeyboard
+import com.fiz.mono.base.android.utils.showToast
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.feature.pin_password.databinding.FragmentPINPasswordBinding
 import com.fiz.mono.navigation.navigationData
@@ -184,7 +184,7 @@ class PINPasswordFragment : Fragment() {
                 binding.nextPINPasswordButton.isActivated = true
             }
             StatePin.REMOVE_CONFIRM_FINISH -> {
-                Toast.makeText(requireContext(), "PIN deleted", Toast.LENGTH_SHORT).show()
+                showToast(R.string.deleted_PIN)
                 viewModel.deletePin()
             }
             StatePin.LOGIN_FINISH -> {

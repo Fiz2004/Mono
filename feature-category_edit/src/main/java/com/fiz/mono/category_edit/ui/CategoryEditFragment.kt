@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.fiz.mono.base.android.adapters.CategoriesAdapter
-import com.fiz.mono.base.android.utils.launchAndRepeatWithViewLifecycle
+import com.fiz.mono.base.android.utils.collectUiEffect
+import com.fiz.mono.base.android.utils.collectUiState
 import com.fiz.mono.category_edit.databinding.FragmentCategoryEditBinding
 import com.fiz.mono.common.ui.resources.R
 import com.fiz.mono.navigation.navigate
@@ -21,28 +21,25 @@ class CategoryEditFragment : Fragment() {
     private val viewModel: CategoryEditViewModel by viewModels()
 
     private val expenseAdapter: CategoriesAdapter by lazy {
-        CategoriesAdapter(
-            R.color.red
-        ) { position ->
+        CategoriesAdapter(R.color.red) { position ->
             viewModel.onEvent(CategoryEditEvent.ExpenseItemClicked(position))
         }
     }
 
     private val incomeAdapter: CategoriesAdapter by lazy {
-        CategoriesAdapter(
-            R.color.red
-        ) { position ->
+        CategoriesAdapter(R.color.red) { position ->
             viewModel.onEvent(CategoryEditEvent.IncomeItemClicked(position))
         }
     }
 
-    private lateinit var binding: FragmentCategoryEditBinding
+    private var _binding: FragmentCategoryEditBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentCategoryEditBinding.inflate(inflater, container, false)
+        _binding = FragmentCategoryEditBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -51,8 +48,8 @@ class CategoryEditFragment : Fragment() {
 
         setupUI()
         setupListeners()
-        observeViewStateUpdates()
 
+        observeViewStateUpdates()
         observeViewEffects()
     }
 
@@ -73,15 +70,10 @@ class CategoryEditFragment : Fragment() {
                 viewModel.onEvent(CategoryEditEvent.RemoveButtonClicked)
             }
         }
-        Button(context).setOnClickListener { }
     }
 
     private fun observeViewStateUpdates() {
-        launchAndRepeatWithViewLifecycle {
-            viewModel.viewState.collect { newState ->
-                updateScreenState(newState)
-            }
-        }
+        collectUiState(viewModel.viewState, ::updateScreenState)
     }
 
     private fun updateScreenState(newState: CategoryEditViewState) {
@@ -92,22 +84,25 @@ class CategoryEditFragment : Fragment() {
     }
 
     private fun observeViewEffects() {
-        launchAndRepeatWithViewLifecycle {
-            viewModel.viewEffects.collect { viewEffect ->
+        collectUiEffect(viewModel.viewEffects, ::reactTo)
+    }
 
-                when (viewEffect) {
-                    CategoryEditViewEffect.MoveCategoryAdd -> {
-                        navigate(
-                            com.fiz.mono.category_edit.R.id.action_categoryFragment_to_categoryAddFragment,
-                            data = viewModel.getType()
-                        )
-                    }
-                    CategoryEditViewEffect.MoveReturn -> {
-                        findNavController().popBackStack()
-                    }
-                }
-
+    private fun reactTo(viewEffect: CategoryEditViewEffect) {
+        when (viewEffect) {
+            CategoryEditViewEffect.MoveCategoryAdd -> {
+                navigate(
+                    com.fiz.mono.category_edit.R.id.action_categoryFragment_to_categoryAddFragment,
+                    data = viewModel.getType()
+                )
+            }
+            CategoryEditViewEffect.MoveReturn -> {
+                findNavController().popBackStack()
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

@@ -37,6 +37,7 @@
     <string name="confirm_PIN">Please confirm your PIN password.</string>
     <string name="incorrect_PIN">Password incorrect please try again!</string>
     <string name="remove_PIN">Remove PIN</string>
+    <string name="deleted_PIN">PIN deleted</string>
     <string name="delete_PIN">Delete PIN password to disable this feature.</string>
 
     <string name="expense">Expense</string>
