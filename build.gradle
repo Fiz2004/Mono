@@ -2,19 +2,19 @@
 
 buildscript {
     ext.buildConfig = [
-            "compileSdk": 32,
+            "compileSdk": 33,
             "minSdk"    : 22,
-            "targetSdk" : 32,
+            "targetSdk" : 33,
     ]
 
     ext.versions = [
-            "hilt"      : "2.43.1",
-            "navigation": "2.5.1",
-            "room"      : "2.4.3",
-            "coroutines": "1.6.4",
-            "material"  : "1.6.1",
-            "appcompat" : "1.4.2",
-            "fragmentKtx" : "1.5.1"
+            "hilt"       : '2.44',
+            "navigation" : '2.5.2',
+            "room"       : "2.4.3",
+            "coroutines" : "1.6.4",
+            "material"   : "1.6.1",
+            "appcompat"  : '1.5.1',
+            "fragmentKtx": '1.5.3'
     ]
 
     repositories {
@@ -22,16 +22,16 @@ buildscript {
     }
     dependencies {
         classpath("com.google.dagger:hilt-android-gradle-plugin:${versions.hilt}")
-        classpath("com.android.tools.build:gradle:7.2.2")
+        classpath('com.android.tools.build:gradle:7.3.0')
 
-        classpath("com.google.gms:google-services:4.3.13")
-        classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.1")
+        classpath("com.google.gms:google-services:4.3.14")
+        classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.2")
     }
 }
 
 plugins {
-    id("com.android.application") version "7.2.2" apply false
-    id("com.android.library") version "7.2.2" apply false
+    id("com.android.application") version "7.3.0" apply false
+    id("com.android.library") version "7.3.0" apply false
     id("org.jetbrains.kotlin.android") version "1.7.10" apply false
     id("org.jetbrains.kotlin.jvm") version "1.7.10" apply false
 }

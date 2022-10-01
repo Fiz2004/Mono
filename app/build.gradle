@@ -9,8 +9,8 @@ android {
 
     defaultConfig {
         applicationId "com.fiz.mono"
-        versionCode 3
-        versionName "0.1.0"
+        versionCode 4
+        versionName "0.2.0"
     }
 
     buildTypes {
@@ -55,9 +55,9 @@ dependencies {
 
     implementation("androidx.appcompat:appcompat:${versions.appcompat}")
     implementation("com.google.android.material:material:${versions.material}")
-    implementation("androidx.activity:activity-ktx:1.5.1")
+    implementation('androidx.activity:activity-ktx:1.6.0')
 
-    implementation platform("com.google.firebase:firebase-bom:30.3.1")
+    implementation platform('com.google.firebase:firebase-bom:30.5.0')
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
 
@@ -67,13 +67,14 @@ dependencies {
 
     // Hilt
     implementation("com.google.dagger:hilt-android:${versions.hilt}")
+    implementation 'com.yandex.android:mobmetricalib:5.2.0'
     kapt("com.google.dagger:hilt-android-compiler:${versions.hilt}")
 
     // Date
-    implementation("com.jakewharton.threetenabp:threetenabp:1.4.0")
+    implementation('com.jakewharton.threetenabp:threetenabp:1.4.1')
 
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-core:4.6.1")
+    testImplementation('org.mockito:mockito-core:4.8.0')
     debugImplementation("androidx.fragment:fragment-testing:${versions.fragmentKtx}")
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.4.0")
     androidTestImplementation("androidx.room:room-testing:${versions.room}")

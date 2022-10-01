@@ -21,11 +21,11 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:${versions.navigation}")
 
     // Date
-    implementation("com.jakewharton.threetenabp:threetenabp:1.4.0")
+    implementation("com.jakewharton.threetenabp:threetenabp:1.4.1")
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:${versions.hilt}")
-    kapt("com.google.dagger:hilt-android-compiler:${versions.hilt}")
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
 
     testImplementation("junit:junit:4.13.2")
 
